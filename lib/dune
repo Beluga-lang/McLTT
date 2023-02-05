@@ -1,0 +1,8 @@
+(library
+ (name mcltt)
+ (modules main cst parser lexer))
+
+(menhir
+ (modules parser))
+
+(ocamllex lexer)
