@@ -1,6 +1,8 @@
 (library
  (name mcltt)
- (modules main cst parser lexer))
+ (modules main cst parser lexer test)
+ (inline_tests)
+ (preprocess (pps ppx_inline_test)))
 
 (menhir
  (modules parser))
