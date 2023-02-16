@@ -6,7 +6,6 @@
 %token DOT
 %token COLON
 %token SUCC
-%token SPACE
 %token NAT
 %token TYPE
 
@@ -22,12 +21,12 @@ prog:
   ;
 
 obj:
+  | LPAREN; o = obj; RPAREN { o }
   | NAT { Nat }
   | ZERO { Zero }
   | SUCC; o = obj { Succ o }
-  | TYPE; SPACE; i = INT { Type i }
-  | LPAREN; o = obj; RPAREN { o }
+  | TYPE; i = INT { Type i }
   | x = VAR { Var x }
-  | LAMBDA; SPACE; x = VAR; DOT; o = obj { Fun (x, o) }
-  | m = obj; SPACE; n = obj { App (m, n) }
+  | LAMBDA; x = VAR; DOT; o = obj { Fun (x, o) }
+  | m = obj; n = obj { App (m, n) }
   ;

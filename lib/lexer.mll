@@ -13,7 +13,7 @@ rule read =
   | "zero" { ZERO }
   | "succ " { SUCC }
   | "fun" { LAMBDA }
-  | ' ' { SPACE }
+  | [' ' '\t' '\n' ] { read lexbuf }
   | "Nat" { NAT }
   | ['0'-'9']+ as lxm { INT(int_of_string lxm) }
   | "Type" { TYPE }
