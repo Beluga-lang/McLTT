@@ -28,7 +28,22 @@ obj:
   | SUCC; o = obj { Succ o }
   | TYPE; i = INT { Type i }
   | x = VAR { Var x }
-  | LAMBDA; LPAREN; x = VAR; COLON; t = obj; RPAREN; DOT; o = obj { Fun (x, t, o) }
-  | PI; LPAREN; x = VAR; COLON; t = obj; RPAREN; DOT; o = obj { Pi (x, t, o) }
+  | LAMBDA; args = args_list; DOT; o = obj {
+    List.fold_right (fun (a, t) curr -> Cst.Fun (a, t, curr)) args o
+  }
+  | PI; args = args_list; DOT; o = obj {
+    List.fold_right (fun (a, t) curr -> Cst.Pi (a, t, curr)) args o
+  }
   | m = obj; n = obj { App (m, n) }
   ;
+
+(* Parse multiple arguments in lambda:
+   Read more at https://dev.realworldocaml.org/parsing-with-ocamllex-and-menhir.html *)
+args_list: l = rev_args_list { List.rev l };
+
+rev_args_list:
+  | (* empty *) { [] }
+  | l = rev_args_list; LPAREN; x = VAR; COLON; t = obj; RPAREN
+    { (x, t) :: l }
+  ;
+

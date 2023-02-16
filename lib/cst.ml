@@ -8,4 +8,3 @@ type obj =
   | App of obj * obj (* M N *)
   | Pi of string * obj * obj (* pi (x:A).B *)
   (* There's a couple more *)
-
