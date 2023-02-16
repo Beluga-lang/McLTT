@@ -37,11 +37,9 @@ obj:
   | m = obj; n = obj { App (m, n) }
   ;
 
-(* Parse multiple arguments:
-   Read more at https://dev.realworldocaml.org/parsing-with-ocamllex-and-menhir.html *)
 args_list:
-  | (* empty *) { [] }
-  | l = args_list; LPAREN; x = VAR; COLON; t = obj; RPAREN
-    { (x, t) :: l }
-  ;
+  l = args_obj+ { List.rev l };
+
+args_obj:
+  LPAREN; x = VAR; COLON; t = obj; RPAREN { (x, t) };
 
