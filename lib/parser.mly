@@ -3,6 +3,7 @@
 %token EOF
 %token ZERO
 %token LAMBDA
+%token PI
 %token DOT
 %token COLON
 %token SUCC
@@ -27,6 +28,7 @@ obj:
   | SUCC; o = obj { Succ o }
   | TYPE; i = INT { Type i }
   | x = VAR { Var x }
-  | LAMBDA; x = VAR; DOT; o = obj { Fun (x, o) }
+  | LAMBDA; LPAREN; x = VAR; COLON; t = obj; RPAREN; DOT; o = obj { Fun (x, t, o) }
+  | PI; LPAREN; x = VAR; COLON; t = obj; RPAREN; DOT; o = obj { Pi (x, t, o) }
   | m = obj; n = obj { App (m, n) }
   ;
