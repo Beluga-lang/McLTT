@@ -99,30 +99,36 @@ Global Program Instance terminalNum : MenhirLib.Alphabet.Numbered terminal :=
 Global Instance TerminalAlph : MenhirLib.Alphabet.Alphabet terminal := _.
 
 Inductive nonterminal' : Set :=
+| app_obj'nt
 | args_list'nt
 | args_obj'nt
 | obj'nt
 | prog'nt
-| rev_args_list'nt.
+| rev_args_list'nt
+| simpl_obj'nt.
 Definition nonterminal := nonterminal'.
 
 Global Program Instance nonterminalNum : MenhirLib.Alphabet.Numbered nonterminal :=
   { inj := fun x => match x return _ with
-    | args_list'nt => 1%positive
-    | args_obj'nt => 2%positive
-    | obj'nt => 3%positive
-    | prog'nt => 4%positive
-    | rev_args_list'nt => 5%positive
+    | app_obj'nt => 1%positive
+    | args_list'nt => 2%positive
+    | args_obj'nt => 3%positive
+    | obj'nt => 4%positive
+    | prog'nt => 5%positive
+    | rev_args_list'nt => 6%positive
+    | simpl_obj'nt => 7%positive
     end;
     surj := (fun n => match n return _ with
-    | 1%positive => args_list'nt
-    | 2%positive => args_obj'nt
-    | 3%positive => obj'nt
-    | 4%positive => prog'nt
-    | 5%positive => rev_args_list'nt
-    | _ => args_list'nt
+    | 1%positive => app_obj'nt
+    | 2%positive => args_list'nt
+    | 3%positive => args_obj'nt
+    | 4%positive => obj'nt
+    | 5%positive => prog'nt
+    | 6%positive => rev_args_list'nt
+    | 7%positive => simpl_obj'nt
+    | _ => app_obj'nt
     end)%Z;
-    inj_bound := 5%positive }.
+    inj_bound := 7%positive }.
 Global Instance NonTerminalAlph : MenhirLib.Alphabet.Alphabet nonterminal := _.
 
 Include MenhirLib.Grammar.Symbol.
@@ -146,11 +152,13 @@ Definition terminal_semantic_type (t:terminal) : Type:=
 
 Definition nonterminal_semantic_type (nt:nonterminal) : Type:=
   match nt with
+  | simpl_obj'nt =>       (Cst.obj)%type
   | rev_args_list'nt =>       (list (string * Cst.obj))%type
   | prog'nt =>        (Cst.obj)%type
   | obj'nt =>       (Cst.obj)%type
   | args_obj'nt =>       (string * Cst.obj)%type
   | args_list'nt =>       (list (string * Cst.obj))%type
+  | app_obj'nt =>       (Cst.obj)%type
   end.
 
 Definition symbol_semantic_type (s:symbol) : Type:=
@@ -196,57 +204,63 @@ Definition token_sem (tok : token) : symbol_semantic_type (T (token_term tok)) :
   end.
 
 Inductive production' : Set :=
+| Prod'simpl_obj'5
+| Prod'simpl_obj'4
+| Prod'simpl_obj'3
+| Prod'simpl_obj'2
+| Prod'simpl_obj'1
+| Prod'simpl_obj'0
 | Prod'rev_args_list'1
 | Prod'rev_args_list'0
 | Prod'prog'0
-| Prod'obj'8
-| Prod'obj'7
-| Prod'obj'6
-| Prod'obj'5
-| Prod'obj'4
-| Prod'obj'3
 | Prod'obj'2
 | Prod'obj'1
 | Prod'obj'0
 | Prod'args_obj'0
-| Prod'args_list'0.
+| Prod'args_list'0
+| Prod'app_obj'1
+| Prod'app_obj'0.
 Definition production := production'.
 
 Global Program Instance productionNum : MenhirLib.Alphabet.Numbered production :=
   { inj := fun x => match x return _ with
-    | Prod'rev_args_list'1 => 1%positive
-    | Prod'rev_args_list'0 => 2%positive
-    | Prod'prog'0 => 3%positive
-    | Prod'obj'8 => 4%positive
-    | Prod'obj'7 => 5%positive
-    | Prod'obj'6 => 6%positive
-    | Prod'obj'5 => 7%positive
-    | Prod'obj'4 => 8%positive
-    | Prod'obj'3 => 9%positive
+    | Prod'simpl_obj'5 => 1%positive
+    | Prod'simpl_obj'4 => 2%positive
+    | Prod'simpl_obj'3 => 3%positive
+    | Prod'simpl_obj'2 => 4%positive
+    | Prod'simpl_obj'1 => 5%positive
+    | Prod'simpl_obj'0 => 6%positive
+    | Prod'rev_args_list'1 => 7%positive
+    | Prod'rev_args_list'0 => 8%positive
+    | Prod'prog'0 => 9%positive
     | Prod'obj'2 => 10%positive
     | Prod'obj'1 => 11%positive
     | Prod'obj'0 => 12%positive
     | Prod'args_obj'0 => 13%positive
     | Prod'args_list'0 => 14%positive
+    | Prod'app_obj'1 => 15%positive
+    | Prod'app_obj'0 => 16%positive
     end;
     surj := (fun n => match n return _ with
-    | 1%positive => Prod'rev_args_list'1
-    | 2%positive => Prod'rev_args_list'0
-    | 3%positive => Prod'prog'0
-    | 4%positive => Prod'obj'8
-    | 5%positive => Prod'obj'7
-    | 6%positive => Prod'obj'6
-    | 7%positive => Prod'obj'5
-    | 8%positive => Prod'obj'4
-    | 9%positive => Prod'obj'3
+    | 1%positive => Prod'simpl_obj'5
+    | 2%positive => Prod'simpl_obj'4
+    | 3%positive => Prod'simpl_obj'3
+    | 4%positive => Prod'simpl_obj'2
+    | 5%positive => Prod'simpl_obj'1
+    | 6%positive => Prod'simpl_obj'0
+    | 7%positive => Prod'rev_args_list'1
+    | 8%positive => Prod'rev_args_list'0
+    | 9%positive => Prod'prog'0
     | 10%positive => Prod'obj'2
     | 11%positive => Prod'obj'1
     | 12%positive => Prod'obj'0
     | 13%positive => Prod'args_obj'0
     | 14%positive => Prod'args_list'0
-    | _ => Prod'rev_args_list'1
+    | 15%positive => Prod'app_obj'1
+    | 16%positive => Prod'app_obj'0
+    | _ => Prod'simpl_obj'5
     end)%Z;
-    inj_bound := 14%positive }.
+    inj_bound := 16%positive }.
 Global Instance ProductionAlph : MenhirLib.Alphabet.Alphabet production := _.
 
 Definition prod_contents (p:production) :
@@ -261,6 +275,16 @@ Definition prod_contents (p:production) :
       (List.map symbol_semantic_type (snd p)) )
   in
   match p with
+  | Prod'app_obj'0 => box
+    (app_obj'nt, [NT simpl_obj'nt; NT app_obj'nt]%list)
+    (fun _2 _1 =>
+                      ( Cst.App _1 _2 )
+)
+  | Prod'app_obj'1 => box
+    (app_obj'nt, [NT simpl_obj'nt]%list)
+    (fun _1 =>
+              ( _1 )
+)
   | Prod'args_list'0 => box
     (args_list'nt, [NT rev_args_list'nt]%list)
     (fun _1 =>
@@ -269,52 +293,26 @@ Definition prod_contents (p:production) :
   | Prod'args_obj'0 => box
     (args_obj'nt, [T RPAREN't; NT obj'nt; T COLON't; T VAR't; T LPAREN't]%list)
     (fun _5 _4 _3 _2 _1 =>
-                              ( (_2, _4) )
+                                ( (_2, _4) )
 )
   | Prod'obj'0 => box
-    (obj'nt, [T RPAREN't; NT obj'nt; T LPAREN't]%list)
-    (fun _3 _2 _1 =>
-                      ( _2 )
-)
-  | Prod'obj'1 => box
-    (obj'nt, [T NAT't]%list)
-    (fun _1 =>
-        ( Cst.Nat )
-)
-  | Prod'obj'2 => box
-    (obj'nt, [T ZERO't]%list)
-    (fun _1 =>
-         ( Cst.Zero )
-)
-  | Prod'obj'3 => box
-    (obj'nt, [NT obj'nt; T SUCC't]%list)
-    (fun _2 _1 =>
-             ( Cst.Succ _2 )
-)
-  | Prod'obj'4 => box
-    (obj'nt, [T INT't; T TYPE't]%list)
-    (fun _2 _1 =>
-             ( Cst.TType _2 )
-)
-  | Prod'obj'5 => box
-    (obj'nt, [T VAR't]%list)
-    (fun _1 =>
-        ( Cst.Var _1 )
-)
-  | Prod'obj'6 => box
-    (obj'nt, [NT obj'nt; NT obj'nt]%list)
-    (fun _2 _1 =>
-            ( Cst.App _1 _2 )
-)
-  | Prod'obj'7 => box
     (obj'nt, [NT obj'nt; T DOT't; NT args_list'nt; T LAMBDA't]%list)
     (fun _4 _3 _2 _1 =>
-                             ( List.fold_left (fun acc arg => Cst.Fun (fst arg) (snd arg) acc) _2 _4 )
+                             (
+      List.fold_left (fun acc arg => Cst.Fun (fst arg) (snd arg) acc) _2 _4 
+  )
 )
-  | Prod'obj'8 => box
+  | Prod'obj'1 => box
     (obj'nt, [NT obj'nt; T DOT't; NT args_list'nt; T PI't]%list)
     (fun _4 _3 _2 _1 =>
-                         ( List.fold_left (fun acc arg => Cst.Pi (fst arg) (snd arg) acc) _2 _4 )
+                         (
+      List.fold_left (fun acc arg => Cst.Pi (fst arg) (snd arg) acc) _2 _4
+  )
+)
+  | Prod'obj'2 => box
+    (obj'nt, [NT app_obj'nt]%list)
+    (fun _1 =>
+            ( _1 )
 )
   | Prod'prog'0 => box
     (prog'nt, [T EOF't; NT obj'nt]%list)
@@ -330,6 +328,36 @@ Definition prod_contents (p:production) :
     (rev_args_list'nt, [NT args_obj'nt]%list)
     (fun _1 =>
              ( [_1] )
+)
+  | Prod'simpl_obj'0 => box
+    (simpl_obj'nt, [T VAR't]%list)
+    (fun _1 =>
+        ( Cst.Var _1 )
+)
+  | Prod'simpl_obj'1 => box
+    (simpl_obj'nt, [T NAT't]%list)
+    (fun _1 =>
+        ( Cst.Nat )
+)
+  | Prod'simpl_obj'2 => box
+    (simpl_obj'nt, [T ZERO't]%list)
+    (fun _1 =>
+         ( Cst.Zero )
+)
+  | Prod'simpl_obj'3 => box
+    (simpl_obj'nt, [T INT't; T TYPE't]%list)
+    (fun _2 _1 =>
+             ( Cst.TType _2 )
+)
+  | Prod'simpl_obj'4 => box
+    (simpl_obj'nt, [NT simpl_obj'nt; T SUCC't]%list)
+    (fun _2 _1 =>
+                   ( Cst.Succ _2 )
+)
+  | Prod'simpl_obj'5 => box
+    (simpl_obj'nt, [T RPAREN't; NT obj'nt; T LPAREN't]%list)
+    (fun _3 _2 _1 =>
+                      ( _2 )
 )
   end.
 
@@ -353,25 +381,31 @@ Module GramDefs := Gram.
 
 Definition nullable_nterm (nt:nonterminal) : bool :=
   match nt with
+  | simpl_obj'nt => false
   | rev_args_list'nt => false
   | prog'nt => false
   | obj'nt => false
   | args_obj'nt => false
   | args_list'nt => false
+  | app_obj'nt => false
   end.
 
 Definition first_nterm (nt:nonterminal) : list terminal :=
   match nt with
+  | simpl_obj'nt => [ZERO't; VAR't; TYPE't; SUCC't; NAT't; LPAREN't]%list
   | rev_args_list'nt => [LPAREN't]%list
   | prog'nt => [ZERO't; VAR't; TYPE't; SUCC't; PI't; NAT't; LPAREN't; LAMBDA't]%list
   | obj'nt => [ZERO't; VAR't; TYPE't; SUCC't; PI't; NAT't; LPAREN't; LAMBDA't]%list
   | args_obj'nt => [LPAREN't]%list
   | args_list'nt => [LPAREN't]%list
+  | app_obj'nt => [ZERO't; VAR't; TYPE't; SUCC't; NAT't; LPAREN't]%list
   end.
 
 Inductive noninitstate' : Set :=
-| Nis'30
+| Nis'32
+| Nis'31
 | Nis'29
+| Nis'28
 | Nis'27
 | Nis'26
 | Nis'25
@@ -403,69 +437,73 @@ Definition noninitstate := noninitstate'.
 
 Global Program Instance noninitstateNum : MenhirLib.Alphabet.Numbered noninitstate :=
   { inj := fun x => match x return _ with
-    | Nis'30 => 1%positive
-    | Nis'29 => 2%positive
-    | Nis'27 => 3%positive
-    | Nis'26 => 4%positive
-    | Nis'25 => 5%positive
-    | Nis'24 => 6%positive
-    | Nis'23 => 7%positive
-    | Nis'22 => 8%positive
-    | Nis'21 => 9%positive
-    | Nis'20 => 10%positive
-    | Nis'19 => 11%positive
-    | Nis'18 => 12%positive
-    | Nis'17 => 13%positive
-    | Nis'16 => 14%positive
-    | Nis'15 => 15%positive
-    | Nis'14 => 16%positive
-    | Nis'13 => 17%positive
-    | Nis'12 => 18%positive
-    | Nis'11 => 19%positive
-    | Nis'10 => 20%positive
-    | Nis'9 => 21%positive
-    | Nis'8 => 22%positive
-    | Nis'7 => 23%positive
-    | Nis'6 => 24%positive
-    | Nis'5 => 25%positive
-    | Nis'4 => 26%positive
-    | Nis'3 => 27%positive
-    | Nis'2 => 28%positive
-    | Nis'1 => 29%positive
+    | Nis'32 => 1%positive
+    | Nis'31 => 2%positive
+    | Nis'29 => 3%positive
+    | Nis'28 => 4%positive
+    | Nis'27 => 5%positive
+    | Nis'26 => 6%positive
+    | Nis'25 => 7%positive
+    | Nis'24 => 8%positive
+    | Nis'23 => 9%positive
+    | Nis'22 => 10%positive
+    | Nis'21 => 11%positive
+    | Nis'20 => 12%positive
+    | Nis'19 => 13%positive
+    | Nis'18 => 14%positive
+    | Nis'17 => 15%positive
+    | Nis'16 => 16%positive
+    | Nis'15 => 17%positive
+    | Nis'14 => 18%positive
+    | Nis'13 => 19%positive
+    | Nis'12 => 20%positive
+    | Nis'11 => 21%positive
+    | Nis'10 => 22%positive
+    | Nis'9 => 23%positive
+    | Nis'8 => 24%positive
+    | Nis'7 => 25%positive
+    | Nis'6 => 26%positive
+    | Nis'5 => 27%positive
+    | Nis'4 => 28%positive
+    | Nis'3 => 29%positive
+    | Nis'2 => 30%positive
+    | Nis'1 => 31%positive
     end;
     surj := (fun n => match n return _ with
-    | 1%positive => Nis'30
-    | 2%positive => Nis'29
-    | 3%positive => Nis'27
-    | 4%positive => Nis'26
-    | 5%positive => Nis'25
-    | 6%positive => Nis'24
-    | 7%positive => Nis'23
-    | 8%positive => Nis'22
-    | 9%positive => Nis'21
-    | 10%positive => Nis'20
-    | 11%positive => Nis'19
-    | 12%positive => Nis'18
-    | 13%positive => Nis'17
-    | 14%positive => Nis'16
-    | 15%positive => Nis'15
-    | 16%positive => Nis'14
-    | 17%positive => Nis'13
-    | 18%positive => Nis'12
-    | 19%positive => Nis'11
-    | 20%positive => Nis'10
-    | 21%positive => Nis'9
-    | 22%positive => Nis'8
-    | 23%positive => Nis'7
-    | 24%positive => Nis'6
-    | 25%positive => Nis'5
-    | 26%positive => Nis'4
-    | 27%positive => Nis'3
-    | 28%positive => Nis'2
-    | 29%positive => Nis'1
-    | _ => Nis'30
+    | 1%positive => Nis'32
+    | 2%positive => Nis'31
+    | 3%positive => Nis'29
+    | 4%positive => Nis'28
+    | 5%positive => Nis'27
+    | 6%positive => Nis'26
+    | 7%positive => Nis'25
+    | 8%positive => Nis'24
+    | 9%positive => Nis'23
+    | 10%positive => Nis'22
+    | 11%positive => Nis'21
+    | 12%positive => Nis'20
+    | 13%positive => Nis'19
+    | 14%positive => Nis'18
+    | 15%positive => Nis'17
+    | 16%positive => Nis'16
+    | 17%positive => Nis'15
+    | 18%positive => Nis'14
+    | 19%positive => Nis'13
+    | 20%positive => Nis'12
+    | 21%positive => Nis'11
+    | 22%positive => Nis'10
+    | 23%positive => Nis'9
+    | 24%positive => Nis'8
+    | 25%positive => Nis'7
+    | 26%positive => Nis'6
+    | 27%positive => Nis'5
+    | 28%positive => Nis'4
+    | 29%positive => Nis'3
+    | 30%positive => Nis'2
+    | 31%positive => Nis'1
+    | _ => Nis'32
     end)%Z;
-    inj_bound := 29%positive }.
+    inj_bound := 31%positive }.
 Global Instance NonInitStateAlph : MenhirLib.Alphabet.Alphabet noninitstate := _.
 
 Definition last_symb_of_non_init_state (noninitstate:noninitstate) : symbol :=
@@ -475,30 +513,32 @@ Definition last_symb_of_non_init_state (noninitstate:noninitstate) : symbol :=
   | Nis'3 => T TYPE't
   | Nis'4 => T INT't
   | Nis'5 => T SUCC't
-  | Nis'6 => T PI't
+  | Nis'6 => T NAT't
   | Nis'7 => T LPAREN't
-  | Nis'8 => T VAR't
-  | Nis'9 => T COLON't
-  | Nis'10 => T NAT't
-  | Nis'11 => T LPAREN't
+  | Nis'8 => T PI't
+  | Nis'9 => T LPAREN't
+  | Nis'10 => T VAR't
+  | Nis'11 => T COLON't
   | Nis'12 => T LAMBDA't
   | Nis'13 => NT rev_args_list'nt
   | Nis'14 => NT args_obj'nt
   | Nis'15 => NT args_obj'nt
   | Nis'16 => NT args_list'nt
   | Nis'17 => T DOT't
-  | Nis'18 => NT obj'nt
+  | Nis'18 => NT simpl_obj'nt
   | Nis'19 => NT obj'nt
-  | Nis'20 => NT obj'nt
-  | Nis'21 => T RPAREN't
+  | Nis'20 => NT app_obj'nt
+  | Nis'21 => NT simpl_obj'nt
   | Nis'22 => NT obj'nt
   | Nis'23 => T RPAREN't
   | Nis'24 => NT args_list'nt
   | Nis'25 => T DOT't
   | Nis'26 => NT obj'nt
   | Nis'27 => NT obj'nt
-  | Nis'29 => NT obj'nt
-  | Nis'30 => T EOF't
+  | Nis'28 => T RPAREN't
+  | Nis'29 => NT simpl_obj'nt
+  | Nis'31 => NT obj'nt
+  | Nis'32 => T EOF't
   end.
 
 Inductive initstate' : Set :=
@@ -531,80 +571,78 @@ Definition action_table (state:state) : action :=
     | VAR't => Shift_act Nis'2 (eq_refl _)
     | TYPE't => Shift_act Nis'3 (eq_refl _)
     | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
+    | PI't => Shift_act Nis'8 (eq_refl _)
+    | NAT't => Shift_act Nis'6 (eq_refl _)
+    | LPAREN't => Shift_act Nis'7 (eq_refl _)
     | LAMBDA't => Shift_act Nis'12 (eq_refl _)
     | _ => Fail_act
     end)
-  | Ninit Nis'1 => Default_reduce_act Prod'obj'2
-  | Ninit Nis'2 => Default_reduce_act Prod'obj'5
+  | Ninit Nis'1 => Default_reduce_act Prod'simpl_obj'2
+  | Ninit Nis'2 => Default_reduce_act Prod'simpl_obj'0
   | Ninit Nis'3 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
     | INT't => Shift_act Nis'4 (eq_refl _)
     | _ => Fail_act
     end)
-  | Ninit Nis'4 => Default_reduce_act Prod'obj'4
+  | Ninit Nis'4 => Default_reduce_act Prod'simpl_obj'3
   | Ninit Nis'5 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
     | ZERO't => Shift_act Nis'1 (eq_refl _)
     | VAR't => Shift_act Nis'2 (eq_refl _)
     | TYPE't => Shift_act Nis'3 (eq_refl _)
     | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
-    | _ => Fail_act
-    end)
-  | Ninit Nis'6 => Lookahead_act (fun terminal:terminal =>
-    match terminal return lookahead_action terminal with
+    | NAT't => Shift_act Nis'6 (eq_refl _)
     | LPAREN't => Shift_act Nis'7 (eq_refl _)
     | _ => Fail_act
     end)
+  | Ninit Nis'6 => Default_reduce_act Prod'simpl_obj'1
   | Ninit Nis'7 => Lookahead_act (fun terminal:terminal =>
-    match terminal return lookahead_action terminal with
-    | VAR't => Shift_act Nis'8 (eq_refl _)
-    | _ => Fail_act
-    end)
-  | Ninit Nis'8 => Lookahead_act (fun terminal:terminal =>
-    match terminal return lookahead_action terminal with
-    | COLON't => Shift_act Nis'9 (eq_refl _)
-    | _ => Fail_act
-    end)
-  | Ninit Nis'9 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
     | ZERO't => Shift_act Nis'1 (eq_refl _)
     | VAR't => Shift_act Nis'2 (eq_refl _)
     | TYPE't => Shift_act Nis'3 (eq_refl _)
     | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
+    | PI't => Shift_act Nis'8 (eq_refl _)
+    | NAT't => Shift_act Nis'6 (eq_refl _)
+    | LPAREN't => Shift_act Nis'7 (eq_refl _)
     | LAMBDA't => Shift_act Nis'12 (eq_refl _)
     | _ => Fail_act
     end)
-  | Ninit Nis'10 => Default_reduce_act Prod'obj'1
+  | Ninit Nis'8 => Lookahead_act (fun terminal:terminal =>
+    match terminal return lookahead_action terminal with
+    | LPAREN't => Shift_act Nis'9 (eq_refl _)
+    | _ => Fail_act
+    end)
+  | Ninit Nis'9 => Lookahead_act (fun terminal:terminal =>
+    match terminal return lookahead_action terminal with
+    | VAR't => Shift_act Nis'10 (eq_refl _)
+    | _ => Fail_act
+    end)
+  | Ninit Nis'10 => Lookahead_act (fun terminal:terminal =>
+    match terminal return lookahead_action terminal with
+    | COLON't => Shift_act Nis'11 (eq_refl _)
+    | _ => Fail_act
+    end)
   | Ninit Nis'11 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
     | ZERO't => Shift_act Nis'1 (eq_refl _)
     | VAR't => Shift_act Nis'2 (eq_refl _)
     | TYPE't => Shift_act Nis'3 (eq_refl _)
     | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
+    | PI't => Shift_act Nis'8 (eq_refl _)
+    | NAT't => Shift_act Nis'6 (eq_refl _)
+    | LPAREN't => Shift_act Nis'7 (eq_refl _)
     | LAMBDA't => Shift_act Nis'12 (eq_refl _)
     | _ => Fail_act
     end)
   | Ninit Nis'12 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
-    | LPAREN't => Shift_act Nis'7 (eq_refl _)
+    | LPAREN't => Shift_act Nis'9 (eq_refl _)
     | _ => Fail_act
     end)
   | Ninit Nis'13 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
-    | LPAREN't => Shift_act Nis'7 (eq_refl _)
+    | LPAREN't => Shift_act Nis'9 (eq_refl _)
     | DOT't => Reduce_act Prod'args_list'0
     | _ => Fail_act
     end)
@@ -621,65 +659,30 @@ Definition action_table (state:state) : action :=
     | VAR't => Shift_act Nis'2 (eq_refl _)
     | TYPE't => Shift_act Nis'3 (eq_refl _)
     | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
+    | PI't => Shift_act Nis'8 (eq_refl _)
+    | NAT't => Shift_act Nis'6 (eq_refl _)
+    | LPAREN't => Shift_act Nis'7 (eq_refl _)
     | LAMBDA't => Shift_act Nis'12 (eq_refl _)
     | _ => Fail_act
     end)
-  | Ninit Nis'18 => Lookahead_act (fun terminal:terminal =>
-    match terminal return lookahead_action terminal with
-    | ZERO't => Shift_act Nis'1 (eq_refl _)
-    | VAR't => Shift_act Nis'2 (eq_refl _)
-    | TYPE't => Shift_act Nis'3 (eq_refl _)
-    | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | RPAREN't => Reduce_act Prod'obj'7
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
-    | EOF't => Reduce_act Prod'obj'7
-    | _ => Fail_act
-    end)
-  | Ninit Nis'19 => Lookahead_act (fun terminal:terminal =>
-    match terminal return lookahead_action terminal with
-    | ZERO't => Shift_act Nis'1 (eq_refl _)
-    | VAR't => Shift_act Nis'2 (eq_refl _)
-    | TYPE't => Shift_act Nis'3 (eq_refl _)
-    | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | RPAREN't => Reduce_act Prod'obj'6
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
-    | EOF't => Reduce_act Prod'obj'6
-    | _ => Fail_act
-    end)
+  | Ninit Nis'18 => Default_reduce_act Prod'app_obj'1
+  | Ninit Nis'19 => Default_reduce_act Prod'obj'0
   | Ninit Nis'20 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
     | ZERO't => Shift_act Nis'1 (eq_refl _)
     | VAR't => Shift_act Nis'2 (eq_refl _)
     | TYPE't => Shift_act Nis'3 (eq_refl _)
     | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | RPAREN't => Shift_act Nis'21 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
+    | RPAREN't => Reduce_act Prod'obj'2
+    | NAT't => Shift_act Nis'6 (eq_refl _)
+    | LPAREN't => Shift_act Nis'7 (eq_refl _)
+    | EOF't => Reduce_act Prod'obj'2
     | _ => Fail_act
     end)
-  | Ninit Nis'21 => Default_reduce_act Prod'obj'0
+  | Ninit Nis'21 => Default_reduce_act Prod'app_obj'0
   | Ninit Nis'22 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
-    | ZERO't => Shift_act Nis'1 (eq_refl _)
-    | VAR't => Shift_act Nis'2 (eq_refl _)
-    | TYPE't => Shift_act Nis'3 (eq_refl _)
-    | SUCC't => Shift_act Nis'5 (eq_refl _)
     | RPAREN't => Shift_act Nis'23 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
     | _ => Fail_act
     end)
   | Ninit Nis'23 => Default_reduce_act Prod'args_obj'0
@@ -694,78 +697,54 @@ Definition action_table (state:state) : action :=
     | VAR't => Shift_act Nis'2 (eq_refl _)
     | TYPE't => Shift_act Nis'3 (eq_refl _)
     | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
+    | PI't => Shift_act Nis'8 (eq_refl _)
+    | NAT't => Shift_act Nis'6 (eq_refl _)
+    | LPAREN't => Shift_act Nis'7 (eq_refl _)
     | LAMBDA't => Shift_act Nis'12 (eq_refl _)
     | _ => Fail_act
     end)
-  | Ninit Nis'26 => Lookahead_act (fun terminal:terminal =>
-    match terminal return lookahead_action terminal with
-    | ZERO't => Shift_act Nis'1 (eq_refl _)
-    | VAR't => Shift_act Nis'2 (eq_refl _)
-    | TYPE't => Shift_act Nis'3 (eq_refl _)
-    | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | RPAREN't => Reduce_act Prod'obj'8
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
-    | EOF't => Reduce_act Prod'obj'8
-    | _ => Fail_act
-    end)
+  | Ninit Nis'26 => Default_reduce_act Prod'obj'1
   | Ninit Nis'27 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
-    | ZERO't => Shift_act Nis'1 (eq_refl _)
-    | VAR't => Shift_act Nis'2 (eq_refl _)
-    | TYPE't => Shift_act Nis'3 (eq_refl _)
-    | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | RPAREN't => Reduce_act Prod'obj'3
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
-    | EOF't => Reduce_act Prod'obj'3
+    | RPAREN't => Shift_act Nis'28 (eq_refl _)
     | _ => Fail_act
     end)
-  | Ninit Nis'29 => Lookahead_act (fun terminal:terminal =>
+  | Ninit Nis'28 => Default_reduce_act Prod'simpl_obj'5
+  | Ninit Nis'29 => Default_reduce_act Prod'simpl_obj'4
+  | Ninit Nis'31 => Lookahead_act (fun terminal:terminal =>
     match terminal return lookahead_action terminal with
-    | ZERO't => Shift_act Nis'1 (eq_refl _)
-    | VAR't => Shift_act Nis'2 (eq_refl _)
-    | TYPE't => Shift_act Nis'3 (eq_refl _)
-    | SUCC't => Shift_act Nis'5 (eq_refl _)
-    | PI't => Shift_act Nis'6 (eq_refl _)
-    | NAT't => Shift_act Nis'10 (eq_refl _)
-    | LPAREN't => Shift_act Nis'11 (eq_refl _)
-    | LAMBDA't => Shift_act Nis'12 (eq_refl _)
-    | EOF't => Shift_act Nis'30 (eq_refl _)
+    | EOF't => Shift_act Nis'32 (eq_refl _)
     | _ => Fail_act
     end)
-  | Ninit Nis'30 => Default_reduce_act Prod'prog'0
+  | Ninit Nis'32 => Default_reduce_act Prod'prog'0
   end.
 
 Definition goto_table (state:state) (nt:nonterminal) :=
   match state, nt return option { s:noninitstate | NT nt = last_symb_of_non_init_state s } with
-  | Init Init'0, prog'nt => None  | Init Init'0, obj'nt => Some (exist _ Nis'29 (eq_refl _))
-  | Ninit Nis'5, obj'nt => Some (exist _ Nis'27 (eq_refl _))
-  | Ninit Nis'6, rev_args_list'nt => Some (exist _ Nis'13 (eq_refl _))
-  | Ninit Nis'6, args_obj'nt => Some (exist _ Nis'15 (eq_refl _))
-  | Ninit Nis'6, args_list'nt => Some (exist _ Nis'24 (eq_refl _))
-  | Ninit Nis'9, obj'nt => Some (exist _ Nis'22 (eq_refl _))
-  | Ninit Nis'11, obj'nt => Some (exist _ Nis'20 (eq_refl _))
+  | Init Init'0, simpl_obj'nt => Some (exist _ Nis'18 (eq_refl _))
+  | Init Init'0, prog'nt => None  | Init Init'0, obj'nt => Some (exist _ Nis'31 (eq_refl _))
+  | Init Init'0, app_obj'nt => Some (exist _ Nis'20 (eq_refl _))
+  | Ninit Nis'5, simpl_obj'nt => Some (exist _ Nis'29 (eq_refl _))
+  | Ninit Nis'7, simpl_obj'nt => Some (exist _ Nis'18 (eq_refl _))
+  | Ninit Nis'7, obj'nt => Some (exist _ Nis'27 (eq_refl _))
+  | Ninit Nis'7, app_obj'nt => Some (exist _ Nis'20 (eq_refl _))
+  | Ninit Nis'8, rev_args_list'nt => Some (exist _ Nis'13 (eq_refl _))
+  | Ninit Nis'8, args_obj'nt => Some (exist _ Nis'15 (eq_refl _))
+  | Ninit Nis'8, args_list'nt => Some (exist _ Nis'24 (eq_refl _))
+  | Ninit Nis'11, simpl_obj'nt => Some (exist _ Nis'18 (eq_refl _))
+  | Ninit Nis'11, obj'nt => Some (exist _ Nis'22 (eq_refl _))
+  | Ninit Nis'11, app_obj'nt => Some (exist _ Nis'20 (eq_refl _))
   | Ninit Nis'12, rev_args_list'nt => Some (exist _ Nis'13 (eq_refl _))
   | Ninit Nis'12, args_obj'nt => Some (exist _ Nis'15 (eq_refl _))
   | Ninit Nis'12, args_list'nt => Some (exist _ Nis'16 (eq_refl _))
   | Ninit Nis'13, args_obj'nt => Some (exist _ Nis'14 (eq_refl _))
-  | Ninit Nis'17, obj'nt => Some (exist _ Nis'18 (eq_refl _))
-  | Ninit Nis'18, obj'nt => Some (exist _ Nis'19 (eq_refl _))
-  | Ninit Nis'19, obj'nt => Some (exist _ Nis'19 (eq_refl _))
-  | Ninit Nis'20, obj'nt => Some (exist _ Nis'19 (eq_refl _))
-  | Ninit Nis'22, obj'nt => Some (exist _ Nis'19 (eq_refl _))
+  | Ninit Nis'17, simpl_obj'nt => Some (exist _ Nis'18 (eq_refl _))
+  | Ninit Nis'17, obj'nt => Some (exist _ Nis'19 (eq_refl _))
+  | Ninit Nis'17, app_obj'nt => Some (exist _ Nis'20 (eq_refl _))
+  | Ninit Nis'20, simpl_obj'nt => Some (exist _ Nis'21 (eq_refl _))
+  | Ninit Nis'25, simpl_obj'nt => Some (exist _ Nis'18 (eq_refl _))
   | Ninit Nis'25, obj'nt => Some (exist _ Nis'26 (eq_refl _))
-  | Ninit Nis'26, obj'nt => Some (exist _ Nis'19 (eq_refl _))
-  | Ninit Nis'27, obj'nt => Some (exist _ Nis'19 (eq_refl _))
-  | Ninit Nis'29, obj'nt => Some (exist _ Nis'19 (eq_refl _))
+  | Ninit Nis'25, app_obj'nt => Some (exist _ Nis'20 (eq_refl _))
   | _, _ => None
   end.
 
@@ -778,34 +757,36 @@ Definition past_symb_of_non_init_state (noninitstate:noninitstate) : list symbol
   | Nis'5 => []%list
   | Nis'6 => []%list
   | Nis'7 => []%list
-  | Nis'8 => [T LPAREN't]%list
-  | Nis'9 => [T VAR't; T LPAREN't]%list
-  | Nis'10 => []%list
-  | Nis'11 => []%list
+  | Nis'8 => []%list
+  | Nis'9 => []%list
+  | Nis'10 => [T LPAREN't]%list
+  | Nis'11 => [T VAR't; T LPAREN't]%list
   | Nis'12 => []%list
   | Nis'13 => []%list
   | Nis'14 => [NT rev_args_list'nt]%list
   | Nis'15 => []%list
   | Nis'16 => [T LAMBDA't]%list
   | Nis'17 => [NT args_list'nt; T LAMBDA't]%list
-  | Nis'18 => [T DOT't; NT args_list'nt; T LAMBDA't]%list
-  | Nis'19 => [NT obj'nt]%list
-  | Nis'20 => [T LPAREN't]%list
-  | Nis'21 => [NT obj'nt; T LPAREN't]%list
+  | Nis'18 => []%list
+  | Nis'19 => [T DOT't; NT args_list'nt; T LAMBDA't]%list
+  | Nis'20 => []%list
+  | Nis'21 => [NT app_obj'nt]%list
   | Nis'22 => [T COLON't; T VAR't; T LPAREN't]%list
   | Nis'23 => [NT obj'nt; T COLON't; T VAR't; T LPAREN't]%list
   | Nis'24 => [T PI't]%list
   | Nis'25 => [NT args_list'nt; T PI't]%list
   | Nis'26 => [T DOT't; NT args_list'nt; T PI't]%list
-  | Nis'27 => [T SUCC't]%list
-  | Nis'29 => []%list
-  | Nis'30 => [NT obj'nt]%list
+  | Nis'27 => [T LPAREN't]%list
+  | Nis'28 => [NT obj'nt; T LPAREN't]%list
+  | Nis'29 => [T SUCC't]%list
+  | Nis'31 => []%list
+  | Nis'32 => [NT obj'nt]%list
   end.
 Extract Constant past_symb_of_non_init_state => "fun _ -> assert false".
 
 Definition state_set_1 (s:state) : bool :=
   match s with
-  | Init Init'0 | Ninit Nis'5 | Ninit Nis'9 | Ninit Nis'11 | Ninit Nis'17 | Ninit Nis'18 | Ninit Nis'19 | Ninit Nis'20 | Ninit Nis'22 | Ninit Nis'25 | Ninit Nis'26 | Ninit Nis'27 | Ninit Nis'29 => true
+  | Init Init'0 | Ninit Nis'5 | Ninit Nis'7 | Ninit Nis'11 | Ninit Nis'17 | Ninit Nis'20 | Ninit Nis'25 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_1 => "assert false".
@@ -819,136 +800,143 @@ Extract Inlined Constant state_set_2 => "assert false".
 
 Definition state_set_3 (s:state) : bool :=
   match s with
-  | Ninit Nis'6 | Ninit Nis'12 | Ninit Nis'13 => true
+  | Init Init'0 | Ninit Nis'7 | Ninit Nis'11 | Ninit Nis'17 | Ninit Nis'25 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_3 => "assert false".
 
 Definition state_set_4 (s:state) : bool :=
   match s with
-  | Ninit Nis'7 => true
+  | Ninit Nis'8 | Ninit Nis'12 | Ninit Nis'13 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_4 => "assert false".
 
 Definition state_set_5 (s:state) : bool :=
   match s with
-  | Ninit Nis'8 => true
+  | Ninit Nis'9 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_5 => "assert false".
 
 Definition state_set_6 (s:state) : bool :=
   match s with
-  | Ninit Nis'6 | Ninit Nis'12 => true
+  | Ninit Nis'10 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_6 => "assert false".
 
 Definition state_set_7 (s:state) : bool :=
   match s with
-  | Ninit Nis'13 => true
+  | Ninit Nis'8 | Ninit Nis'12 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_7 => "assert false".
 
 Definition state_set_8 (s:state) : bool :=
   match s with
-  | Ninit Nis'12 => true
+  | Ninit Nis'13 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_8 => "assert false".
 
 Definition state_set_9 (s:state) : bool :=
   match s with
-  | Ninit Nis'16 => true
+  | Ninit Nis'12 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_9 => "assert false".
 
 Definition state_set_10 (s:state) : bool :=
   match s with
-  | Ninit Nis'17 => true
+  | Ninit Nis'16 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_10 => "assert false".
 
 Definition state_set_11 (s:state) : bool :=
   match s with
-  | Ninit Nis'18 | Ninit Nis'19 | Ninit Nis'20 | Ninit Nis'22 | Ninit Nis'26 | Ninit Nis'27 | Ninit Nis'29 => true
+  | Ninit Nis'17 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_11 => "assert false".
 
 Definition state_set_12 (s:state) : bool :=
   match s with
-  | Ninit Nis'11 => true
+  | Ninit Nis'20 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_12 => "assert false".
 
 Definition state_set_13 (s:state) : bool :=
   match s with
-  | Ninit Nis'20 => true
+  | Ninit Nis'11 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_13 => "assert false".
 
 Definition state_set_14 (s:state) : bool :=
   match s with
-  | Ninit Nis'9 => true
+  | Ninit Nis'22 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_14 => "assert false".
 
 Definition state_set_15 (s:state) : bool :=
   match s with
-  | Ninit Nis'22 => true
+  | Ninit Nis'8 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_15 => "assert false".
 
 Definition state_set_16 (s:state) : bool :=
   match s with
-  | Ninit Nis'6 => true
+  | Ninit Nis'24 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_16 => "assert false".
 
 Definition state_set_17 (s:state) : bool :=
   match s with
-  | Ninit Nis'24 => true
+  | Ninit Nis'25 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_17 => "assert false".
 
 Definition state_set_18 (s:state) : bool :=
   match s with
-  | Ninit Nis'25 => true
+  | Ninit Nis'7 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_18 => "assert false".
 
 Definition state_set_19 (s:state) : bool :=
   match s with
-  | Ninit Nis'5 => true
+  | Ninit Nis'27 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_19 => "assert false".
 
 Definition state_set_20 (s:state) : bool :=
   match s with
-  | Init Init'0 => true
+  | Ninit Nis'5 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_20 => "assert false".
 
 Definition state_set_21 (s:state) : bool :=
   match s with
-  | Ninit Nis'29 => true
+  | Init Init'0 => true
   | _ => false
   end.
 Extract Inlined Constant state_set_21 => "assert false".
+
+Definition state_set_22 (s:state) : bool :=
+  match s with
+  | Ninit Nis'31 => true
+  | _ => false
+  end.
+Extract Inlined Constant state_set_22 => "assert false".
 
 Definition past_state_of_non_init_state (s:noninitstate) : list (state -> bool) :=
   match s with
@@ -958,309 +946,275 @@ Definition past_state_of_non_init_state (s:noninitstate) : list (state -> bool) 
   | Nis'4 => [state_set_2; state_set_1]%list
   | Nis'5 => [state_set_1]%list
   | Nis'6 => [state_set_1]%list
-  | Nis'7 => [state_set_3]%list
-  | Nis'8 => [state_set_4; state_set_3]%list
-  | Nis'9 => [state_set_5; state_set_4; state_set_3]%list
-  | Nis'10 => [state_set_1]%list
-  | Nis'11 => [state_set_1]%list
-  | Nis'12 => [state_set_1]%list
-  | Nis'13 => [state_set_6]%list
-  | Nis'14 => [state_set_7; state_set_6]%list
-  | Nis'15 => [state_set_6]%list
-  | Nis'16 => [state_set_8; state_set_1]%list
-  | Nis'17 => [state_set_9; state_set_8; state_set_1]%list
-  | Nis'18 => [state_set_10; state_set_9; state_set_8; state_set_1]%list
-  | Nis'19 => [state_set_11; state_set_1]%list
-  | Nis'20 => [state_set_12; state_set_1]%list
-  | Nis'21 => [state_set_13; state_set_12; state_set_1]%list
-  | Nis'22 => [state_set_14; state_set_5; state_set_4; state_set_3]%list
-  | Nis'23 => [state_set_15; state_set_14; state_set_5; state_set_4; state_set_3]%list
-  | Nis'24 => [state_set_16; state_set_1]%list
-  | Nis'25 => [state_set_17; state_set_16; state_set_1]%list
-  | Nis'26 => [state_set_18; state_set_17; state_set_16; state_set_1]%list
-  | Nis'27 => [state_set_19; state_set_1]%list
-  | Nis'29 => [state_set_20]%list
-  | Nis'30 => [state_set_21; state_set_20]%list
+  | Nis'7 => [state_set_1]%list
+  | Nis'8 => [state_set_3]%list
+  | Nis'9 => [state_set_4]%list
+  | Nis'10 => [state_set_5; state_set_4]%list
+  | Nis'11 => [state_set_6; state_set_5; state_set_4]%list
+  | Nis'12 => [state_set_3]%list
+  | Nis'13 => [state_set_7]%list
+  | Nis'14 => [state_set_8; state_set_7]%list
+  | Nis'15 => [state_set_7]%list
+  | Nis'16 => [state_set_9; state_set_3]%list
+  | Nis'17 => [state_set_10; state_set_9; state_set_3]%list
+  | Nis'18 => [state_set_3]%list
+  | Nis'19 => [state_set_11; state_set_10; state_set_9; state_set_3]%list
+  | Nis'20 => [state_set_3]%list
+  | Nis'21 => [state_set_12; state_set_3]%list
+  | Nis'22 => [state_set_13; state_set_6; state_set_5; state_set_4]%list
+  | Nis'23 => [state_set_14; state_set_13; state_set_6; state_set_5; state_set_4]%list
+  | Nis'24 => [state_set_15; state_set_3]%list
+  | Nis'25 => [state_set_16; state_set_15; state_set_3]%list
+  | Nis'26 => [state_set_17; state_set_16; state_set_15; state_set_3]%list
+  | Nis'27 => [state_set_18; state_set_1]%list
+  | Nis'28 => [state_set_19; state_set_18; state_set_1]%list
+  | Nis'29 => [state_set_20; state_set_1]%list
+  | Nis'31 => [state_set_21]%list
+  | Nis'32 => [state_set_22; state_set_21]%list
   end.
 Extract Constant past_state_of_non_init_state => "fun _ -> assert false".
 
 Definition lookahead_set_1 : list terminal :=
-  [ZERO't; VAR't; TYPE't; SUCC't; PI't; NAT't; LPAREN't; LAMBDA't; EOF't]%list.
+  [ZERO't; VAR't; TYPE't; SUCC't; NAT't; LPAREN't; EOF't]%list.
 Extract Inlined Constant lookahead_set_1 => "assert false".
 
 Definition lookahead_set_2 : list terminal :=
-  [ZERO't; VAR't; TYPE't; SUCC't; RPAREN't; PI't; NAT't; LPAREN't; LAMBDA't; INT't; EOF't; DOT't; COLON't]%list.
+  [EOF't]%list.
 Extract Inlined Constant lookahead_set_2 => "assert false".
 
 Definition lookahead_set_3 : list terminal :=
-  [ZERO't; VAR't; TYPE't; SUCC't; RPAREN't; PI't; NAT't; LPAREN't; LAMBDA't; EOF't]%list.
+  [ZERO't; VAR't; TYPE't; SUCC't; RPAREN't; PI't; NAT't; LPAREN't; LAMBDA't; INT't; EOF't; DOT't; COLON't]%list.
 Extract Inlined Constant lookahead_set_3 => "assert false".
 
 Definition lookahead_set_4 : list terminal :=
-  [DOT't]%list.
+  [ZERO't; VAR't; TYPE't; SUCC't; RPAREN't; NAT't; LPAREN't; EOF't]%list.
 Extract Inlined Constant lookahead_set_4 => "assert false".
 
 Definition lookahead_set_5 : list terminal :=
-  [LPAREN't; DOT't]%list.
+  [ZERO't; VAR't; TYPE't; SUCC't; RPAREN't; NAT't; LPAREN't]%list.
 Extract Inlined Constant lookahead_set_5 => "assert false".
 
 Definition lookahead_set_6 : list terminal :=
-  [ZERO't; VAR't; TYPE't; SUCC't; RPAREN't; PI't; NAT't; LPAREN't; LAMBDA't]%list.
+  [RPAREN't]%list.
 Extract Inlined Constant lookahead_set_6 => "assert false".
 
+Definition lookahead_set_7 : list terminal :=
+  [DOT't]%list.
+Extract Inlined Constant lookahead_set_7 => "assert false".
+
+Definition lookahead_set_8 : list terminal :=
+  [LPAREN't; DOT't]%list.
+Extract Inlined Constant lookahead_set_8 => "assert false".
+
+Definition lookahead_set_9 : list terminal :=
+  [RPAREN't; EOF't]%list.
+Extract Inlined Constant lookahead_set_9 => "assert false".
+
 Definition items_of_state_0 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'prog'0; dot_pos_item := 0; lookaheads_item := lookahead_set_2 |} ]%list.
+  [ {| prod_item := Prod'app_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
+    {| prod_item := Prod'app_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
+    {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_2 |};
+    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_2 |};
+    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_2 |};
+    {| prod_item := Prod'prog'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
+    {| prod_item := Prod'simpl_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
+    {| prod_item := Prod'simpl_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
+    {| prod_item := Prod'simpl_obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
+    {| prod_item := Prod'simpl_obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |} ]%list.
 Extract Inlined Constant items_of_state_0 => "assert false".
 
 Definition items_of_state_1 : list item :=
-  [ {| prod_item := Prod'obj'2; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'2; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_1 => "assert false".
 
 Definition items_of_state_2 : list item :=
-  [ {| prod_item := Prod'obj'5; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'0; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_2 => "assert false".
 
 Definition items_of_state_3 : list item :=
-  [ {| prod_item := Prod'obj'4; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'3; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_3 => "assert false".
 
 Definition items_of_state_4 : list item :=
-  [ {| prod_item := Prod'obj'4; dot_pos_item := 2; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'3; dot_pos_item := 2; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_4 => "assert false".
 
 Definition items_of_state_5 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_5 => "assert false".
 
 Definition items_of_state_6 : list item :=
-  [ {| prod_item := Prod'args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
-    {| prod_item := Prod'args_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'rev_args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
-    {| prod_item := Prod'rev_args_list'1; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'1; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_6 => "assert false".
 
 Definition items_of_state_7 : list item :=
-  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 1; lookaheads_item := lookahead_set_5 |} ]%list.
+  [ {| prod_item := Prod'app_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'app_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
+    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
+    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
+    {| prod_item := Prod'simpl_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_7 => "assert false".
 
 Definition items_of_state_8 : list item :=
-  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 2; lookaheads_item := lookahead_set_5 |} ]%list.
+  [ {| prod_item := Prod'args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_7 |};
+    {| prod_item := Prod'args_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_8 |};
+    {| prod_item := Prod'obj'1; dot_pos_item := 1; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'rev_args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_8 |};
+    {| prod_item := Prod'rev_args_list'1; dot_pos_item := 0; lookaheads_item := lookahead_set_8 |} ]%list.
 Extract Inlined Constant items_of_state_8 => "assert false".
 
 Definition items_of_state_9 : list item :=
-  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 3; lookaheads_item := lookahead_set_5 |};
-    {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |} ]%list.
+  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 1; lookaheads_item := lookahead_set_8 |} ]%list.
 Extract Inlined Constant items_of_state_9 => "assert false".
 
 Definition items_of_state_10 : list item :=
-  [ {| prod_item := Prod'obj'1; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 2; lookaheads_item := lookahead_set_8 |} ]%list.
 Extract Inlined Constant items_of_state_10 => "assert false".
 
 Definition items_of_state_11 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'0; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |} ]%list.
-Extract Inlined Constant items_of_state_11 => "assert false".
-
-Definition items_of_state_12 : list item :=
-  [ {| prod_item := Prod'args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
-    {| prod_item := Prod'args_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'rev_args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
-    {| prod_item := Prod'rev_args_list'1; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |} ]%list.
-Extract Inlined Constant items_of_state_12 => "assert false".
-
-Definition items_of_state_13 : list item :=
-  [ {| prod_item := Prod'args_list'0; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |};
-    {| prod_item := Prod'args_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
-    {| prod_item := Prod'rev_args_list'0; dot_pos_item := 1; lookaheads_item := lookahead_set_5 |} ]%list.
-Extract Inlined Constant items_of_state_13 => "assert false".
-
-Definition items_of_state_14 : list item :=
-  [ {| prod_item := Prod'rev_args_list'0; dot_pos_item := 2; lookaheads_item := lookahead_set_5 |} ]%list.
-Extract Inlined Constant items_of_state_14 => "assert false".
-
-Definition items_of_state_15 : list item :=
-  [ {| prod_item := Prod'rev_args_list'1; dot_pos_item := 1; lookaheads_item := lookahead_set_5 |} ]%list.
-Extract Inlined Constant items_of_state_15 => "assert false".
-
-Definition items_of_state_16 : list item :=
-  [ {| prod_item := Prod'obj'7; dot_pos_item := 2; lookaheads_item := lookahead_set_3 |} ]%list.
-Extract Inlined Constant items_of_state_16 => "assert false".
-
-Definition items_of_state_17 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 3; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |} ]%list.
-Extract Inlined Constant items_of_state_17 => "assert false".
-
-Definition items_of_state_18 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 4; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |} ]%list.
-Extract Inlined Constant items_of_state_18 => "assert false".
-
-Definition items_of_state_19 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 2; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |} ]%list.
-Extract Inlined Constant items_of_state_19 => "assert false".
-
-Definition items_of_state_20 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'0; dot_pos_item := 2; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 1; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |} ]%list.
-Extract Inlined Constant items_of_state_20 => "assert false".
-
-Definition items_of_state_21 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 3; lookaheads_item := lookahead_set_3 |} ]%list.
-Extract Inlined Constant items_of_state_21 => "assert false".
-
-Definition items_of_state_22 : list item :=
-  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 4; lookaheads_item := lookahead_set_5 |};
+  [ {| prod_item := Prod'app_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'app_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'args_obj'0; dot_pos_item := 3; lookaheads_item := lookahead_set_8 |};
     {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
     {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
     {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 1; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_6 |} ]%list.
+    {| prod_item := Prod'simpl_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_5 |} ]%list.
+Extract Inlined Constant items_of_state_11 => "assert false".
+
+Definition items_of_state_12 : list item :=
+  [ {| prod_item := Prod'args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_7 |};
+    {| prod_item := Prod'args_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_8 |};
+    {| prod_item := Prod'obj'0; dot_pos_item := 1; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'rev_args_list'0; dot_pos_item := 0; lookaheads_item := lookahead_set_8 |};
+    {| prod_item := Prod'rev_args_list'1; dot_pos_item := 0; lookaheads_item := lookahead_set_8 |} ]%list.
+Extract Inlined Constant items_of_state_12 => "assert false".
+
+Definition items_of_state_13 : list item :=
+  [ {| prod_item := Prod'args_list'0; dot_pos_item := 1; lookaheads_item := lookahead_set_7 |};
+    {| prod_item := Prod'args_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_8 |};
+    {| prod_item := Prod'rev_args_list'0; dot_pos_item := 1; lookaheads_item := lookahead_set_8 |} ]%list.
+Extract Inlined Constant items_of_state_13 => "assert false".
+
+Definition items_of_state_14 : list item :=
+  [ {| prod_item := Prod'rev_args_list'0; dot_pos_item := 2; lookaheads_item := lookahead_set_8 |} ]%list.
+Extract Inlined Constant items_of_state_14 => "assert false".
+
+Definition items_of_state_15 : list item :=
+  [ {| prod_item := Prod'rev_args_list'1; dot_pos_item := 1; lookaheads_item := lookahead_set_8 |} ]%list.
+Extract Inlined Constant items_of_state_15 => "assert false".
+
+Definition items_of_state_16 : list item :=
+  [ {| prod_item := Prod'obj'0; dot_pos_item := 2; lookaheads_item := lookahead_set_9 |} ]%list.
+Extract Inlined Constant items_of_state_16 => "assert false".
+
+Definition items_of_state_17 : list item :=
+  [ {| prod_item := Prod'app_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'app_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'obj'0; dot_pos_item := 3; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'simpl_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |} ]%list.
+Extract Inlined Constant items_of_state_17 => "assert false".
+
+Definition items_of_state_18 : list item :=
+  [ {| prod_item := Prod'app_obj'1; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |} ]%list.
+Extract Inlined Constant items_of_state_18 => "assert false".
+
+Definition items_of_state_19 : list item :=
+  [ {| prod_item := Prod'obj'0; dot_pos_item := 4; lookaheads_item := lookahead_set_9 |} ]%list.
+Extract Inlined Constant items_of_state_19 => "assert false".
+
+Definition items_of_state_20 : list item :=
+  [ {| prod_item := Prod'app_obj'0; dot_pos_item := 1; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'obj'2; dot_pos_item := 1; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'simpl_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |} ]%list.
+Extract Inlined Constant items_of_state_20 => "assert false".
+
+Definition items_of_state_21 : list item :=
+  [ {| prod_item := Prod'app_obj'0; dot_pos_item := 2; lookaheads_item := lookahead_set_4 |} ]%list.
+Extract Inlined Constant items_of_state_21 => "assert false".
+
+Definition items_of_state_22 : list item :=
+  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 4; lookaheads_item := lookahead_set_8 |} ]%list.
 Extract Inlined Constant items_of_state_22 => "assert false".
 
 Definition items_of_state_23 : list item :=
-  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 5; lookaheads_item := lookahead_set_5 |} ]%list.
+  [ {| prod_item := Prod'args_obj'0; dot_pos_item := 5; lookaheads_item := lookahead_set_8 |} ]%list.
 Extract Inlined Constant items_of_state_23 => "assert false".
 
 Definition items_of_state_24 : list item :=
-  [ {| prod_item := Prod'obj'8; dot_pos_item := 2; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'obj'1; dot_pos_item := 2; lookaheads_item := lookahead_set_9 |} ]%list.
 Extract Inlined Constant items_of_state_24 => "assert false".
 
 Definition items_of_state_25 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 3; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'app_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'app_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'obj'1; dot_pos_item := 3; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_9 |};
+    {| prod_item := Prod'simpl_obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |};
+    {| prod_item := Prod'simpl_obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_25 => "assert false".
 
 Definition items_of_state_26 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 4; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'obj'1; dot_pos_item := 4; lookaheads_item := lookahead_set_9 |} ]%list.
 Extract Inlined Constant items_of_state_26 => "assert false".
 
 Definition items_of_state_27 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 2; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_3 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'5; dot_pos_item := 2; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_27 => "assert false".
 
+Definition items_of_state_28 : list item :=
+  [ {| prod_item := Prod'simpl_obj'5; dot_pos_item := 3; lookaheads_item := lookahead_set_4 |} ]%list.
+Extract Inlined Constant items_of_state_28 => "assert false".
+
 Definition items_of_state_29 : list item :=
-  [ {| prod_item := Prod'obj'0; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'1; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'2; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'3; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'4; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'5; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'6; dot_pos_item := 1; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'7; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'obj'8; dot_pos_item := 0; lookaheads_item := lookahead_set_1 |};
-    {| prod_item := Prod'prog'0; dot_pos_item := 1; lookaheads_item := lookahead_set_2 |} ]%list.
+  [ {| prod_item := Prod'simpl_obj'4; dot_pos_item := 2; lookaheads_item := lookahead_set_4 |} ]%list.
 Extract Inlined Constant items_of_state_29 => "assert false".
 
-Definition items_of_state_30 : list item :=
-  [ {| prod_item := Prod'prog'0; dot_pos_item := 2; lookaheads_item := lookahead_set_2 |} ]%list.
-Extract Inlined Constant items_of_state_30 => "assert false".
+Definition items_of_state_31 : list item :=
+  [ {| prod_item := Prod'prog'0; dot_pos_item := 1; lookaheads_item := lookahead_set_3 |} ]%list.
+Extract Inlined Constant items_of_state_31 => "assert false".
+
+Definition items_of_state_32 : list item :=
+  [ {| prod_item := Prod'prog'0; dot_pos_item := 2; lookaheads_item := lookahead_set_3 |} ]%list.
+Extract Inlined Constant items_of_state_32 => "assert false".
 
 Definition items_of_state (s:state) : list item :=
   match s with
@@ -1292,8 +1246,10 @@ Definition items_of_state (s:state) : list item :=
   | Ninit Nis'25 => items_of_state_25
   | Ninit Nis'26 => items_of_state_26
   | Ninit Nis'27 => items_of_state_27
+  | Ninit Nis'28 => items_of_state_28
   | Ninit Nis'29 => items_of_state_29
-  | Ninit Nis'30 => items_of_state_30
+  | Ninit Nis'31 => items_of_state_31
+  | Ninit Nis'32 => items_of_state_32
   end.
 Extract Constant items_of_state => "fun _ -> assert false".
 
@@ -1327,8 +1283,10 @@ Definition N_of_state (s:state) : N :=
   | Ninit Nis'25 => 25%N
   | Ninit Nis'26 => 26%N
   | Ninit Nis'27 => 27%N
+  | Ninit Nis'28 => 28%N
   | Ninit Nis'29 => 29%N
-  | Ninit Nis'30 => 30%N
+  | Ninit Nis'31 => 31%N
+  | Ninit Nis'32 => 32%N
   end.
 End Aut.
 

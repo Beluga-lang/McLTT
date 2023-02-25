@@ -19,36 +19,33 @@ End Cst.
 
 %token <string> VAR
 %token <nat> INT
-%token ZERO LAMBDA PI SUCC NAT TYPE
-%token LPAREN RPAREN DOT COLON EOF
+%token ZERO LAMBDA PI SUCC NAT TYPE (* keywords *)
+%token LPAREN RPAREN DOT COLON EOF (* delimiters *)
 
 %start <Cst.obj> prog
-%type <Cst.obj> obj
-%type <list (string * Cst.obj)> args_list
-%type <list (string * Cst.obj)> rev_args_list
+%type <Cst.obj> obj app_obj simpl_obj
 %type <string * Cst.obj> args_obj
+%type <list (string * Cst.obj)> args_list rev_args_list
 
 %%
 
 prog:
   | obj EOF { $1 }
-  ;
 
 obj:
-  | LPAREN obj RPAREN { $2 }
-  | NAT { Cst.Nat }
-  | ZERO { Cst.Zero }
-  | SUCC obj { Cst.Succ $2 }
-  (* TODO: "Type" is a reserved keyword in Coq, which is why I've made it TType *)
-  | TYPE INT { Cst.TType $2 }
-  | VAR { Cst.Var $1 }
-  | obj obj { Cst.App $1 $2 }
-  (* Lambda with multiple arguments allowed with args_list *)
-  | LAMBDA args_list DOT obj { List.fold_left (fun acc arg => Cst.Fun (fst arg) (snd arg) acc) $2 $4 }
-  (* Pi with multiple arguments allowed with args_list *)
-  | PI args_list DOT obj { List.fold_left (fun acc arg => Cst.Pi (fst arg) (snd arg) acc) $2 $4 }
-  ;
+  (* An object is a lambda / pi, *)
+  | LAMBDA args_list DOT obj {
+      List.fold_left (fun acc arg => Cst.Fun (fst arg) (snd arg) acc) $2 $4 
+  }
+  | PI args_list DOT obj {
+      List.fold_left (fun acc arg => Cst.Pi (fst arg) (snd arg) acc) $2 $4
+  }
+  (* or an application (a "variable" is an application with no arguments) *)
+  (* see https://github.com/utgwkk/lambda-chama/blob/master/parser.mly *)
+  | app_obj { $1 }
 
+(* To avoid quadratic time in parsing the list of arguments, we must
+    prepend the arguments and reverse it at the end. *)
 args_list:
   | rev_args_list { List.rev $1 }
 
@@ -57,5 +54,23 @@ rev_args_list:
   | rev_args_list args_obj { $2 :: $1 }
   | args_obj { [$1] }
 
+(* (x : A) *)
 args_obj:
-  LPAREN VAR COLON obj RPAREN { ($2, $4) };
+  | LPAREN VAR COLON obj RPAREN { ($2, $4) }
+
+(* M N *)
+app_obj:
+  (* simpl_obj prevents conflict by associativity *)
+  | app_obj simpl_obj { Cst.App $1 $2 }
+  | simpl_obj { $1 }
+
+(* Either a primitive object like "Type 5" / "Zero"
+  or parentheses around a complex object *)
+simpl_obj:
+  | VAR { Cst.Var $1 }
+  | NAT { Cst.Nat }
+  | ZERO { Cst.Zero }
+  | TYPE INT { Cst.TType $2 }
+  | SUCC simpl_obj { Cst.Succ $2 }
+  | LPAREN obj RPAREN { $2 }
+
