@@ -33,14 +33,17 @@ prog:
   | obj EOF { $1 }
 
 obj:
-  (* An object is a lambda / pi, *)
   | LAMBDA args_list DOT obj {
       List.fold_left (fun acc arg => Cst.Fun (fst arg) (snd arg) acc) $2 $4 
   }
   | PI args_list DOT obj {
       List.fold_left (fun acc arg => Cst.Pi (fst arg) (snd arg) acc) $2 $4
   }
-  (* or an application (a "variable" is an application with no arguments) *)
+  | NAT { Cst.Nat }
+  | ZERO { Cst.Zero }
+  | TYPE INT { Cst.TType $2 }
+  | SUCC simpl_obj { Cst.Succ $2 }
+  (* Application is a special case, where we must avoid conflict by associativity: *)
   (* see https://github.com/utgwkk/lambda-chama/blob/master/parser.mly *)
   | app_obj { $1 }
 
@@ -64,13 +67,8 @@ app_obj:
   | app_obj simpl_obj { Cst.App $1 $2 }
   | simpl_obj { $1 }
 
-(* Either a primitive object like "Type 5" / "Zero"
-  or parentheses around a complex object *)
+(* Either a variable or parentheses around a complex object *)
 simpl_obj:
   | VAR { Cst.Var $1 }
-  | NAT { Cst.Nat }
-  | ZERO { Cst.Zero }
-  | TYPE INT { Cst.TType $2 }
-  | SUCC simpl_obj { Cst.Succ $2 }
   | LPAREN obj RPAREN { $2 }
 
