@@ -25,7 +25,7 @@ End Cst.
 %start <Cst.obj> prog
 %type <Cst.obj> obj app_obj simpl_obj
 %type <string * Cst.obj> args_obj
-%type <list (string * Cst.obj)> args_list rev_args_list
+%type <list (string * Cst.obj)> args_list
 
 %%
 
@@ -47,14 +47,9 @@ obj:
   (* see https://github.com/utgwkk/lambda-chama/blob/master/parser.mly *)
   | app_obj { $1 }
 
-(* To avoid quadratic time in parsing the list of arguments, we must
-    prepend the arguments and reverse it at the end. *)
 args_list:
-  | rev_args_list { List.rev $1 }
-
-rev_args_list:
   (* Nonempty list of arguments *)
-  | rev_args_list args_obj { $2 :: $1 }
+  | args_list args_obj { $2 :: $1 }
   | args_obj { [$1] }
 
 (* (x : A) *)

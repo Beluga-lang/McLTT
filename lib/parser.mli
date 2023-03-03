@@ -178,8 +178,6 @@ module Pos :
   val eq_dec : positive -> positive -> bool
  end
 
-val rev : 'a1 list -> 'a1 list
-
 val rev_append : 'a1 list -> 'a1 list -> 'a1 list
 
 val rev' : 'a1 list -> 'a1 list
@@ -10228,7 +10226,6 @@ module Gram :
   | Coq_args_obj'nt
   | Coq_obj'nt
   | Coq_prog'nt
-  | Coq_rev_args_list'nt
   | Coq_simpl_obj'nt
 
   type nonterminal = nonterminal'
@@ -10260,19 +10257,18 @@ module Gram :
   val token_sem : token -> symbol_semantic_type
 
   type production' =
-  | Prod'simpl_obj'5
-  | Prod'simpl_obj'4
-  | Prod'simpl_obj'3
-  | Prod'simpl_obj'2
   | Prod'simpl_obj'1
   | Prod'simpl_obj'0
-  | Prod'rev_args_list'1
-  | Prod'rev_args_list'0
   | Prod'prog'0
+  | Prod'obj'6
+  | Prod'obj'5
+  | Prod'obj'4
+  | Prod'obj'3
   | Prod'obj'2
   | Prod'obj'1
   | Prod'obj'0
   | Prod'args_obj'0
+  | Prod'args_list'1
   | Prod'args_list'0
   | Prod'app_obj'1
   | Prod'app_obj'0
@@ -10361,7 +10357,6 @@ module Aut :
     | Coq_args_obj'nt
     | Coq_obj'nt
     | Coq_prog'nt
-    | Coq_rev_args_list'nt
     | Coq_simpl_obj'nt
 
     type nonterminal = nonterminal'
@@ -10395,19 +10390,18 @@ module Aut :
     val token_sem : token -> symbol_semantic_type
 
     type production' = Gram.production' =
-    | Prod'simpl_obj'5
-    | Prod'simpl_obj'4
-    | Prod'simpl_obj'3
-    | Prod'simpl_obj'2
     | Prod'simpl_obj'1
     | Prod'simpl_obj'0
-    | Prod'rev_args_list'1
-    | Prod'rev_args_list'0
     | Prod'prog'0
+    | Prod'obj'6
+    | Prod'obj'5
+    | Prod'obj'4
+    | Prod'obj'3
     | Prod'obj'2
     | Prod'obj'1
     | Prod'obj'0
     | Prod'args_obj'0
+    | Prod'args_list'1
     | Prod'args_list'0
     | Prod'app_obj'1
     | Prod'app_obj'0
@@ -10493,7 +10487,6 @@ module Aut :
     | Coq_args_obj'nt
     | Coq_obj'nt
     | Coq_prog'nt
-    | Coq_rev_args_list'nt
     | Coq_simpl_obj'nt
 
     type nonterminal = nonterminal'
@@ -10527,19 +10520,18 @@ module Aut :
     val token_sem : token -> symbol_semantic_type
 
     type production' = Coq__1.production' =
-    | Prod'simpl_obj'5
-    | Prod'simpl_obj'4
-    | Prod'simpl_obj'3
-    | Prod'simpl_obj'2
     | Prod'simpl_obj'1
     | Prod'simpl_obj'0
-    | Prod'rev_args_list'1
-    | Prod'rev_args_list'0
     | Prod'prog'0
+    | Prod'obj'6
+    | Prod'obj'5
+    | Prod'obj'4
+    | Prod'obj'3
     | Prod'obj'2
     | Prod'obj'1
     | Prod'obj'0
     | Prod'args_obj'0
+    | Prod'args_list'1
     | Prod'args_list'0
     | Prod'app_obj'1
     | Prod'app_obj'0
@@ -10601,9 +10593,8 @@ module Aut :
   val first_nterm : Coq__1.nonterminal -> Coq__1.terminal list
 
   type noninitstate' =
-  | Nis'32
   | Nis'31
-  | Nis'29
+  | Nis'30
   | Nis'28
   | Nis'27
   | Nis'26
