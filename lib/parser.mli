@@ -10257,12 +10257,12 @@ module Gram :
   val token_sem : token -> symbol_semantic_type
 
   type production' =
+  | Prod'simpl_obj'4
+  | Prod'simpl_obj'3
+  | Prod'simpl_obj'2
   | Prod'simpl_obj'1
   | Prod'simpl_obj'0
   | Prod'prog'0
-  | Prod'obj'6
-  | Prod'obj'5
-  | Prod'obj'4
   | Prod'obj'3
   | Prod'obj'2
   | Prod'obj'1
@@ -10390,12 +10390,12 @@ module Aut :
     val token_sem : token -> symbol_semantic_type
 
     type production' = Gram.production' =
+    | Prod'simpl_obj'4
+    | Prod'simpl_obj'3
+    | Prod'simpl_obj'2
     | Prod'simpl_obj'1
     | Prod'simpl_obj'0
     | Prod'prog'0
-    | Prod'obj'6
-    | Prod'obj'5
-    | Prod'obj'4
     | Prod'obj'3
     | Prod'obj'2
     | Prod'obj'1
@@ -10520,12 +10520,12 @@ module Aut :
     val token_sem : token -> symbol_semantic_type
 
     type production' = Coq__1.production' =
+    | Prod'simpl_obj'4
+    | Prod'simpl_obj'3
+    | Prod'simpl_obj'2
     | Prod'simpl_obj'1
     | Prod'simpl_obj'0
     | Prod'prog'0
-    | Prod'obj'6
-    | Prod'obj'5
-    | Prod'obj'4
     | Prod'obj'3
     | Prod'obj'2
     | Prod'obj'1

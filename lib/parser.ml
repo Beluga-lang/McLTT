@@ -4945,12 +4945,12 @@ module Gram =
   | COLON x -> Obj.magic x
 
   type production' =
+  | Prod'simpl_obj'4
+  | Prod'simpl_obj'3
+  | Prod'simpl_obj'2
   | Prod'simpl_obj'1
   | Prod'simpl_obj'0
   | Prod'prog'0
-  | Prod'obj'6
-  | Prod'obj'5
-  | Prod'obj'4
   | Prod'obj'3
   | Prod'obj'2
   | Prod'obj'1
@@ -4968,12 +4968,12 @@ module Gram =
   let productionNum =
     { inj = (fun x ->
       match x with
-      | Prod'simpl_obj'1 -> XH
-      | Prod'simpl_obj'0 -> XO XH
-      | Prod'prog'0 -> XI XH
-      | Prod'obj'6 -> XO (XO XH)
-      | Prod'obj'5 -> XI (XO XH)
-      | Prod'obj'4 -> XO (XI XH)
+      | Prod'simpl_obj'4 -> XH
+      | Prod'simpl_obj'3 -> XO XH
+      | Prod'simpl_obj'2 -> XI XH
+      | Prod'simpl_obj'1 -> XO (XO XH)
+      | Prod'simpl_obj'0 -> XI (XO XH)
+      | Prod'prog'0 -> XO (XI XH)
       | Prod'obj'3 -> XI (XI XH)
       | Prod'obj'2 -> XO (XO (XO XH))
       | Prod'obj'1 -> XI (XO (XO XH))
@@ -4991,24 +4991,24 @@ module Gram =
             | XI p1 ->
               (match p1 with
                | XH -> Prod'app_obj'0
-               | _ -> Prod'simpl_obj'1)
+               | _ -> Prod'simpl_obj'4)
             | XO p1 ->
               (match p1 with
                | XH -> Prod'args_obj'0
-               | _ -> Prod'simpl_obj'1)
+               | _ -> Prod'simpl_obj'4)
             | XH -> Prod'obj'3)
          | XO p0 ->
            (match p0 with
             | XI p1 ->
               (match p1 with
                | XH -> Prod'args_list'0
-               | _ -> Prod'simpl_obj'1)
+               | _ -> Prod'simpl_obj'4)
             | XO p1 ->
               (match p1 with
                | XH -> Prod'obj'1
-               | _ -> Prod'simpl_obj'1)
-            | XH -> Prod'obj'5)
-         | XH -> Prod'prog'0)
+               | _ -> Prod'simpl_obj'4)
+            | XH -> Prod'simpl_obj'0)
+         | XH -> Prod'simpl_obj'2)
       | XO p ->
         (match p with
          | XI p0 ->
@@ -5016,25 +5016,25 @@ module Gram =
             | XI p1 ->
               (match p1 with
                | XH -> Prod'app_obj'1
-               | _ -> Prod'simpl_obj'1)
+               | _ -> Prod'simpl_obj'4)
             | XO p1 ->
               (match p1 with
                | XH -> Prod'obj'0
-               | _ -> Prod'simpl_obj'1)
-            | XH -> Prod'obj'4)
+               | _ -> Prod'simpl_obj'4)
+            | XH -> Prod'prog'0)
          | XO p0 ->
            (match p0 with
             | XI p1 ->
               (match p1 with
                | XH -> Prod'args_list'1
-               | _ -> Prod'simpl_obj'1)
+               | _ -> Prod'simpl_obj'4)
             | XO p1 ->
               (match p1 with
                | XH -> Prod'obj'2
-               | _ -> Prod'simpl_obj'1)
-            | XH -> Prod'obj'6)
-         | XH -> Prod'simpl_obj'0)
-      | XH -> Prod'simpl_obj'1); inj_bound = (XI (XI (XI XH))) }
+               | _ -> Prod'simpl_obj'4)
+            | XH -> Prod'simpl_obj'1)
+         | XH -> Prod'simpl_obj'3)
+      | XH -> Prod'simpl_obj'4); inj_bound = (XI (XI (XI XH))) }
 
   (** val coq_ProductionAlph : production alphabet **)
 
@@ -5048,27 +5048,28 @@ module Gram =
   let prod_contents p =
     let box = fun x x0 -> ExistT (x, x0) in
     (match p with
-     | Prod'simpl_obj'1 ->
+     | Prod'simpl_obj'4 ->
        Obj.magic box (Coq_simpl_obj'nt, ((T RPAREN't) :: ((NT
          Coq_obj'nt) :: ((T LPAREN't) :: [])))) (fun _ _4 _ -> _4)
+     | Prod'simpl_obj'3 ->
+       Obj.magic box (Coq_simpl_obj'nt, ((T INT't) :: ((T TYPE't) :: [])))
+         (fun _4 _ -> Cst.TType _4)
+     | Prod'simpl_obj'2 ->
+       Obj.magic box (Coq_simpl_obj'nt, ((T ZERO't) :: [])) (fun _ ->
+         Cst.Zero)
+     | Prod'simpl_obj'1 ->
+       Obj.magic box (Coq_simpl_obj'nt, ((T NAT't) :: [])) (fun _ -> Cst.Nat)
      | Prod'simpl_obj'0 ->
        Obj.magic box (Coq_simpl_obj'nt, ((T VAR't) :: [])) (fun _4 -> Cst.Var
          _4)
      | Prod'prog'0 ->
        Obj.magic box (Coq_prog'nt, ((T EOF't) :: ((NT Coq_obj'nt) :: [])))
          (fun _ _4 -> _4)
-     | Prod'obj'6 ->
+     | Prod'obj'3 ->
        Obj.magic box (Coq_obj'nt, ((NT Coq_app_obj'nt) :: [])) (fun _4 -> _4)
-     | Prod'obj'5 ->
+     | Prod'obj'2 ->
        Obj.magic box (Coq_obj'nt, ((NT Coq_obj'nt) :: ((T SUCC't) :: [])))
          (fun _4 _ -> Cst.Succ _4)
-     | Prod'obj'4 ->
-       Obj.magic box (Coq_obj'nt, ((T INT't) :: ((T TYPE't) :: [])))
-         (fun _4 _ -> Cst.TType _4)
-     | Prod'obj'3 ->
-       Obj.magic box (Coq_obj'nt, ((T ZERO't) :: [])) (fun _ -> Cst.Zero)
-     | Prod'obj'2 ->
-       Obj.magic box (Coq_obj'nt, ((T NAT't) :: [])) (fun _ -> Cst.Nat)
      | Prod'obj'1 ->
        Obj.magic box (Coq_obj'nt, ((NT Coq_obj'nt) :: ((T DOT't) :: ((NT
          Coq_args_list'nt) :: ((T PI't) :: []))))) (fun _4 _ _5 _ ->
@@ -5203,10 +5204,12 @@ module Aut =
   (** val first_nterm : Coq__1.nonterminal -> Coq__1.terminal list **)
 
   let first_nterm = function
-  | Coq__1.Coq_app_obj'nt -> Coq__1.VAR't :: (Coq__1.LPAREN't :: [])
+  | Coq__1.Coq_app_obj'nt ->
+    Coq__1.ZERO't :: (Coq__1.VAR't :: (Coq__1.TYPE't :: (Coq__1.NAT't :: (Coq__1.LPAREN't :: []))))
   | Coq__1.Coq_args_list'nt -> Coq__1.LPAREN't :: []
   | Coq__1.Coq_args_obj'nt -> Coq__1.LPAREN't :: []
-  | Coq__1.Coq_simpl_obj'nt -> Coq__1.VAR't :: (Coq__1.LPAREN't :: [])
+  | Coq__1.Coq_simpl_obj'nt ->
+    Coq__1.ZERO't :: (Coq__1.VAR't :: (Coq__1.TYPE't :: (Coq__1.NAT't :: (Coq__1.LPAREN't :: []))))
   | _ ->
     Coq__1.ZERO't :: (Coq__1.VAR't :: (Coq__1.TYPE't :: (Coq__1.SUCC't :: (Coq__1.PI't :: (Coq__1.NAT't :: (Coq__1.LPAREN't :: (Coq__1.LAMBDA't :: [])))))))
 
@@ -5545,7 +5548,7 @@ module Aut =
          match terminal0 with
          | Coq__1.EOF't -> Shift_act Nis'31
          | _ -> Fail_act)
-     | Nis'28 -> Default_reduce_act Coq__1.Prod'obj'5
+     | Nis'28 -> Default_reduce_act Coq__1.Prod'obj'2
      | Nis'27 -> Default_reduce_act Coq__1.Prod'obj'1
      | Nis'25 ->
        Lookahead_act (fun terminal0 ->
@@ -5559,7 +5562,7 @@ module Aut =
          match terminal0 with
          | Coq__1.RPAREN't -> Shift_act Nis'24
          | _ -> Fail_act)
-     | Nis'22 -> Default_reduce_act Coq__1.Prod'simpl_obj'1
+     | Nis'22 -> Default_reduce_act Coq__1.Prod'simpl_obj'4
      | Nis'21 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
@@ -5570,10 +5573,13 @@ module Aut =
      | Nis'18 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
-         | Coq__1.EOF't -> Reduce_act Coq__1.Prod'obj'6
+         | Coq__1.EOF't -> Reduce_act Coq__1.Prod'obj'3
          | Coq__1.LPAREN't -> Shift_act Nis'11
-         | Coq__1.RPAREN't -> Reduce_act Coq__1.Prod'obj'6
+         | Coq__1.NAT't -> Shift_act Nis'10
+         | Coq__1.RPAREN't -> Reduce_act Coq__1.Prod'obj'3
+         | Coq__1.TYPE't -> Shift_act Nis'3
          | Coq__1.VAR't -> Shift_act Nis'2
+         | Coq__1.ZERO't -> Shift_act Nis'1
          | _ -> Fail_act)
      | Nis'17 -> Default_reduce_act Coq__1.Prod'obj'0
      | Nis'16 -> Default_reduce_act Coq__1.Prod'app_obj'1
@@ -5589,7 +5595,7 @@ module Aut =
          match terminal0 with
          | Coq__1.LPAREN't -> Shift_act Nis'7
          | _ -> Fail_act)
-     | Nis'10 -> Default_reduce_act Coq__1.Prod'obj'2
+     | Nis'10 -> Default_reduce_act Coq__1.Prod'simpl_obj'1
      | Nis'8 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
@@ -5605,14 +5611,14 @@ module Aut =
          match terminal0 with
          | Coq__1.LPAREN't -> Shift_act Nis'7
          | _ -> Fail_act)
-     | Nis'4 -> Default_reduce_act Coq__1.Prod'obj'4
+     | Nis'4 -> Default_reduce_act Coq__1.Prod'simpl_obj'3
      | Nis'3 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
          | Coq__1.INT't -> Shift_act Nis'4
          | _ -> Fail_act)
      | Nis'2 -> Default_reduce_act Coq__1.Prod'simpl_obj'0
-     | Nis'1 -> Default_reduce_act Coq__1.Prod'obj'3
+     | Nis'1 -> Default_reduce_act Coq__1.Prod'simpl_obj'2
      | _ ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
