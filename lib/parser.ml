@@ -5060,8 +5060,8 @@ module Gram =
      | Prod'obj'6 ->
        Obj.magic box (Coq_obj'nt, ((NT Coq_app_obj'nt) :: [])) (fun _4 -> _4)
      | Prod'obj'5 ->
-       Obj.magic box (Coq_obj'nt, ((NT Coq_simpl_obj'nt) :: ((T
-         SUCC't) :: []))) (fun _4 _ -> Cst.Succ _4)
+       Obj.magic box (Coq_obj'nt, ((NT Coq_obj'nt) :: ((T SUCC't) :: [])))
+         (fun _4 _ -> Cst.Succ _4)
      | Prod'obj'4 ->
        Obj.magic box (Coq_obj'nt, ((T INT't) :: ((T TYPE't) :: [])))
          (fun _4 _ -> Cst.TType _4)
@@ -5379,10 +5379,9 @@ module Aut =
 
   let last_symb_of_non_init_state = function
   | Nis'31 -> Coq__1.T Coq__1.EOF't
-  | Nis'28 -> Coq__1.NT Coq__1.Coq_simpl_obj'nt
-  | Nis'27 -> Coq__1.T Coq__1.RPAREN't
-  | Nis'24 -> Coq__1.T Coq__1.DOT't
-  | Nis'23 -> Coq__1.NT Coq__1.Coq_args_list'nt
+  | Nis'26 -> Coq__1.T Coq__1.DOT't
+  | Nis'25 -> Coq__1.NT Coq__1.Coq_args_list'nt
+  | Nis'24 -> Coq__1.T Coq__1.RPAREN't
   | Nis'22 -> Coq__1.T Coq__1.RPAREN't
   | Nis'20 -> Coq__1.NT Coq__1.Coq_args_obj'nt
   | Nis'19 -> Coq__1.NT Coq__1.Coq_simpl_obj'nt
@@ -5392,12 +5391,12 @@ module Aut =
   | Nis'14 -> Coq__1.NT Coq__1.Coq_args_list'nt
   | Nis'13 -> Coq__1.NT Coq__1.Coq_args_obj'nt
   | Nis'12 -> Coq__1.T Coq__1.LAMBDA't
-  | Nis'11 -> Coq__1.T Coq__1.NAT't
-  | Nis'10 -> Coq__1.T Coq__1.COLON't
-  | Nis'9 -> Coq__1.T Coq__1.VAR't
-  | Nis'8 -> Coq__1.T Coq__1.LPAREN't
-  | Nis'7 -> Coq__1.T Coq__1.PI't
-  | Nis'6 -> Coq__1.T Coq__1.LPAREN't
+  | Nis'11 -> Coq__1.T Coq__1.LPAREN't
+  | Nis'10 -> Coq__1.T Coq__1.NAT't
+  | Nis'9 -> Coq__1.T Coq__1.COLON't
+  | Nis'8 -> Coq__1.T Coq__1.VAR't
+  | Nis'7 -> Coq__1.T Coq__1.LPAREN't
+  | Nis'6 -> Coq__1.T Coq__1.PI't
   | Nis'5 -> Coq__1.T Coq__1.SUCC't
   | Nis'4 -> Coq__1.T Coq__1.INT't
   | Nis'3 -> Coq__1.T Coq__1.TYPE't
@@ -5530,9 +5529,9 @@ module Aut =
     Lookahead_act (fun terminal0 ->
       match terminal0 with
       | Coq__1.LAMBDA't -> Shift_act Nis'12
-      | Coq__1.LPAREN't -> Shift_act Nis'6
-      | Coq__1.NAT't -> Shift_act Nis'11
-      | Coq__1.PI't -> Shift_act Nis'7
+      | Coq__1.LPAREN't -> Shift_act Nis'11
+      | Coq__1.NAT't -> Shift_act Nis'10
+      | Coq__1.PI't -> Shift_act Nis'6
       | Coq__1.SUCC't -> Shift_act Nis'5
       | Coq__1.TYPE't -> Shift_act Nis'3
       | Coq__1.VAR't -> Shift_act Nis'2
@@ -5547,20 +5546,20 @@ module Aut =
          | Coq__1.EOF't -> Shift_act Nis'31
          | _ -> Fail_act)
      | Nis'28 -> Default_reduce_act Coq__1.Prod'obj'5
-     | Nis'27 -> Default_reduce_act Coq__1.Prod'simpl_obj'1
-     | Nis'26 ->
+     | Nis'27 -> Default_reduce_act Coq__1.Prod'obj'1
+     | Nis'25 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
-         | Coq__1.RPAREN't -> Shift_act Nis'27
+         | Coq__1.DOT't -> Shift_act Nis'26
+         | Coq__1.LPAREN't -> Shift_act Nis'7
          | _ -> Fail_act)
-     | Nis'25 -> Default_reduce_act Coq__1.Prod'obj'1
+     | Nis'24 -> Default_reduce_act Coq__1.Prod'args_obj'0
      | Nis'23 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
-         | Coq__1.DOT't -> Shift_act Nis'24
-         | Coq__1.LPAREN't -> Shift_act Nis'8
+         | Coq__1.RPAREN't -> Shift_act Nis'24
          | _ -> Fail_act)
-     | Nis'22 -> Default_reduce_act Coq__1.Prod'args_obj'0
+     | Nis'22 -> Default_reduce_act Coq__1.Prod'simpl_obj'1
      | Nis'21 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
@@ -5572,7 +5571,7 @@ module Aut =
        Lookahead_act (fun terminal0 ->
          match terminal0 with
          | Coq__1.EOF't -> Reduce_act Coq__1.Prod'obj'6
-         | Coq__1.LPAREN't -> Shift_act Nis'6
+         | Coq__1.LPAREN't -> Shift_act Nis'11
          | Coq__1.RPAREN't -> Reduce_act Coq__1.Prod'obj'6
          | Coq__1.VAR't -> Shift_act Nis'2
          | _ -> Fail_act)
@@ -5582,35 +5581,29 @@ module Aut =
        Lookahead_act (fun terminal0 ->
          match terminal0 with
          | Coq__1.DOT't -> Shift_act Nis'15
-         | Coq__1.LPAREN't -> Shift_act Nis'8
+         | Coq__1.LPAREN't -> Shift_act Nis'7
          | _ -> Fail_act)
      | Nis'13 -> Default_reduce_act Coq__1.Prod'args_list'1
      | Nis'12 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
-         | Coq__1.LPAREN't -> Shift_act Nis'8
+         | Coq__1.LPAREN't -> Shift_act Nis'7
          | _ -> Fail_act)
-     | Nis'11 -> Default_reduce_act Coq__1.Prod'obj'2
-     | Nis'9 ->
-       Lookahead_act (fun terminal0 ->
-         match terminal0 with
-         | Coq__1.COLON't -> Shift_act Nis'10
-         | _ -> Fail_act)
+     | Nis'10 -> Default_reduce_act Coq__1.Prod'obj'2
      | Nis'8 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
-         | Coq__1.VAR't -> Shift_act Nis'9
+         | Coq__1.COLON't -> Shift_act Nis'9
          | _ -> Fail_act)
      | Nis'7 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
-         | Coq__1.LPAREN't -> Shift_act Nis'8
+         | Coq__1.VAR't -> Shift_act Nis'8
          | _ -> Fail_act)
-     | Nis'5 ->
+     | Nis'6 ->
        Lookahead_act (fun terminal0 ->
          match terminal0 with
-         | Coq__1.LPAREN't -> Shift_act Nis'6
-         | Coq__1.VAR't -> Shift_act Nis'2
+         | Coq__1.LPAREN't -> Shift_act Nis'7
          | _ -> Fail_act)
      | Nis'4 -> Default_reduce_act Coq__1.Prod'obj'4
      | Nis'3 ->
@@ -5624,9 +5617,9 @@ module Aut =
        Lookahead_act (fun terminal0 ->
          match terminal0 with
          | Coq__1.LAMBDA't -> Shift_act Nis'12
-         | Coq__1.LPAREN't -> Shift_act Nis'6
-         | Coq__1.NAT't -> Shift_act Nis'11
-         | Coq__1.PI't -> Shift_act Nis'7
+         | Coq__1.LPAREN't -> Shift_act Nis'11
+         | Coq__1.NAT't -> Shift_act Nis'10
+         | Coq__1.PI't -> Shift_act Nis'6
          | Coq__1.SUCC't -> Shift_act Nis'5
          | Coq__1.TYPE't -> Shift_act Nis'3
          | Coq__1.VAR't -> Shift_act Nis'2
@@ -5645,13 +5638,13 @@ module Aut =
        | _ -> None)
     | Ninit n0 ->
       (match n0 with
-       | Nis'24 ->
+       | Nis'26 ->
          (match nt with
           | Coq__1.Coq_app_obj'nt -> Some Nis'18
-          | Coq__1.Coq_obj'nt -> Some Nis'25
+          | Coq__1.Coq_obj'nt -> Some Nis'27
           | Coq__1.Coq_simpl_obj'nt -> Some Nis'16
           | _ -> None)
-       | Nis'23 ->
+       | Nis'25 ->
          (match nt with
           | Coq__1.Coq_args_obj'nt -> Some Nis'20
           | _ -> None)
@@ -5674,26 +5667,28 @@ module Aut =
           | Coq__1.Coq_args_list'nt -> Some Nis'14
           | Coq__1.Coq_args_obj'nt -> Some Nis'13
           | _ -> None)
-       | Nis'10 ->
+       | Nis'11 ->
          (match nt with
           | Coq__1.Coq_app_obj'nt -> Some Nis'18
           | Coq__1.Coq_obj'nt -> Some Nis'21
           | Coq__1.Coq_simpl_obj'nt -> Some Nis'16
           | _ -> None)
-       | Nis'7 ->
+       | Nis'9 ->
          (match nt with
-          | Coq__1.Coq_args_list'nt -> Some Nis'23
-          | Coq__1.Coq_args_obj'nt -> Some Nis'13
+          | Coq__1.Coq_app_obj'nt -> Some Nis'18
+          | Coq__1.Coq_obj'nt -> Some Nis'23
+          | Coq__1.Coq_simpl_obj'nt -> Some Nis'16
           | _ -> None)
        | Nis'6 ->
          (match nt with
-          | Coq__1.Coq_app_obj'nt -> Some Nis'18
-          | Coq__1.Coq_obj'nt -> Some Nis'26
-          | Coq__1.Coq_simpl_obj'nt -> Some Nis'16
+          | Coq__1.Coq_args_list'nt -> Some Nis'25
+          | Coq__1.Coq_args_obj'nt -> Some Nis'13
           | _ -> None)
        | Nis'5 ->
          (match nt with
-          | Coq__1.Coq_simpl_obj'nt -> Some Nis'28
+          | Coq__1.Coq_app_obj'nt -> Some Nis'18
+          | Coq__1.Coq_obj'nt -> Some Nis'28
+          | Coq__1.Coq_simpl_obj'nt -> Some Nis'16
           | _ -> None)
        | _ -> None)
 

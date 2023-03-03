@@ -42,7 +42,7 @@ obj:
   | NAT { Cst.Nat }
   | ZERO { Cst.Zero }
   | TYPE INT { Cst.TType $2 }
-  | SUCC simpl_obj { Cst.Succ $2 }
+  | SUCC obj { Cst.Succ $2 }
   (* Application is a special case, where we must avoid conflict by associativity: *)
   (* see https://github.com/utgwkk/lambda-chama/blob/master/parser.mly *)
   | app_obj { $1 }
