@@ -2,9 +2,12 @@
  (name mcltt)
  (modules main cst ast abstract parser lexer test)
  (inline_tests)
- (preprocess (pps ppx_inline_test)))
+ (preprocess
+  (pps ppx_inline_test)))
 
-(menhir
- (modules parser))
+(env
+ (dev
+  (flags
+   (:standard -w -67 -w -32 -w -39))))
 
 (ocamllex lexer)
