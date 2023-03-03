@@ -10,4 +10,5 @@ Require Import ExtrOcamlBasic.
 Require Import ExtrOcamlNatInt.
 Require Import ExtrOcamlString.
 
-Extraction "lib/parser.ml" Parser.prog.
+(* Meant to be run in this directory *)
+Extraction "../parser.ml" Parser.prog.
