@@ -3,7 +3,7 @@
 open Main
 open Parser.Cst
 
-let x, y, z = ['x'], ['y'], ['z']
+let x, y, z = "x", "y", "z"
 
 let%test "type" = parse "Type 5" = Some (TType 5)
 let%test "nat" = parse "Nat" = Some Nat

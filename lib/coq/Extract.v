@@ -8,7 +8,7 @@ Extraction Language OCaml.
 
 Require Import ExtrOcamlBasic.
 Require Import ExtrOcamlNatInt.
-Require Import ExtrOcamlString.
+Require Import ExtrOcamlNativeString.
 
 (* Meant to be run in this directory *)
 Extraction "../parser.ml" Parser.prog.
