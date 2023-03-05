@@ -49,6 +49,7 @@ implementation.
 
 * OCaml 4.14.0
 * Menhir
+* coq-menhirlib
 * Coq 8.16.1
 * Equations 1.3
 
@@ -59,4 +60,22 @@ opam switch add coq-8.16.1 4.14.0
 opam pin add coq 8.16.1
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-equations
+opam install coq-menhirlib
+```
+
+## Development
+
+Before anything, the Coq parser must be extracted to OCaml code. Then, you can run `dune build` like normal for all other changes.
+
+You can build changes to the Coq parser with the following commands:
+```
+make gen_parser
+dune build
+```
+
+Then you can interact with the parser at the toplevel with `dune utop`:
+```
+# open Mcltt;;
+# open Parser.Cst;;
+# Main.parse "<expression to parse>"
 ```
