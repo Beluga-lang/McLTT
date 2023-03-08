@@ -1,0 +1,2 @@
+# Explicitly state language of *.vy files as Coq
+*.vy linguist-language=Coq
