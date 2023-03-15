@@ -1,3 +1,14 @@
 _build
+
+# Ignore generated parser code
 lib/parser.ml
 lib/parser.mli
+lib/Parser.v
+
+# Remove Coq compiled code
+**/*.vo
+**/*.glob
+**/*.d
+**/.*.aux
+**/*.vok
+**/*.vos
