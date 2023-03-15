@@ -2,5 +2,6 @@
 
 -arg -w -arg -notation-overridden
 
+Syntax.v
 Parser.v
 ParserExtraction.v
