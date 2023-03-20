@@ -3,35 +3,39 @@ Require Import List.
 
 (* CST term *)
 Module Cst.
-Inductive obj :=
-  | TType : nat -> obj
-  | Nat : obj
-  | Zero : obj
-  | Succ : obj -> obj
-  | App : obj -> obj -> obj
-  | Fun : string -> obj -> obj -> obj
-  | Pi : string -> obj -> obj -> obj
-  | Var : string -> obj.
+Inductive obj : Set :=
+  | typ : nat -> obj
+  | nat : obj
+  | zero : obj
+  | succ : obj -> obj
+  | app : obj -> obj -> obj
+  | fn : string -> obj -> obj -> obj
+  | pi : string -> obj -> obj -> obj
+  | var : string -> obj.
 End Cst.
 
 (* AST term *)
 Inductive exp : Set :=
   (* Natural numbers *)
-  | Zero : exp
-  | Succ : exp
+  | zero : exp
+  | succ : exp -> exp
   (* Type constructors *)
-  | Nat : exp
-  | Typ : nat -> exp
-  | Var : nat -> exp
+  | nat : exp
+  | typ : nat -> exp
+  | var : nat -> exp
   (* Functions *)
-  | Fun : exp -> exp
-  | App : exp -> exp -> exp
+  | fn : exp -> exp
+  | app : exp -> exp -> exp
   (* Substitutions *)
-  | Sub : exp -> subst -> exp
+  | sub : exp -> subst -> exp
 with subst : Set :=
-  | Id : subst
-  | Weaken : subst
-  | Compose : subst -> subst -> subst
-  | Extend : subst -> exp -> subst.
+  | id : subst
+  | weaken : subst
+  | compose : subst -> subst -> subst
+  | extend : subst -> exp -> subst.
 
-Definition Ctx : Set := list exp.
+(* Some convenient infix notations *)
+Infix "∘" := compose (at level 70).
+Infix "," := extend (at level 80).
+
+Notation Ctx := (list exp).
