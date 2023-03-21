@@ -39,4 +39,3 @@ Infix "∘" := compose (at level 70).
 Infix "," := extend (at level 80).
 
 Notation Ctx := (list exp).
-Notation Typ := exp.
