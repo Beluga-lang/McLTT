@@ -1,6 +1,7 @@
 gen_parser:
 	@echo "Generating parser..."
-	cd lib/coq; \
+	@cd lib; \
+		coqc -Q . Mcltt Syntax.v; \
 		menhir --coq Parser.vy; \
-		coqc -Q . McLtt Parser.v; \
-		coqc -Q . McLtt Extract.v
+		coqc -Q . Mcltt Parser.v; \
+		coqc -Q . Mcltt ParserExtraction.v

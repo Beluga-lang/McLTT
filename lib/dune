@@ -1,6 +1,6 @@
 (library
   (name mcltt)
-  (modules main cst ast abstract parser lexer test)
+  (modules main parser lexer test)
   (inline_tests)
   (preprocess (pps ppx_inline_test)))
 
