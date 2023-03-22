@@ -24,7 +24,7 @@ Inductive exp : Set :=
   | typ : nat -> exp
   | var : nat -> exp
   (* Functions *)
-  | fn : exp -> exp
+  | fn : exp -> exp -> exp
   | pi : exp -> exp -> exp
   | app : exp -> exp -> exp
   (* Substitutions *)
