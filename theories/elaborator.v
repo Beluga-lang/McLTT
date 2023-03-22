@@ -11,6 +11,9 @@ Open Scope string_scope.
 Module StrSet := Make String_as_OT.
 Module StrSProp := MSetProperties.Properties StrSet.
 
+(*Copied from the MSetsInterface file because I couldn't figure out how to import it*)
+Notation "s  [<=]  t" := (StrSet.Subset s t) (at level 70, no associativity).
+
 
 Inductive cst_term : Set :=
  | cType (level : nat)
@@ -35,7 +38,7 @@ Inductive ast_term : Set :=
 Fixpoint lookup (s : string) (ctx : list string) : (option nat) :=
  match ctx with
   | nil => None
-  | c::cs => if String.eqb c s then (Some 0) else 
+  | c::cs => if string_dec c s then (Some 0) else 
                   match lookup s cs  with
                         | Some n => Some (n + 1)
                         | None => None
@@ -81,248 +84,196 @@ Fixpoint cst_variables (cst : cst_term) : StrSet.t :=
  end
 .
 
-Fixpoint max_index (ast : ast_term) : option nat :=
-  match ast with
-    | aType n => None
-    | aNat => None
-    | aZero => None
-    | aSucc a => max_index a
-    | aVar n => Some n
-    | aFun a => max_index a
-    | aApp a1 a2 => match (max_index a1), (max_index a2) with
-                    | Some n1, None => Some n1
-                    | None, Some n2 => Some n2
-                    | Some n1, Some n2 => Some (max n1 n2)
-                    | None, None => None
-                    end
-  end
+Inductive closed_at : ast_term -> nat -> Prop :=
+ | ca_var : forall x n, x < n -> closed_at (aVar x) n
+ | ca_lam : forall t n, closed_at t (1+n) -> closed_at (aFun t) n
+ | ca_app : forall a1 a2 n m, closed_at a1 n -> closed_at a2 m -> 
+            closed_at (aApp a1 a2) (max n m)
+ | ca_nat : forall n, closed_at (aNat) n
+ | ca_zero : forall n, closed_at (aZero) n
+ | ca_type : forall n m, closed_at (aType m) n
+ | ca_succ : forall a n, closed_at a n -> closed_at (aSucc a) n 
 .
 
-Fixpoint elab_success (cst : cst_term) (ctx : list string) : Prop :=
-  match cst with
-  | cType n => True
-  | cNat => True
-  | cZero => True
-  | cSucc c => elab_success c ctx
-  | cVar s => In s ctx
-  | cFun s c => elab_success c (s::ctx)
-  | cApp c1 c2 => and (elab_success c1 ctx) (elab_success c2 ctx)
-  end
-.
-
-
-Fixpoint closed_at (ast : ast_term) (n : nat) : Prop :=
-match ast with
-  | aVar m => m < n
-  | aFun a => closed_at a n
-  | aApp a1 a2 => and (closed_at a1 n) (closed_at a2 n)
-  | _ => True
-end.
-
-
-Lemma elab_concat (cst : cst_term) (ctx : list string) (s : string) (x : elab_success cst ctx) : elab_success cst (s::ctx).
+(*Lemma for the well_scoped proof, lookup succeeds if var is in context*)
+Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n).
 Proof.
-  induction cst.
-  all : simpl ; auto.
-  simpl in x.
-  
-  (*Another situation where I'm stuck and not sure how I can use the induction
-    hypothesis that's available. *)
-
-Admitted. 
-(*Lemma for the older version of the well_scoped proof, not needed for the inductive predicate version*)
-Lemma lookup_known (s : string) (ctx : list string) (p : List.In s ctx) : exists n : nat, (lookup s ctx = Some n).
-Proof.
-  
-  
   induction ctx as [| c ctx' IHctx].
-  simpl.
-  contradiction.
+  - simpl.
+    contradiction.
+  - simpl.
+    destruct (string_dec s c).
+    rewrite e.
+    exists 0.
+    destruct (string_dec c c).
+    + reflexivity.
+    + contradiction n. reflexivity.
+    + assert (In s ctx').
+      destruct (in_inv H_in).
+      * contradiction n. symmetry. exact H.
+      * exact H.
+      * destruct (IHctx H).
+        rewrite H0.
+        exists (x+1).
+        destruct (string_dec c s).
+        -- contradiction n. symmetry. exact e.
+        -- reflexivity.
+Qed.
+(*Lemma for the well_scoped proof, lookup result always less than context length*)
+Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (length ctx).
+  induction ctx.
+  - intros. discriminate H.
+  - intros. destruct (string_dec s a).
+    + rewrite e in H.
+      simpl in H.
+      destruct string_dec in H.
+      * inversion H.
+        unfold Datatypes.length.
+        apply (Nat.lt_0_succ).
+      * contradiction n. reflexivity.
 
-  
-  
-  assert (str_dec := String.string_dec s c).
-  destruct str_dec.
-  
-  simpl.
-  exists 0.
-  assert (eqcs : c =? s = true).
-  apply (String.eqb_eq c s).
-  symmetry.
-  exact e.
-
-  rewrite eqcs.
-  simpl.
-  reflexivity.
-  
-  assert (In s ctx').
-  assert (H := List.in_inv p).
-  destruct H.
-  destruct n.
-  symmetry.
-  exact H.
-  exact H.
-
-  assert (I := In_nth ctx' s "" H).
-  destruct(I).
-  destruct(H0).
-  destruct (IHctx H).
-
-  simpl.
-  assert (Q : s =? c = false).
-  apply eqb_neq.
-  exact n.
-  rewrite eqb_sym.
-  rewrite Q.
-  exists(x0 + 1).
-  rewrite H3.
-  reflexivity.
+    + simpl in H.
+      destruct string_dec in H.
+      * contradiction n.
+        symmetry.
+        exact e.
+      * destruct (lookup s ctx).
+        --inversion H.
+          rewrite H1.
+          simpl.
+          pose (IHctx (m-1)).
+          rewrite <- H1 in l.
+          rewrite (Nat.add_sub n1 1) in l.
+          rewrite <- H1.
+          rewrite Nat.add_1_r.
+          apply (Arith_prebase.lt_n_S_stt (n1) (length ctx)).
+          apply l.
+          reflexivity.
+        --discriminate H.
 Qed.
 
-(*Alternate phrasing of the lemma using an inductive predicate for
-  elaboration suceeding, instead of the "exists a, elaborate ... = Some a"
-  I think it should be equivalent, but for this one most steps go through easier.
-*)
-Lemma alt_well_scoped (cst : cst_term) (ctx : list string) 
-(x : StrSet.Subset (cst_variables cst) (StrSProp.of_list ctx)) :
- elab_success cst ctx.
+(*Well scopedness lemma: If the set of free variables in a cst are contained in a context
+  then elaboration succeeds with that context, and the result is a closed term*)
+Lemma well_scoped (cst : cst_term) : forall ctx,  cst_variables cst [<=] StrSProp.of_list ctx  ->
+exists a : ast_term, (elaborate cst ctx = Some a) /\ (closed_at a (length ctx)).
 Proof.
   induction cst.
-  all : simpl ; trivial.
-  simpl in x.
-  assert (StrSet.In s (StrSProp.of_list ctx)).
-  apply x.
-  apply (StrSet.singleton_spec s s).
-  reflexivity.
-  destruct ( (StrSProp.of_list_1 ctx s)).
-  destruct (InA_alt eq s ctx).
-  destruct (H2 (H0 H)).
-  destruct H4.
-  rewrite H4.
-  exact H5.
-
-  exact (IHcst x).
-  simpl in x.
-
-   (* I can't figure out how to get past this step 
-     1: I'm not sure what I can do to make use of the induction hypothesis here
-     Since we only know that the free variables minus s is a subset of the context,
-     and not that the whole set of free variables is.
-     2: If I can get the induction hypothesis to work, I need a lemma of the form
-     (elab_success cst ctx) -> (elab_success cst (s::ctx)), which I haven't been able to prove either.
-  *)
-  
-
-  
-  2 : {
+  - intros.
+    exists (aType level).
     split.
-    simpl in x.
+    + reflexivity.
+    + exact (ca_type (length ctx) level).
 
-    assert (StrSet.Subset (cst_variables cst1) (cst_variables (cApp cst1 cst2))).
-    simpl.
-    apply StrSProp.union_subset_1.
-    exact (IHcst1 (StrSProp.subset_trans H x)).
+  - intros.
+    exists (aNat).
+    split.
+    + reflexivity.
+    + exact (ca_nat (length ctx)).
 
-    assert (StrSet.Subset (cst_variables cst2) (cst_variables (cApp cst1 cst2))).
-    simpl.
-    apply StrSProp.union_subset_2.
-    exact (IHcst2 (StrSProp.subset_trans H x)).
-  }
+  - intros.
+    simpl in *.
+    assert (In s ctx).
+    {
+      unfold "[<=]" in H.
+      assert (I := H s).
+      apply StrSProp.of_list_1 in I.
+      apply InA_alt in I.
+      destruct I.
+      destruct H0.
+      rewrite <- H0 in H1.
+      exact H1.
+      apply StrSet.singleton_spec.
+      reflexivity.
+    }
+    destruct (lookup_known s ctx H0).
+    rewrite H1.
+    exists (aVar x).
+    split.
+    + reflexivity.
+    + exact (ca_var x (length ctx) (lookup_bound s ctx x H1)).
 
+  - intros.
+    exists (aZero).
+    split.
+    + reflexivity.
+    + exact (ca_zero (length ctx)).
   
-  (* Partial work on proof by cases that could be useful later
-     Still gets stuck on essentially the same step as without looking at the cases
-  destruct cst.
-  all : simpl ; trivial.
-  destruct (String.string_dec s s0).
-  left.
-  exact e.
-  right.
-  
-  simpl in x.
-  unfold StrSet.Subset in x.
-  assert (StrSet.In s0 (StrSProp.of_list ctx)).
-  apply (x s0).
-  rewrite (StrSet.remove_spec).
-  split.
-  apply StrSet.singleton_spec.
-  auto.
-  auto.
-  
-  destruct ( (StrSProp.of_list_1 ctx s0)).
-  destruct (InA_alt eq s0 ctx).
-  destruct (H2 (H0 H)).
-  destruct H4.
-  rewrite H4.
-  exact H5.
-  *)
-  
-
- 
-  
-
-  
-  (*Admitted just so the lower proof attempt isn't blocked*)
-Admitted.
-
-
-(* If all free variables are in a context, then elaboration suceeds with that context*)
-Lemma well_scoped (cst : cst_term) (ctx : list string) 
-(x : StrSet.Subset (cst_variables cst) (StrSProp.of_list ctx)) :
-exists a : ast_term, (elaborate cst ctx = Some a).
-Proof.
-  induction cst.
-
-  exists (aType level).
-  reflexivity.
- 
-  
-
-  exists (aNat).
-  reflexivity.
-
-  
-  assert (StrSet.In s (cst_variables (cVar s))). {
-    simpl.
-    apply (StrSet.singleton_spec).
-    reflexivity. }
-  assert (In s ctx). {
-    assert (Q:=StrSProp.of_list_1 ctx s).
-    assert (InA eq s ctx -> In s ctx).
-    intro.
-    rewrite (InA_alt eq s ctx) in H0.
+  - intros.
+    destruct ((IHcst ctx) H).
     destruct H0.
-    destruct H0.
-    rewrite <- H0 in H1.
-    exact H1.
-    rewrite <- Q in H0.
-    apply H0.
-    auto. }
+    exists (aSucc x).
+    split.
+    + simpl. rewrite H0. reflexivity.
+    + exact (ca_succ x (length ctx) H1).
 
-
-  destruct (lookup_known s ctx H0).
-  exists (aVar x0).
-  simpl.
-  rewrite H1.
-  reflexivity.
-  
-  exists aZero.
-  reflexivity.
-
-  destruct (IHcst x).
-  exists (aSucc x0).
-  simpl.
-  rewrite H.
-  reflexivity.
-
-  simpl in x.
-  (*This is basically the same stuck situation as before, where I don't 
-    quite know how to apply the induction hypothesis, and I still need
-    the fact that if the elaboration succeeds with ctx it also succeeds with s::ctx *)
+  - intros.
+    simpl in H.
+    assert (cst_variables cst [<=] StrSProp.of_list (s::ctx)).
+    {
+      simpl.
+      unfold "[<=]" in H |- *.
+      intros.
+      destruct (string_dec a s).
+      - rewrite e.
+        apply StrSet.add_spec.
+        left.
+        reflexivity.
+      - apply StrSet.add_spec.
+        right.
+        apply H.
+        apply StrSet.remove_spec.
+        split.
+        + exact H0.
+        + exact n.
+    }
+    destruct ((IHcst (s::ctx)) H0).
+    destruct H1.
+    simpl.
+    rewrite -> H1.
+    exists (aFun x).
+    split.
+    + reflexivity.
+    + exact (ca_lam x (length ctx) H2).
+    
+   - intros.
+    assert (cst_variables cst1 [<=] StrSProp.of_list ctx).
+    {
+      unfold "[<=]" in H |- *.
+      intros.
+      apply (H a).
+      apply StrSet.union_spec.
+      left.
+      exact H0.
+    }
+    assert (cst_variables cst2 [<=] StrSProp.of_list ctx).
+    {
+      unfold "[<=]" in H |- *.
+      intros.
+      apply (H a).
+      apply StrSet.union_spec.
+      right.
+      exact H1.
+    }
+    destruct ((IHcst1 ctx) H0).
+    destruct H2.
+    destruct ((IHcst2 ctx) H1).
+    destruct H4.
+    exists (aApp x x0).
+    split.
+    + simpl.
+      rewrite H2.
+      rewrite H4.
+      reflexivity.
+    + assert (S := ca_app x x0 (length ctx) (length ctx) H3 H5).
+      rewrite -> (Nat.max_id (length ctx)) in S.
+      exact S.
 Qed.
+
+
 
 Check elaborate cNat nil : option ast_term.
 Fail Check elaborate (cSucc aNat) : option ast_term.
+
 
 Compute (elaborate (cFun "s" (cVar "s")) nil).
 Compute (elaborate (cFun "s" (cFun "x" (cApp (cVar "x") (cVar "s")))) nil).
