@@ -20,7 +20,7 @@ Inductive exp : Set :=
   | zero : exp
   | succ : exp -> exp
   (* Type constructors *)
-  | nat : exp
+  | n : exp
   | typ : nat -> exp
   | var : nat -> exp
   (* Functions *)
