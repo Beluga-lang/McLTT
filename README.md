@@ -56,7 +56,7 @@ implementation.
 We recommend to install dependencies in the following way:
 
 ```bash
-opam switch add coq-8.16.1 4.14.0
+opam switch create coq-8.16.1 4.14.0
 opam pin add coq 8.16.1
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-equations
