@@ -35,7 +35,7 @@ with subst : Set :=
   | a_extend : subst -> exp -> subst.
 
 (* Some convenient infix notations *)
-Infix "∘" := compose (at level 70).
-Infix "," := extend (at level 80).
+Infix "∘" := a_compose (at level 70).
+Infix "," := a_extend (at level 80).
 
 Notation Ctx := (list exp).

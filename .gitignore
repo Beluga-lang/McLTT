@@ -12,3 +12,5 @@ lib/Parser.v
 **/.*.aux
 **/*.vok
 **/*.vos
+makefile.coq*
+*.~undo-tree~
