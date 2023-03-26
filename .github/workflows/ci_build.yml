@@ -35,9 +35,14 @@ jobs:
           opam update
           opam install coq-equations
           opam install coq-menhirlib
+          eval $(opam env)
         env:
           OPAMYES: "true"
       - name: build lib
         run: |
+          env
+          opam env
+          eval $(opam env)
+          env
           cd lib/
           make
