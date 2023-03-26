@@ -41,3 +41,8 @@ jobs:
           eval $(opam env)
           cd theories/
           make
+      - name: test parser
+        run: |
+          cd ../
+          dune build
+          dune runtest
