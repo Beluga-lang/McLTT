@@ -6,6 +6,10 @@ on:
   pull_request:
     branches:
       - master
+
+env:
+  OCAML_VER: "4.14.0"
+  COQ_VER: "8.16.1"
       
 jobs:
   build:
@@ -15,23 +19,14 @@ jobs:
       - name: repo checkout
         uses: actions/checkout@v3
       - name: setup OCaml
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ env.OCAML_VER }}
+      - name: install Menhir and Coq
         run: |
-          export PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig
-          opam init -a -j "$NJOBS" --compiler=ocaml-base-compiler.$COMPILER
-          opam switch set ocaml-base-compiler.$COMPILER
-          eval $(opam env)
           opam update
           opam install menhir
-        env:
-          COMPILER: "4.14.0"
-          FINDLIB_VER: ".1.8.1"
-          OPAMYES: "true"
-          NJOBS: "2"
-      - name: install Coq
-        run: |
-          opam pin add coq "$COQVER"
-        env:
-          COQVER: "8.16.1"
+          opam pin add coq "${{ COQ_VER }}"
       - name: install Coq dependencies
         run: |
           opam repo add coq-released https://coq.inria.fr/opam/released
