@@ -22,8 +22,10 @@ jobs:
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ${{ env.OCAML_VER }}
+          dune-cache: true
       - name: install Menhir and Coq
         run: |
+          eval $(opam env)
           opam update
           opam install menhir
           opam pin add coq "${{ env.COQ_VER }}"
