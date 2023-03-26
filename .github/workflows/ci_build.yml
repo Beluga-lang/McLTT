@@ -25,7 +25,6 @@ jobs:
           dune-cache: true
       - name: install Menhir and Coq
         run: |
-          eval $(opam env)
           opam update
           opam install menhir
           opam pin add coq "${{ env.COQ_VER }}"
@@ -39,5 +38,6 @@ jobs:
           OPAMYES: "true"
       - name: build lib
         run: |
+          eval $(opam env)
           cd theories/
           make
