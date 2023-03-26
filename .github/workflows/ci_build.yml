@@ -26,7 +26,7 @@ jobs:
         run: |
           opam update
           opam install menhir
-          opam pin add coq "${{ COQ_VER }}"
+          opam pin add coq "${{ env.COQ_VER }}"
       - name: install Coq dependencies
         run: |
           opam repo add coq-released https://coq.inria.fr/opam/released
