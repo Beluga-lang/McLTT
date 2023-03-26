@@ -1,9 +1,9 @@
 _build
 
 # Ignore generated parser code
-lib/parser.ml
-lib/parser.mli
-lib/Parser.v
+driver/parser.ml
+driver/parser.mli
+theories/Parser.v
 
 # Remove Coq compiled code
 **/*.vo
