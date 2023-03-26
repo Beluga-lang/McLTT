@@ -4,14 +4,14 @@ Require Import List.
 (* CST term *)
 Module Cst.
 Inductive obj : Set :=
-  | c_typ : nat -> obj
-  | c_nat : obj
-  | c_zero : obj
-  | c_succ : obj -> obj
-  | c_app : obj -> obj -> obj
-  | c_fn : string -> obj -> obj -> obj
-  | c_pi : string -> obj -> obj -> obj
-  | c_var : string -> obj.
+  | typ : nat -> obj
+  | nat : obj
+  | zero : obj
+  | succ : obj -> obj
+  | app : obj -> obj -> obj
+  | fn : string -> obj -> obj -> obj
+  | pi : string -> obj -> obj -> obj
+  | var : string -> obj.
 End Cst.
 
 (* AST term *)
@@ -36,6 +36,6 @@ with subst : Set :=
 
 (* Some convenient infix notations *)
 Infix "∘" := a_compose (at level 70).
-Infix "," := a_extend (at level 80).
+Infix ",," := a_extend (at level 80).
 
 Notation Ctx := (list exp).
