@@ -39,5 +39,5 @@ jobs:
           OPAMYES: "true"
       - name: build lib
         run: |
-          cd lib/
+          cd theories/
           make
