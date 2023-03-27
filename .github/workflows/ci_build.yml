@@ -43,6 +43,6 @@ jobs:
           make
       - name: test parser
         run: |
-          cd ../
+          eval $(opam env)
           dune build
           dune runtest
