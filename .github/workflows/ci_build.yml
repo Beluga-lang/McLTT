@@ -34,6 +34,7 @@ jobs:
           opam update
           opam install coq-equations
           opam install coq-menhirlib
+          opam install ppx_inline_test
         env:
           OPAMYES: "true"
       - name: build lib

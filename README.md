@@ -62,6 +62,7 @@ opam pin add coq 8.16.1
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-equations
 opam install coq-menhirlib
+opam install ppx_inline_test
 ```
 
 ## Development
