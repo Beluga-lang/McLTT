@@ -95,35 +95,33 @@ Inductive closed_at : ast_term -> nat -> Prop :=
  | ca_succ : forall a n, closed_at a n -> closed_at (aSucc a) n 
 .
 
+Print List.In.
 (*Lemma for the well_scoped proof, lookup succeeds if var is in context*)
 Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n).
 Proof.
+
   induction ctx as [| c ctx' IHctx].
   - simpl.
     contradiction.
   - simpl.
-    destruct (string_dec s c).
-    rewrite e.
-    exists 0.
-    destruct (string_dec c c).
-    + reflexivity.
-    + contradiction n. reflexivity.
-    + assert (In s ctx').
+    destruct (string_dec c s).
+    subst.
+    eauto.
+    assert (In s ctx').
+    {
       destruct (in_inv H_in).
-      * contradiction n. symmetry. exact H.
+      * contradiction n. 
       * exact H.
-      * destruct (IHctx H).
-        rewrite H0.
-        exists (x+1).
-        destruct (string_dec c s).
-        -- contradiction n. symmetry. exact e.
-        -- reflexivity.
+    } 
+    destruct (IHctx H).
+    rewrite H0.
+    eauto.    
 Qed.
 (*Lemma for the well_scoped proof, lookup result always less than context length*)
 Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (length ctx).
   induction ctx.
   - intros. discriminate H.
-  - intros. destruct (string_dec s a).
+  - intros. destruct (string_dec a s).
     + rewrite e in H.
       simpl in H.
       destruct string_dec in H.
@@ -131,12 +129,9 @@ Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (length ctx).
         unfold Datatypes.length.
         apply (Nat.lt_0_succ).
       * contradiction n. reflexivity.
-
     + simpl in H.
       destruct string_dec in H.
       * contradiction n.
-        symmetry.
-        exact e.
       * destruct (lookup s ctx).
         --inversion H.
           rewrite H1.
