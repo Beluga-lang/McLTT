@@ -1,3 +1,16 @@
 _build
-lib/parser.ml
-lib/parser.mli
+
+# Ignore generated parser code
+driver/parser.ml
+driver/parser.mli
+theories/Parser.v
+
+# Remove Coq compiled code
+**/*.vo
+**/*.glob
+**/*.d
+**/.*.aux
+**/*.vok
+**/*.vos
+makefile.coq*
+*.~undo-tree~

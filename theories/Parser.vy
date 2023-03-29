@@ -3,17 +3,7 @@
 Require Import String.
 Require Import List.
 
-Module Cst.
-Inductive obj :=
-  | TType : nat -> obj
-  | Nat : obj
-  | Zero : obj
-  | Succ : obj -> obj
-  | App : obj -> obj -> obj
-  | Fun : string -> obj -> obj -> obj
-  | Pi : string -> obj -> obj -> obj
-  | Var : string -> obj.
-End Cst.
+From Mcltt Require Import Syntax.
 
 %}
 
@@ -34,12 +24,12 @@ prog:
 
 obj:
   | LAMBDA args_list DOT obj {
-      List.fold_left (fun acc arg => Cst.Fun (fst arg) (snd arg) acc) $2 $4 
+      List.fold_left (fun acc arg => Cst.fn (fst arg) (snd arg) acc) $2 $4 
   }
   | PI args_list DOT obj {
-      List.fold_left (fun acc arg => Cst.Pi (fst arg) (snd arg) acc) $2 $4
+      List.fold_left (fun acc arg => Cst.pi (fst arg) (snd arg) acc) $2 $4
   }
-  | SUCC obj { Cst.Succ $2 }
+  | SUCC obj { Cst.succ $2 }
   (* Application is a special case, where we must avoid conflict by associativity: *)
   (* see https://github.com/utgwkk/lambda-chama/blob/master/parser.mly *)
   | app_obj { $1 }
@@ -56,14 +46,14 @@ args_obj:
 (* M N *)
 app_obj:
   (* simpl_obj prevents conflict by associativity *)
-  | app_obj simpl_obj { Cst.App $1 $2 }
+  | app_obj simpl_obj { Cst.app $1 $2 }
   | simpl_obj { $1 }
 
 (* Either a variable or parentheses around a complex object *)
 simpl_obj:
-  | VAR { Cst.Var $1 }
-  | NAT { Cst.Nat }
-  | ZERO { Cst.Zero }
-  | TYPE INT { Cst.TType $2 }
+  | VAR { Cst.var $1 }
+  | NAT { Cst.nat }
+  | ZERO { Cst.zero }
+  | TYPE INT { Cst.typ $2 }
   | LPAREN obj RPAREN { $2 }
 
