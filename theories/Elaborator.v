@@ -32,11 +32,6 @@ Fixpoint lookup (s : string) (ctx : list string) : (option nat) :=
  end
 .
 
-Check Cst.typ.
-
-
-
-
 Fixpoint elaborate (cst : cst_term) (ctx : list string) : (option ast_term) :=
  match cst with 
  | Cst.typ n => Some (a_typ n)
