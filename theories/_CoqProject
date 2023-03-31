@@ -5,3 +5,4 @@
 Syntax.v
 Parser.v
 ParserExtraction.v
+Elaborator.v
