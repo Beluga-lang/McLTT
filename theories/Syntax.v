@@ -40,6 +40,7 @@ Infix "∘" := a_compose (at level 70).
 Infix ",," := a_extend (at level 80).
 
 Notation Ctx := (list exp).
+Notation Sb := subst.
 Notation Typ := exp.
 Notation typ := a_typ.
 Notation ℕ := a_nat.
