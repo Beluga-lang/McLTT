@@ -9,4 +9,4 @@ Require Import ExtrOcamlNatInt.
 Require Import ExtrOcamlNativeString.
 
 (* Meant to be run in this directory *)
-Extraction "./parser.ml" Parser.prog.
+Extraction "../driver/parser.ml" Parser.prog.
