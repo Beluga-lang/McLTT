@@ -58,3 +58,4 @@ with wf_sb : Ctx -> Sb -> Ctx -> Set :=
       Γ ⊢ M : a_sub A S ->
       Γ ⊢ [a_extend S M] : A :: Δ
 where "Γ ⊢ [ e ] : T" := (wf_sb Γ e T).
+where "Γ ⊢ [ e ] : Δ" := (wf_sb Γ e Δ).
