@@ -1,23 +1,19 @@
 Require Export String.
 Require Export List.
 Require Export Coq.Structures.OrderedTypeEx.
-Require Export MSets MSetInterface MSetFacts MSetProperties.
-Require Export Coq.Lists.SetoidList.
+Require Export MSets.
 Require Export Arith.
+Require Export Lia.
 From Mcltt Require Import Syntax.
 
 
 Open Scope string_scope.
-
-Definition cst_term := Syntax.Cst.obj.
-Definition ast_term := Syntax.exp.
 
 Module StrSet := Make String_as_OT.
 Module StrSProp := MSetProperties.Properties StrSet.
 
 (*Copied from the MSetsInterface file because I couldn't figure out how to import it*)
 Notation "s  [<=]  t" := (StrSet.Subset s t) (at level 70, no associativity).
-
 
 
 (**De-monadify with pattern matching for now**)
@@ -32,7 +28,7 @@ Fixpoint lookup (s : string) (ctx : list string) : (option nat) :=
  end
 .
 
-Fixpoint elaborate (cst : cst_term) (ctx : list string) : (option ast_term) :=
+Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : (option exp) :=
  match cst with 
  | Cst.typ n => Some (a_typ n)
  | Cst.nat => Some a_nat
@@ -61,7 +57,7 @@ Fixpoint elaborate (cst : cst_term) (ctx : list string) : (option ast_term) :=
  end
 .
 
-Fixpoint cst_variables (cst : cst_term) : StrSet.t :=
+Fixpoint cst_variables (cst : Cst.obj) : StrSet.t :=
  match cst with
   | Cst.typ n => StrSet.empty
   | Cst.nat => StrSet.empty
@@ -74,38 +70,34 @@ Fixpoint cst_variables (cst : cst_term) : StrSet.t :=
  end
 .
 
-Inductive closed_at : ast_term -> nat -> Prop :=
+Inductive closed_at : exp -> nat -> Prop :=
  | ca_var : forall x n, x < n -> closed_at (a_var x) n
  | ca_lam : forall t b n, closed_at t n -> closed_at b (1+n) -> closed_at (a_fn t b) n
  | ca_pi : forall t b n, closed_at t n -> closed_at b (1+n) -> closed_at (a_pi t b) n
- | ca_app : forall a1 a2 n m, closed_at a1 n -> closed_at a2 m -> 
-            closed_at (a_app a1 a2) (max n m)
+ | ca_app : forall a1 a2 n, closed_at a1 n -> closed_at a2 n ->
+            closed_at (a_app a1 a2) n
  | ca_nat : forall n, closed_at (a_nat) n
  | ca_zero : forall n, closed_at (a_zero) n
  | ca_type : forall n m, closed_at (a_typ m) n
  | ca_succ : forall a n, closed_at a n -> closed_at (a_succ a) n 
 .
+(* TODO: JH: create our own hint database. *)
+#[local]
+Hint Constructors closed_at: core.
 
 (*Lemma for the well_scoped proof, lookup succeeds if var is in context*)
-Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n).
+Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n /\ n < length ctx).
 Proof.
-  induction ctx as [| c ctx' IHctx].
-  - simpl.
-    contradiction.
-  - simpl.
-    destruct (string_dec c s).
-    subst.
-    eauto.
-    assert (In s ctx').
-    {
-      destruct (in_inv H_in).
-      * contradiction n. 
-      * exact H.
-    } 
-    destruct (IHctx H).
-    rewrite H0.
-    eauto.    
+  induction ctx as [| c ctx' IHctx]; simpl in *.
+  - contradiction.
+  - destruct (string_dec c s); subst.
+    + eexists; split; auto. lia.
+    + destruct H_in; try contradiction.
+      destruct IHctx as [? [? ?]]; [assumption |].
+      rewrite H0.
+      eexists; split; auto. lia.
 Qed.
+
 (*Lemma for the well_scoped proof, lookup result always less than context length*)
 Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (length ctx).
   induction ctx.
@@ -136,192 +128,57 @@ Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (length ctx).
         --discriminate H.
 Qed.
 
+Import StrSProp.Dec.
+
+Lemma Subset_to_In : forall xs x, StrSet.singleton x [<=] StrSProp.of_list xs -> In x xs.
+Proof.
+  intro xs; induction xs; simpl; intros.
+  - rewrite <- F.empty_iff.
+    apply (H x).
+    fsetdec.
+  - specialize (H x).
+    rewrite F.add_iff in H.
+    destruct H; [fsetdec | auto |].
+    right. eapply IHxs.
+    intros y Hy.
+    assert (y = x); fsetdec.
+Qed.
+
 (*Well scopedness lemma: If the set of free variables in a cst are contained in a context
   then elaboration succeeds with that context, and the result is a closed term*)
-Lemma well_scoped (cst : cst_term) : forall ctx,  cst_variables cst [<=] StrSProp.of_list ctx  ->
-exists a : ast_term, (elaborate cst ctx = Some a) /\ (closed_at a (length ctx)).
+Lemma well_scoped (cst : Cst.obj) : forall ctx,  cst_variables cst [<=] StrSProp.of_list ctx  ->
+exists a : exp, (elaborate cst ctx = Some a) /\ (closed_at a (length ctx)).
 Proof.
-  induction cst.
-  - intros.
-    exists (a_typ n).
-    split.
-    + reflexivity.
-    + exact (ca_type (length ctx) n).
-
-  - intros.
-    exists (a_nat).
-    split.
-    + reflexivity.
-    + exact (ca_nat (length ctx)).
-
-  - intros.
-    exists (a_zero).
-    split.
-    + reflexivity.
-    + exact (ca_zero (length ctx)).
-
-  - intros.
-    destruct ((IHcst ctx) H).
-    destruct H0.
-    exists (a_succ x).
-    split.
-    + simpl. rewrite H0. reflexivity.
-    + exact (ca_succ x (length ctx) H1).
-  - intros.
-    assert (cst_variables cst1 [<=] StrSProp.of_list ctx).
-    {
-      unfold "[<=]" in H |- *.
-      intros.
-      apply (H a).
-      apply StrSet.union_spec.
-      left.
-      exact H0.
-    }
-    assert (cst_variables cst2 [<=] StrSProp.of_list ctx).
-    {
-      unfold "[<=]" in H |- *.
-      intros.
-      apply (H a).
-      apply StrSet.union_spec.
-      right.
-      exact H1.
-    }
-    destruct ((IHcst1 ctx) H0).
-    destruct H2.
-    destruct ((IHcst2 ctx) H1).
-    destruct H4.
-    exists (a_app x x0).
-    split.
-    + simpl.
-      rewrite H2.
-      rewrite H4.
-      reflexivity.
-    + assert (S := ca_app x x0 (length ctx) (length ctx) H3 H5).
-      rewrite -> (Nat.max_id (length ctx)) in S.
-      exact S.
-  - intros.
-    simpl in H.
-    assert (cst_variables cst2 [<=] StrSProp.of_list (s::ctx)).
-    {
-      simpl.
-      unfold "[<=]" in H |- *.
-      intros.
-      destruct (string_dec a s).
-      - rewrite e.
-        apply StrSet.add_spec.
-        left.
-        reflexivity.
-      - apply StrSet.add_spec.
-        right.
-        apply H.
-        apply StrSet.union_spec.
-        right.
-        apply StrSet.remove_spec.
-        split.
-        + exact H0.
-        + exact n.
-    }
-    assert (cst_variables cst1 [<=] StrSProp.of_list ctx).
-    {
-      simpl.
-      unfold "[<=]" in H |- *.
-      intros.
-      apply H.
-      apply StrSet.union_spec.
-      left.
-      exact H1.
-    }
-    destruct ((IHcst2 (s::ctx)) H0).
-    destruct H2.
-    destruct (IHcst1 ctx H1).
-    destruct H4.
-    simpl.
-    rewrite -> H2.
-    rewrite -> H4.
-    exists (a_fn x0 x).
-    split.
-    + reflexivity.
-    + exact (ca_lam x0 x (length ctx) H5 H3).
-
-  - intros.
-    simpl in H.
-    assert (cst_variables cst2 [<=] StrSProp.of_list (s::ctx)).
-    {
-      simpl.
-      unfold "[<=]" in H |- *.
-      intros.
-      destruct (string_dec a s).
-      - rewrite e.
-        apply StrSet.add_spec.
-        left.
-        reflexivity.
-      - apply StrSet.add_spec.
-        right.
-        apply H.
-        apply StrSet.union_spec.
-        right.
-        apply StrSet.remove_spec.
-        split.
-        + exact H0.
-        + exact n.
-    }
-    assert (cst_variables cst1 [<=] StrSProp.of_list ctx).
-    {
-      simpl.
-      unfold "[<=]" in H |- *.
-      intros.
-      apply H.
-      apply StrSet.union_spec.
-      left.
-      exact H1.
-    }
-    destruct ((IHcst2 (s::ctx)) H0).
-    destruct H2.
-    destruct (IHcst1 ctx H1).
-    destruct H4.
-    simpl.
-    rewrite -> H2.
-    rewrite -> H4.
-    exists (a_pi x0 x).
-    split.
-    + reflexivity.
-    + exact (ca_pi x0 x (length ctx) H5 H3).
-
-    
-
-  - intros.
-    simpl in *.
-    assert (In s ctx).
-    {
-      unfold "[<=]" in H.
-      assert (I := H s).
-      apply StrSProp.of_list_1 in I.
-      apply InA_alt in I.
-      destruct I.
-      destruct H0.
-      rewrite <- H0 in H1.
-      exact H1.
-      apply StrSet.singleton_spec.
-      reflexivity.
-    }
-    destruct (lookup_known s ctx H0).
-    rewrite H1.
-    exists (a_var x).
-    split.
-    + reflexivity.
-    + exact (ca_var x (length ctx) (lookup_bound s ctx x H1)).
+  induction cst; intros; simpl in *; eauto.
+  - destruct (IHcst _ H) as [ast [-> ?]]; eauto.
+  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst2 [<=] StrSProp.of_list ctx) by fsetdec.
+    destruct (IHcst1 _ H0) as [ast [-> ?]];
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; eauto.
+  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
+    destruct (IHcst1 _ H0) as [ast [-> ?]];
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; eauto.
+  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
+    destruct (IHcst1 _ H0) as [ast [-> ?]];
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; eauto.
+  - apply Subset_to_In in H.
+    edestruct lookup_known as [? [-> ?]]; [auto |].
+    apply (In_nth _ _ s)  in H.
+    destruct H as [? [? ?]].
+    eauto.
 Qed.
 
 
+(* Check elaborate Cst.nat nil : option exp. *)
+(* Fail Check elaborate (Cst.succ a_nat) : option exp. *)
 
-Check elaborate Cst.nat nil : option ast_term.
-Fail Check elaborate (Cst.succ a_nat) : option ast_term.
 
-
-Compute (elaborate (Cst.fn "s" (Cst.typ 5) (Cst.var "s")) nil).
-Compute (elaborate (Cst.fn "s" (Cst.typ 0) (Cst.fn "x" Cst.nat (Cst.app (Cst.var "x") (Cst.var "s")))) nil).
-Compute (elaborate (Cst.fn "s" Cst.nat (Cst.fn "x" Cst.nat (Cst.fn "s" Cst.nat (Cst.var "s")))) nil).
-Compute (elaborate (Cst.fn "s" (Cst.typ 10) (Cst.fn "x" (Cst.typ 0) (Cst.fn "s" (Cst.typ 5) (Cst.var "q")))) nil).
+(* Compute (elaborate (Cst.fn "s" (Cst.typ 5) (Cst.var "s")) nil). *)
+(* Compute (elaborate (Cst.fn "s" (Cst.typ 0) (Cst.fn "x" Cst.nat (Cst.app (Cst.var "x") (Cst.var "s")))) nil). *)
+(* Compute (elaborate (Cst.fn "s" Cst.nat (Cst.fn "x" Cst.nat (Cst.fn "s" Cst.nat (Cst.var "s")))) nil). *)
+(* Compute (elaborate (Cst.fn "s" (Cst.typ 10) (Cst.fn "x" (Cst.typ 0) (Cst.fn "s" (Cst.typ 5) (Cst.var "q")))) nil). *)
 
 
 Example test_elab : elaborate Cst.nat nil = Some a_nat.
