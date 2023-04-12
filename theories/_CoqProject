@@ -6,3 +6,4 @@ Syntax.v
 System.v
 Parser.v
 ParserExtraction.v
+Elaborator.v

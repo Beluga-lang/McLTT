@@ -12,6 +12,16 @@ env:
   COQ_VER: "8.16.1"
       
 jobs:
+  wf:
+    name: Completeness of _CoqProject
+    runs-on: ubuntu-latest
+    steps:
+      - name: repo checkout
+        uses: actions/checkout@v3
+      - name: check
+        run: |
+          .github/scripts/check_projects.sh theories
+    
   build:
     name: Continuous Intergration
     runs-on: ubuntu-latest
