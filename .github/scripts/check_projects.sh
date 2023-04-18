@@ -2,7 +2,7 @@
 
 dir=${1?directory unspecified}
 
-function error_out () {
+error_out () {
 
     echo "$1 is not in the _CoqProject file" >&2
     exit 1
