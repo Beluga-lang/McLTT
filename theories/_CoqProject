@@ -2,6 +2,7 @@
 
 -arg -w -arg -notation-overridden
 
+LibTactics.v
 Syntax.v
 Parser.v
 ParserExtraction.v
