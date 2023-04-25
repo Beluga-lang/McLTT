@@ -5,6 +5,8 @@ Import ListNotations.
 Require Import Mcltt.Syntax.
 
 Reserved Notation "⊢ Γ" (at level 80).
+Reserved Notation "⊢ Γ ≈ Δ" (at level 70).
+Reserved Notation "Γ ⊢ A ≈ B : T" (at level 80).
 Reserved Notation "Γ ⊢ t : T" (no associativity, at level 80, t at next level).
 Reserved Notation "Γ ⊢ [ e ] : T" (no associativity, at level 80, e at next level).
 
@@ -18,6 +20,18 @@ Inductive wf_ctx : Ctx -> Set :=
       ⊢ T :: Γ
     )
 where "⊢ Γ" := (wf_ctx Γ)
+with wf_ctx_eq : Ctx -> Ctx -> Set :=
+  | wfc_empty : wf_ctx_eq [] []
+  | wfc_extend : `(
+      wf_ctx_eq Γ Δ ->
+      Γ ⊢ T : typ i ->
+      Δ ⊢ T' : typ i ->
+      Γ ⊢ T' : typ i ->
+      wf_term_eq Γ T T' (typ i) ->
+      wf_term_eq Δ T T' (typ i) ->
+      wf_ctx_eq (T :: Γ) (T' :: Δ)
+    )
+where "⊢ Γ ≈ Δ" := (wf_ctx_eq Γ Δ)
 with wf_term : Ctx -> exp -> Typ -> Set :=
   | wf_univ_nat_f :
       `(⊢ Γ -> Γ ⊢ ℕ : typ i)
@@ -52,6 +66,11 @@ with wf_term : Ctx -> exp -> Typ -> Set :=
       `(⊢ Γ -> Γ ⊢ a_zero : ℕ)
   | wf_succ :
       `(Γ ⊢ n : ℕ -> Γ ⊢ a_succ n : ℕ)
+  | wf_sub : `(
+      Γ ⊢ [s] : Δ ->
+      Δ ⊢ M : A ->
+      Γ ⊢ a_sub M s : a_sub A s
+    )
 where "Γ ⊢ t : T" := (wf_term Γ t T)
 with wf_sb : Ctx -> Sb -> Ctx -> Set :=
   | wf_sb_id :
@@ -71,4 +90,6 @@ with wf_sb : Ctx -> Sb -> Ctx -> Set :=
       Γ ⊢ M : a_sub A s ->
       Γ ⊢ [a_extend s M] : A :: Δ
     )
-where "Γ ⊢ [ e ] : Δ" := (wf_sb Γ e Δ).
+where "Γ ⊢ [ e ] : Δ" := (wf_sb Γ e Δ)
+with wf_term_eq : Ctx -> exp -> exp -> Typ -> Set :=
+where "Γ ⊢ A ≈ B : T" := (wf_term_eq Γ A B T).
