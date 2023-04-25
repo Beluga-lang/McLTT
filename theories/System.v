@@ -12,7 +12,11 @@ Generalizable All Variables.
 
 Inductive wf_ctx : Ctx -> Set :=
   | wf_empty : ⊢ []
-  | wf_ext : `(⊢ Γ -> ⊢ t :: Γ)
+  | wf_extend : `(
+      ⊢ Γ ->
+      Γ ⊢ T : typ i ->
+      ⊢ T :: Γ
+    )
 where "⊢ Γ" := (wf_ctx Γ)
 with wf_term : Ctx -> exp -> Typ -> Set :=
   | wf_univ_nat_f :
