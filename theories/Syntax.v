@@ -25,8 +25,8 @@ Inductive exp : Set :=
   | a_var : nat -> exp
   (* Functions *)
   | a_fn : exp -> exp -> exp
-  | a_pi : exp -> exp -> exp
   | a_app : exp -> exp -> exp
+  | a_pi : exp -> exp -> exp
   (* Substitutions *)
   | a_sub : exp -> subst -> exp
 with subst : Set :=
@@ -40,3 +40,9 @@ with subst : Set :=
 Infix ",," := a_extend (at level 80).
 
 Notation Ctx := (list exp).
+Notation Sb := subst.
+Notation Typ := exp.
+Notation typ := a_typ.
+Notation ℕ := a_nat.
+Notation 𝝺 := a_fn.
+Notation Π := a_pi.
