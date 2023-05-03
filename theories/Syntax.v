@@ -36,10 +36,9 @@ with subst : Set :=
   | a_extend : subst -> exp -> subst.
 
 (* Some convenient infix notations *)
-Infix "-∘-" := a_compose (at level 70).
+Infix "∙" := a_compose (at level 70).
 Infix ",," := a_extend (at level 80).
 
-Notation "T [ σ ]" := (a_sub T σ) (at level 80, σ at next level).
 
 Notation Ctx := (list exp).
 Notation Sb := subst.
