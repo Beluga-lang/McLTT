@@ -82,7 +82,7 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
                )
   | wf_conv : `(
       Γ ⊢ t : T ->
-      wf_context_eq T T' ->
+      (Γ ⊢ T ≈ T' : (typ i)) ->
       Γ ⊢ t : T'
       ) 
   | wf_cumu :
@@ -92,7 +92,7 @@ with wf_sb : Ctx -> Sb -> Ctx -> Prop :=
   | wf_sb_id :
       `(⊢ Γ -> Γ ⊢s a_id : Γ)
   | wf_sb_weaken : `(
-      Γ ⊢ A : typ i ->
+      ⊢ A :: Γ ->
       A :: Γ ⊢s a_weaken : Γ
     )
   | wf_sb_compose : `(
