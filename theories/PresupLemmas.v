@@ -417,74 +417,64 @@ Proof.
 
   - destruct IHwf_term_eq.
     split;auto.
-
-  (*Really not sure what we can do here, maybe presup_tm_eq will work*)
     destruct (presup_tm_eq _ _ _ _ H) as [_ [_ [P _]]].
     exact P.
   - exact IHwf_term_eq1.
 Admitted.  
 
-Lemma presup_tm_eq1 (Γ : Ctx) (s t : exp) (T : Typ) : Γ ⊢ s ≈ t : T -> (⊢ Γ ∧ Γ ⊢ s : T ∧ Γ ⊢ t : T ∧ ∃ i, Γ ⊢ T : typ i).
+Lemma presup_tm_eq' (Γ : Ctx) (s t : exp) (T : Typ) : Γ ⊢ s ≈ t : T -> (⊢ Γ ∧ Γ ⊢ s : T ∧ Γ ⊢ t : T ∧ ∃ i, Γ ⊢ T : typ i).
 Proof.
   intros.
   induction H; try destruct (presup_sb _ _ _ H).
-  pose proof (wf_univ_nat_f _ i H0).
-  pose proof (wf_univ_nat_f _ i H1).
-  split ;auto.
-  split.
-  pose proof (wf_sub _ _ _ _ _ H H3).
-  apply (wf_conv _ _ _ _ (i+1) H4).
-  exact (wf_eq_typ_sub _ _ _ _ H).
-  split;auto.
-  exists (i+1).
-  constructor.
-  exact H0.
+  - pose proof (wf_univ_nat_f _ i H0).
+    pose proof (wf_univ_nat_f _ i H1).
+    split ;auto.
+    split.
+    -- pose proof (wf_sub _ _ _ _ _ H H3).
+       apply (wf_conv _ _ _ _ (i+1) H4).
+       exact (wf_eq_typ_sub _ _ _ _ H).
+    -- split;auto.
+       exists (i+1).
+       constructor.
+       exact H0.
 
-  pose proof (wf_univ _ (i) H1).
-  pose proof (wf_univ _ (i) H0).
-  split;auto.
-  pose proof (wf_sub _ _ _ _ _ H H2).
-  split.
-  apply (wf_conv _ _ _ _ (i+1+1) H4).
-  exact (wf_eq_typ_sub _ _ _ _ H).
-  split; auto.
-  exists (i+ 1 + 1).
-  constructor;auto.
+  - pose proof (wf_univ _ (i) H1).
+    pose proof (wf_univ _ (i) H0).
+    split;auto.
+    pose proof (wf_sub _ _ _ _ _ H H2).
+    split.
+    -- apply (wf_conv _ _ _ _ (i+1+1) H4).
+       exact (wf_eq_typ_sub _ _ _ _ H).
+    -- split; auto.
+       exists (i+ 1 + 1).
+       constructor;auto.
 
-  pose proof (wf_pi _ _ _ _ H0 H1).
-  pose proof (wf_sub _ _ _ _ _ H H4).
-  split;auto.
-  split.
-  apply (wf_conv _ _ _ _ (i+1) H5).
-  exact (wf_eq_typ_sub _ _ _ _ H).
-  split.
-  apply (wf_pi).
-  pose proof (wf_sub _ _ _ _ _ H H0).
-  apply (wf_conv _ _ _ _ (i+1) H6).
-  exact (wf_eq_typ_sub _ _ _ _ H).
-
-  
-  (*pose proof (wf_sb_extend H H0 
-  pose proof (wf_sub _ _ _ _ _ H H1).
-  
-  pose proof (wf_eq_pi_sub _ _ _ _ _ _ H H0 H1).
-  apply (wf_conv _ _ _ _ (i) H5 H6). *)
-  pose proof (presup_tm _ _ _ H1).
-  
-  admit.
-  exists (i+1).
-  constructor;auto.
-
-  destruct IHwf_term_eq1.
-  destruct IHwf_term_eq2.
-  split;auto.
-  destruct H3.
-  destruct H5.
-  split.
-  constructor;auto.
-  destruct H6.
-  destruct H7.
-  split;try constructor;auto.
-  
+  - pose proof (wf_pi _ _ _ _ H0 H1).
+    pose proof (wf_sub _ _ _ _ _ H H4).
+    split;auto.
+    split.
+    apply (wf_conv _ _ _ _ (i+1) H5).
+    exact (wf_eq_typ_sub _ _ _ _ H).
+    split.
+    -- apply (wf_pi).
+       pose proof (wf_sub _ _ _ _ _ H H0).
+       apply (wf_conv _ _ _ _ (i+1) H6).
+       exact (wf_eq_typ_sub _ _ _ _ H).  
+       pose proof (presup_tm _ _ _ H1).
+       (* Currently stuck *)
+       admit.
+    -- exists (i+1).
+       constructor;auto.
+  - destruct IHwf_term_eq1.
+    destruct IHwf_term_eq2.
+    split;auto.
+    destruct H3.
+    destruct H5.
+    split.
+    constructor;auto.
+    destruct H6.
+    destruct H7.
+    split;try constructor;auto.
+    (*Unfinished*)
   
 Admitted.  
