@@ -52,13 +52,13 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
     )
   | wf_pi : `(
       Γ ⊢ A : typ i ->
-      A :: Γ ⊢ B : typ (i + 1) ->
-      Γ ⊢ Π A B : typ (i + 1)
+      A :: Γ ⊢ B : typ i ->
+      Γ ⊢ Π A B : typ i
     )
   | wf_vlookup : `(
       ⊢ Γ ->
       x : T ∈! Γ ->
-      t :: Γ ⊢ a_var x : T
+      Γ ⊢ a_var x : T
     )
   | wf_fun_e: `(
       Γ ⊢ M : Π A B ->
@@ -161,7 +161,7 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
       Γ ⊢s τ : Γ' ->
       Γ' ⊢s σ : Γ'' -> 
       Γ'' ⊢ t : T -> 
-      Γ ⊢ a_sub t (σ ∙ τ) ≈ a_sub (a_sub t σ) τ : a_sub t (σ ∙ τ) 
+      Γ ⊢ a_sub t (σ ∙ τ) ≈ a_sub (a_sub t σ) τ : a_sub T (σ ∙ τ) 
     )
   | wf_eq_var_ze : `(
       Γ ⊢s σ : Δ ->
