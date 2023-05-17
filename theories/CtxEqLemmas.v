@@ -92,8 +92,10 @@ Qed.
 Lemma var_in_eq (Γ Δ : Ctx) (T : Typ) (x : nat) :  ⊢ Γ ≈ Δ -> (x : T ∈! Γ) -> (∃ T' i, (x : T' ∈! Δ ∧ Γ ⊢ T ≈ T' : typ i ∧ Δ ⊢ T ≈T' : typ i)).
 Proof.
   intros.
+  generalize dependent Δ.
   induction H0.
-  - destruct (presup_ctx_eq _ _ H).
+  - intros.
+    destruct (presup_ctx_eq _ _ H).
     destruct (ctx_decomp _ _ H0) as [G [x G_T]].
     inversion H.
     exists (a_sub T' a_weaken).    
@@ -106,12 +108,10 @@ Proof.
        --- rewrite <- H8 in H1, H.
            pose proof (wf_sb_weaken _ _ H1).
            eauto using wf_eq_sub_cong,sb_eq_refl,wf_sb_weaken.
-  - (*Fake Induction *)
-    clear IHctx_lookup.
-    assert (∀ Γ0 Δ0, ⊢ Γ0 ≈ Δ0 -> ∃ (T' : Typ) (i : nat), (n : T' ∈! Δ0) ∧ (Γ0 ⊢ T ≈ T' : typ i) ∧ Δ0 ⊢ T ≈ T' : typ i) as fake_IH by admit.
+  - intros.    
     inversion H.
     rewrite <- H7 in H.
-    destruct (fake_IH _ _ H3) as [X [i0 [nXD0 [GTX D0TX]]]].
+    destruct (IHctx_lookup _ H3) as [X [i0 [nXD0 [GTX D0TX]]]].
     exists (a_sub X a_weaken).
     exists i0.
     split.
@@ -126,8 +126,7 @@ Proof.
        --- eapply wf_eq_conv.
            eapply wf_eq_sub_cong;eauto using sb_eq_refl.
            eauto.
-    (*Fake induction *)    
-Admitted.
+Qed.           
 
 
 (* Corresponds to ⊢≈-sym in Agda proof *)
