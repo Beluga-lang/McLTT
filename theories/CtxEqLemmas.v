@@ -1,9 +1,10 @@
 Require Import Unicode.Utf8_core.
 Require Import Mcltt.Syntax.
 Require Import Mcltt.System.
-Require Export Lia.
+Require Import Mcltt.LibTactics.
 
-Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq : mcltt.
+#[export]
+Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq wf_sub_eq: core.
 
 Lemma ctx_decomp (Γ : Ctx) (T : Typ) : ⊢ T :: Γ -> (⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i).
 Proof.
@@ -33,7 +34,6 @@ Lemma tm_eq_refl (Γ : Ctx) (t: exp) (T : Typ) : Γ ⊢ t : T -> Γ ⊢ t ≈ t 
 Proof.
   eauto.
 Qed.
-
 Lemma sb_eq_refl (Γ Δ : Ctx) (σ : Sb) : Γ ⊢s σ : Δ -> Γ ⊢s σ ≈ σ : Δ.
 Proof.
   intros.
