@@ -34,7 +34,6 @@ with wf_ctx_eq : Ctx -> Ctx -> Prop :=
       ⊢ Γ ≈ Δ ->
       Γ ⊢ T : typ i ->
       Δ ⊢ T' : typ i ->
-      Γ ⊢ T' : typ i ->
       Γ ⊢ T ≈ T' : (typ i) ->
       Δ ⊢ T ≈ T' : (typ i) ->
       ⊢ (T :: Γ) ≈ (T' :: Δ)
