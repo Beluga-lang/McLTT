@@ -3,7 +3,7 @@ Require Import Mcltt.Syntax.
 Require Import Mcltt.System.
 Require Export Lia.
 
-Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq.
+Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq : core.
 
 Lemma ctx_decomp (Γ : Ctx) (T : Typ) : ⊢ T :: Γ -> (⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i).
 Proof.
@@ -27,6 +27,7 @@ Proof.
     rewrite <- H9;rewrite H8;eauto.
     1-5:eauto.
 Qed.
+
 (* Corresponds to ≈-refl in the Agda code*)
 Lemma tm_eq_refl (Γ : Ctx) (t: exp) (T : Typ) : Γ ⊢ t : T -> Γ ⊢ t ≈ t : T.
 Proof.
@@ -38,7 +39,6 @@ Proof.
   intros.
   eauto using wf_sub_eq_id_comp_right, wf_sub_eq_sym, wf_sub_eq_trans.
 Qed.
-
 
 (* Corresponds to t[σ]-Se in the Agda proof *)
 Lemma sub_lvl (Δ Γ : Ctx) (T : Typ) (σ : Sb) (i : nat) : (Δ ⊢ T : typ i) -> (Γ ⊢s σ : Δ) -> (Γ ⊢ a_sub T σ : typ i).
@@ -54,8 +54,6 @@ Proof.
   eauto using sb_eq_refl.
 Qed.  
 
-
-
 (* Corresponds to ∈!⇒ty-wf in Agda proof *)
 Lemma var_in_wf (Γ : Ctx) (T : Typ) (x : nat) : ⊢ Γ -> (x : T ∈! Γ) -> (∃ i, Γ ⊢ T : typ i).
 Proof.
@@ -63,7 +61,6 @@ Proof.
   induction H0.
   - inversion H.
     eauto using sub_lvl.
-
   - inversion H.
     destruct (IHctx_lookup H3).
     eauto using  wf_sb_weaken, sub_lvl.
@@ -73,16 +70,14 @@ Lemma presup_sb_ctx (Γ Δ: Ctx) (σ : Sb) : Γ ⊢s σ : Δ -> ⊢ Γ ∧ ⊢ �
 Proof.
   intro.
   induction H;eauto.
-  destruct (ctx_decomp _ _ H).
-  eauto.
-  destruct IHwf_sb1.
-  destruct IHwf_sb2.
-  eauto.
-  destruct IHwf_sb.
-  eauto.
-  destruct (presup_ctx_eq _ _ H0).
-  destruct IHwf_sb.
-  eauto.
+  - destruct (ctx_decomp _ _ H).
+    eauto.
+  - destruct IHwf_sb1,IHwf_sb2.
+    eauto.
+  - destruct IHwf_sb.
+    eauto.
+  - destruct (presup_ctx_eq _ _ H0),IHwf_sb.
+    eauto.
 Qed.  
 
 Lemma presup_tm_ctx (Γ : Ctx) (t T : exp) : Γ ⊢ t : T -> ⊢ Γ.
@@ -110,17 +105,13 @@ Proof.
            eauto using wf_eq_sub_cong, wf_sb_weaken,sb_eq_refl.
        --- rewrite <- H8 in H1, H.
            pose proof (wf_sb_weaken _ _ H1).
-           pose proof (wf_eq_sub_cong _ _ _ _ _ _ _ H9 (sb_eq_refl _ _ _ H10)).
-           pose proof (wf_eq_sym _ _ _ _ H11).
-           pose proof (wf_sub _ _ _ _ _ H10 H6).
-           pose proof (tm_eq_refl _ _ _ H13).
-           eauto.
-  -
-    (*Fake Induction *)
-    assert (∀ Γ0 Δ0, ⊢ Γ0 ≈ Δ0 -> ∃ (T' : Typ) (i : nat), (n : T' ∈! Δ0) ∧ (Γ0 ⊢ T ≈ T' : typ i) ∧ Δ0 ⊢ T ≈ T' : typ i) by admit.
+           eauto using wf_eq_sub_cong,sb_eq_refl,wf_sb_weaken.
+  - (*Fake Induction *)
+    clear IHctx_lookup.
+    assert (∀ Γ0 Δ0, ⊢ Γ0 ≈ Δ0 -> ∃ (T' : Typ) (i : nat), (n : T' ∈! Δ0) ∧ (Γ0 ⊢ T ≈ T' : typ i) ∧ Δ0 ⊢ T ≈ T' : typ i) as fake_IH by admit.
     inversion H.
-    rewrite <- H8 in H.
-    destruct (H1 _ _ H4) as [X [i0 [nXD0 [GTX D0TX]]]].
+    rewrite <- H7 in H.
+    destruct (fake_IH _ _ H3) as [X [i0 [nXD0 [GTX D0TX]]]].
     exists (a_sub X a_weaken).
     exists i0.
     split.
@@ -135,28 +126,7 @@ Proof.
        --- eapply wf_eq_conv.
            eapply wf_eq_sub_cong;eauto using sb_eq_refl.
            eauto.
-    (*Fake induction *)
-
-    inversion H.
-    exists (a_sub T a_weaken).
-    destruct (presup_ctx_eq _ _ H3).
-    destruct (var_in_wf _ _ _ H9 H0).
-    exists x.
-    split.
-    eauto using there.
-    destruct (presup_ctx_eq _ _ H).
-    
-    split.
-    
-    eapply tm_eq_refl.
-    
-    pose proof (wf_sb_weaken _ _ H12).
-    pose proof (wf_sub _ _ _ _ _ H14 H11).
-    eapply (wf_conv _ _ _ _ _ H15).
-    eauto.
-    rewrite <- H7 in H.
-    Search T.
-    
+    (*Fake induction *)    
 Admitted.
 
 
