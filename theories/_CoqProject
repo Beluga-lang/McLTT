@@ -9,4 +9,3 @@ Parser.v
 ParserExtraction.v
 Elaborator.v
 CtxEqLemmas.v
-PresupLemmas.v

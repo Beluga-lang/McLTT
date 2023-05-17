@@ -1,26 +1,57 @@
 Require Import Unicode.Utf8_core.
 Require Import Mcltt.Syntax.
 Require Import Mcltt.System.
-Require Import Mcltt.PresupLemmas.
 Require Export Lia.
+
+Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq.
+
+Lemma ctx_decomp (Γ : Ctx) (T : Typ) : ⊢ T :: Γ -> (⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i).
+Proof.
+  intros.
+  inversion H.
+  split;eauto.
+Qed.  
+
+(* Corresponds to presup-⊢≈ in the Agda proof*)
+Lemma presup_ctx_eq (Γ Δ : Ctx) : ⊢ Γ ≈ Δ -> ⊢ Γ ∧ ⊢ Δ.
+Proof.
+  intro.
+  induction H.
+  - split; exact wf_empty.
+  - destruct IHwf_ctx_eq.
+    split.
+    inversion H3.
+    1-2: rewrite H8; eauto.
+    1-2: rewrite H10; eauto.
+    rewrite H9; eauto.
+    rewrite <- H9;rewrite H8;eauto.
+    1-5:eauto.
+Qed.
+(* Corresponds to ≈-refl in the Agda code*)
+Lemma tm_eq_refl (Γ : Ctx) (t: exp) (T : Typ) : Γ ⊢ t : T -> Γ ⊢ t ≈ t : T.
+Proof.
+  eauto.
+Qed.
+
+Lemma sb_eq_refl (Γ Δ : Ctx) (σ : Sb) : Γ ⊢s σ : Δ -> Γ ⊢s σ ≈ σ : Δ.
+Proof.
+  intros.
+  eauto using wf_sub_eq_id_comp_right, wf_sub_eq_sym, wf_sub_eq_trans.
+Qed.
+
 
 (* Corresponds to t[σ]-Se in the Agda proof *)
 Lemma sub_lvl (Δ Γ : Ctx) (T : Typ) (σ : Sb) (i : nat) : (Δ ⊢ T : typ i) -> (Γ ⊢s σ : Δ) -> (Γ ⊢ a_sub T σ : typ i).
 Proof.
   intros.
-  pose proof (wf_sub _ _ _ _ _ H0 H).
-  apply (wf_conv _ _ _ _ (i+1) H1).
-  exact (wf_eq_typ_sub _ _ _ _ H0).
+  eauto.
 Qed.  
 
 (* Corresponds to []-cong-Se′ in the Agda proof*)
 Lemma sub_lvl_eq (Δ Γ : Ctx) (T T': Typ) (σ : Sb) (i : nat) : (Δ ⊢ T ≈ T' : typ i) -> (Γ ⊢s σ : Δ) -> (Γ ⊢ a_sub T σ ≈ a_sub T' σ : typ i).
 Proof.
   intros.
-  pose proof (wf_eq_typ_sub _ _ _ i H0).
-  pose proof (sb_eq_refl _ _ _ H0).
-  pose proof (wf_eq_sub_cong _ _ _ _ _ _ _ H H2).
-  apply (wf_eq_conv _ _ _ _ _ _ H3 H1).
+  eauto using sb_eq_refl.
 Qed.  
 
 
@@ -30,49 +61,102 @@ Lemma var_in_wf (Γ : Ctx) (T : Typ) (x : nat) : ⊢ Γ -> (x : T ∈! Γ) -> (�
 Proof.
   intros.
   induction H0.
-  pose proof (ctx_decomp _ _ H).
-  destruct H0.
-  destruct H1.
-  exists x.
-  apply (sub_lvl Γ (T :: Γ) _ a_weaken x H1).
-  apply (wf_sb_weaken _ _ H).
-  pose proof (ctx_decomp _ _ H).
-  destruct H1.
-  destruct H2.
-  pose proof (IHctx_lookup H1).
-  destruct H3.
-  exists x0.
-  apply (sub_lvl Γ (T' :: Γ) _ a_weaken x0 H3).
-  apply (wf_sb_weaken _ _ H).
+  - inversion H.
+    eauto using sub_lvl.
+
+  - inversion H.
+    destruct (IHctx_lookup H3).
+    eauto using  wf_sb_weaken, sub_lvl.
 Qed.
 
+Lemma presup_sb_ctx (Γ Δ: Ctx) (σ : Sb) : Γ ⊢s σ : Δ -> ⊢ Γ ∧ ⊢ Δ.
+Proof.
+  intro.
+  induction H;eauto.
+  destruct (ctx_decomp _ _ H).
+  eauto.
+  destruct IHwf_sb1.
+  destruct IHwf_sb2.
+  eauto.
+  destruct IHwf_sb.
+  eauto.
+  destruct (presup_ctx_eq _ _ H0).
+  destruct IHwf_sb.
+  eauto.
+Qed.  
+
+Lemma presup_tm_ctx (Γ : Ctx) (t T : exp) : Γ ⊢ t : T -> ⊢ Γ.
+Proof.
+  intro.
+  induction H;eauto using presup_sb_ctx.
+  destruct (presup_sb_ctx _ _ _ H).
+  eauto.
+Qed.
 
 (* Corresponds to ∈!⇒ty≈ in Agda proof *)
-Lemma var_in_eq  (Γ Δ : Ctx) (T : Typ) (x : nat) : ⊢ Γ ≈ Δ -> (x : T ∈! Γ) -> (∃ T' i, (x : T' ∈! Γ ∧ Γ ⊢ T ≈ T' : typ i ∧ Δ ⊢ T ≈T' : typ i)).
+Lemma var_in_eq (Γ Δ : Ctx) (T : Typ) (x : nat) :  ⊢ Γ ≈ Δ -> (x : T ∈! Γ) -> (∃ T' i, (x : T' ∈! Δ ∧ Γ ⊢ T ≈ T' : typ i ∧ Δ ⊢ T ≈T' : typ i)).
 Proof.
   intros.
-  pose proof (presup_ctx_eq _ _ H).
-  destruct H1.
   induction H0.
-  exists (a_sub T a_weaken).
-  pose proof (wf_sb_weaken _ _ H1).
-  destruct (ctx_decomp _ _ H1).
-  destruct H4.
-  pose proof (wf_sub _ _ _ _ _ H0 H4).
-  exists (x).
-  split.
-  - exact (here _ _).
-  - split.
-    -- pose proof (tm_eq_refl _ _ _ H5).
-       apply (wf_eq_conv _ _ _ _ _ (x+1) H6).
-       exact (wf_eq_typ_sub _ _ _ _ H0).
-    -- destruct H.
-       --- pose proof (tm_eq_refl _ _ _ H5).
-           apply (wf_eq_conv _ _ _ _ _ (x+1) H).
-           exact (wf_eq_typ_sub _ _ _ _ H0).
-       --- pose proof (wf_extend _ _ _ H3 H4).
-           pose proof (wf_sb_weaken _ _ H11).
-           admit.         
+  - destruct (presup_ctx_eq _ _ H).
+    destruct (ctx_decomp _ _ H0) as [G [x G_T]].
+    inversion H.
+    exists (a_sub T' a_weaken).    
+    exists i.
+    split.
+    -- eauto using here.
+    -- split.
+       --- pose proof (wf_sb_weaken _ _ H0).
+           eauto using wf_eq_sub_cong, wf_sb_weaken,sb_eq_refl.
+       --- rewrite <- H8 in H1, H.
+           pose proof (wf_sb_weaken _ _ H1).
+           pose proof (wf_eq_sub_cong _ _ _ _ _ _ _ H9 (sb_eq_refl _ _ _ H10)).
+           pose proof (wf_eq_sym _ _ _ _ H11).
+           pose proof (wf_sub _ _ _ _ _ H10 H6).
+           pose proof (tm_eq_refl _ _ _ H13).
+           eauto.
+  -
+    (*Fake Induction *)
+    assert (∀ Γ0 Δ0, ⊢ Γ0 ≈ Δ0 -> ∃ (T' : Typ) (i : nat), (n : T' ∈! Δ0) ∧ (Γ0 ⊢ T ≈ T' : typ i) ∧ Δ0 ⊢ T ≈ T' : typ i) by admit.
+    inversion H.
+    rewrite <- H8 in H.
+    destruct (H1 _ _ H4) as [X [i0 [nXD0 [GTX D0TX]]]].
+    exists (a_sub X a_weaken).
+    exists i0.
+    split.
+    -- eauto using there.
+    -- destruct (presup_ctx_eq _ _ H) as [T'G T0D0].
+       pose proof (wf_sb_weaken _ _ T'G).
+       pose proof (wf_sb_weaken _ _ T0D0).
+       split.
+       --- eapply wf_eq_conv.
+           eapply wf_eq_sub_cong;eauto using sb_eq_refl.
+           eauto.
+       --- eapply wf_eq_conv.
+           eapply wf_eq_sub_cong;eauto using sb_eq_refl.
+           eauto.
+    (*Fake induction *)
+
+    inversion H.
+    exists (a_sub T a_weaken).
+    destruct (presup_ctx_eq _ _ H3).
+    destruct (var_in_wf _ _ _ H9 H0).
+    exists x.
+    split.
+    eauto using there.
+    destruct (presup_ctx_eq _ _ H).
+    
+    split.
+    
+    eapply tm_eq_refl.
+    
+    pose proof (wf_sb_weaken _ _ H12).
+    pose proof (wf_sub _ _ _ _ _ H14 H11).
+    eapply (wf_conv _ _ _ _ _ H15).
+    eauto.
+    rewrite <- H7 in H.
+    Search T.
+    
 Admitted.
 
 
@@ -81,12 +165,6 @@ Lemma ctx_eq_sym (Γ Δ : Ctx) : ⊢ Γ ≈ Δ -> ⊢ Δ ≈ Γ.
 Proof.
   intros.
   induction H.
-  exact wfc_empty.
-  apply (wfc_extend _ _ _ i _ IHwf_ctx_eq).
-  exact H1.
-  exact H0.
-  destruct (presup_tm_eq _ _ _ _ H4).
-  auto.
-  exact (wf_eq_sym _ _ _ _ H4).
-  exact (wf_eq_sym _ _ _ _ H3).
+  - eauto.
+  - eapply (wfc_extend _ _ _ _ _ IHwf_ctx_eq);eauto.
 Qed.
