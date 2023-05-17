@@ -3,7 +3,7 @@ Require Import Mcltt.Syntax.
 Require Import Mcltt.System.
 Require Export Lia.
 
-Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq : core.
+Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq : mcltt.
 
 Lemma ctx_decomp (Γ : Ctx) (T : Typ) : ⊢ T :: Γ -> (⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i).
 Proof.
