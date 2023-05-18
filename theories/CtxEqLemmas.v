@@ -43,7 +43,7 @@ Qed.
 Lemma sb_eq_refl (Γ Δ : Ctx) (σ : Sb) : Γ ⊢s σ : Δ -> Γ ⊢s σ ≈ σ : Δ.
 Proof.
   intros.
-  mauto using (wf_sub_eq_id_comp_right, wf_sub_eq_sym, wf_sub_eq_trans).
+  mauto.
 Qed.
 
 (* Corresponds to t[σ]-Se in the Agda proof *)
