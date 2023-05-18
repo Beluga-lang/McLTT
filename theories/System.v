@@ -3,6 +3,7 @@ Require Import Unicode.Utf8_core.
 Import ListNotations.
 
 Require Import Mcltt.Syntax.
+Require Import Mcltt.LibTactics.
 
 Reserved Notation "⊢ Γ" (at level 80).
 Reserved Notation "⊢ Γ ≈ Δ" (at level 80, Γ at next level, Δ at next level).
