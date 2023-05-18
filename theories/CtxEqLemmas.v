@@ -1,16 +1,7 @@
 Require Import Unicode.Utf8_core.
 Require Import Mcltt.Syntax.
-Require Import Mcltt.System.
-Require Import Mcltt.LibTactics.
-
-#[export]
-  Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq wf_sub_eq: mcltt.
-
-Tactic Notation "mauto" :=
-  eauto with mcltt core.
-
-Tactic Notation "mauto" "using" uconstr(use) :=
-  eauto using use with mcltt core.
+Require Export Mcltt.System.
+Require Export Mcltt.LibTactics.
 
 Lemma ctx_decomp (Γ : Ctx) (T : Typ) : ⊢ T :: Γ -> (⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i).
 Proof.
@@ -32,7 +23,7 @@ Proof.
     1-2: rewrite H10; mauto.
     rewrite H9; mauto.
     rewrite <- H9;rewrite H8;mauto.
-    1-5:mauto.
+    1-5: mauto.
 Qed.
 
 (* Corresponds to ≈-refl in the Agda code*)
@@ -69,7 +60,7 @@ Proof.
     mauto using sub_lvl.
   - inversion H.
     destruct (IHctx_lookup H3).
-    eauto using wf_sb_weaken, sub_lvl with mcltt.
+    mauto using sub_lvl.
 Qed.
 
 Lemma presup_sb_ctx (Γ Δ: Ctx) (σ : Sb) : Γ ⊢s σ : Δ -> ⊢ Γ ∧ ⊢ Δ.
@@ -143,3 +134,4 @@ Proof.
   - mauto.
   - eapply (wfc_extend _ _ _ _ _ IHwf_ctx_eq);mauto.
 Qed.
+
