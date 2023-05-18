@@ -22,3 +22,10 @@ Ltac destruct_logic :=
     end.
 
 Ltac destruct_all := repeat destruct_logic.
+
+
+Tactic Notation "mauto" :=
+  eauto with mcltt core.
+
+Tactic Notation "mauto" "using" uconstr(use) :=
+  eauto using use with mcltt core.

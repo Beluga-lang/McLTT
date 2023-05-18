@@ -14,6 +14,7 @@ Reserved Notation "x : T ∈! Γ" (no associativity, at level 80).
 
 Generalizable All Variables.
 
+
 Inductive ctx_lookup : nat -> Typ -> Ctx -> Prop :=
   | here : `( 0 :  (a_sub T a_weaken) ∈! (T :: Γ))
   | there : `( n : T ∈! Γ -> (S n) : (a_sub T a_weaken) ∈! (T' :: Γ))              
@@ -59,10 +60,11 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
       x : T ∈! Γ ->
       Γ ⊢ a_var x : T
     )
-  | wf_fun_e: `(
+| wf_fun_e: `(
+      Γ ⊢ A : typ i ->          
+      A :: Γ ⊢ B : typ i ->            
       Γ ⊢ M : Π A B ->
       Γ ⊢ N : A ->
-      A :: Γ ⊢ B : typ i ->
       Γ ⊢ a_app M N : a_sub B (a_id ,, N)
     )
   | wf_fun_i : `(
@@ -246,3 +248,7 @@ with wf_sub_eq : Ctx -> Sb -> Sb -> Ctx -> Prop :=
       Γ ⊢s σ ≈ σ' : Δ'  
    )   
 where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ S1 S2 Δ).
+
+
+#[export]
+Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq wf_sub_eq: mcltt.
