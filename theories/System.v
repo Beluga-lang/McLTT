@@ -126,7 +126,7 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
       Γ ⊢ a_sub (Π T' T) σ ≈ Π (a_sub T' σ) (a_sub T σ) : typ i
     )                             
   | wf_eq_pi_cong : `(
-      Γ ⊢ T : typ i ->
+      Γ ⊢ M : typ i ->
       Γ ⊢ M ≈ M' : typ i ->         
       M :: Γ ⊢ T ≈ T' : typ i ->              
       Γ ⊢ Π M T ≈ Π M' T' : typ i              
@@ -233,8 +233,8 @@ with wf_sub_eq : Ctx -> Sb -> Sb -> Ctx -> Prop :=
       Γ' ⊢s a_weaken ∙ (σ ,, t) ≈ σ : Γ           
     )   
   | wf_sub_eq_ext : `(
-      Γ ⊢s σ : T :: Γ ->
-      Γ ⊢s σ ≈ ((a_weaken ∙ σ) ,, (a_sub (a_var 0) σ)) : T :: Γ                    
+      Γ' ⊢s σ : T :: Γ ->
+      Γ' ⊢s σ ≈ ((a_weaken ∙ σ) ,, (a_sub (a_var 0) σ)) : T :: Γ                    
     )   
   | wf_sub_eq_sym :
       `(Γ ⊢s σ ≈ σ' : Δ -> Γ ⊢s σ' ≈ σ : Δ)  
@@ -252,4 +252,4 @@ where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ S1 S2 Δ).
 
 
 #[export]
-Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq wf_sub_eq: mcltt.
+Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq wf_sub_eq ctx_lookup: mcltt.
