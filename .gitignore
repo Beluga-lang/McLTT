@@ -12,5 +12,6 @@ theories/Parser.v
 **/.*.aux
 **/*.vok
 **/*.vos
+.lia.cache
 makefile.coq*
 *.~undo-tree~

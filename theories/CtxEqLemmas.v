@@ -26,7 +26,6 @@ Proof.
     1-5: mauto.
 Qed.
 
-                              
 (* Corresponds to ≈-refl in the Agda code*)
 Lemma tm_eq_refl (Γ : Ctx) (t: exp) (T : Typ) : Γ ⊢ t : T -> Γ ⊢ t ≈ t : T.
 Proof.
@@ -125,8 +124,6 @@ Proof.
     -- split;mauto.
 Qed.           
 
-
-
 (* Corresponds to ⊢≈-sym in Agda proof *)
 Lemma ctx_eq_sym (Γ Δ : Ctx) : ⊢ Γ ≈ Δ -> ⊢ Δ ≈ Γ.
 Proof.
@@ -158,3 +155,4 @@ Qed.
 
 #[export]
 Hint Resolve presup_tm_eq_ctx : mcltt.
+

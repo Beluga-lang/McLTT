@@ -32,3 +32,4 @@ Tactic Notation "mauto" "using" uconstr(use) :=
 
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use) :=
   eauto pow using use with mcltt core.
+
