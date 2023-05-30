@@ -35,73 +35,27 @@ Proof.
        mauto.    
 Qed.
 
-Lemma inv_pi (Γ : Ctx) (M T T' : Typ) : Γ ⊢ Π M T : T' -> ∃ i,M :: Γ ⊢ T : typ i.
+
+
+Add Parametric Relation : (Ctx) (wf_ctx_eq)
+    symmetry proved by ctx_eq_sym
+    transitivity proved by ctx_eq_trans
+    as ctx_eq.
+
+Add Parametric Relation (Γ : Ctx) (T : Typ) : (exp) (λ t t',wf_term_eq Γ t t' T)
+    symmetry proved by (λ t t',wf_eq_sym Γ t t' T)
+    transitivity proved by (λ t t' t'', wf_eq_trans Γ t t' T t'')
+    as tm_eq.                                                
+
+Add Parametric Relation (Γ Δ : Ctx) : (Sb) (λ σ τ, wf_sub_eq Γ σ τ Δ)
+    symmetry proved by (λ σ τ, wf_sub_eq_sym Γ σ τ Δ)
+    transitivity proved by (λ σ τ ρ, wf_sub_eq_trans Γ σ τ Δ ρ)
+    as sb_eq.
+
+
+Lemma test (Γ : Ctx) (t s : exp) (T : Typ) : Γ ⊢ t ≈ s : T -> Γ ⊢ s ≈ t : T.
 Proof.
   intros.
-  dependent induction H;mauto.  
-Qed.
-
-
-(*
-Add Parametric Morphism (Γ Δ : Ctx) : (λ σ, wf_sb Γ σ Δ)
-    with signature (λ σ τ, wf_sub_eq Γ σ τ Δ) ==> iff as sb_mor.
-Proof.
-  intros.
-  split.
-  intro.
-  generalize dependent y.
-  induction H0.
-  intros.
-  inversion H0.
-  mauto.
-  rewrite <- H5 in H.
-  pose proof (ctx_decomp _ _ H) as [_ [i GT]].
-  econstructor.
-  econstructor.
-  econstructor.
-  exact H.
-  econstructor.
-  exact H.
-  exact GT.
-
-  econstructor.
-  mauto.
-  eapply wf_eq_conv;mauto.
-
-  
-  
-  dependent induction H0.
-  dependent induction H.
-  mauto.
-  
-  econstructor.
-  mauto.
-  mauto.
-  eapply wf_conv.
-  econstructor.
-  exact H.
-  econstructor.
-  exact H0.
-  eapply here.
-  eapply wf_eq_conv.
-  mauto.
-  mauto.
-
-  
-  admit.
-
-  eapply IHwf_sub_eq2.
   symmetry.
-  
-  
-Qed.  
-
-                           
-Add Parametric Morphism (Γ : Ctx) (T : Typ) : (λ t,@wf_term Γ t T)
-  with signature (λ t s,wf_term_eq Γ t s T ) ==> iff as tm_mor.                                   
-Proof.
-  intros.
-  
-Qed.
-
-*)
+  (* This should work, but it's looking for a relation between t and T instead of the one between s and t *)
+Admitted.
