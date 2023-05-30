@@ -123,7 +123,7 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
       Γ ⊢s σ : Δ ->
       Δ ⊢ T' : typ i ->
       T' :: Δ ⊢ T : typ i ->
-      Γ ⊢ a_sub (Π T' T) σ ≈ Π (a_sub T' σ) (a_sub T σ) : typ i
+      Γ ⊢ a_sub (Π T' T) σ ≈ Π (a_sub T' σ) (a_sub T (σ ∙ a_weaken ,, a_var 0)) : typ i
     )                             
   | wf_eq_pi_cong : `(
       Γ ⊢ M : typ i ->
