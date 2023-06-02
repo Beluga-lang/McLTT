@@ -51,11 +51,3 @@ Add Parametric Relation (Γ Δ : Ctx) : (Sb) (λ σ τ, wf_sub_eq Γ σ τ Δ)
     symmetry proved by (λ σ τ, wf_sub_eq_sym Γ σ τ Δ)
     transitivity proved by (λ σ τ ρ, wf_sub_eq_trans Γ σ τ Δ ρ)
     as sb_eq.
-
-
-Lemma test (Γ : Ctx) (t s : exp) (T : Typ) : Γ ⊢ t ≈ s : T -> Γ ⊢ s ≈ t : T.
-Proof.
-  intros.
-  symmetry.
-  (* This should work, but it's looking for a relation between t and T instead of the one between s and t *)
-Admitted.
