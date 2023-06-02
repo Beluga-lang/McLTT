@@ -17,9 +17,9 @@ Ltac breakdown_goal :=
   in splitting
 .
 
-Fixpoint presup_tm (Γ : Ctx) (t : exp) (T : Typ) (g_tm : Γ ⊢ t : T) {struct g_tm}:  ⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i
-with presup_eq  (Γ : Ctx) (s t : exp) (T : Typ) (g_eq : Γ ⊢ s ≈ t : T) {struct g_eq} :  ⊢ Γ ∧ Γ ⊢ s : T ∧ Γ ⊢ t : T ∧ ∃ i,Γ ⊢ T : typ i
-with presup_sb_eq (Γ Δ : Ctx) (σ τ : Sb) (g_seq : Γ ⊢s σ ≈ τ : Δ) {struct g_seq} : ⊢ Γ ∧ Γ ⊢s σ : Δ ∧ Γ ⊢s τ : Δ ∧ ⊢ Δ.                        
+Lemma presup_tm (Γ : Ctx) (t : exp) (T : Typ) (g_tm : Γ ⊢ t : T) :  ⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i
+with presup_eq  (Γ : Ctx) (s t : exp) (T : Typ) (g_eq : Γ ⊢ s ≈ t : T) :  ⊢ Γ ∧ Γ ⊢ s : T ∧ Γ ⊢ t : T ∧ ∃ i,Γ ⊢ T : typ i
+with presup_sb_eq (Γ Δ : Ctx) (σ τ : Sb) (g_seq : Γ ⊢s σ ≈ τ : Δ) : ⊢ Γ ∧ Γ ⊢s σ : Δ ∧ Γ ⊢s τ : Δ ∧ ⊢ Δ.                        
 Proof.
   - inversion g_tm;clear g_tm.
     1-4,8-9 : mauto.
@@ -122,8 +122,7 @@ Proof.
        econstructor;mauto.
        econstructor;mauto.
        econstructor;mauto.
-       econstructor;mauto.
-       econstructor;mauto.     
+       econstructor;mauto. 
 
     -- breakdown_goal.
        eapply wf_conv.
