@@ -34,26 +34,30 @@ Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : (option exp) :=
  | Cst.nat => Some a_nat
  | Cst.zero => Some a_zero
  | Cst.succ c => match elaborate c ctx with
-              | Some a => Some (a_succ a)
-              | None => None
-              end
+                | Some a => Some (a_succ a)
+                | None => None
+                end
  | Cst.var s =>  match lookup s ctx with
-              | Some n => Some (a_var n)
-              | None => None
-              end
+                | Some n => Some (a_var n)
+                | None => None
+                end
  | Cst.fn s t c => match elaborate c (s::ctx), elaborate t ctx with
-              | Some a, Some t => Some (a_fn t a)
-              | _, _ => None
-              end 
+                  | Some a, Some t => Some (a_fn t a)
+                  | _, _ => None
+                  end 
  | Cst.app c1 c2 => match elaborate c1 ctx, elaborate c2 ctx with
-              | None, _ => None
-              | _, None => None
-              | Some a1, Some a2 => Some (a_app a1 a2)
-              end 
+                   | None, _ => None
+                   | _, None => None
+                   | Some a1, Some a2 => Some (a_app a1 a2)
+                   end 
  | Cst.pi s t c => match elaborate c (s::ctx), elaborate t ctx with
-              | Some a, Some t => Some (a_pi t a)
-              | _,_ => None
-              end
+                  | Some a, Some t => Some (a_pi t a)
+                  | _,_ => None
+                  end
+ | Cst.rec T s r t => match elaborate T ctx, elaborate s ctx, elaborate r ctx, elaborate t ctx with
+                     | Some T, Some s, Some r, Some t => Some (a_rec T s r t)
+                     | _,_,_,_ => None
+                   end                
  end
 .
 
@@ -66,7 +70,8 @@ Fixpoint cst_variables (cst : Cst.obj) : StrSet.t :=
   | Cst.var s => StrSet.singleton s
   | Cst.fn s t c => StrSet.union (cst_variables t) (StrSet.remove s (cst_variables c))
   | Cst.pi s t c => StrSet.union (cst_variables t) (StrSet.remove s (cst_variables c))
-  | Cst.app c1 c2 => StrSet.union (cst_variables c1) (cst_variables c2)
+ | Cst.app c1 c2 => StrSet.union (cst_variables c1) (cst_variables c2)
+ | Cst.rec T s r t => StrSet.union (StrSet.union (cst_variables T) (cst_variables s)) (StrSet.union (cst_variables r) (cst_variables t)) 
  end
 .
 
@@ -79,7 +84,8 @@ Inductive closed_at : exp -> nat -> Prop :=
  | ca_nat : forall n, closed_at (a_nat) n
  | ca_zero : forall n, closed_at (a_zero) n
  | ca_type : forall n m, closed_at (a_typ m) n
- | ca_succ : forall a n, closed_at a n -> closed_at (a_succ a) n 
+| ca_succ : forall a n, closed_at a n -> closed_at (a_succ a) n
+| ca_rec : forall T s r t n, closed_at T n -> closed_at s n -> closed_at r n -> closed_at t n -> closed_at (a_rec T s r t) n                                            
 .
 (* TODO: JH: create our own hint database. *)
 #[local]
@@ -163,6 +169,14 @@ Proof.
     assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
     destruct (IHcst1 _ H0) as [ast [-> ?]];
       destruct (IHcst2 _ H1) as [ast' [-> ?]]; eauto.
+  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst2 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst3 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst4 [<=] StrSProp.of_list ctx) by fsetdec.
+    destruct (IHcst1 _ H0) as [ast1 [-> ?]];
+      destruct (IHcst2 _ H1) as [ast2 [-> ?]];
+      destruct (IHcst3 _ H2) as [ast3 [-> ?]];
+      destruct (IHcst4 _ H3) as [ast4 [-> ?]]; eauto.
   - apply Subset_to_In in H.
     edestruct lookup_known as [? [-> ?]]; [auto |].
     apply (In_nth _ _ s)  in H.

@@ -56,3 +56,6 @@ Proof.
   assert (m <= max n m) by lia.
   split;eauto using lift_eq_ge.
 Qed.
+
+#[export]
+Hint Resolve lift_eq_ge lift_eq_max lift_tm_ge lift_tm_max : mcltt.

@@ -3,6 +3,8 @@ Require Import Mcltt.Syntax.
 Require Export Mcltt.System.
 Require Export Mcltt.LibTactics.
 
+Open Scope mcltt.
+
 Lemma ctx_decomp (Γ : Ctx) (T : Typ) : ⊢ T :: Γ -> (⊢ Γ ∧ ∃ i, Γ ⊢ T : typ i).
 Proof.
   intros.
@@ -18,12 +20,9 @@ Proof.
   - split; mauto.
   - destruct IHwf_ctx_eq.
     split.
-    inversion H3.
-    1-2: rewrite H8; mauto.
-    1-2: rewrite H10; mauto.
-    rewrite H9; mauto.
-    rewrite <- H9;rewrite H8;mauto.
-    1-5: mauto.
+    inversion H3;subst T;mauto.
+    -- do 2 (econstructor;mauto).
+    -- econstructor;mauto.
 Qed.
 
 (* Corresponds to ≈-refl in the Agda code*)

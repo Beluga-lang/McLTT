@@ -39,7 +39,10 @@ Proof.
        pose proof (lift_tm_max _ _ _ _ _ _ H AGi1) as [Ga AGB].
        econstructor;auto.
        
-    -- pose proof presup_sb_ctx _ _ _ H as [G D].
+    -- pose proof (presup_tm _ _ _ H) as [NG _].
+       pose proof (presup_tm _ _ _ H0) as [G ].
+       mauto.
+    --  pose proof presup_sb_ctx _ _ _ H as [G D].
        pose proof presup_tm _ _ _ H0 as [_ [i0 DAi0]].
        breakdown_goal.
     -- pose proof presup_eq _ _ _ _ H0 as [G [_ [GT _]]].
@@ -66,7 +69,9 @@ Proof.
        mauto.
        eapply wf_conv;mauto.
        eapply wf_eq_conv.
-       eapply wf_eq_sym.
+       convert_to_relational.
+       symmetry.
+       convert_from_relational.
        eapply wf_eq_sub_comp;mauto.
        eapply wf_eq_typ_sub;mauto.   
 
@@ -89,7 +94,304 @@ Proof.
 
     -- pose proof (presup_sb_ctx _ _ _ H) as [G D].
        breakdown_goal.
+    -- pose proof (presup_tm _ _ _ H) as [NG _].
+       pose proof (presup_eq _ _ _ _ H0) as [? [? [? _]]].
+       pose proof (presup_eq _ _ _ _ H1) as [? [? [? _]]].
+       pose proof (presup_eq _ _ _ _ H2) as [? [? [? _]]].
+       pose proof (presup_eq _ _ _ _ H3) as [? [? [? _]]].
+       assert (Γ ⊢s (a_id,, t0) : ℕ :: Γ) by (econstructor;mauto).
+       breakdown_goal.
+       assert (Γ ⊢ a_sub T0 (a_id,, a_zero) ≈ a_sub T' (a_id,,a_zero) : typ i).
+       {
+         assert (Γ ⊢s (a_id,, a_zero) : ℕ :: Γ) by (econstructor;mauto;(eapply wf_conv;mauto)).
+         eapply wf_eq_conv.
+         eapply wf_eq_sub_cong;mauto.
+         mauto.
+       }
+       assert (Γ ⊢ a_sub T0 (a_id,, t0) ≈ a_sub T' (a_id,,t') : typ i).
+       {
+         
+         eapply wf_eq_conv.
+         eapply wf_eq_sub_cong;mauto.
+         - econstructor;mauto.
+         - econstructor;mauto.
+       }  
+       assert (T' :: ℕ :: Γ ⊢ a_sub T0 (a_weaken ∙ a_weaken,,a_succ (a_var 1)) ≈ a_sub T' (a_weaken ∙ a_weaken,,a_succ (a_var 1)): typ i).
+       {
+         enough (T' :: ℕ :: Γ ⊢s (a_weaken ∙ a_weaken ,, a_succ (a_var 1)) : ℕ :: Γ) as SBE.
+         - eapply wf_eq_conv.
+           eapply wf_eq_sub_cong;mauto.
+           mauto.
+         - assert (T' :: ℕ :: Γ ⊢ ℕ ≈ a_sub ℕ (a_weaken ∙ a_weaken) : typ i).
+           {
+             convert_to_relational.
+             symmetry.
+             erewrite rew_tm_nat_sub.
+             all : convert_from_relational;mauto.
+           }        
+           econstructor;mauto.
+           convert_to_relational.
+           rewrite <- H23.
+           econstructor.
+           eapply wf_conv.
+           econstructor;mauto.
+           assert (ℕ :: Γ ⊢s a_weaken : Γ) by mauto.
+           assert (T' :: ℕ :: Γ ⊢s a_weaken ∙ a_weaken : Γ) by mauto.
+           convert_to_relational.
+           transitivity (a_sub ℕ (a_weaken ∙ a_weaken)).
+           eapply wf_eq_conv.
+           convert_to_relational.
+           symmetry.
+           eapply wf_eq_sub_comp;mauto.
+           eapply wf_eq_typ_sub;mauto.
+           mauto.
+           convert_from_relational.
+           mauto.
+       }    
+       assert (⊢ T' :: ℕ :: Γ ≈ T0 :: ℕ :: Γ) by mauto using ctx_eq_refl.
+       convert_to_relational.
+       rewrite -> H22.
+       econstructor;mauto.
 
+
+       
+    -- pose proof (presup_sb_ctx _ _ _ H) as [G D].
+       pose proof (presup_tm _ _ _ H1) as [_ [? ?]].
+       pose proof (presup_tm _ _ _ H2) as [? [? ?]].
+       assert (Δ ⊢s (a_id,,t0) : ℕ :: Δ) by (econstructor;mauto).
+       assert (Γ ⊢s a_id : Γ) by mauto.
+       assert (Γ ⊢ ℕ : typ i) by mauto.
+       assert (Δ ⊢ t0 : a_sub ℕ a_id) by mauto.
+       assert (Γ ⊢s (a_id ,, t0) ∙ σ ≈ ((a_id ∙ σ) ,, (a_sub t0 σ)) : ℕ :: Δ) by mauto.
+       assert (Γ ⊢s ((a_id ∙ σ) ,, (a_sub t0 σ)) ≈ (σ,,(a_sub t0 σ)) : ℕ :: Δ).
+       {
+         econstructor.
+         mauto.
+         mauto.
+         mauto.
+         eapply tm_eq_refl.
+         assert (Γ ⊢ a_sub ℕ (a_id ∙ σ) ≈ ℕ : typ i) by mauto.
+         assert (Γ ⊢ a_sub ℕ σ ≈ ℕ : typ i) by mauto.
+         convert_to_relational.
+         rewrite H16.
+         rewrite <- H17.
+         convert_from_relational.
+         mauto.
+       }  
+       breakdown_goal.
+       econstructor.
+       econstructor.
+       mauto.
+       mauto.
+       eapply wf_eq_conv.
+       assert (Γ ⊢ a_sub T0 ((a_id,, t0) ∙ σ) ≈ a_sub (a_sub T0 (a_id,, t0)) σ : typ i).
+       {
+         eapply wf_eq_conv.         
+         eapply wf_eq_sub_comp;mauto.
+         mauto.
+       }
+       convert_to_relational.
+       rewrite H16 in H15.
+       symmetry.
+       rewrite <- H17.
+       eapply wf_eq_conv.
+       eapply wf_eq_sub_cong;mauto.
+       mauto.
+       mauto.
+
+       assert (ℕ :: Γ ⊢ (ℕ ⟦ σ ∙ a_weaken ⟧) ≈ (ℕ ⟦ a_weaken ⟧) : typ i).
+       {
+         convert_to_relational.
+         autorewrite with mcltt_types.
+         all: convert_from_relational;mauto.
+       }
+       econstructor.
+       econstructor.
+       econstructor.
+       econstructor.
+       econstructor.
+       mauto.
+       eapply wf_univ_nat_f;mauto.
+       
+       convert_to_relational.
+       erewrite H17.
+       convert_from_relational.
+       econstructor;mauto.
+       mauto.
+       eapply wf_eq_typ_sub.
+       econstructor.
+       econstructor.
+       mauto.
+       mauto.
+       eapply wf_univ_nat_f;mauto.
+       
+       eapply wf_conv.
+       econstructor;mauto.
+       convert_to_relational.
+       erewrite H17.
+       convert_from_relational.
+       mauto.
+
+       econstructor.
+       econstructor.
+       mauto.
+       mauto.
+       eapply wf_eq_conv.
+       convert_to_relational.
+       autorewrite with mcltt.
+       1-3: convert_from_relational;mauto.
+       assert (Γ ⊢s (a_id,, a_zero) ∙ σ ≈ (σ ,, a_zero) : ℕ :: Δ).
+       {
+         convert_to_relational.
+         erewrite rew_sb_ext_comp.
+         eapply wf_sub_eq_ext_cong;mauto.
+         eapply wf_eq_conv.
+         mauto.
+         mauto.
+         all: convert_from_relational;mauto.
+         eapply wf_conv;mauto.
+       }
+       convert_to_relational.
+       symmetry.
+       transitivity ((T0 ⟦ (a_id,,a_zero) ∙ σ ⟧)).
+       symmetry.
+       transitivity (T0 ⟦ var_wk σ ∙ (a_id,,a_zero)⟧).
+       1-3: convert_from_relational.
+       eapply wf_eq_conv.
+       eapply wf_eq_sub_cong.
+       mauto.
+       convert_to_relational.
+       rewrite H18.
+       econstructor.
+       eapply here.
+       admit.
+       (*eapply wf_conv.
+       eapply wf_nat_elim.
+       eapply wf_conv.
+       econstructor.
+       econstructor.
+       econstructor.
+       mauto.
+       mauto.
+       eapply (wf_univ_nat_f _ _ D).
+       eapply wf_conv.
+       mauto.
+       transitivity ℕ.
+       mauto.
+       symmetry;mauto.
+       mauto.
+       eapply wf_eq_typ_sub.
+       econstructor;mauto.
+       eapply wf_conv.
+       econstructor;mauto.
+       
+       
+       eapply wf_conv.
+       econstructor.
+       econstructor.
+       econstructor.
+       mauto.
+       mauto.
+       mauto. *)
+       exists i.
+       mauto.
+    -- pose proof (presup_tm _ _ _ H) as [NG _].
+       pose proof (presup_tm _ _ _ H0) as [G [? ?]].
+       pose proof (presup_tm _ _ _ H1) as [TNG [? ?]].
+       breakdown_goal.
+    --  pose proof (presup_tm _ _ _ H) as [NG _].
+       pose proof (presup_tm _ _ _ H0) as [G [? ?]].
+       pose proof (presup_tm _ _ _ H1) as [TNG [? ?]].
+        assert ( Γ ⊢s (a_id,, t0) : ℕ :: Γ) by (econstructor;mauto). 
+       breakdown_goal.
+       eapply wf_conv.
+       econstructor.
+       2 : exact H1.
+       econstructor.
+       econstructor;mauto.
+       eapply wf_conv;mauto.
+       eapply wf_conv.
+       econstructor.
+       mauto.
+       mauto.
+       mauto.
+      
+       eapply tm_eq_refl.
+       eapply wf_conv;mauto.
+       eapply wf_eq_conv.
+       transitivity (a_sub T0 ((a_weaken ∙ a_weaken,, a_succ (a_var 1)) ∙ (((a_id,, t0),, a_rec T0 s0 r t0)))).
+       symmetry.
+       eapply wf_eq_sub_comp.
+       econstructor;mauto.
+       econstructor.
+       econstructor.
+       mauto.
+       mauto.
+       eapply (wf_univ_nat_f _ _ G).
+       assert (T0 :: ℕ :: Γ ⊢ a_sub ℕ (a_weaken ∙ a_weaken) ≈ ℕ : typ i) by mauto.
+       rewrite H10.
+       econstructor.
+       eapply wf_conv;mauto.
+       transitivity (a_sub ℕ (a_weaken ∙ a_weaken)).
+       eapply wf_eq_conv.
+       symmetry.
+       eapply wf_eq_sub_comp;mauto.
+       mauto.
+       mauto.
+       mauto.
+
+       eapply wf_eq_sub_cong.
+       mauto.
+       erewrite (wf_sub_eq_ext_comp).
+       eapply wf_sub_eq_ext_cong.
+       erewrite (wf_sub_eq_comp_assoc).
+       assert (Γ ⊢s (a_weaken ∙ ((a_id,, t0),, a_rec T0 s0 r t0)) ≈ (a_id,,t0) : ℕ :: Γ) by (erewrite -> (wf_sub_eq_p_ext);mauto).
+       assert (Γ ⊢s a_weaken ∙ (a_id,,t0) ≈ a_id : Γ).
+       {
+         erewrite (wf_sub_eq_p_ext).
+         mauto.
+         mauto.
+         eapply (wf_univ_nat_f _ _ G).
+         mauto.
+       }
+       transitivity ( a_weaken ∙ (a_id,, t0)).
+       eapply wf_sub_eq_comp_cong;mauto.
+       mauto.
+       mauto.
+       mauto.
+       econstructor.
+       mauto.
+       mauto.
+       mauto.
+       mauto.
+
+       1-7: admit.
+       
+    -- pose proof (presup_tm _ _ _ H) as [G _].
+       pose proof (presup_eq _ _ _ _ H0) as [MG [? [? [x ?]]]].
+       breakdown_goal.
+       pose proof (ctx_decomp _ _ MG) as [_ [n ?]].
+       exists (max x n).
+       destruct (lift_tm_max _ _ _ _ _ _ H7 H8).
+       mauto.
+    -- pose proof (presup_eq _ _ _ _ H1) as [G [Gr [Gr' [n GPi]]]].
+       pose proof (presup_eq _ _ _ _ H2) as [_ [Gm [Gm' _]]].
+       breakdown_goal.
+       econstructor.
+       econstructor.
+       exact H.
+       exact H0.
+       exact Gr'.
+       exact Gm'.
+       eapply wf_eq_conv.
+       eapply wf_eq_sub_cong.
+       eapply tm_eq_refl;mauto.
+       econstructor;mauto.
+       eapply wf_eq_typ_sub.
+       econstructor;mauto.
+       eapply wf_conv.
+       exact Gm'.
+       
     -- pose proof (presup_sb_eq _ _ _ _ H0) as [G [Gs [Gs' D]]].
        pose proof (presup_eq _ _ _ _ H) as [_ [Dt0 [Dt' [i DT0i]]]].
        breakdown_goal.
@@ -219,3 +521,6 @@ Proof.
     Unshelve.
     1-9: exact 0. 
 Qed.  
+
+#[export]
+Hint Resolve presup_tm presup_eq presup_sb_eq : mcltt.

@@ -5,23 +5,28 @@ Import ListNotations.
 Require Import Mcltt.Syntax.
 Require Import Mcltt.LibTactics.
 
+Open Scope mcltt.
+ 
 Reserved Notation "⊢ Γ" (at level 80).
 Reserved Notation "⊢ Γ ≈ Δ" (at level 80, Γ at next level, Δ at next level).
 Reserved Notation "Γ ⊢ A ≈ B : T" (at level 80, A at next level, B at next level).
 Reserved Notation "Γ ⊢ t : T" (no associativity, at level 80, t at next level).
 Reserved Notation "Γ ⊢s σ : Δ" (no associativity, at level 80, σ at next level).
 Reserved Notation "Γ ⊢s S1 ≈ S2 : Δ" (no associativity, at level 80, S1 at next level, S2 at next level).
-Reserved Notation "x : T ∈! Γ" (no associativity, at level 80). 
+Reserved Notation "x : T ∈! Γ" (no associativity, at level 80).
+
+
 
 Generalizable All Variables.
 
+(*Inductive definition for the x : T ∈ Γ judgement *)
 
 Inductive ctx_lookup : nat -> Typ -> Ctx -> Prop :=
-  | here : `( 0 :  (a_sub T a_weaken) ∈! (T :: Γ))
+  | here : `( 0 : (a_sub T a_weaken) ∈! (T :: Γ))
   | there : `( n : T ∈! Γ -> (S n) : (a_sub T a_weaken) ∈! (T' :: Γ))              
-where "x : T ∈! Γ" := (ctx_lookup x T Γ).
+where "x : T ∈! Γ" := (ctx_lookup x T Γ) : mcltt.
 
-
+(* Well formed contexts, well formed terms, well formed substitions and well formed equalities between them are defined by mutual induction *)
 Inductive wf_ctx : Ctx -> Prop :=
   | wf_empty : ⊢ []
   | wf_extend : `(
@@ -29,7 +34,7 @@ Inductive wf_ctx : Ctx -> Prop :=
       Γ ⊢ T : typ i ->
       ⊢ T :: Γ
     ) 
-where "⊢ Γ" := (wf_ctx Γ)
+where "⊢ Γ" := (wf_ctx Γ) : mcltt
 with wf_ctx_eq : Ctx -> Ctx -> Prop :=
   | wfc_empty : ⊢ [] ≈ []
   | wfc_extend : `(
@@ -40,7 +45,7 @@ with wf_ctx_eq : Ctx -> Ctx -> Prop :=
       Δ ⊢ T ≈ T' : (typ i) ->
       ⊢ (T :: Γ) ≈ (T' :: Δ)
     ) 
-where "⊢ Γ ≈ Δ" := (wf_ctx_eq Γ Δ)
+where "⊢ Γ ≈ Δ" := (wf_ctx_eq Γ Δ) : mcltt
 with wf_term : Ctx -> exp -> Typ -> Prop :=
   | wf_univ_nat_f :
       `(⊢ Γ -> Γ ⊢ ℕ : typ i)
@@ -61,12 +66,12 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
       x : T ∈! Γ ->
       Γ ⊢ a_var x : T
     )
-| wf_fun_e: `(
+  | wf_fun_e: `(
       Γ ⊢ A : typ i ->          
       A :: Γ ⊢ B : typ i ->            
       Γ ⊢ M : Π A B ->
       Γ ⊢ N : A ->
-      Γ ⊢ a_app M N : a_sub B (a_id ,, N)
+      Γ ⊢ (M $ N) : (B ⟦| N ⟧)
     )
   | wf_fun_i : `(
       Γ ⊢ A : typ i ->
@@ -76,12 +81,18 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
   | wf_zero :
       `(⊢ Γ -> Γ ⊢ a_zero : ℕ)
   | wf_succ :
-      `(Γ ⊢ n : ℕ -> Γ ⊢ a_succ n : ℕ)
+     `(Γ ⊢ n : ℕ -> Γ ⊢ a_succ n : ℕ)
+  | wf_nat_elim : `(
+      ℕ :: Γ ⊢ T : typ i ->                  
+      Γ ⊢ s : (T ⟦| a_zero ⟧) ->                  
+      T :: ℕ :: Γ ⊢ r : (T ⟦ ((a_weaken ∙ a_weaken) ,, a_succ (a_var 1))⟧) ->       
+      Γ ⊢ a_rec T s r t : (T ⟦| t⟧)        
+     )                 
   | wf_sub : `(
       Γ ⊢s σ : Δ ->
       Δ ⊢ M : A ->
-      Γ ⊢ a_sub M σ : a_sub A σ
-               )
+      Γ ⊢ (M ⟦ σ ⟧) : (A ⟦ σ ⟧)
+      )
   | wf_conv : `(
       Γ ⊢ t : T ->
       (Γ ⊢ T ≈ T' : (typ i)) ->
@@ -89,7 +100,7 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
       ) 
   | wf_cumu :
       `(Γ ⊢ T : typ i -> Γ ⊢ T : typ (1 + i))   
-where "Γ ⊢ t : T" := (wf_term Γ t T)
+where "Γ ⊢ t : T" := (wf_term Γ t T) : mcltt
 with wf_sb : Ctx -> Sb -> Ctx -> Prop :=
   | wf_sb_id :
       `(⊢ Γ -> Γ ⊢s a_id : Γ)
@@ -105,7 +116,7 @@ with wf_sb : Ctx -> Sb -> Ctx -> Prop :=
   | wf_sb_extend : `(
       Γ ⊢s σ : Δ ->
       Δ ⊢ A : typ i ->
-      Γ ⊢ M : a_sub A σ ->
+      Γ ⊢ M : (A ⟦ σ ⟧) ->
       Γ ⊢s (σ ,, M) : A :: Δ
      )
   | wf_sb_conv : `(
@@ -113,17 +124,17 @@ with wf_sb : Ctx -> Sb -> Ctx -> Prop :=
       ⊢ Δ ≈ Δ' ->                        
       Γ ⊢s σ : Δ'
      )  
-where "Γ ⊢s σ : Δ" := (wf_sb Γ σ Δ)
+where "Γ ⊢s σ : Δ" := (wf_sb Γ σ Δ) : mcltt
 with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
   | wf_eq_nat_sub :
-      `(Γ ⊢s σ : Δ -> Γ ⊢ (a_sub ℕ σ) ≈ ℕ : typ i)
+      `(Γ ⊢s σ : Δ -> Γ ⊢  ℕ ⟦ σ ⟧ ≈ ℕ : typ i)
   | wf_eq_typ_sub :
-      `(Γ ⊢s σ : Δ -> Γ ⊢ a_sub (typ i) σ ≈ typ i : typ (i+1))
+      `(Γ ⊢s σ : Δ -> Γ ⊢ typ i ⟦ σ ⟧ ≈ typ i : typ (i+1))
   | wf_eq_pi_sub : `(
       Γ ⊢s σ : Δ ->
       Δ ⊢ T' : typ i ->
       T' :: Δ ⊢ T : typ i ->
-      Γ ⊢ a_sub (Π T' T) σ ≈ Π (a_sub T' σ) (a_sub T (σ ∙ a_weaken ,, a_var 0)) : typ i
+      Γ ⊢ (Π T' T) ⟦ σ ⟧ ≈ Π (T' ⟦ σ ⟧) (T ⟦var_wk σ ⟧) : typ i
     )                             
   | wf_eq_pi_cong : `(
       Γ ⊢ M : typ i ->
@@ -139,45 +150,112 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
   | wf_eq_zero :
       `(⊢ Γ -> Γ ⊢ a_zero ≈ a_zero : ℕ)
   | wf_eq_zero_sub :
-      `(Γ ⊢s σ : Δ  -> Γ ⊢ a_sub a_zero σ ≈ a_zero : ℕ)
+      `(Γ ⊢s σ : Δ  -> Γ ⊢ a_zero ⟦ σ ⟧ ≈ a_zero : ℕ)
   | wf_eq_succ :
       `(Γ ⊢ t ≈ t' : ℕ -> Γ ⊢ a_succ t ≈ a_succ t' : ℕ)
   | wf_eq_succ_sub : `(
       Γ ⊢s σ : Δ ->
       Δ ⊢ t : ℕ ->            
-      Γ ⊢ a_sub (a_succ t) σ ≈ a_succ (a_sub t σ) : ℕ
+      Γ ⊢ a_succ t ⟦ σ ⟧ ≈ a_succ (t ⟦ σ ⟧) : ℕ
     )
+  | wf_eq_rec_cong : `(
+      ℕ :: Γ ⊢ T : typ i ->                     
+      ℕ :: Γ ⊢ T ≈ T' : typ i ->                     
+      Γ ⊢ s ≈ s' : (T ⟦| a_zero ⟧) ->                      
+      T :: ℕ :: Γ ⊢ r ≈ r' :  (T ⟦ ((a_weaken ∙ a_weaken) ,, a_succ (a_var 1)) ⟧) ->
+      Γ ⊢ t ≈ t' : ℕ ->                     
+      Γ ⊢ a_rec T s r t ≈ a_rec T' s' r' t' : (T ⟦| t ⟧)                     
+    )
+  | wf_eq_rec_sub : `(
+      Γ ⊢s σ : Δ ->
+      ℕ :: Δ ⊢ T : typ i ->
+      Δ ⊢ s : (T ⟦| a_zero ⟧) ->
+      T :: ℕ :: Δ ⊢ r : (T ⟦ ((a_weaken ∙ a_weaken) ,, a_succ (a_var 1)) ⟧) ->
+      Δ ⊢ t : ℕ ->                
+      Γ ⊢ (a_rec T s r t) ⟦ σ ⟧ ≈ a_rec (T ⟦ var_wk σ ⟧) (s ⟦ σ ⟧) (r  ⟦var_wk (var_wk σ)⟧) (t ⟦ σ ⟧) : (T  ⟦σ ,, (t ⟦ σ ⟧)⟧)
+    )
+  | wf_eq_rec_beta_ze : `(                   
+      ℕ :: Γ ⊢ T : typ i ->                      
+      Γ ⊢ s : (T ⟦| a_zero ⟧) -> 
+      T :: ℕ :: Γ ⊢ r : (T ⟦ ((a_weaken ∙ a_weaken) ,, a_succ (a_var 1))⟧) ->           
+      Γ ⊢ a_rec T s r a_zero ≈ s : (T ⟦| a_zero ⟧)
+    )
+  | wf_eq_rec_beta_succ : `(
+      ℕ :: Γ ⊢ T : typ i ->                      
+      Γ ⊢ s : (T ⟦| a_zero ⟧) ->                      
+      T :: ℕ :: Γ ⊢ r : (T ⟦ ((a_weaken ∙ a_weaken) ,, a_succ (a_var 1))⟧) ->                        
+      Γ ⊢ t : ℕ ->
+      Γ ⊢ a_rec T s r (a_succ t) ≈ (r ⟦ ((a_id ,, t) ,, a_rec T s r t) ⟧) : (T ⟦| (a_succ t) ⟧)
+    )                     
+  | wf_eq_lam_cong : `(
+      Γ ⊢ M : typ i ->
+      M :: Γ ⊢ t ≈ t' : T ->
+      Γ ⊢ 𝝺 M t ≈ 𝝺 M t' : Π M T                         
+    ) 
+  | wf_eq_app_cong : `(
+      Γ ⊢ M : typ i ->
+      M :: Γ ⊢ T : typ i ->
+      Γ ⊢ r ≈ r' : Π M T ->
+      Γ ⊢ m ≈ m' : M ->
+      Γ ⊢ (r $ m) ≈ (r' $ m') : (T ⟦| m ⟧)
+    )                            
   | wf_eq_sub_cong : `(
       Δ ⊢ t ≈ t' : T ->
       Γ ⊢s σ ≈ σ' : Δ ->
-      Γ ⊢ a_sub t σ ≈ a_sub t' σ' : a_sub T σ
+      Γ ⊢ (t ⟦ σ ⟧) ≈ (t' ⟦ σ' ⟧) : (T ⟦ σ ⟧)
     )
   | wf_eq_sub_id :
-      `(Γ ⊢ t : T -> Γ ⊢ a_sub t a_id ≈ t : T)
+      `(Γ ⊢ t : T -> Γ ⊢ t ⟦ a_id ⟧ ≈ t : T)
   | wf_eq_sub_weak : `(
       ⊢ M :: Γ ->
       x : T ∈! Γ ->
-      M :: Γ ⊢ a_sub (a_var x) a_weaken ≈ a_var (S x) : a_sub T a_weaken 
+      M :: Γ ⊢  a_var x ⟦ a_weaken ⟧ ≈ a_var (S x) : (T ⟦ a_weaken ⟧) 
    )   
   | wf_eq_sub_comp : `(
       Γ ⊢s τ : Γ' ->
       Γ' ⊢s σ : Γ'' -> 
       Γ'' ⊢ t : T -> 
-      Γ ⊢ a_sub t (σ ∙ τ) ≈ a_sub (a_sub t σ) τ : a_sub T (σ ∙ τ) 
+      Γ ⊢ (t ⟦ σ ∙ τ ⟧) ≈  ((t ⟦ σ ⟧) ⟦ τ ⟧) : (T ⟦ (σ ∙ τ) ⟧) 
     )
   | wf_eq_var_ze : `(
       Γ ⊢s σ : Δ ->
       Δ ⊢ T : typ i ->          
-      Γ ⊢ t : a_sub T σ ->          
-      Γ ⊢ a_sub (a_var 0) (σ ,, t) ≈ t : a_sub T σ        
+      Γ ⊢ t : (T ⟦ σ ⟧) ->          
+      Γ ⊢ a_var 0 ⟦ σ ,, t ⟧ ≈ t : (T ⟦ σ ⟧)        
     )
   | wf_eq_var_su : `(
       Γ ⊢s σ : Δ ->
       Δ ⊢ T : typ i ->          
-      Γ ⊢ t : a_sub T σ ->         
+      Γ ⊢ t : (T ⟦ σ ⟧)->         
       x : T ∈! Δ ->  
-      Γ ⊢ a_sub (a_var (S x)) (σ ,, t) ≈ a_sub (a_var x) σ : a_sub T σ           
-    )   
+      Γ ⊢ a_var (S x) ⟦σ ,, t⟧ ≈ (a_var x ⟦ σ ⟧) : (T ⟦ σ ⟧)           
+    )
+  | wf_eq_sub_lam : `(
+      Γ ⊢s σ : Δ ->
+      M :: Δ ⊢ t : T ->
+      Γ ⊢ 𝝺 M t ⟦ σ ⟧ ≈ 𝝺 M (t  ⟦ var_wk σ ⟧) : (Π M T ⟦ σ ⟧)                     
+    )                    
+  | wf_eq_sub_app : `(
+     Δ ⊢ M : typ i ->                    
+     M :: Δ ⊢ T : typ i ->                   
+     Γ ⊢s σ : Δ ->            
+     Δ ⊢ r : Π M T ->            
+     Δ ⊢ m : M ->            
+     Γ ⊢ (r $ m) ⟦ σ ⟧ ≈ ((r ⟦ σ ⟧) $ (m ⟦ σ ⟧)) :  (T ⟦ σ ,, a_sub m σ ⟧)       
+    )
+  | wf_eq_lam_beta : `(
+     Γ ⊢ M : typ i ->                    
+     M :: Γ ⊢ T : typ i ->        
+     M :: Γ ⊢ t : T ->        
+     Γ ⊢ m : M ->        
+     Γ ⊢ (𝝺 M t) $ m ≈  (t ⟦| m ⟧) : (T ⟦| m ⟧)            
+    )
+  | wf_eq_lam_eta : `(
+     Γ ⊢ M : typ i ->                   
+     M :: Γ ⊢ T : typ i ->                   
+     Γ ⊢ t : Π M T ->                  
+     Γ ⊢ t ≈ 𝝺 M ((t ⟦ a_weaken ⟧) $ (a_var 0)) : Π M T      
+    )                  
   | wf_eq_cumu : 
       `(Γ ⊢ T ≈ T' : typ i ->Γ ⊢ T ≈ T' : typ (1+i))   
   | wf_eq_conv : `(
@@ -192,7 +270,7 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
       Γ ⊢ t' ≈ t'' : T ->            
       Γ ⊢ t ≈ t'' : T             
     )   
-where "Γ ⊢ A ≈ B : T" := (wf_term_eq Γ A B T)
+where "Γ ⊢ A ≈ B : T" := (wf_term_eq Γ A B T) : mcltt
 with wf_sub_eq : Ctx -> Sb -> Sb -> Ctx -> Prop :=
   | wf_sub_eq_id :
       `(⊢ Γ -> Γ ⊢s a_id ≈ a_id : Γ)
@@ -229,12 +307,12 @@ with wf_sub_eq : Ctx -> Sb -> Sb -> Ctx -> Prop :=
   | wf_sub_eq_p_ext : `(
       Γ' ⊢s σ : Γ ->
       Γ ⊢ T : typ i ->           
-      Γ' ⊢ t : a_sub T σ ->         
-      Γ' ⊢s a_weaken ∙ (σ ,, t) ≈ σ : Γ           
+      Γ' ⊢ t : (T ⟦ σ ⟧) ->         
+      Γ' ⊢s sb_proj (σ ,, t) ≈ σ : Γ           
     )   
   | wf_sub_eq_ext : `(
       Γ' ⊢s σ : T :: Γ ->
-      Γ' ⊢s σ ≈ ((a_weaken ∙ σ) ,, (a_sub (a_var 0) σ)) : T :: Γ                    
+      Γ' ⊢s σ ≈ (sb_proj σ ,, (a_var 0 ⟦ σ ⟧)) : T :: Γ                    
     )   
   | wf_sub_eq_sym :
       `(Γ ⊢s σ ≈ σ' : Δ -> Γ ⊢s σ' ≈ σ : Δ)  
@@ -248,8 +326,10 @@ with wf_sub_eq : Ctx -> Sb -> Sb -> Ctx -> Prop :=
       ⊢ Δ ≈ Δ' ->               
       Γ ⊢s σ ≈ σ' : Δ'  
    )   
-where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ S1 S2 Δ).
+where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ S1 S2 Δ) : mcltt.
 
 
 #[export]
 Hint Constructors wf_ctx wf_ctx_eq wf_term wf_sb wf_term_eq wf_sub_eq ctx_lookup: mcltt.
+
+Close Scope mcltt.
