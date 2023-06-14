@@ -233,7 +233,7 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
   | wf_eq_sub_lam : `(
       Γ ⊢s σ : Δ ->
       M :: Δ ⊢ t : T ->
-      Γ ⊢ 𝝺 M t ⟦ σ ⟧ ≈ 𝝺 M (t  ⟦ var_wk σ ⟧) : (Π M T ⟦ σ ⟧)                     
+      Γ ⊢ 𝝺 M t ⟦ σ ⟧ ≈ 𝝺 (M ⟦ σ ⟧) (t  ⟦ var_wk σ ⟧) : (Π M T ⟦ σ ⟧)                     
     )                    
   | wf_eq_sub_app : `(
      Δ ⊢ M : typ i ->                    

@@ -211,7 +211,6 @@ Proof.
   split;intros;mauto.
 Qed.
 
-Check a_.
 
 Generalizable All Variables.
 
@@ -325,16 +324,20 @@ Hint Rewrite rew_tm_sub_comp rew_tm_sub_cong rew_tm_succ_sub rew_tm_zero_sub usi
 Hint Rewrite rew_sb_ext rew_sb_ext_comp rew_sb_ext_cong rew_sb_p_ext using mauto : mcltt_sub_ext. 
 (*Rewrite rules for substition algebra*) 
 #[export]
-Hint Rewrite rew_sb_comp_assoc rew_sb_comp_cong rew_sb_eq_id_l rew_sb_eq_id_r using mauto : mcltt_sub_alg.
+  Hint Rewrite rew_sb_comp_assoc rew_sb_comp_cong rew_sb_eq_id_l rew_sb_eq_id_r using mauto : mcltt_sub_alg.
 
+#[export]
+Hint Rewrite rew_sb_ext rew_sb_ext_comp rew_sb_ext_cong rew_sb_p_ext rew_sb_comp_assoc rew_sb_comp_cong rew_sb_eq_id_l rew_sb_eq_id_r : mcltt_sub. 
+(*Rewrite rules for types*)
+#[export]
+Hint Rewrite rew_tm_nat_sub rew_tm_pi_sub rew_tm_typ_sub rew_tm_conv rew_tm_sub_comp rew_tm_sub_cong rew_tm_succ_sub rew_tm_zero_sub rew_sb_ext rew_sb_ext_comp rew_sb_ext_cong rew_sb_p_ext rew_sb_comp_assoc rew_sb_comp_cong rew_sb_eq_id_l rew_sb_eq_id_r : mcltt.
 
 Lemma test (Γ : Ctx) : ⊢ Γ -> Γ ⊢ a_zero ⟦ a_id ∙ a_id ⟧ ≈ a_zero : ℕ.
 Proof.
   intro.
   convert_to_relational.
-  autorewrite with mcltt.
-  
+  autorewrite with mcltt_terms.
   eapply tm_eq_refl;mauto.
-  eapply wf_sb_to_rel_sb.
-  mauto.
+  convert_from_relational.
+  econstructor;mauto.
 Qed.  
