@@ -4,6 +4,8 @@ Require Import Mcltt.Domain.
 Require Import Mcltt.Evaluation.
 Require Import Mcltt.Readback.
 Require Import Coq.Relations.Relations.
+Require Import Relations.Relation_Definitions.
+Require Import Classes.RelationClasses.
 Require Import Unicode.Utf8.
 
 Generalizable All Variables.
@@ -36,9 +38,6 @@ Inductive per_neu : Ty :=
 
 Check per_neu.
 
-Inductive per_neu_univ (i : nat) : Ty :=
-| per_neu_univ_ne : `(c ≈ c' ∈ Bot -> per_neu_univ (↑ (d_typ i) c) (↑ (d_typ i) c'))
-.
 
 Record pi_RT (T T' : exp) (p p' : Env) (R : Ty) : Set := mk_pi_rt
   {
@@ -58,28 +57,73 @@ Record pi_helper (f a f' a' : D) (R : Ty) : Set := mk_pi_helper
   ; eq_fafa' : fa ≈ fa' ∈ R
   }.
 
+(* vv This section copied directly from CPP18 vv *)
+Definition binRelEq (D:Type) (R1:relation D) (R2:relation D) :=
+  (forall x y, R1 x y <-> R2 x y).
+
+(* this notation slightly modifiedd to inlude the type information *)
+Notation "R1 =~ D ~= R2" := (binRelEq D R1 R2) (at level 75, no associativity).
+
+Instance binRelEq_EQ (D:Type) : Equivalence (@binRelEq D).
+Proof.
+  constructor 1; red; intros; red; intros.
+split; auto.
+red in H.
+split; auto; apply H.
+
+red in H. red in H0.
+split; auto; intro Z. 
+apply H0; apply H; auto.
+apply H; apply H0; auto.
+Qed.  
 
 
+Definition rel_oper (D:Type) := D -> relation D -> Prop.
 
+Record ProperRelOper (A:relation D) (F:rel_oper D) :=
+  Mk_ProperRelOper {
+    ro_resp_arg: forall a0 a1 Y, a0 ≈ a1 ∈ A -> F a0 Y -> F a1 Y;
+    ro_resp_ex:  forall a, a ≈ a ∈ A -> exists B, F a B;
+    ro_resp_det: forall a0 a1 Y0 Y1, a0 ≈ a1 ∈ A -> F a0 Y0 -> F a1 Y1 -> (Y0 =~D~= Y1)
+  }
+.
 
+Inductive RelProd (A:relation D) (F:rel_oper D) : relation D :=
+| RelProd_intro: forall f0 f1,
+  (forall a0 a1, a0 ≈ a1 ∈ A -> exists y0 y1 Y,
+    F a0 Y /\ (f0 ∙d a0 ↘ y0) /\ (f1 ∙d a1 ↘ y1) /\ y0 ≈ y1 ∈ Y) ->
+  f0 ≈ f1 ∈ RelProd A F
+.
+
+Record ProperPerProd (A:relation D) (F:rel_oper D) :=
+  Mk_ProperPerOper {
+    po_ro      :> ProperRelOper A F;
+    po_per_codom: forall a Y, a ≈ a ∈ A -> F a Y -> PER Y;
+    po_per_dom :> PER A
+  }
+.
+
+(* ^^ This section copied directly from CPP18 ^^ *)
   
 Section PERDef.
 
   Variable i : nat.
   Variable Univ : ∀ j, j < i -> Ty.
 
-  Inductive InterpUniv (d : D) (R : Ty) : Prop :=
+
+ 
+  Inductive InterpUniv : D -> Ty -> Prop :=
   | iu_ne : `( j < i ->
-               de ≈ de ∈ per_neu  ->
-               InterpUniv (↑ (d_typ j) d) per_neu)
+               de ≈ de ∈ Bot  ->
+               InterpUniv (↑ (d_typ j) de) per_neu)
   | iu_nat : InterpUniv d_nat per_nat
   | iu_pi : `(InterpUniv DA PA ->
               ProperPerProd PA PF ->
               (∀ a PB DB, a ≈ a ∈ PA -> DF ∙d a ↘ DB -> PF a PB -> InterpUniv DB PB) ->
               (∀ a, a ≈ a ∈ PA -> ∃ DB, DF ∙d a ↘ DB) ->
-              InterpUniv (d_pi DA DF) (RelProd PA PF))
-  | iu_typ : 
+              InterpUniv (d_pi DA DF) (RelProd PA PF)).
   
+
 
   Inductive per_U : Ty :=
   | per_ne : `(C ≈ C' ∈ Bot -> ↑ A C ≈ ↑ A C' ∈ per_U)
@@ -94,12 +138,5 @@ Section PERDef.
                  DF' ∙d a1 ↘ DB1 ->
                  DB0 ≈ DB1 ∈ per_U) ->
                d_pi DA DF ≈ d_pi DA' DF' ∈ per_U)
-                
-  | per_pi (A A' : D) (iA : A ≈ A' ∈ per_U) : `(a ≈ a' ∈ El iA ->
-                                                pi_rt T (p ↦ a) T' (p' ↦ a') per_U ->
-                                                d_pi A T p ≈ d_pi A' T' p' ∈ per_U)
-  with El (A B : D) (q : A ≈ B ∈ per_U) : Ty :=
-    match q with
-      | 
-
+  . 
 End PERDef.  

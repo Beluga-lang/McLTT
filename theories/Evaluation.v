@@ -9,13 +9,13 @@ Reserved Notation "⟦ A ⟧s B ↘ C" (at level 90).
 
 Generalizable All Variables.
 
-Inductive d_app_eval : D -> D -> D -> Set :=
+Inductive d_app_eval : D -> D -> D -> Prop :=
 | d_app_lam : `(⟦ t ⟧ (p ↦ a) ↘ b ->
               (d_lam t p) ∙d a ↘ b)
 | d_app_app : `(⟦ T ⟧ (p ↦ a) ↘ B ->
                 (↑ (d_pi A T p) c) ∙d a ↘ (↑ B (d_app c (↓ A a))))
 where "A ∙d B ↘ C" := (d_app_eval A B C)
-with d_rec_eval : Typ -> D -> exp -> Env -> D -> D -> Set :=
+with d_rec_eval : Typ -> D -> exp -> Env -> D -> D -> Prop :=
 | d_rec_zero : `(rec∙ T , a , t , p , d_zero ↘ a)
 | d_rec_succ : `(rec∙ T , a , t , p , b ↘ b' ->
                  ⟦ t ⟧ (p ↦ b ↦ b') ↘ a' ->
@@ -23,7 +23,7 @@ with d_rec_eval : Typ -> D -> exp -> Env -> D -> D -> Set :=
 | d_rec_rec : `(⟦ T ⟧ (p ↦ (↑ d_nat c)) ↘ (↑ A (d_rec T a t p c)) ->
             rec∙ T ,a , t , p , (↑ d_nat c) ↘ ↑ A (d_rec T a t p c))
 where "'rec∙' A , B , C , D , E ↘ F" := (d_rec_eval A B C D E F)
-with d_tm_eval : exp -> Env -> D -> Set :=
+with d_tm_eval : exp -> Env -> D -> Prop :=
 | d_eval_nat : `(⟦ a_nat ⟧ p ↘ d_nat)
 | d_eval_pi : `(⟦ M ⟧ p ↘ A ->
                 ⟦ a_pi M T ⟧ p ↘ (d_pi A T p) )
@@ -45,7 +45,7 @@ with d_tm_eval : exp -> Env -> D -> Set :=
                  ⟦ t ⟧ p' ↘ a ->
                  ⟦ a_sub t σ ⟧ p ↘ a)
 where "⟦ A ⟧ B ↘ C" := (d_tm_eval A B C)
-with d_sb_eval : Sb -> Env -> Env -> Set :=
+with d_sb_eval : Sb -> Env -> Env -> Prop :=
 | d_sb_eval_id : `(⟦ a_id ⟧s p ↘ p)
 | d_sb_eval_wk : `(⟦ a_weaken ⟧s p ↘ (d_drop p))
 | d_sb_eval_ext : `(⟦ σ ⟧s p ↘ p' ->
