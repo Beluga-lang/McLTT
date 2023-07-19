@@ -170,3 +170,16 @@ Proof.
     rewrite (eval_det _ _ _ _ d H5), H6.
     reflexivity.
 Qed.  
+
+Lemma NbE_det : `(NbE Γ t T w -> NbE Γ t T w' ->
+                  w = w').
+Proof.
+  intros.
+  inversion H.
+  inversion H0.
+  rewrite (InitEnvs_det _ _ _ init0 init1) in nbe0.
+  inversion nbe0.
+  inversion nbe1.
+  rewrite (eval_det _ _ _ _ eval_t0 eval_t1), (eval_det _ _ _ _ eval_T0 eval_T1) in down_t0.
+  apply (Rf_det _ _ _ _ down_t0 down_t1).  
+Qed.  

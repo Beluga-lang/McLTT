@@ -7,6 +7,10 @@ Require Import Coq.Relations.Relations.
 Require Import Relations.Relation_Definitions.
 Require Import Classes.RelationClasses.
 Require Import Unicode.Utf8.
+Require Import Arith.
+From Equations Require Import Equations.
+
+
 
 Generalizable All Variables.
 
@@ -44,7 +48,7 @@ Record pi_RT (T T' : exp) (p p' : Env) (R : Ty) : Set := mk_pi_rt
     val_t : D 
   ; val_t' : D
   ; eval_t : ⟦ T ⟧ p ↘ val_t
-  ; eval_t' : ⟦ T' ⟧ p ↘ val_t
+  ; eval_t' : ⟦ T' ⟧ p' ↘ val_t'
   ; eq_tt' : val_t ≈ val_t' ∈ R
   }.
 
@@ -57,51 +61,6 @@ Record pi_helper (f a f' a' : D) (R : Ty) : Set := mk_pi_helper
   ; eq_fafa' : fa ≈ fa' ∈ R
   }.
 
-(* vv This section copied directly from CPP18 vv *)
-Definition binRelEq (D:Type) (R1:relation D) (R2:relation D) :=
-  (forall x y, R1 x y <-> R2 x y).
-
-(* this notation slightly modifiedd to inlude the type information *)
-Notation "R1 =~ D ~= R2" := (binRelEq D R1 R2) (at level 75, no associativity).
-
-Instance binRelEq_EQ (D:Type) : Equivalence (@binRelEq D).
-Proof.
-  constructor 1; red; intros; red; intros.
-split; auto.
-red in H.
-split; auto; apply H.
-
-red in H. red in H0.
-split; auto; intro Z. 
-apply H0; apply H; auto.
-apply H; apply H0; auto.
-Qed.  
-
-
-Definition rel_oper (D:Type) := D -> relation D -> Prop.
-
-Record ProperRelOper (A:relation D) (F:rel_oper D) :=
-  Mk_ProperRelOper {
-    ro_resp_arg: forall a0 a1 Y, a0 ≈ a1 ∈ A -> F a0 Y -> F a1 Y;
-    ro_resp_ex:  forall a, a ≈ a ∈ A -> exists B, F a B;
-    ro_resp_det: forall a0 a1 Y0 Y1, a0 ≈ a1 ∈ A -> F a0 Y0 -> F a1 Y1 -> (Y0 =~D~= Y1)
-  }
-.
-
-Inductive RelProd (A:relation D) (F:rel_oper D) : relation D :=
-| RelProd_intro: forall f0 f1,
-  (forall a0 a1, a0 ≈ a1 ∈ A -> exists y0 y1 Y,
-    F a0 Y /\ (f0 ∙d a0 ↘ y0) /\ (f1 ∙d a1 ↘ y1) /\ y0 ≈ y1 ∈ Y) ->
-  f0 ≈ f1 ∈ RelProd A F
-.
-
-Record ProperPerProd (A:relation D) (F:rel_oper D) :=
-  Mk_ProperPerOper {
-    po_ro      :> ProperRelOper A F;
-    po_per_codom: forall a Y, a ≈ a ∈ A -> F a Y -> PER Y;
-    po_per_dom :> PER A
-  }
-.
 
 (* ^^ This section copied directly from CPP18 ^^ *)
   
@@ -112,31 +71,46 @@ Section PERDef.
 
 
  
-  Inductive InterpUniv : D -> Ty -> Prop :=
+  Inductive InterpUniv : D -> D -> Ty -> Prop :=
   | iu_ne : `( j < i ->
-               de ≈ de ∈ Bot  ->
-               InterpUniv (↑ (d_typ j) de) per_neu)
-  | iu_nat : InterpUniv d_nat per_nat
-  | iu_pi : `(InterpUniv DA PA ->
-              ProperPerProd PA PF ->
-              (∀ a PB DB, a ≈ a ∈ PA -> DF ∙d a ↘ DB -> PF a PB -> InterpUniv DB PB) ->
-              (∀ a, a ≈ a ∈ PA -> ∃ DB, DF ∙d a ↘ DB) ->
-              InterpUniv (d_pi DA DF) (RelProd PA PF)).
-  
+               de ≈ de' ∈ Bot  ->
+               InterpUniv (↑ (d_typ j) de) (↑ (d_typ j) de') per_neu)
+  | iu_nat : InterpUniv d_nat d_nat per_nat
+  | iu_pi : `(
+             InterpUniv a b U_ab ->
+             a ≈ b ∈ U_ab ->
+             pi_RT T T' (p ↦ a) (p' ↦ b) U_im ->
+             InterpUniv (d_pi a T p) (d_pi b T' p') (λ f f',
+                 ∃ fa fb, (f ∙d a ↘ fa) ∧ (f' ∙d b ↘ fb) ∧ (fa ≈ fb ∈ U_im)
+               )
+              ) 
+  | iu_univ : (∀ j (p : j < i),
+                InterpUniv (d_typ j) (d_typ j) (Univ j (p)))
+  .
+  (* Need another case for universe, maybe needs to be mutual with per_U *)
 
 
   Inductive per_U : Ty :=
-  | per_ne : `(C ≈ C' ∈ Bot -> ↑ A C ≈ ↑ A C' ∈ per_U)
-  | per_nat : `(d_nat ≈ d_nat ∈ per_U)
-  | per_univ : `(j < i -> j = j' -> d_typ j ≈ d_typ j' ∈ per_U)
-  | per_pi : `(DA ≈ DA ∈ per_U ->
-               InterpUniv DA PA ->
-               (∀ a, a ≈ a ∈ PA -> ∃ DB, DF ∙d a ↘ DB) ->
-               (∀ a, a ≈ a ∈ PA -> ∃ DB', DF' ∙d a ↘ DB') ->
-               (InterpUniv DA P -> a0 ≈ a1 ∈ P ->
-                 DF ∙d a0 ↘ DB0 ->
-                 DF' ∙d a1 ↘ DB1 ->
-                 DB0 ≈ DB1 ∈ per_U) ->
-               d_pi DA DF ≈ d_pi DA' DF' ∈ per_U)
+  | per_u_ne : `(C ≈ C' ∈ Bot -> ↑ A C ≈ ↑ A C' ∈ per_U)
+  | per_u_nat : `(d_nat ≈ d_nat ∈ per_U)
+  | per_u_univ : `(j < i -> j = j' -> d_typ j ≈ d_typ j' ∈ per_U)
+  | per_u_pi : `(
+               A ≈ A' ∈ per_U ->
+               InterpUniv A A' per_A ->
+               a ≈ a' ∈ per_A ->
+               pi_RT T T' (p ↦ a) (p' ↦ a') per_U ->
+               d_pi A T p ≈ d_pi A' T' p' ∈ per_U
+               )   
   . 
-End PERDef.  
+End PERDef.
+
+Check lt.
+
+Equations? per_U_wf (i j : nat) : j < i -> Ty by wf (j) (lt) :=
+  per_U_wf (n) (m) (p) := per_U m (λ k p', per_U_wf (n) k (lt_trans k m n  p' p)).
+Proof.
+Admitted.
+
+
+
+  
