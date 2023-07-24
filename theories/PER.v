@@ -76,18 +76,19 @@ Section PERDef.
                de ≈ de' ∈ Bot  ->
                InterpUniv (↑ (d_typ j) de) (↑ (d_typ j) de') per_neu)
   | iu_nat : InterpUniv d_nat d_nat per_nat
-  | iu_pi : `(
-             InterpUniv a b U_ab ->
-             a ≈ b ∈ U_ab ->
-             pi_RT T T' (p ↦ a) (p' ↦ b) U_im ->
-             InterpUniv (d_pi a T p) (d_pi b T' p') (λ f f',
-                 ∃ fa fb, (f ∙d a ↘ fa) ∧ (f' ∙d b ↘ fb) ∧ (fa ≈ fb ∈ U_im)
-               )
-              ) 
+  | iu_pi : `( A ≈ A' ∈ per_U ->
+               InterpUniv A A' per_A ->
+               (∀ a a', a ≈ a' ∈ per_A ->
+                        pi_RT T T' (p ↦ a) (p' ↦ a') U_im
+               ) ->
+               InterpUniv (d_pi A T p) (d_pi A' T' p') (λ f f',
+                   ∃ fa fa' : D , ∀ a a', a ≈ a' ∈ per_A ->
+                    (f ∙d a ↘ fa) ∧ (f' ∙d b ↘ fb) ∧ (fa ≈ fb ∈ U_im)                  
+                 )
+               )  
   | iu_univ : (∀ j (p : j < i),
                 InterpUniv (d_typ j) (d_typ j) (Univ j (p)))
   .
-  (* Need another case for universe, maybe needs to be mutual with per_U *)
 
 
   Inductive per_U : Ty :=
@@ -97,20 +98,42 @@ Section PERDef.
   | per_u_pi : `(
                A ≈ A' ∈ per_U ->
                InterpUniv A A' per_A ->
-               a ≈ a' ∈ per_A ->
+               (∀ a a', a ≈ a' ∈ per_A ->
                pi_RT T T' (p ↦ a) (p' ↦ a') per_U ->
                d_pi A T p ≈ d_pi A' T' p' ∈ per_U
-               )   
+               ))   
   . 
 End PERDef.
 
-Check lt.
+Equations per_U_wf (i : nat) : Ty by wf (i) (lt) :=
+  per_U_wf (i) := per_U (i) (λ k p, per_U_wf k)
+.
 
-Equations? per_U_wf (i j : nat) : j < i -> Ty by wf (j) (lt) :=
-  per_U_wf (n) (m) (p) := per_U m (λ k p', per_U_wf (n) k (lt_trans k m n  p' p)).
-Proof.
-Admitted.
+Definition U_PER (i : nat) : Ty := per_U i (λ k p, per_U_wf k). 
 
+Definition UniInterp (i : nat) : D -> D -> Ty -> Prop := InterpUniv i (λ k p, per_U_wf k).
 
+Record RelTyp (i : nat) (T T' : exp) (p p' : Env) : Set := mk_rel_typ
+  {
+    val_T : D 
+  ; val_T' : D
+  ; eval_T : ⟦ T ⟧ p ↘ val_T
+  ; eval_T' : ⟦ T' ⟧ p' ↘ val_T'
+  ; eq_TT' : val_T ≈ val_T' ∈ U_PER i
+  }.
 
-  
+(* Inductive ctx_equiv_PER : Ctx -> Ctx -> Prop :=
+| ctx_empty : ctx_equiv_PER nil nil
+| ctx_cong (Γ Δ : Ctx) (ctx_eq : ctx_equiv_PER Γ Δ) :
+  `(
+      (∀ p p',
+          InterpCtx Γ Δ R ->
+          p ≈ p' ∈ R ->
+          RelTyp i T T' p p' 
+      ) ->
+      ctx_equiv_PER (T :: Γ) (T' :: Δ)        
+    )
+with InterpCtx : Ctx -> Ctx -> Ev -> Prop :=
+| InterpEmp : InterpCtx nil nil (λ p p', True).
+ | InterpCong : `(ctx_cong Γ Δ ctx_eq rel ->    
+*)
