@@ -40,8 +40,6 @@ Inductive per_neu : Ty :=
 | per_neu_ne : `(c ≈ c' ∈ Bot -> ↑ A c ≈ ↑ A c' ∈ per_neu)
 .
 
-Check per_neu.
-
 
 Record pi_RT (T T' : exp) (p p' : Env) (R : Ty) : Set := mk_pi_rt
   {
