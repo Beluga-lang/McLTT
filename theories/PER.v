@@ -120,18 +120,39 @@ Record RelTyp (i : nat) (T T' : exp) (p p' : Env) : Set := mk_rel_typ
   ; eq_TT' : val_T ≈ val_T' ∈ U_PER i
   }.
 
-(* Inductive ctx_equiv_PER : Ctx -> Ctx -> Prop :=
+Inductive ctx_equiv_PER : Ctx -> Ctx -> Prop :=
 | ctx_empty : ctx_equiv_PER nil nil
 | ctx_cong (Γ Δ : Ctx) (ctx_eq : ctx_equiv_PER Γ Δ) :
   `(
+      InterpCtx Γ Δ R ->
       (∀ p p',
-          InterpCtx Γ Δ R ->
           p ≈ p' ∈ R ->
           RelTyp i T T' p p' 
       ) ->
       ctx_equiv_PER (T :: Γ) (T' :: Δ)        
     )
 with InterpCtx : Ctx -> Ctx -> Ev -> Prop :=
-| InterpEmp : InterpCtx nil nil (λ p p', True).
- | InterpCong : `(ctx_cong Γ Δ ctx_eq rel ->    
-*)
+| InterpEmp : InterpCtx nil nil (λ p p', True)
+| InterpCong :
+               `(ctx_equiv_PER Γ Δ ->
+                 InterpCtx Γ Δ R ->
+                 InterpCtx (T :: Γ) (T' :: Δ)
+                   (
+                     λ (p p' : Env),
+                     (d_drop p) ≈ (d_drop p') ∈ R ->
+                     ⟦ T ⟧ p ↘ d ->
+                     ⟦ T' ⟧ p' ↘ d' ->
+                     UniInterp i d d' P ->
+                     (d_lookup p 0) ≈ (d_lookup p' 0) ∈ P
+                   )
+                   (*
+                     λ (p p' : Env),
+                     ∀ (rel_typ : RelTyp i T T' p p'),
+                     (d_drop p) ≈ (d_drop p') ∈ R ->
+                     RelTyp i T T' p p' ->
+                     UniInterp i (val_T _ _ _ _ _ rel_typ) (val_T' _ _ _ _ _ rel_typ) P ->
+                     (d_lookup p 0) ≈ (d_lookup p' 0) ∈ P
+                   *)
+                 ).
+                 
+
