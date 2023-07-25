@@ -139,20 +139,11 @@ with InterpCtx : Ctx -> Ctx -> Ev -> Prop :=
                  InterpCtx (T :: Γ) (T' :: Δ)
                    (
                      λ (p p' : Env),
-                     (d_drop p) ≈ (d_drop p') ∈ R ->
-                     ⟦ T ⟧ p ↘ d ->
-                     ⟦ T' ⟧ p' ↘ d' ->
-                     UniInterp i d d' P ->
+                     ∀ (rel_typ : RelTyp i T T' p p'),
+                     (d_drop p) ≈ (d_drop p') ∈ R ∧
+                      UniInterp i (val_T _ _ _ _ _ rel_typ) (val_T' _ _ _ _ _ rel_typ) P ->
                      (d_lookup p 0) ≈ (d_lookup p' 0) ∈ P
                    )
-                   (*
-                     λ (p p' : Env),
-                     ∀ (rel_typ : RelTyp i T T' p p'),
-                     (d_drop p) ≈ (d_drop p') ∈ R ->
-                     RelTyp i T T' p p' ->
-                     UniInterp i (val_T _ _ _ _ _ rel_typ) (val_T' _ _ _ _ _ rel_typ) P ->
-                     (d_lookup p 0) ≈ (d_lookup p' 0) ∈ P
-                   *)
                  ).
-                 
 
+                   
