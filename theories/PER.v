@@ -16,7 +16,7 @@ Generalizable All Variables.
 
 Notation "a ≈ b ∈ P" := (P a b) (at level 80). 
 Notation "a ∈' P" := (P a a) (at level 80).
-Notation "a ~ b ∈ P" := (P a b) (at level 80).
+
 
 Definition Ty : Type := relation D.
 Definition Ev : Type := relation Env.
@@ -107,7 +107,6 @@ Equations per_U_wf (i : nat) : Ty by wf (i) (lt) :=
   per_U_wf (i) := per_U (i) (λ k p, per_U_wf k)
 .
 
-Definition U_PER (i : nat) : Ty := per_U i (λ k p, per_U_wf k). 
 
 Definition UniInterp (i : nat) : D -> D -> Ty -> Prop := InterpUniv i (λ k p, per_U_wf k).
 
@@ -117,7 +116,7 @@ Record RelTyp (i : nat) (T T' : exp) (p p' : Env) : Set := mk_rel_typ
   ; val_T' : D
   ; eval_T : ⟦ T ⟧ p ↘ val_T
   ; eval_T' : ⟦ T' ⟧ p' ↘ val_T'
-  ; eq_TT' : val_T ≈ val_T' ∈ U_PER i
+  ; eq_TT' : val_T ≈ val_T' ∈ per_U_wf i
   }.
 
 Inductive ctx_equiv_PER : Ctx -> Ctx -> Prop :=
@@ -139,9 +138,9 @@ with InterpCtx : Ctx -> Ctx -> Ev -> Prop :=
                  InterpCtx (T :: Γ) (T' :: Δ)
                    (
                      λ (p p' : Env),
+                       (d_drop p) ≈ (d_drop p') ∈ R ∧
                      ∀ (rel_typ : RelTyp i T T' p p'),
-                     (d_drop p) ≈ (d_drop p') ∈ R ∧
-                      UniInterp i (val_T _ _ _ _ _ rel_typ) (val_T' _ _ _ _ _ rel_typ) P ->
+                       UniInterp i (val_T _ _ _ _ _ rel_typ) (val_T' _ _ _ _ _ rel_typ) P ->
                      (d_lookup p 0) ≈ (d_lookup p' 0) ∈ P
                    )
                  ).
