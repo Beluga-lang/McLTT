@@ -67,7 +67,7 @@ Proof.
     -- rewrite <- H0 in H4.
        injection H4.
        intros.
-       rewrite H7, H8 in H3.
+       subst.
        eapply (eval_det _ _ _ _ H H3).
     -- rewrite <- H0 in H4.
        inversion H4.
@@ -99,12 +99,9 @@ Proof.
        --- congruence.
        --- rewrite <- H11 in H4.
            injection H4;intros.
-           rewrite H13.
            rewrite H13 in H.
-           pose proof (eval_det _ _ _ _ H H6).
-           injection H14;intro.
-           rewrite H15.
-           reflexivity.
+           rewrite H13.
+           exact (eval_det _ _ _ _ H H6).
   - inversion eval_a;inversion eval_b;(try congruence).
     -- rewrite <- H0 in H4.
        injection H4;intros.
@@ -117,33 +114,27 @@ Proof.
        pose proof (eval_det _ _ _ _ H H3).
        rewrite H7.
        congruence.
-    -- rewrite <- H8 in H2.
-       inversion H2.
-       rewrite <- H12 in H5.
-       rewrite <- H13 in H6.
-       pose proof (eval_det _ _ _ _ H H5).
-       pose proof (eval_det _ _ _ _ H0 H6).
-       rewrite H14 in H1.
-       rewrite <- H11 in H7.
+    -- subst.
+       inversion H8.
+       subst.
+       rewrite <- (eval_det _ _ _ _ H H5) in H7.
+       rewrite (eval_det _ _ _ _ H0 H6) in H1.
        eapply (ap_det _ _ _ _ H1 H7).
-    -- rewrite <- H6 in H1.
-       inversion H1.
-       rewrite H10 in H0.
-       rewrite H11 in H.
+    -- subst.
+       inversion H6.
+       subst.
        rewrite <- (eval_sb_det _ _ _ _ H H4) in H5.
        eapply (eval_det _ _ _ _ H0 H5).
   - inversion eval_p';inversion eval_p'';(try congruence).
-    -- rewrite <- H6 in H1.
-       inversion H1.
-       rewrite H10 in H.
-       rewrite H11 in H0.
+    -- subst.
+       inversion H6.
+       subst.
        rewrite (eval_sb_det _ _ _ _ H H4).
        rewrite (eval_det _ _ _ _ H0 H5).
        reflexivity.
-    -- rewrite <- H6 in H1.
-       inversion H1.
-       rewrite H10 in H0.
-       rewrite H11 in H.
+    -- subst.
+       inversion H6.
+       subst.
        rewrite (eval_sb_det _ _ _ _ H H4) in H0.
        exact (eval_sb_det _ _ _ _ H0 H5).
 Qed.  

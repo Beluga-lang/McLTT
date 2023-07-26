@@ -63,48 +63,42 @@ with Re_det (n : nat) (c : Dn) (u u' : Ne) (eval_u : Re n -- c ↘ u) (eval_u' :
 with Rty_det (n : nat) (A : D) (W W' : Nf) (eval_W : Rty n -- A ↘ W) (eval_W' : Rty n -- A ↘ W') : W = W'.
 Proof.
   - inversion eval_w;inversion eval_w';(try congruence).
-    -- rewrite <- H5 in H1.
-       inversion H1.
-       rewrite H9 in H.
+    -- subst.
+       inversion H5.
+       subst.
        apply (Rty_det _ _ _ _ H H3).
-    -- rewrite <- H5 in H1.
-       inversion H1.
-       rewrite H8 in H.
+    -- subst.
+       inversion H5.
+       subst.
        rewrite (Rf_det _ _ _ _ H H3).
        reflexivity.
-    -- rewrite <- H9 in H3.
-       inversion H3.
-       rewrite H12, H13, H14 in H0.
+    -- subst.
+       inversion H9.
+       subst.
        rewrite (eval_det _ _ _ _ H0 H6) in H1.
-       rewrite H15, H12 in H.
        rewrite (ap_det _ _ _ _ H H5) in H1.
        rewrite (Rf_det _ _ _ _ H1 H7).
        reflexivity.
-    -- rewrite <- H5 in H1.
-       inversion H1.
-       rewrite H8 in H.
+    -- subst.
+       inversion H5.
+       subst.
        rewrite (Re_det _ _ _ _ H H3).
        reflexivity.
-    -- rewrite <- H5 in H1.
-       inversion H1.
-       rewrite H11 in H.
+    -- subst.
+       inversion H5.
+       subst.
        rewrite (Re_det _ _ _ _ H H3).
        reflexivity.
-  - inversion eval_u;inversion eval_u';(try congruence).
-    -- rewrite <- H7 in H2.
-       inversion H2.
-       rewrite H10 in H.
-       rewrite H11 in H0.
+  - inversion eval_u;inversion eval_u';(try (subst;congruence)).
+    -- subst.
+       inversion H7.
+       subst.
        rewrite (Re_det _ _ _ _ H H4).
        rewrite (Rf_det _ _ _ _ H0 H5).
        reflexivity.
-    -- rewrite <- H19 in H8.
-       inversion H8.
-       rewrite H22, H25 in H ,H1, H4.
-       rewrite H25 in H3.
-       rewrite H24 in H3.
-       rewrite H23 in H2.
-       rewrite H26 in H6.
+    -- subst.
+       inversion H19.
+       subst.
        rewrite (eval_det _ _ _ _ H H10) in H0,H3.
        rewrite (Rty_det _ _ _ _ H0 H11).
        rewrite (eval_det _ _ _ _ H1 H12) in H2.
@@ -115,17 +109,16 @@ Proof.
        rewrite (Re_det _ _ _ _ H6 H17).
        reflexivity.
   - inversion eval_W;inversion eval_W';(try congruence).
-    -- rewrite <- H9 in H3.
-       inversion H3.
-       rewrite H12, H13, H14 in H0.
-       rewrite H12 in H.
+    -- subst. 
+       inversion H9.
+       subst.
        rewrite (eval_det _ _ _ _ H0 H6) in H1.
        rewrite (Rty_det _ _ _ _ H H5).
        rewrite (Rty_det _ _ _ _ H1 H7).
        reflexivity.
-    -- rewrite <- H5 in H1.
-       inversion H1.
-       rewrite H9 in H.
+    -- subst.
+       inversion H5.
+       subst.
        rewrite (Re_det _ _ _ _ H H3).
        reflexivity.
 Qed.  

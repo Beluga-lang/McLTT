@@ -10,16 +10,14 @@ Require Import Unicode.Utf8.
 Require Import Arith.
 From Equations Require Import Equations.
 
-
-
 Generalizable All Variables.
 
 Notation "a ≈ b ∈ P" := (P a b) (at level 80). 
 Notation "a ∈' P" := (P a a) (at level 80).
 
 
-Definition Ty : Type := relation D.
-Definition Ev : Type := relation Env.
+Notation Ty := (relation D).
+Notation Ev := (relation Env).
 
 Definition Bot (c c' : Dn) : Prop :=
   ∀ n, ∃ u : Ne, ((Re n -- c ↘ u) ∧ (Re n -- c' ↘ u)).
@@ -40,7 +38,6 @@ Inductive per_neu : Ty :=
 | per_neu_ne : `(c ≈ c' ∈ Bot -> ↑ A c ≈ ↑ A c' ∈ per_neu)
 .
 
-
 Record pi_RT (T T' : exp) (p p' : Env) (R : Ty) : Set := mk_pi_rt
   {
     val_t : D 
@@ -49,18 +46,6 @@ Record pi_RT (T T' : exp) (p p' : Env) (R : Ty) : Set := mk_pi_rt
   ; eval_t' : ⟦ T' ⟧ p' ↘ val_t'
   ; eq_tt' : val_t ≈ val_t' ∈ R
   }.
-
-Record pi_helper (f a f' a' : D) (R : Ty) : Set := mk_pi_helper
-  {                                              
-    fa : D
-  ; fa' : D
-  ; eval_fa : f ∙d a ↘ fa
-  ; eval_fa': f ∙d a' ↘ fa'
-  ; eq_fafa' : fa ≈ fa' ∈ R
-  }.
-
-
-(* ^^ This section copied directly from CPP18 ^^ *)
   
 Section PERDef.
 
@@ -141,7 +126,7 @@ with InterpCtx : Ctx -> Ctx -> Ev -> Prop :=
                        (d_drop p) ≈ (d_drop p') ∈ R ∧
                      ∀ (rel_typ : RelTyp i T T' p p'),
                        UniInterp i (val_T _ _ _ _ _ rel_typ) (val_T' _ _ _ _ _ rel_typ) P ->
-                     (d_lookup p 0) ≈ (d_lookup p' 0) ∈ P
+                       (d_lookup p 0) ≈ (d_lookup p' 0) ∈ P
                    )
                  ).
 
