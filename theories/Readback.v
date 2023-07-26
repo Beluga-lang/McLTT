@@ -10,7 +10,6 @@ Reserved Notation "'Re' A -- B ↘ C" (at level 90, B at next level, C at next l
 Reserved Notation "'Rty' A -- B ↘ C" (at level 90, B at next level, C at next level).
 
 Generalizable All Variables.
-Print Grammar constr.
 
 Inductive rf : nat -> Df -> Nf -> Prop :=
 | rf_typ : `(Rty n -- A ↘ (W) ->
