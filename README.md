@@ -50,15 +50,15 @@ implementation.
 * OCaml 4.14.0
 * Menhir
 * coq-menhirlib
-* Coq 8.16.1
+* Coq 8.17.1
 * Equations 1.3
 
 We recommend to install dependencies in the following way:
 
 ```bash
-opam switch create coq-8.16.1 4.14.0
+opam switch create coq-8.17.1 4.14.0
 opam install menhir
-opam pin add coq 8.16.1
+opam pin add coq 8.17.1
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-equations
 opam install coq-menhirlib
