@@ -2,14 +2,4 @@
 
 -arg -w -arg -notation-overridden
 
-LibTactics.v
-Syntax.v
-System.v
-Parser.v
-ParserExtraction.v
-Elaborator.v
-CtxEqLemmas.v
-CtxEquiv.v
-PresupLemmas.v
-Relations.v
-Presup.v
+.

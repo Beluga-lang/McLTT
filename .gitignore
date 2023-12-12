@@ -6,12 +6,12 @@ driver/parser.mli
 theories/Parser.v
 
 # Remove Coq compiled code
-**/*.vo
-**/*.glob
-**/*.d
-**/.*.aux
-**/*.vok
-**/*.vos
+*.vo
+*.glob
+*.d
+.*.aux
+*.vok
+*.vos
 .lia.cache
 makefile.coq*
 *.~undo-tree~

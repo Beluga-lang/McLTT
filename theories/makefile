@@ -1,12 +1,16 @@
-.PHONY: all clean
+COQMAKEFILE := makefile.coq
 
--include makefile.coq
+.PHONY: all
+all: $(COQMAKEFILE)
 
-all: makefile.coq
-	make -f "$?"
+-include $(COQMAKEFILE)
+
+clean::
+	rm -f $(COQMAKEFILE)
+	rm -f $(COQMAKEFILE).conf
 
 Parser.v: Parser.vy
-	menhir --coq $?
+	menhir --coq "$?"
 
-makefile.coq: _CoqProject
+$(COQMAKEFILE): _CoqProject
 	coq_makefile -f "$?" -o "$@"
