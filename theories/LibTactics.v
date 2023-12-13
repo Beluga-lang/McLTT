@@ -27,9 +27,26 @@ Ltac destruct_all := repeat destruct_logic.
 Tactic Notation "mauto" :=
   eauto with mcltt core.
 
+Tactic Notation "mauto" int_or_var(pow) :=
+  eauto pow with mcltt core.
+
 Tactic Notation "mauto" "using" uconstr(use) :=
   eauto using use with mcltt core.
+
+Tactic Notation "mauto" "using" uconstr(use1) "," uconstr(use2) :=
+  eauto using use1, use2 with mcltt core.
+
+Tactic Notation "mauto" "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) :=
+  eauto using use1, use2, use3 with mcltt core.
+
+Tactic Notation "mauto" "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) "," uconstr(use4) :=
+  eauto using use1, use2, use3, use4 with mcltt core.
 
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use) :=
   eauto pow using use with mcltt core.
 
+Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) :=
+  eauto pow using use1, use2 with mcltt core.
+
+Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) "," uconstr(use4) :=
+  eauto pow using use1, use2, use3, use4 with mcltt core.

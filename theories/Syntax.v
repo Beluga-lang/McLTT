@@ -62,15 +62,19 @@ Definition exp_to_num e :=
   | None => None
   end.
 
-Declare Custom Entry exp.
-Declare Scope exp_scope.
-Delimit Scope exp_scope with exp.
+#[global] Declare Custom Entry exp.
+#[global] Declare Scope exp_scope.
+#[global] Delimit Scope exp_scope with exp.
+#[global] Bind Scope exp_scope with exp.
+#[global] Bind Scope exp_scope with subst.
+Open Scope exp_scope.
+Open Scope nat_scope.
 
-Notation "{{ e }}" := e (at level 0, e custom exp at level 99) : exp_scope.
+Notation "<{ x }>" := x (at level 0, x custom exp at level 99) : exp_scope.
 Notation "( x )" := x (in custom exp at level 0, x custom exp at level 99) : exp_scope.
 Notation "~{ x }" := x (in custom exp at level 0, x constr at level 0) : exp_scope.
 Notation "x" := x (in custom exp at level 0, x constr at level 0) : exp_scope.
-Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, s custom exp at level 99) : exp_scope.
+Notation "e |[ s ]|" := (a_sub e s) (in custom exp at level 0, s custom exp at level 99) : exp_scope.
 Notation "'λ' T e" := (a_fn T e) (in custom exp at level 0, T custom exp at level 30, e custom exp at level 30) : exp_scope.
 Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom exp at level 40, f custom exp, x custom exp at next level, y custom exp at next level) : exp_scope.
 Notation "'ℕ'" := a_nat (in custom exp) : exp_scope.
@@ -79,8 +83,8 @@ Notation "'Π' T S" := (a_pi T S) (in custom exp at level 0, T custom exp at lev
 Number Notation exp num_to_exp exp_to_num : exp_scope.
 Notation "'suc' e" := (a_succ e) (in custom exp at level 30, e custom exp at level 30) : exp_scope.
 Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0) : exp_scope.
-Notation "'$id'" := a_id (in custom exp at level 0) : exp_scope.
-Notation "'$wk'" := a_weaken (in custom exp at level 0) : exp_scope.
+Notation "'Id'" := a_id (in custom exp at level 0) : exp_scope.
+Notation "'Wk'" := a_weaken (in custom exp at level 0) : exp_scope.
 Infix "∙" := a_compose (in custom exp at level 70) : exp_scope.
 Infix "," := a_extend (in custom exp at level 80) : exp_scope.
 
