@@ -15,9 +15,10 @@ Reserved Notation "x : T ∈! Γ" (no associativity, at level 80).
 
 Generalizable All Variables.
 
+#[local] Open Scope exp_scope.
 Inductive ctx_lookup : nat -> Typ -> Ctx -> Prop :=
-  | here : `( 0 : ( {{ T[$wk] }}%exp ) ∈! (T :: Γ) )
-  | there : `( n : T ∈! Γ -> (S n) : {{ T[$wk] }}%exp ∈! (T' :: Γ) )
+  | here : `( 0 : {{ T[$wk] }} ∈! (T :: Γ) )
+  | there : `( n : T ∈! Γ -> (S n) : {{ T[$wk] }} ∈! (T' :: Γ) )
 where "x : T ∈! Γ" := (ctx_lookup x T Γ).
 
 
@@ -58,14 +59,14 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
   | wf_vlookup : `(
       ⊢ Γ ->
       x : T ∈! Γ ->
-      Γ ⊢ {{ #x }}%exp : T
+      Γ ⊢ {{ #x }} : T
     )
 | wf_fun_e: `(
       Γ ⊢ A : typ i ->          
       A :: Γ ⊢ B : typ i ->            
       Γ ⊢ M : Π A B ->
       Γ ⊢ N : A ->
-      Γ ⊢ {{ M N }}%exp : {{ B[$id,N] }}%exp
+      Γ ⊢ {{ M N }} : {{ B[$id,N] }}
     )
   | wf_fun_i : `(
       Γ ⊢ A : typ i ->
