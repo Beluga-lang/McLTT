@@ -39,9 +39,6 @@ with subst : Set :=
 Infix "∙" := a_compose (at level 70).
 Infix ",," := a_extend (at level 80).
 
-Declare Custom Entry ast.
-Declare Scope ast_scope.
-
 Fixpoint nat_to_exp n : exp :=
   match n with
   | 0 => a_zero
@@ -65,28 +62,27 @@ Definition exp_to_num e :=
   | None => None
   end.
 
-Notation "{{ e }}" := e (at level 0, e custom ast at level 99) : ast_scope.
-Notation "( x )" := x (in custom ast at level 0, x custom ast at level 99) : ast_scope.
-Notation "~{ x }" := x (in custom ast at level 0, x constr at level 0) : ast_scope.
-Notation "x" := x (in custom ast at level 0, x constr at level 0) : ast_scope.
-Notation "e [ s ]" := (a_sub e s) (in custom ast at level 0) : ast_scope.
-Notation "'λ' T -> e" := (a_fn T e) (in custom ast at level 0, e custom ast at level 99) : ast_scope.
-Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom ast at level 20, f custom ast, x custom ast at level 9, y custom ast at level 9) : ast_scope.
-Notation "'ℕ'" := a_nat (in custom ast) : ast_scope.
-Notation "'Type<' n >" := (a_typ n) (in custom ast at level 0, n constr at level 0) : ast_scope.
-Notation "'Π' T -> S" := (a_pi T S) (in custom ast at level 99, T custom ast at level 0, S custom ast at level 0) : ast_scope.
-Number Notation exp num_to_exp exp_to_num : ast_scope.
-Notation "0" := a_zero (in custom ast) : ast_scope.
-Notation "1" := (a_succ a_zero) (in custom ast) : ast_scope.
-Notation "2" := (a_succ (a_succ a_zero)) (in custom ast) : ast_scope.
-Notation "'S' e" := (a_succ e) (in custom ast at level 20, e custom ast at level 10) : ast_scope.
-Notation "'#' n" := (a_var n) (in custom ast at level 70, n constr at level 0) : ast_scope.
-Notation "!" := a_id (in custom ast at level 0) : ast_scope.
+Declare Custom Entry exp.
+Declare Scope exp_scope.
+Delimit Scope exp_scope with exp.
 
-Open Scope ast_scope.
-Example example := {{ (λ Type<0> -> S S # 0 Type<0>) Type<0> ℕ }}.
-Set Printing All.
-Print example.
+Notation "{{ e }}" := e (at level 0, e custom exp at level 99) : exp_scope.
+Notation "( x )" := x (in custom exp at level 0, x custom exp at level 99) : exp_scope.
+Notation "~{ x }" := x (in custom exp at level 0, x constr at level 0) : exp_scope.
+Notation "x" := x (in custom exp at level 0, x constr at level 0) : exp_scope.
+Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, s custom exp at level 99) : exp_scope.
+Notation "'λ' T e" := (a_fn T e) (in custom exp at level 0, T custom exp at level 30, e custom exp at level 30) : exp_scope.
+Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom exp at level 40, f custom exp, x custom exp at next level, y custom exp at next level) : exp_scope.
+Notation "'ℕ'" := a_nat (in custom exp) : exp_scope.
+Notation "'Type(' n ')'" := (a_typ n) (in custom exp at level 0, n constr at level 99) : exp_scope.
+Notation "'Π' T S" := (a_pi T S) (in custom exp at level 0, T custom exp at level 30, S custom exp at level 30) : exp_scope.
+Number Notation exp num_to_exp exp_to_num : exp_scope.
+Notation "'suc' e" := (a_succ e) (in custom exp at level 30, e custom exp at level 30) : exp_scope.
+Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0) : exp_scope.
+Notation "'$id'" := a_id (in custom exp at level 0) : exp_scope.
+Notation "'$wk'" := a_weaken (in custom exp at level 0) : exp_scope.
+Infix "∙" := a_compose (in custom exp at level 70) : exp_scope.
+Infix "," := a_extend (in custom exp at level 80) : exp_scope.
 
 Notation Ctx := (list exp).
 Notation Sb := subst.

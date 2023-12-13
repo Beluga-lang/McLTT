@@ -11,14 +11,13 @@ Reserved Notation "Γ ⊢ A ≈ B : T" (at level 80, A at next level, B at next 
 Reserved Notation "Γ ⊢ t : T" (no associativity, at level 80, t at next level).
 Reserved Notation "Γ ⊢s σ : Δ" (no associativity, at level 80, σ at next level).
 Reserved Notation "Γ ⊢s S1 ≈ S2 : Δ" (no associativity, at level 80, S1 at next level, S2 at next level).
-Reserved Notation "x : T ∈! Γ" (no associativity, at level 80). 
+Reserved Notation "x : T ∈! Γ" (no associativity, at level 80).
 
 Generalizable All Variables.
 
-
 Inductive ctx_lookup : nat -> Typ -> Ctx -> Prop :=
-  | here : `( 0 :  (a_sub T a_weaken) ∈! (T :: Γ))
-  | there : `( n : T ∈! Γ -> (S n) : (a_sub T a_weaken) ∈! (T' :: Γ))              
+  | here : `( 0 : ( {{ T[$wk] }}%exp ) ∈! (T :: Γ) )
+  | there : `( n : T ∈! Γ -> (S n) : {{ T[$wk] }}%exp ∈! (T' :: Γ) )
 where "x : T ∈! Γ" := (ctx_lookup x T Γ).
 
 
@@ -59,14 +58,14 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
   | wf_vlookup : `(
       ⊢ Γ ->
       x : T ∈! Γ ->
-      Γ ⊢ a_var x : T
+      Γ ⊢ {{ #x }}%exp : T
     )
 | wf_fun_e: `(
       Γ ⊢ A : typ i ->          
       A :: Γ ⊢ B : typ i ->            
       Γ ⊢ M : Π A B ->
       Γ ⊢ N : A ->
-      Γ ⊢ a_app M N : a_sub B (a_id ,, N)
+      Γ ⊢ {{ M N }}%exp : {{ B[$id,N] }}%exp
     )
   | wf_fun_i : `(
       Γ ⊢ A : typ i ->
