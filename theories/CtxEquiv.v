@@ -4,87 +4,63 @@ Require Import Mcltt.System.
 Require Import Mcltt.CtxEqLemmas.
 Require Import Mcltt.LibTactics.
 
-Lemma ctxeq_tm (Γ Δ : Ctx) (t : exp) (T : Typ) : ⊢ Γ ≈ Δ -> Γ ⊢ t : T -> Δ ⊢ t : T
+Lemma ctxeq_tm : forall {Γ Δ t T}, ⊢ Γ ≈ Δ -> Γ ⊢ t : T -> Δ ⊢ t : T
 with
-ctxeq_eq (Γ Δ : Ctx) (t t' : exp) (T : Typ) : ⊢ Γ ≈ Δ -> Γ ⊢ t ≈ t' : T -> Δ ⊢ t ≈ t' : T
+ctxeq_eq : forall {Γ Δ t t' T}, ⊢ Γ ≈ Δ -> Γ ⊢ t ≈ t' : T -> Δ ⊢ t ≈ t' : T
 with
-ctxeq_s (Γ Γ' Δ : Ctx) (σ : Sb) : ⊢ Γ ≈ Δ -> Γ ⊢s σ : Γ' -> Δ ⊢s σ : Γ'
+ctxeq_s : forall {Γ Γ' Δ σ}, ⊢ Γ ≈ Δ -> Γ ⊢s σ : Γ' -> Δ ⊢s σ : Γ'
 with
-ctxeq_s_eq (Γ Γ' Δ : Ctx) (σ σ' : Sb) : ⊢ Γ ≈ Δ -> Γ ⊢s σ ≈ σ' : Γ' -> Δ ⊢s σ ≈ σ' : Γ'.
-Proof.
+ctxeq_s_eq : forall {Γ Γ' Δ σ σ'}, ⊢ Γ ≈ Δ -> Γ ⊢s σ ≈ σ' : Γ' -> Δ ⊢s σ ≈ σ' : Γ'.
+Proof with mauto.
   (*ctxeq_tm*)
   - clear ctxeq_tm.
-    intros.
-    generalize dependent Δ.
-    induction H0;intros;try destruct (presup_ctx_eq _ _ H0);mauto.
-    -- destruct (presup_ctx_eq _ _ H) as [G D].
-       pose proof (IHwf_term1 _ H).
-       assert (⊢ a :: Γ ≈ a :: Δ) by mauto.
-       mauto.
-    -- destruct (presup_ctx_eq _ _ H) as [G D].
-       pose proof (IHwf_term1 _ H).
-       assert (⊢ A :: Γ ≈ A :: Δ) by mauto.
-       mauto.       
-    -- destruct (var_in_eq _ _ _ x H1 H0) as [T' [i [xT'G [GTT' DTT']]]].
-       mauto.
-    -- destruct (presup_ctx_eq _ _ H) as [G D].
-       assert (⊢ A :: Γ ≈ A :: Δ) by mauto 6 using tm_eq_refl.
-       econstructor;mauto.
-    -- pose proof (IHwf_term1 _ H).
-       assert (⊢ A :: Γ ≈ A :: Δ) by mauto.
-       mauto.
+    intros * HΓΔ Ht.
+    gen Δ.
+    induction Ht; intros; destruct (presup_ctx_eq HΓΔ)...
+    -- destruct (presup_ctx_eq HΓΔ) as [G D].
+       pose proof (IHHt1 _ HΓΔ).
+       assert (⊢ a :: Γ ≈ a :: Δ)...
+    -- destruct (presup_ctx_eq HΓΔ) as [G D].
+       pose proof (IHHt1 _ HΓΔ).
+       assert (⊢ A :: Γ ≈ A :: Δ)...
+    -- destruct (var_in_eq HΓΔ H0) as [T' [i [xT'G [GTT' DTT']]]].
+       eapply wf_conv...
+    -- destruct (presup_ctx_eq HΓΔ) as [G D].
+       assert (⊢ A :: Γ ≈ A :: Δ); mauto 6.
+    -- pose proof (IHHt1 _ HΓΔ).
+       assert (⊢ A :: Γ ≈ A :: Δ)...
   (*ctxeq_eq*)
   - clear ctxeq_eq.
-    intros.
-    generalize dependent Δ.
-    induction H0.
-    1-3: mauto.
-    4-16: mauto.
-    -- intros.
-       pose proof (IHwf_term_eq1 _ H0).
-       pose proof (ctxeq_tm _ _ _ _ H0 H).
-       assert (⊢ M :: Γ ≈ M :: Δ) by mauto.
-       mauto.
-    -- intros.
-       destruct (presup_ctx_eq _ _ H1) as [G D].
-       pose proof (var_in_eq _ _ _ _ H1 H0) as [T' [n [xT' [GTT' DTT']]]].
-       eapply wf_eq_conv;mauto.
-    -- intros.
-       destruct (presup_ctx_eq _ _ H0) as [G D].
-       mauto.       
-    -- intros.
-       inversion H1.
-       pose proof (var_in_eq _ _ _ x H4 H0) as [T'' [n [xT'' [GTT'' DTT'']]]].
-       destruct (presup_ctx_eq _ _ H4).
-       eapply wf_eq_conv;mauto.
+    intros * HΓΔ Htt'.
+    gen Δ.
+    induction Htt'; intros; destruct (presup_ctx_eq HΓΔ).
+    1-4,6-19: mauto.
+    -- pose proof (IHHtt'1 _ HΓΔ).
+       pose proof (ctxeq_tm _ _ _ _ HΓΔ H).
+       assert (⊢ M :: Γ ≈ M :: Δ)...
+    -- inversion_clear HΓΔ.
+       pose proof (var_in_eq H3 H0) as [T'' [n [xT'' [GTT'' DTT'']]]].
+       destruct (presup_ctx_eq H3).
+       eapply wf_eq_conv...
+    -- pose proof (var_in_eq HΓΔ H0) as [T'' [n [xT'' [GTT'' DTT'']]]].
+       eapply wf_eq_conv...
   (*ctxeq_s*)
   - clear ctxeq_s.
-    intros.
-    destruct (presup_ctx_eq _ _ H).
-    induction H0;mauto.
-    -- inversion H.
-       rewrite <- H9 in H,H2.
-       mauto.
+    intros * HΓΔ Hσ.
+    gen Δ.
+    induction Hσ; intros; destruct (presup_ctx_eq HΓΔ)...
+    inversion_clear HΓΔ.
+    econstructor...
   (*ctxeq_s_eq*)
-  - clear ctxeq_s_eq. 
-    intros.
-    destruct (presup_ctx_eq _ _ H).
-    induction H0.
-    3-7,11-13 : mauto.   
-    -- eapply wf_sub_eq_conv.
-       eapply (wf_sub_eq_id _ H2).
-       mauto.
-    -- inversion H.
-       rewrite <- H9 in H2.
-       eapply wf_sub_eq_conv;mauto. 
-    -- pose proof (ctxeq_s _ _ _ _ H H5).
-       mauto.
-    -- pose proof (ctxeq_s _ _ _ _ H H0).
-       pose proof (ctxeq_tm _ _ _ _ H H4).
-       mauto.
-    -- pose proof (ctxeq_s _ _ _ _ H H0).
-       mauto.
-Qed.  
+  - clear ctxeq_s_eq.
+    intros * HΓΔ Hσσ'.
+    gen Δ.
+    induction Hσσ'; intros; destruct (presup_ctx_eq HΓΔ).
+    3-9,11-13: mauto.
+    -- inversion_clear HΓΔ; eapply wf_sub_eq_conv...
+    -- inversion_clear HΓΔ; eapply wf_sub_eq_conv...
+    -- econstructor. eapply ctxeq_s...
+Qed.
 
-
-
+#[export]
+Hint Resolve ctxeq_tm ctxeq_eq ctxeq_s ctxeq_s_eq : mcltt.

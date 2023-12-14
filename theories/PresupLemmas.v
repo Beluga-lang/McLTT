@@ -8,51 +8,44 @@ Require Import Setoid.
 
 (*Type lifting lemmas*)
 
-
-
-Lemma lift_tm_ge (Γ : Ctx) (T : Typ) (n m : nat) : n <= m -> Γ ⊢ T : typ n -> Γ ⊢ T : typ m.
-Proof.
-  intros.
-  induction m.
-  assert (n = 0) by lia.
-  rewrite H1 in H0.
-  exact H0.
-
-  inversion H.
-  rewrite <- H1.
-  exact H0.
-  pose proof (IHm H2).
-  mauto.
-Qed.  
-  
-
-Lemma lift_tm_max (Γ Δ : Ctx) (T T' : Typ) (n m : nat) : Γ ⊢ T : typ n -> Δ ⊢ T' : typ m -> Γ ⊢ T : typ (max n m) ∧ Δ ⊢ T' : typ (max n m).
-Proof.
-  intros.
-  assert (n <= max n m) by lia.
-  assert (m <= max n m) by lia.
-  split;eauto using lift_tm_ge.
+Lemma lift_tm_ge : forall {Γ T n m}, n <= m -> Γ ⊢ T : typ n -> Γ ⊢ T : typ m.
+Proof with mauto.
+  intros * Hnm HT.
+  induction m; inversion Hnm; subst...
 Qed.
 
-Lemma lift_eq_ge (Γ : Ctx) (T T': Typ) (n m : nat) : n <= m -> Γ ⊢ T ≈ T': typ n -> Γ ⊢ T ≈ T' : typ m.
-Proof.
-  intros.
-  induction m.
-  assert (n = 0) by lia.
-  rewrite H1 in H0.
-  exact H0.
+#[export]
+Hint Resolve lift_tm_ge : mcltt.
 
-  inversion H.
-  rewrite <- H1.
-  exact H0.
-  pose proof (IHm H2).
-  mauto.
-Qed.  
-
-Lemma lift_eq_max (Γ Δ : Ctx) (T0 T0' T1 T1' : Typ) (n m : nat) : Γ ⊢ T0 ≈ T0' : typ n -> Δ ⊢ T1 ≈ T1' : typ m -> Γ ⊢ T0 ≈ T0' : typ (max n m) ∧ Δ ⊢ T1 ≈ T1' : typ (max n m).
-Proof.
+Lemma lift_tm_max_left : forall {Γ T n} m, Γ ⊢ T : typ n -> Γ ⊢ T : typ (max n m).
+Proof with mauto.
   intros.
-  assert (n <= max n m) by lia.
-  assert (m <= max n m) by lia.
-  split;eauto using lift_eq_ge.
+  assert (n <= max n m) by lia...
+Qed.
+
+Lemma lift_tm_max_right : forall {Γ T} n {m}, Γ ⊢ T : typ m -> Γ ⊢ T : typ (max n m).
+Proof with mauto.
+  intros.
+  assert (m <= max n m) by lia...
+Qed.
+
+Lemma lift_eq_ge : forall {Γ T T' n m}, n <= m -> Γ ⊢ T ≈ T': typ n -> Γ ⊢ T ≈ T' : typ m.
+Proof with mauto.
+  intros * Hnm HTT'.
+  induction m; inversion Hnm; subst...
+Qed.
+
+#[export]
+Hint Resolve lift_eq_ge : mcltt.
+
+Lemma lift_eq_max_left : forall {Γ T T' n} m, Γ ⊢ T ≈ T' : typ n -> Γ ⊢ T ≈ T' : typ (max n m).
+Proof with mauto.
+  intros.
+  assert (n <= max n m) by lia...
+Qed.
+
+Lemma lift_eq_max_right : forall {Γ T T'} n {m}, Γ ⊢ T ≈ T' : typ m -> Γ ⊢ T ≈ T' : typ (max n m).
+Proof with mauto.
+  intros.
+  assert (m <= max n m) by lia...
 Qed.

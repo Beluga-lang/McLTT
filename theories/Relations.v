@@ -8,46 +8,40 @@ Require Import Mcltt.PresupLemmas.
 Require Import Setoid.
 Require Import Coq.Program.Equality.
 
-
-
-Lemma ctx_eq_refl (Γ : Ctx) : ⊢ Γ ->  ⊢ Γ ≈ Γ.
-Proof.
-  intro.
-  induction H;mauto.
+Lemma ctx_eq_refl : forall {Γ}, ⊢ Γ -> ⊢ Γ ≈ Γ.
+Proof with mauto.
+  intros * HΓ.
+  induction HΓ...
 Qed.
 
-Lemma ctx_eq_trans (Γ Δ Δ' : Ctx) : ⊢ Γ ≈ Δ -> ⊢ Δ ≈ Δ' -> ⊢ Γ ≈ Δ'.
-Proof.
-  intros.
-  generalize dependent Δ'.
-  induction H.
-  - intros.
-    auto.
-  - intros.
-    inversion H4.
-    destruct (lift_tm_max _ _ _ _ i i0 H0 H9).
-    destruct (lift_eq_max _ _ _ _ _ _ i i0 H2 H10).
-    destruct (lift_eq_max _ _ _ _ _ _ i i0 H3 H12).
-    econstructor;mauto.
-    -- eapply (ctxeq_eq _ _ _ _ _ (ctx_eq_sym _ _ H)).
-       mauto.
-    -- eapply (ctxeq_eq _ _ _ _ _ H7).
-       mauto.    
+#[export]
+Hint Resolve ctx_eq_refl : mcltt.
+
+Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, ⊢ Γ0 ≈ Γ1 -> ⊢ Γ1 ≈ Γ2 -> ⊢ Γ0 ≈ Γ2.
+Proof with mauto.
+  intros * HΓ01 HΓ12.
+  gen Γ2.
+  induction HΓ01 as [|? ? ? i01 * HΓ01 IHΓ01 HΓ0T0 _ HΓ0T01 _]; intros...
+  rename HΓ12 into HT1Γ12.
+  inversion_clear HT1Γ12 as [|? ? ? i12 * HΓ12' _ HΓ2'T2 _ HΓ2'T12].
+  pose proof (lift_tm_max_left i12 HΓ0T0).
+  pose proof (lift_tm_max_right i01 HΓ2'T2).
+  pose proof (lift_eq_max_left i12 HΓ0T01).
+  pose proof (lift_eq_max_right i01 HΓ2'T12).
+  econstructor...
 Qed.
 
-
-
-Add Parametric Relation : (Ctx) (wf_ctx_eq)
-    symmetry proved by ctx_eq_sym
-    transitivity proved by ctx_eq_trans
+Add Relation (Ctx) (wf_ctx_eq)
+    symmetry proved by @ctx_eq_sym
+    transitivity proved by @ctx_eq_trans
     as ctx_eq.
 
-Add Parametric Relation (Γ : Ctx) (T : Typ) : (exp) (λ t t',wf_term_eq Γ t t' T)
-    symmetry proved by (λ t t',wf_eq_sym Γ t t' T)
+Add Parametric Relation (Γ : Ctx) (T : Typ) : (exp) (λ t t', Γ ⊢ t ≈ t' : T)
+    symmetry proved by (λ t t', wf_eq_sym Γ t t' T)
     transitivity proved by (λ t t' t'', wf_eq_trans Γ t t' T t'')
     as tm_eq.                                                
 
-Add Parametric Relation (Γ Δ : Ctx) : (Sb) (λ σ τ, wf_sub_eq Γ σ τ Δ)
+Add Parametric Relation (Γ Δ : Ctx) : (Sb) (λ σ τ, Γ ⊢s σ ≈ τ : Δ)
     symmetry proved by (λ σ τ, wf_sub_eq_sym Γ σ τ Δ)
     transitivity proved by (λ σ τ ρ, wf_sub_eq_trans Γ σ τ Δ ρ)
     as sb_eq.
