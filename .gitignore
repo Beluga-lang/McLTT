@@ -10,6 +10,7 @@ theories/Parser.v
 *.glob
 *.d
 .*.aux
+*.vio
 *.vok
 *.vos
 .lia.cache
