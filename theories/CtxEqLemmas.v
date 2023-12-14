@@ -45,18 +45,18 @@ Lemma sub_lvl (Δ Γ : Ctx) (T : Typ) (σ : Sb) (i : nat) : (Δ ⊢ T : typ i) -
 Proof.
   intros.
   mauto.
-Qed.  
+Qed.
 
 (* Corresponds to []-cong-Se′ in the Agda proof*)
 Lemma sub_lvl_eq (Δ Γ : Ctx) (T T': Typ) (σ : Sb) (i : nat) : (Δ ⊢ T ≈ T' : typ i) -> (Γ ⊢s σ : Δ) -> (Γ ⊢ a_sub T σ ≈ a_sub T' σ : typ i).
 Proof.
   intros.
   mauto.
-Qed.  
+Qed.
 
 #[export]
 Hint Resolve sub_lvl sub_lvl_eq : mcltt.
- 
+
 (* Corresponds to ∈!⇒ty-wf in Agda proof *)
 Lemma var_in_wf (Γ : Ctx) (T : Typ) (x : nat) : ⊢ Γ -> (x : T ∈! Γ) -> (∃ i, Γ ⊢ T : typ i).
 Proof.
@@ -110,11 +110,11 @@ Proof.
     destruct (presup_ctx_eq _ _ H).
     destruct (ctx_decomp _ _ H0) as [G [x G_T]].
     inversion H.
-    exists (a_sub T' a_weaken).    
+    exists (a_sub T' a_weaken).
     exists i.
     split;mauto.
     -- split;mauto.
-  - intros.    
+  - intros.
     inversion H.
     rewrite <- H7 in H.
     destruct (IHctx_lookup _ H3) as [X [i0 [nXD0 [GTX D0TX]]]].
@@ -122,7 +122,7 @@ Proof.
     exists i0.
     split;mauto.
     -- split;mauto.
-Qed.           
+Qed.
 
 (* Corresponds to ⊢≈-sym in Agda proof *)
 Lemma ctx_eq_sym (Γ Δ : Ctx) : ⊢ Γ ≈ Δ -> ⊢ Δ ≈ Γ.
@@ -132,7 +132,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve var_in_eq ctx_eq_sym : mcltt. 
+Hint Resolve var_in_eq ctx_eq_sym : mcltt.
 
 Lemma presup_sb_eq_ctx (Γ Δ : Ctx) (σ σ' : Sb) : Γ ⊢s σ ≈ σ' : Δ -> ⊢ Γ.
 Proof.
@@ -143,7 +143,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_sb_eq_ctx : mcltt. 
+Hint Resolve presup_sb_eq_ctx : mcltt.
 
 Lemma presup_tm_eq_ctx (Γ : Ctx) (t t' : exp) (T : Typ) : Γ ⊢ t ≈ t' : T -> ⊢ Γ.
 Proof.
@@ -151,8 +151,7 @@ Proof.
   induction H;mauto.
   Unshelve.
   exact 0.
-Qed.  
+Qed.
 
 #[export]
 Hint Resolve presup_tm_eq_ctx : mcltt.
-

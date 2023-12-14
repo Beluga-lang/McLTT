@@ -20,7 +20,7 @@ Notation "s  [<=]  t" := (StrSet.Subset s t) (at level 70, no associativity).
 Fixpoint lookup (s : string) (ctx : list string) : (option nat) :=
  match ctx with
   | nil => None
-  | c::cs => if string_dec c s then (Some 0) else 
+  | c::cs => if string_dec c s then (Some 0) else
                   match lookup s cs  with
                         | Some n => Some (n + 1)
                         | None => None
@@ -29,7 +29,7 @@ Fixpoint lookup (s : string) (ctx : list string) : (option nat) :=
 .
 
 Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : (option exp) :=
- match cst with 
+ match cst with
  | Cst.typ n => Some (a_typ n)
  | Cst.nat => Some a_nat
  | Cst.zero => Some a_zero
@@ -44,12 +44,12 @@ Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : (option exp) :=
  | Cst.fn s t c => match elaborate c (s::ctx), elaborate t ctx with
               | Some a, Some t => Some (a_fn t a)
               | _, _ => None
-              end 
+              end
  | Cst.app c1 c2 => match elaborate c1 ctx, elaborate c2 ctx with
               | None, _ => None
               | _, None => None
               | Some a1, Some a2 => Some (a_app a1 a2)
-              end 
+              end
  | Cst.pi s t c => match elaborate c (s::ctx), elaborate t ctx with
               | Some a, Some t => Some (a_pi t a)
               | _,_ => None
@@ -79,7 +79,7 @@ Inductive closed_at : exp -> nat -> Prop :=
  | ca_nat : forall n, closed_at (a_nat) n
  | ca_zero : forall n, closed_at (a_zero) n
  | ca_type : forall n m, closed_at (a_typ m) n
- | ca_succ : forall a n, closed_at a n -> closed_at (a_succ a) n 
+ | ca_succ : forall a n, closed_at a n -> closed_at (a_succ a) n
 .
 (* TODO: JH: create our own hint database. *)
 #[local]
@@ -186,7 +186,3 @@ Proof. reflexivity. Qed.
 
 Example test_elab2 : elaborate (Cst.fn "s" Cst.nat (Cst.fn "x" Cst.nat (Cst.fn "s" Cst.nat (Cst.var "q")))) nil = None.
 Proof. reflexivity. Qed.
-
-
-
-

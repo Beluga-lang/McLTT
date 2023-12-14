@@ -27,7 +27,7 @@ Inductive wf_ctx : Ctx -> Prop :=
       ⊢ Γ ->
       Γ ⊢ T : typ i ->
       ⊢ T :: Γ
-    ) 
+    )
 where "⊢ Γ" := (wf_ctx Γ)
 with wf_ctx_eq : Ctx -> Ctx -> Prop :=
   | wfc_empty : ⊢ [] ≈ []
@@ -38,7 +38,7 @@ with wf_ctx_eq : Ctx -> Ctx -> Prop :=
       Γ ⊢ T ≈ T' : (typ i) ->
       Δ ⊢ T ≈ T' : (typ i) ->
       ⊢ (T :: Γ) ≈ (T' :: Δ)
-    ) 
+    )
 where "⊢ Γ ≈ Δ" := (wf_ctx_eq Γ Δ)
 with wf_term : Ctx -> exp -> Typ -> Prop :=
   | wf_univ_nat_f :
@@ -61,8 +61,8 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
       Γ ⊢ <{ #x }> : T
     )
 | wf_fun_e: `(
-      Γ ⊢ A : typ i ->          
-      A :: Γ ⊢ B : typ i ->            
+      Γ ⊢ A : typ i ->
+      A :: Γ ⊢ B : typ i ->
       Γ ⊢ M : Π A B ->
       Γ ⊢ N : A ->
       Γ ⊢ <{ M N }> : <{ B|[Id,N]| }>
@@ -85,9 +85,9 @@ with wf_term : Ctx -> exp -> Typ -> Prop :=
       Γ ⊢ t : T ->
       (Γ ⊢ T ≈ T' : (typ i)) ->
       Γ ⊢ t : T'
-      ) 
+      )
   | wf_cumu :
-      `(Γ ⊢ T : typ i -> Γ ⊢ T : typ (1 + i))   
+      `(Γ ⊢ T : typ i -> Γ ⊢ T : typ (1 + i))
 where "Γ ⊢ t : T" := (wf_term Γ t T)
 with wf_sb : Ctx -> Sb -> Ctx -> Prop :=
   | wf_sb_id :
@@ -109,9 +109,9 @@ with wf_sb : Ctx -> Sb -> Ctx -> Prop :=
      )
   | wf_sb_conv : `(
       Γ ⊢s σ : Δ ->
-      ⊢ Δ ≈ Δ' ->                        
+      ⊢ Δ ≈ Δ' ->
       Γ ⊢s σ : Δ'
-     )  
+     )
 where "Γ ⊢s σ : Δ" := (wf_sb Γ σ Δ)
 with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
   | wf_eq_nat_sub :
@@ -123,18 +123,18 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
       Δ ⊢ T' : typ i ->
       T' :: Δ ⊢ T : typ i ->
       Γ ⊢ a_sub (Π T' T) σ ≈ Π (a_sub T' σ) (a_sub T (σ ∙ a_weaken ,, a_var 0)) : typ i
-    )                             
+    )
   | wf_eq_pi_cong : `(
       Γ ⊢ M : typ i ->
-      Γ ⊢ M ≈ M' : typ i ->         
-      M :: Γ ⊢ T ≈ T' : typ i ->              
-      Γ ⊢ Π M T ≈ Π M' T' : typ i              
+      Γ ⊢ M ≈ M' : typ i ->
+      M :: Γ ⊢ T ≈ T' : typ i ->
+      Γ ⊢ Π M T ≈ Π M' T' : typ i
     )
   | wf_eq_var : `(
       ⊢ Γ ->
       x : T ∈! Γ ->
       Γ ⊢ a_var x ≈ a_var x : T
-   )   
+   )
   | wf_eq_zero :
       `(⊢ Γ -> Γ ⊢ a_zero ≈ a_zero : ℕ)
   | wf_eq_zero_sub :
@@ -143,7 +143,7 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
       `(Γ ⊢ t ≈ t' : ℕ -> Γ ⊢ a_succ t ≈ a_succ t' : ℕ)
   | wf_eq_succ_sub : `(
       Γ ⊢s σ : Δ ->
-      Δ ⊢ t : ℕ ->            
+      Δ ⊢ t : ℕ ->
       Γ ⊢ a_sub (a_succ t) σ ≈ a_succ (a_sub t σ) : ℕ
     )
   | wf_eq_sub_cong : `(
@@ -156,41 +156,41 @@ with wf_term_eq : Ctx -> exp -> exp -> Typ -> Prop :=
   | wf_eq_sub_weak : `(
       ⊢ M :: Γ ->
       x : T ∈! Γ ->
-      M :: Γ ⊢ a_sub (a_var x) a_weaken ≈ a_var (S x) : a_sub T a_weaken 
-   )   
+      M :: Γ ⊢ a_sub (a_var x) a_weaken ≈ a_var (S x) : a_sub T a_weaken
+   )
   | wf_eq_sub_comp : `(
       Γ ⊢s τ : Γ' ->
-      Γ' ⊢s σ : Γ'' -> 
-      Γ'' ⊢ t : T -> 
-      Γ ⊢ a_sub t (σ ∙ τ) ≈ a_sub (a_sub t σ) τ : a_sub T (σ ∙ τ) 
+      Γ' ⊢s σ : Γ'' ->
+      Γ'' ⊢ t : T ->
+      Γ ⊢ a_sub t (σ ∙ τ) ≈ a_sub (a_sub t σ) τ : a_sub T (σ ∙ τ)
     )
   | wf_eq_var_ze : `(
       Γ ⊢s σ : Δ ->
-      Δ ⊢ T : typ i ->          
-      Γ ⊢ t : a_sub T σ ->          
-      Γ ⊢ a_sub (a_var 0) (σ ,, t) ≈ t : a_sub T σ        
+      Δ ⊢ T : typ i ->
+      Γ ⊢ t : a_sub T σ ->
+      Γ ⊢ a_sub (a_var 0) (σ ,, t) ≈ t : a_sub T σ
     )
   | wf_eq_var_su : `(
       Γ ⊢s σ : Δ ->
-      Δ ⊢ T : typ i ->          
-      Γ ⊢ t : a_sub T σ ->         
-      x : T ∈! Δ ->  
-      Γ ⊢ a_sub (a_var (S x)) (σ ,, t) ≈ a_sub (a_var x) σ : a_sub T σ           
-    )   
-  | wf_eq_cumu : 
-      `(Γ ⊢ T ≈ T' : typ i ->Γ ⊢ T ≈ T' : typ (1+i))   
+      Δ ⊢ T : typ i ->
+      Γ ⊢ t : a_sub T σ ->
+      x : T ∈! Δ ->
+      Γ ⊢ a_sub (a_var (S x)) (σ ,, t) ≈ a_sub (a_var x) σ : a_sub T σ
+    )
+  | wf_eq_cumu :
+      `(Γ ⊢ T ≈ T' : typ i ->Γ ⊢ T ≈ T' : typ (1+i))
   | wf_eq_conv : `(
       Γ ⊢ t ≈ t' : T ->
-      Γ ⊢ T ≈ T' : typ i ->              
-      Γ ⊢ t ≈ t' : T'            
+      Γ ⊢ T ≈ T' : typ i ->
+      Γ ⊢ t ≈ t' : T'
     )
   | wf_eq_sym :
       `(Γ ⊢ t ≈ t' : T -> Γ ⊢ t' ≈ t : T)
   | wf_eq_trans : `(
       Γ ⊢ t ≈ t' : T ->
-      Γ ⊢ t' ≈ t'' : T ->            
-      Γ ⊢ t ≈ t'' : T             
-    )   
+      Γ ⊢ t' ≈ t'' : T ->
+      Γ ⊢ t ≈ t'' : T
+    )
 where "Γ ⊢ A ≈ B : T" := (wf_term_eq Γ A B T)
 with wf_sub_eq : Ctx -> Sb -> Sb -> Ctx -> Prop :=
   | wf_sub_eq_id :
@@ -201,52 +201,52 @@ with wf_sub_eq : Ctx -> Sb -> Sb -> Ctx -> Prop :=
       Γ ⊢s τ ≈ τ' : Γ' ->
       Γ' ⊢s σ ≈ σ' : Γ'' ->
       Γ ⊢s σ ∙ τ ≈ σ' ∙ τ' : Γ''
-    )                             
+    )
   | wf_sub_eq_ext_cong : `(
       Γ ⊢s σ ≈ σ' : Δ ->
-      Δ ⊢ T : typ i ->  
-      Γ ⊢ t ≈ t' : a_sub T σ ->        
-      Γ ⊢s (σ ,, t) ≈ (σ' ,, t') : T :: Δ             
-    )   
+      Δ ⊢ T : typ i ->
+      Γ ⊢ t ≈ t' : a_sub T σ ->
+      Γ ⊢s (σ ,, t) ≈ (σ' ,, t') : T :: Δ
+    )
   | wf_sub_eq_id_comp_right :
-      `(Γ ⊢s σ : Δ -> Γ ⊢s a_id ∙ σ ≈ σ : Δ)   
+      `(Γ ⊢s σ : Δ -> Γ ⊢s a_id ∙ σ ≈ σ : Δ)
   | wf_sub_eq_id_comp_left :
-      `(Γ ⊢s σ : Δ -> Γ ⊢s σ ∙ a_id ≈ σ : Δ)   
+      `(Γ ⊢s σ : Δ -> Γ ⊢s σ ∙ a_id ≈ σ : Δ)
   | wf_sub_eq_comp_assoc : `(
-      Γ' ⊢s σ : Γ ->   
-      Γ'' ⊢s σ' : Γ' ->   
-      Γ''' ⊢s σ'' : Γ'' ->   
+      Γ' ⊢s σ : Γ ->
+      Γ'' ⊢s σ' : Γ' ->
+      Γ''' ⊢s σ'' : Γ'' ->
       Γ''' ⊢s (σ ∙ σ') ∙ σ'' ≈ σ ∙ (σ' ∙ σ'') : Γ
     )
   | wf_sub_eq_ext_comp : `(
       Γ' ⊢s σ : Γ'' ->
-      Γ'' ⊢ T : typ i ->           
-      Γ' ⊢ t : a_sub T σ ->         
-      Γ ⊢s τ : Γ' ->           
-      Γ ⊢s (σ ,, t) ∙ τ ≈ ((σ ∙ τ) ,, (a_sub t τ)) : T :: Γ''            
-    )             
+      Γ'' ⊢ T : typ i ->
+      Γ' ⊢ t : a_sub T σ ->
+      Γ ⊢s τ : Γ' ->
+      Γ ⊢s (σ ,, t) ∙ τ ≈ ((σ ∙ τ) ,, (a_sub t τ)) : T :: Γ''
+    )
   | wf_sub_eq_p_ext : `(
       Γ' ⊢s σ : Γ ->
-      Γ ⊢ T : typ i ->           
-      Γ' ⊢ t : a_sub T σ ->         
-      Γ' ⊢s a_weaken ∙ (σ ,, t) ≈ σ : Γ           
-    )   
+      Γ ⊢ T : typ i ->
+      Γ' ⊢ t : a_sub T σ ->
+      Γ' ⊢s a_weaken ∙ (σ ,, t) ≈ σ : Γ
+    )
   | wf_sub_eq_ext : `(
       Γ' ⊢s σ : T :: Γ ->
-      Γ' ⊢s σ ≈ ((a_weaken ∙ σ) ,, (a_sub (a_var 0) σ)) : T :: Γ                    
-    )   
+      Γ' ⊢s σ ≈ ((a_weaken ∙ σ) ,, (a_sub (a_var 0) σ)) : T :: Γ
+    )
   | wf_sub_eq_sym :
-      `(Γ ⊢s σ ≈ σ' : Δ -> Γ ⊢s σ' ≈ σ : Δ)  
+      `(Γ ⊢s σ ≈ σ' : Δ -> Γ ⊢s σ' ≈ σ : Δ)
   | wf_sub_eq_trans : `(
       Γ ⊢s σ ≈ σ' : Δ ->
-      Γ ⊢s σ' ≈ σ'' : Δ ->            
+      Γ ⊢s σ' ≈ σ'' : Δ ->
       Γ ⊢s σ ≈ σ'' : Δ
-    )                                   
+    )
   | wf_sub_eq_conv: `(
       Γ ⊢s σ ≈ σ' : Δ ->
-      ⊢ Δ ≈ Δ' ->               
-      Γ ⊢s σ ≈ σ' : Δ'  
-   )   
+      ⊢ Δ ≈ Δ' ->
+      Γ ⊢s σ ≈ σ' : Δ'
+   )
 where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ S1 S2 Δ).
 
 
