@@ -11,6 +11,33 @@ Tactic Notation "gen" ident(x) ident(y) := gen x; gen y.
 Tactic Notation "gen" ident(x) ident(y) ident(z) := gen x y; gen z.
 Tactic Notation "gen" ident(x) ident(y) ident(z) ident(w) := gen x y z; gen w.
 
+(** Marking-based Tactics *)
+
+Definition __mark__ A (a : A) : A := a.
+Arguments __mark__ {A} a : simpl never.
+
+Ltac mark H :=
+  let t := type of H in
+  fold (__mark__ t) in H.
+Ltac unmark H := unfold __mark__ in H.
+
+Ltac mark_all :=
+  repeat match goal with [H: ?P |- _] =>
+    try (match P with __mark__ _ => fail 2 end); mark H
+  end.
+Ltac unmark_all := unfold __mark__ in *.
+
+Ltac on_all_marked_hyp tac :=
+  match goal with
+  | [ H : __mark__ ?A |- _ ] => unmark H; tac H; on_all_marked_hyp tac; mark H
+  | _ => idtac
+  end.
+Tactic Notation "on_all_marked_hyp:" tactic4(tac) := on_all_marked_hyp tac.
+Tactic Notation "on_all_hyp:" tactic4(tac) :=
+  mark_all; (on_all_marked_hyp: tac); unmark_all.
+
+(** Simple helper *)
+
 Ltac destruct_logic :=
   destruct_one_pair
   || destruct_one_ex
@@ -23,6 +50,7 @@ Ltac destruct_logic :=
 
 Ltac destruct_all := repeat destruct_logic.
 
+(** McLTT automation *)
 
 Tactic Notation "mauto" :=
   eauto with mcltt core.
