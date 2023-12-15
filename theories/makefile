@@ -1,7 +1,8 @@
 empty :=
 space := $(empty) $(empty)
+
 COQMAKEFILE := makefile.coq
-COQFILES := $(sort $(wildcard ./*.v) $(patsubst %.vy,%.v,$(wildcard ./*.vy)))
+COQFILES := $(sort $(shell find ./ -name '*.v') $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy')))
 
 .PHONY: all
 all: $(COQMAKEFILE)
@@ -19,8 +20,8 @@ $(COQMAKEFILE): _CoqProject
 	coq_makefile -f _CoqProject -o "$@"
 
 .PHONY: update_CoqProject
-update_CoqProject:
-	(echo "-Q . Mcltt"; \
+update_CoqProject: cleanall
+	(echo "-R . Mcltt"; \
         echo ""; \
         echo "-arg -w -arg -notation-overridden"; \
         echo ""; \

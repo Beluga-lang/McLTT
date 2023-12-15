@@ -1,12 +1,55 @@
 Require Import Unicode.Utf8_core.
-Require Import Mcltt.Syntax.
-Require Export Mcltt.System.
-Require Export Mcltt.LibTactics.
+
+Require Import LibTactics.
+Require Import Syntactic.Syntax.
+Require Import Syntactic.System.
 
 Lemma ctx_decomp : forall {Γ T}, {{ ⊢ Γ , T }} -> {{ ⊢ Γ }} ∧ ∃ i, {{ Γ ⊢ T : Type@i }}.
 Proof with mauto.
   intros * HTΓ.
   inversion HTΓ; subst...
+Qed.
+
+Lemma lift_tm_ge : forall {Γ T n m}, n <= m -> {{ Γ ⊢ T : Type@n }} -> {{ Γ ⊢ T : Type@m }}.
+Proof with mauto.
+  intros * Hnm HT.
+  induction m; inversion Hnm; subst...
+Qed.
+
+#[export]
+Hint Resolve lift_tm_ge : mcltt.
+
+Lemma lift_tm_max_left : forall {Γ T n} m, {{ Γ ⊢ T : Type@n }} -> {{ Γ ⊢ T : Type@(max n m) }}.
+Proof with mauto.
+  intros.
+  assert (n <= max n m) by lia...
+Qed.
+
+Lemma lift_tm_max_right : forall {Γ T} n {m}, {{ Γ ⊢ T : Type@m }} -> {{ Γ ⊢ T : Type@(max n m) }}.
+Proof with mauto.
+  intros.
+  assert (m <= max n m) by lia...
+Qed.
+
+Lemma lift_eq_ge : forall {Γ T T' n m}, n <= m -> {{ Γ ⊢ T ≈ T': Type@n }} -> {{ Γ ⊢ T ≈ T' : Type@m }}.
+Proof with mauto.
+  intros * Hnm HTT'.
+  induction m; inversion Hnm; subst...
+Qed.
+
+#[export]
+Hint Resolve lift_eq_ge : mcltt.
+
+Lemma lift_eq_max_left : forall {Γ T T' n} m, {{ Γ ⊢ T ≈ T' : Type@n }} -> {{ Γ ⊢ T ≈ T' : Type@(max n m) }}.
+Proof with mauto.
+  intros.
+  assert (n <= max n m) by lia...
+Qed.
+
+Lemma lift_eq_max_right : forall {Γ T T'} n {m}, {{ Γ ⊢ T ≈ T' : Type@m }} -> {{ Γ ⊢ T ≈ T' : Type@(max n m) }}.
+Proof with mauto.
+  intros.
+  assert (m <= max n m) by lia...
 Qed.
 
 (* Corresponds to presup-⊢≈ in the Agda proof *)

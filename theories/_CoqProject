@@ -1,15 +1,14 @@
--Q . Mcltt
+-R . Mcltt
 
 -arg -w -arg -notation-overridden
 
-./CtxEqLemmas.v
-./CtxEquiv.v
-./Elaborator.v
+./Core/Syntactic/CtxEquiv.v
+./Core/Syntactic/Presup.v
+./Core/Syntactic/Relations.v
+./Core/Syntactic/Syntax.v
+./Core/Syntactic/System.v
+./Core/Syntactic/SystemLemmas.v
+./Frontend/Elaborator.v
+./Frontend/Parser.v
+./Frontend/ParserExtraction.v
 ./LibTactics.v
-./Parser.v
-./ParserExtraction.v
-./Presup.v
-./PresupLemmas.v
-./Relations.v
-./Syntax.v
-./System.v

@@ -1,8 +1,9 @@
 Require Import Unicode.Utf8_core.
-Require Import Mcltt.Syntax.
-Require Import Mcltt.System.
-Require Import Mcltt.CtxEqLemmas.
-Require Import Mcltt.LibTactics.
+
+Require Import LibTactics.
+Require Import Syntactic.Syntax.
+Require Import Syntactic.System.
+Require Import Syntactic.SystemLemmas.
 
 Lemma ctxeq_tm : forall {Γ Δ t T}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ t : T }} -> {{ Δ ⊢ t : T }}
 with
