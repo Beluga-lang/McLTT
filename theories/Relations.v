@@ -8,7 +8,7 @@ Require Import Mcltt.PresupLemmas.
 Require Import Setoid.
 Require Import Coq.Program.Equality.
 
-Lemma ctx_eq_refl : forall {Γ}, ⊢ Γ -> ⊢ Γ ≈ Γ.
+Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
 Proof with mauto.
   intros * HΓ.
   induction HΓ...
@@ -17,7 +17,7 @@ Qed.
 #[export]
 Hint Resolve ctx_eq_refl : mcltt.
 
-Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, ⊢ Γ0 ≈ Γ1 -> ⊢ Γ1 ≈ Γ2 -> ⊢ Γ0 ≈ Γ2.
+Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, {{ ⊢ Γ0 ≈ Γ1 }} -> {{ ⊢ Γ1 ≈ Γ2 }} -> {{ ⊢ Γ0 ≈ Γ2 }}.
 Proof with mauto.
   intros * HΓ01 HΓ12.
   gen Γ2.
@@ -31,17 +31,17 @@ Proof with mauto.
   econstructor...
 Qed.
 
-Add Relation (Ctx) (wf_ctx_eq)
+Add Relation (ctx) (wf_ctx_eq)
     symmetry proved by @ctx_eq_sym
     transitivity proved by @ctx_eq_trans
     as ctx_eq.
 
-Add Parametric Relation (Γ : Ctx) (T : Typ) : (exp) (λ t t', Γ ⊢ t ≈ t' : T)
+Add Parametric Relation (Γ : ctx) (T : typ) : (exp) (λ t t', {{ Γ ⊢ t ≈ t' : T }})
     symmetry proved by (λ t t', wf_eq_sym Γ t t' T)
     transitivity proved by (λ t t' t'', wf_eq_trans Γ t t' T t'')
     as tm_eq.                                                
 
-Add Parametric Relation (Γ Δ : Ctx) : (Sb) (λ σ τ, Γ ⊢s σ ≈ τ : Δ)
+Add Parametric Relation (Γ Δ : ctx) : (sub) (λ σ τ, {{ Γ ⊢s σ ≈ τ : Δ }})
     symmetry proved by (λ σ τ, wf_sub_eq_sym Γ σ τ Δ)
     transitivity proved by (λ σ τ ρ, wf_sub_eq_trans Γ σ τ Δ ρ)
     as sb_eq.
