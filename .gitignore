@@ -3,7 +3,7 @@ _build
 # Ignore generated parser code
 driver/parser.ml
 driver/parser.mli
-theories/Parser.v
+theories/**/Parser.v
 
 # Remove Coq compiled code
 *.vo
