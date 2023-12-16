@@ -2,7 +2,8 @@ empty :=
 space := $(empty) $(empty)
 
 COQMAKEFILE := makefile.coq
-COQFILES := $(sort $(shell find ./ -name '*.v') $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy')))
+COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
+COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
 
 .PHONY: all
 all: $(COQMAKEFILE)
@@ -13,7 +14,7 @@ clean::
 	rm -f $(COQMAKEFILE)
 	rm -f $(COQMAKEFILE).conf
 
-Parser.v: Parser.vy
+$(COQPARSERFILE): %.v : %.vy
 	menhir --coq "$?"
 
 $(COQMAKEFILE): _CoqProject
