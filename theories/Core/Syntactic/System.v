@@ -2,8 +2,8 @@ Require Import List.
 Require Import Unicode.Utf8_core.
 Import ListNotations.
 
-Require Import Mcltt.Syntax.
-Require Import Mcltt.LibTactics.
+Require Import LibTactics.
+Require Import Syntactic.Syntax.
 
 #[global] Declare Custom Entry judg.
 Notation "{{ x }}" := x (at level 0, x custom judg at level 99, format "'{{'  x  '}}'").

@@ -1,5 +1,5 @@
 Require Extraction.
-From Mcltt Require Import Parser.
+Require Import Frontend.Parser.
 
 Import MenhirLibParser.Inter.
 Extraction Language OCaml.

@@ -1,12 +1,12 @@
 Require Import Unicode.Utf8_core.
-Require Import Mcltt.Syntax.
-Require Import Mcltt.System.
-Require Import Mcltt.CtxEqLemmas.
-Require Import Mcltt.LibTactics.
-Require Import Mcltt.CtxEquiv.
-Require Import Mcltt.PresupLemmas.
 Require Import Setoid.
 Require Import Coq.Program.Equality.
+
+Require Import LibTactics.
+Require Import Syntactic.Syntax.
+Require Import Syntactic.System.
+Require Import Syntactic.SystemLemmas.
+Require Import Syntactic.CtxEquiv.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
 Proof with mauto.

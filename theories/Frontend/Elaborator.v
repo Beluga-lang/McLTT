@@ -4,57 +4,66 @@ Require Export Coq.Structures.OrderedTypeEx.
 Require Export MSets.
 Require Export Arith.
 Require Export Lia.
-From Mcltt Require Import Syntax.
 
+Require Import Syntactic.Syntax.
 
 Open Scope string_scope.
 
 Module StrSet := Make String_as_OT.
 Module StrSProp := MSetProperties.Properties StrSet.
 
-(*Copied from the MSetsInterface file because I couldn't figure out how to import it*)
-Notation "s  [<=]  t" := (StrSet.Subset s t) (at level 70, no associativity).
+(* One cannot import notation from module type without
+   restricting a module to that exact type.
+   Thus here we repeat the notation from WSetsOn. *)
+Notation "s [<=] t" := (StrSet.Subset s t) (at level 70, no associativity).
 
-
-(**De-monadify with pattern matching for now**)
-Fixpoint lookup (s : string) (ctx : list string) : (option nat) :=
- match ctx with
+(* De-monadify with pattern matching for now *)
+Fixpoint lookup (s : string) (ctx : list string) : option nat :=
+  match ctx with
   | nil => None
-  | c::cs => if string_dec c s then (Some 0) else
-                  match lookup s cs  with
-                        | Some n => Some (n + 1)
-                        | None => None
-                  end
- end
+  | c::cs =>
+      if string_dec c s
+      then Some 0
+      else
+        match lookup s cs  with
+        | Some n => Some (n + 1)%nat
+        | None => None
+        end
+  end
 .
 
-Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : (option exp) :=
- match cst with
- | Cst.typ n => Some (a_typ n)
- | Cst.nat => Some a_nat
- | Cst.zero => Some a_zero
- | Cst.succ c => match elaborate c ctx with
-              | Some a => Some (a_succ a)
-              | None => None
-              end
- | Cst.var s =>  match lookup s ctx with
-              | Some n => Some (a_var n)
-              | None => None
-              end
- | Cst.fn s t c => match elaborate c (s::ctx), elaborate t ctx with
-              | Some a, Some t => Some (a_fn t a)
-              | _, _ => None
-              end
- | Cst.app c1 c2 => match elaborate c1 ctx, elaborate c2 ctx with
-              | None, _ => None
-              | _, None => None
-              | Some a1, Some a2 => Some (a_app a1 a2)
-              end
- | Cst.pi s t c => match elaborate c (s::ctx), elaborate t ctx with
-              | Some a, Some t => Some (a_pi t a)
-              | _,_ => None
-              end
- end
+Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : option exp :=
+  match cst with
+  | Cst.typ n => Some (a_typ n)
+  | Cst.nat => Some a_nat
+  | Cst.zero => Some a_zero
+  | Cst.succ c =>
+      match elaborate c ctx with
+      | Some a => Some (a_succ a)
+      | None => None
+      end
+  | Cst.var s =>
+      match lookup s ctx with
+      | Some n => Some (a_var n)
+      | None => None
+      end
+  | Cst.fn s t c =>
+      match elaborate c (s :: ctx), elaborate t ctx with
+      | Some a, Some t => Some (a_fn t a)
+      | _, _ => None
+      end
+  | Cst.app c1 c2 =>
+      match elaborate c1 ctx, elaborate c2 ctx with
+      | None, _ => None
+      | _, None => None
+      | Some a1, Some a2 => Some (a_app a1 a2)
+      end
+  | Cst.pi s t c =>
+      match elaborate c (s :: ctx), elaborate t ctx with
+      | Some a, Some t => Some (a_pi t a)
+      | _, _ => None
+      end
+  end
 .
 
 Fixpoint cst_variables (cst : Cst.obj) : StrSet.t :=
