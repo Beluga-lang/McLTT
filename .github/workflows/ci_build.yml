@@ -33,6 +33,7 @@ jobs:
         with:
           ocaml-compiler: ${{ env.OCAML_VER }}
           dune-cache: true
+          cache-prefix: "v2"
       - name: install Menhir and Coq
         run: |
           opam update
