@@ -1,11 +1,13 @@
+# Dune
 _build
+mcltt.opam
 
-# Ignore generated parser code
+# Menhir
 **/parser.ml
 **/parser.mli
 theories/**/Parser.v
 
-# Remove Coq compiled code
+# Coq
 *.vo
 *.glob
 *.d
