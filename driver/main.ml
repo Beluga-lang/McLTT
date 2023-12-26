@@ -5,8 +5,7 @@ let parse text =
      which we then feed into the parser. *)
   let rec loop lexbuf = lazy (Buf_cons (Lexer.read lexbuf, loop lexbuf)) in
   let token_stream = loop (Lexing.from_string text) in
-  let parse : int -> buffer -> Parser.Cst.obj parse_result = Parser.prog in
-  match parse 50 token_stream with
+  match Parser.prog 50 token_stream with
   | Parsed_pr (e, _) -> Some e
   | Fail_pr_full (_, _) -> None
   | _ -> None

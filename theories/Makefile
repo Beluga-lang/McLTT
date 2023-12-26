@@ -21,8 +21,8 @@ all: $(COQMAKEFILE) $(COQPARSERFILE)
 .PHONY: clean
 clean: $(COQMAKEFILE)
 	@+$(MAKE) -f "$(COQMAKEFILE)" cleanall
-	@echo "CLEAN $(COQPARSERFILE) $(PARSERFILE) $(COQMAKEFILE) $(COQMAKEFILE).conf"
-	@rm -f "$(COQPARSERFILE)" "$(PARSERBASE)" "$(PARSERFILE)" "$(COQMAKEFILE)" "$(COQMAKEFILE).conf"
+	@echo "CLEAN $(COQPARSERFILE) $(PARSERBASE) $(patsubst %.ml,%.mli,$(PARSERBASE)) $(PARSERFILE) $(patsubst %.ml,%.mli,$(PARSERFILE)) $(COQMAKEFILE) $(COQMAKEFILE).conf"
+	@rm -f "$(COQPARSERFILE)" "$(PARSERBASE)" "$(patsubst %.ml,%.mli,$(PARSERBASE))" "$(PARSERFILE)" "$(patsubst %.ml,%.mli,$(PARSERFILE))" "$(COQMAKEFILE)" "$(COQMAKEFILE).conf"
 
 .PHONY: update_CoqProject
 update_CoqProject: clean
@@ -36,7 +36,7 @@ update_CoqProject: clean
 force: ;
 
 $(COQMAKEFILE): $(COQPROJECTFILE)
-	$(COQBIN)coq_makefile -f "$(COQPROJECTFILE)" -o "$(COQMAKEFILE)"
+	$(COQBIN)coq_makefile -f "$?" -o "$@"
 
 $(COQPARSERFILE): %.v : %.vy
 	$(MENHIR) --coq "$?"
@@ -48,8 +48,9 @@ $(PARSERBASE): $(PARSEREXTRACTIONCOQFILE)
 
 $(PARSERFILE): $(PARSEREXTRACTIONCOQFILE)
 	@+$(MAKE) "$(PARSERBASE)"
-	@echo "MOVE $(PARSERBASE) => $(PARSERFILE)"
-	@mv "$(PARSERBASE)" "$(PARSERFILE)"
+	@echo "MOVE $(PARSERBASE) => $@"
+	@mv "$(PARSERBASE)" "$@"
+	@mv "$(patsubst %.ml,%.mli,$(PARSERBASE))" "$(patsubst %.ml,%.mli,$@)"
 
 %: $(COQMAKEFILE) force
 	@+$(MAKE) -f "$(COQMAKEFILE)" "$@"
