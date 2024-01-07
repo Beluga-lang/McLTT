@@ -8,15 +8,6 @@ Require Import Syntactic.SystemLemmas.
 Require Import Syntactic.CtxEquiv.
 Require Import Syntactic.Relations.
 
-Ltac breakdown_goal :=
-  let rec splitting :=
-    match goal with
-    | [|- ?X ∧ ?Y] => split; splitting
-    | [|- _] => mauto
-    end
-  in splitting
-.
-
 Ltac gen_presup_ctx H :=
   match type of H with
   | {{ ⊢ ?Γ ≈ ?Δ }} =>
@@ -26,101 +17,191 @@ Ltac gen_presup_ctx H :=
   | {{ ?Γ ⊢s ?σ : ?Δ }} =>
       let HΓ := fresh "HΓ" in
       let HΔ := fresh "HΔ" in
-      pose proof presup_sb_ctx H as [HΓ HΔ]
+      pose proof presup_sub_ctx H as [HΓ HΔ]
   | _ => idtac
   end.
 
-Ltac gen_presup_IH presup_tm presup_eq presup_sb_eq H :=
+Ltac gen_presup_IH presup_exp presup_exp_eq presup_sub_eq H :=
   match type of H with
-  | {{ ?Γ ⊢ ?t : ?T }} =>
+  | {{ ?Γ ⊢ ?M : ?A }} =>
       let HΓ := fresh "HΓ" in
       let i := fresh "i" in
-      let HTi := fresh "HTi" in
-      pose proof presup_tm _ _ _ H as [HΓ [i HTi]]
+      let HAi := fresh "HAi" in
+      pose proof presup_exp _ _ _ H as [HΓ [i HAi]]
+  | {{ ?Γ ⊢ ?M ≈ ?N : ?A }} =>
+      let HΓ := fresh "HΓ" in
+      let i := fresh "i" in
+      let HM := fresh "HM" in
+      let HN := fresh "HN" in
+      let HAi := fresh "HAi" in
+      pose proof presup_exp_eq _ _ _ _ H as [HΓ [HM [HN [i HAi]]]]
   | {{ ?Γ ⊢s ?σ ≈ ?τ : ?Δ }} =>
       let HΓ := fresh "HΓ" in
       let Hσ := fresh "Hσ" in
       let Hτ := fresh "Hτ" in
       let HΔ := fresh "HΔ" in
-      pose proof presup_sb_eq _ _ _ _ H as [HΓ [Hσ [Hτ HΔ]]]
-  | {{ ?Γ ⊢ ?s ≈ ?t : ?T }} =>
-      let HΓ := fresh "HΓ" in
-      let i := fresh "i" in
-      let Hs := fresh "Hs" in
-      let Ht := fresh "Ht" in
-      let HTi := fresh "HTi" in
-      pose proof presup_eq _ _ _ _ H as [HΓ [Hs [Ht [i HTi]]]]
+      pose proof presup_sub_eq _ _ _ _ H as [HΓ [Hσ [Hτ HΔ]]]
   | _ => gen_presup_ctx H
   end.
 
-Lemma presup_tm : forall {Γ t T}, {{ Γ ⊢ t : T }} -> {{ ⊢ Γ }} ∧ ∃ i, {{ Γ ⊢ T : Type@i }}
-with presup_eq : forall {Γ s t T}, {{ Γ ⊢ s ≈ t : T }} -> {{ ⊢ Γ }} ∧ {{ Γ ⊢ s : T }} ∧ {{ Γ ⊢ t : T }} ∧ ∃ i, {{ Γ ⊢ T : Type@i }}
-with presup_sb_eq : forall {Γ Δ σ τ}, {{ Γ ⊢s σ ≈ τ : Δ }} -> {{ ⊢ Γ }} ∧ {{ Γ ⊢s σ : Δ }} ∧ {{ Γ ⊢s τ : Δ }} ∧ {{ ⊢ Δ }}.
-Proof with mauto.
-  - intros * Ht.
-    inversion_clear Ht; (on_all_hyp: gen_presup_IH presup_tm presup_eq presup_sb_eq); clear presup_tm presup_eq presup_sb_eq; breakdown_goal.
-    -- eexists.
-       eapply exp_sub_typ...
-       econstructor...
-    -- eexists.
-       pose proof (lift_tm_max_left i0 H).
-       pose proof (lift_tm_max_right i HTi).
-       econstructor...
+Lemma presup_exp : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }} ∧ ∃ i, {{ Γ ⊢ A : Type@i }}
+with presup_exp_eq : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }} ∧ {{ Γ ⊢ M : A }} ∧ {{ Γ ⊢ M' : A }} ∧ ∃ i, {{ Γ ⊢ A : Type@i }}
+with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} ∧ {{ Γ ⊢s σ : Δ }} ∧ {{ Γ ⊢s σ' : Δ }} ∧ {{ ⊢ Δ }}.
+Proof with solve [mauto].
+  (* presup_exp *)
+  - intros * HM.
+    inversion_clear HM; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq); clear presup_exp presup_exp_eq presup_sub_eq; repeat split; mauto.
+    all: try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
+    + eexists.
+      assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
+      assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
 
-  - intros * Hst.
-    inversion_clear Hst; (on_all_hyp: gen_presup_IH presup_tm presup_eq presup_sb_eq); clear presup_tm presup_eq presup_sb_eq; breakdown_goal.
-    -- econstructor...
-       eapply exp_sub_typ...
-       econstructor...
-       eapply wf_conv...
-       eapply wf_eq_conv; mauto 6.
+  - intros * HMM'.
+    set (WkWksucc := {{{ Wk∘Wk ,, succ #1 }}}).
+    inversion_clear HMM'; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq); clear presup_exp presup_exp_eq presup_sub_eq; repeat split; mauto.
+    all: try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B');
+      try (rename N into L); try (rename N' into L'); try (rename M0 into N); try (rename MZ into NZ); try (rename MS into NS); try (rename M'0 into N'); try (rename MZ' into NZ'); try (rename MS' into NS'); try (rename M' into N').
+    + assert {{ Γ ⊢s Id ,, N ≈ Id ,, N' : Γ, ℕ }} by mauto.
+      assert {{ Γ ⊢ B[Id ,, N] ≈ B[Id ,, N'] : Type@i }} by mauto.
+      assert {{ Γ ⊢ B[Id ,, N] ≈ B'[Id ,, N'] : Type@i }} by mauto.
+      assert {{ Γ ⊢ B[Id ,, zero] ≈ B'[Id ,, zero] : Type@i }} by mauto.
+      assert {{ Γ ⊢ NZ' : B'[Id ,, zero] }} by mauto.
+      assert {{ Γ, ℕ, B ⊢ NS' : B'[WkWksucc] }} by mauto.
+      assert {{ Γ, ℕ, B' ⊢ NS' : B'[WkWksucc] }} by mauto.
+      enough {{ Γ ⊢ rec N' return B' | zero -> NZ' | succ -> NS' end : B'[Id ,, N'] }}...
 
-    -- econstructor...
-       eapply wf_eq_conv...
+    + assert {{ Γ ⊢ B[(Id,,N)][σ] ≈ B[(Id,,N)∘σ] : Type@i }} by mauto.
+      assert {{ Γ ⊢ B[(Id,,N)∘σ] ≈ B[σ,,N[σ]] : Type@i }} by mauto.
+      enough {{ Γ ⊢ B[(Id,,N)][σ] ≈ B[σ,,N[σ]] : Type@i }}...
 
-    -- eapply wf_exp_sub...
-       econstructor...
-       inversion H...
+    + assert {{ Γ ⊢s Id,,N[σ] : Γ, ℕ }} by mauto.
+      assert {{ Γ, ℕ ⊢s q σ : Δ, ℕ }} by mauto.
+      assert {{ Γ ⊢ B[q σ][(Id,,N[σ])] ≈ B[q σ∘(Id,,N[σ])] : Type@i }} by mauto.
+      assert {{ Γ ⊢ B[q σ∘(Id,,N[σ])] ≈ B[σ,,N[σ]] : Type@i }} by mauto.
+      assert {{ Γ ⊢ B[q σ][Id,,N[σ]] ≈ B[σ,,N[σ]] : Type@i }} by mauto.
+      assert {{ Γ ⊢ NZ[σ] : B[Id ,, zero][σ] }} by mauto.
+      assert {{ Γ ⊢ zero : ℕ[σ] }} by mauto.
+      assert {{ Γ ⊢s q σ∘(Id ,, zero) ≈ σ ,, zero : Δ, ℕ }} by mauto.
+      assert {{ Γ ⊢s σ ≈ Id∘σ : Δ }} by mauto.
+      assert {{ Γ ⊢s σ ,, zero ≈ Id∘σ ,, zero[σ] : Δ, ℕ }} by mauto.
+      assert {{ Γ ⊢s Id∘σ ,, zero[σ] ≈ (Id ,, zero)∘σ : Δ, ℕ }} by mauto.
+      assert {{ Γ ⊢s q σ∘(Id ,, zero) ≈ (Id ,, zero)∘σ : Δ, ℕ }} by mauto.
+      assert {{ Γ ⊢ B[q σ][Id ,, zero] ≈ B[Id ,, zero][σ] : Type@i }} by mauto.
+      assert {{ Γ ⊢ NZ[σ] : B[q σ][Id ,, zero] }} by mauto.
+      set (Γ' := {{{ Γ, ℕ, B[q σ] }}}).
+      assert {{ Γ' ⊢s q (q σ) : Δ, ℕ, B }} by mauto.
+      assert {{ Γ' ⊢s q σ∘WkWksucc ≈ WkWksucc∘q (q σ) : Δ, ℕ }} by mauto.
+      assert {{ Γ' ⊢ B[q σ][WkWksucc] ≈ B[WkWksucc][q (q σ)] : Type@i }} by mauto.
+      enough {{ Γ' ⊢ NS[q (q σ)] : B[q σ][WkWksucc] }}...
 
-    -- eapply wf_conv; [|eapply wf_eq_conv]...
+    + set (recN := {{{ rec N return B | zero -> NZ | succ -> NS end }}}).
+      assert {{ Γ ⊢ recN : B[Id ,, N] }} by mauto.
+      assert {{ Γ ⊢s WkWksucc∘(Id ,, N ,, recN) ≈ (Wk∘Wk)∘(Id ,, N ,, recN) ,, (succ #1)[(Id ,, N ,, recN)] : Γ, ℕ }}
+        by (eapply sub_eq_extend_compose_nat; mauto).
+      assert {{ Γ ⊢s Id ,, N ,, recN : Γ, ℕ, B }} by mauto.
+      assert {{ Γ ⊢s (Wk∘Wk)∘(Id ,, N ,, recN) : Γ }} by mauto.
+      assert {{ Γ ⊢s (Wk∘Wk)∘(Id ,, N ,, recN) ≈ Wk∘(Wk∘(Id ,, N ,, recN)) : Γ }} by mauto.
+      assert {{ Γ ⊢s Wk∘(Wk∘(Id ,, N ,, recN)) ≈ Wk∘(Id ,, N) : Γ }} by mauto.
+      assert {{ Γ ⊢s (Wk∘Wk)∘(Id ,, N ,, recN) ≈ Id : Γ }} by mauto.
+      assert {{ Γ ⊢ #1[Id ,, N ,, recN] ≈ #0[Id ,, N] : ℕ }} by mauto.
+      assert {{ Γ ⊢ succ #1[Id ,, N ,, recN] ≈ succ N : ℕ }} by mauto.
+      assert {{ Γ ⊢ (succ #1)[Id ,, N ,, recN] ≈ succ N : ℕ }} by mauto.
+      assert {{ Γ ⊢s (Wk∘Wk)∘(Id ,, N ,, recN) ,, (succ #1)[Id ,, N ,, recN] ≈ Id ,, succ N : Γ , ℕ }} by mauto.
+      assert {{ Γ ⊢s WkWksucc∘(Id ,, N ,, recN) ≈ Id ,, succ N : Γ , ℕ }} by mauto.
+      assert {{ Γ ⊢ B[WkWksucc∘(Id ,, N ,, recN)] ≈ B[Id ,, succ N] : Type@i }} by mauto.
+      enough {{ Γ ⊢ B[WkWksucc][Id ,, N ,, recN] ≈ B[Id ,, succ N] : Type@i }}...
 
-    -- eapply wf_conv; [econstructor; mauto|].
-       eapply wf_eq_trans.
-       + eapply wf_eq_sym.
-         eapply wf_eq_conv.
-         ++ eapply wf_eq_exp_sub_compose...
-         ++ econstructor...
-       + do 2 econstructor...
+    + assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
+      assert {{ Γ ⊢ B ≈ B' : Type@(max i i0) }} by mauto using lift_exp_eq_max_left.
+      assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right.
+      enough {{ Γ ⊢ λ B' N' : Π B' C }}...
 
-    -- eapply wf_conv; [econstructor; mauto|].
-       eapply wf_eq_trans.
-       + eapply wf_eq_sym.
-         eapply wf_eq_conv.
-         ++ eapply wf_eq_exp_sub_compose...
-         ++ econstructor...
-       + do 2 econstructor...
+    + assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
+      assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
 
-  - intros * Hστ.
-    inversion_clear Hστ; (on_all_hyp: gen_presup_IH presup_tm presup_eq presup_sb_eq); clear presup_tm presup_eq presup_sb_eq; breakdown_goal.
-    -- inversion_clear H...
+    + assert {{ Δ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
+      assert {{ Δ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right.
+      assert {{ Γ ⊢ Π B[σ] C[q σ] ≈ Π B[σ] C[q σ] : Type@(max i i0) }} by mauto.
+      enough {{ Γ ⊢ λ B[σ] N[q σ] : Π B[σ] C[q σ] }}...
 
-    -- econstructor...
-       eapply wf_conv...
+    + assert {{ Δ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
+      assert {{ Δ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
 
-    -- econstructor...
-       eapply wf_conv...
-       eapply wf_eq_conv...
+    + assert {{ Γ ⊢s Id ,, L ≈ Id ,, L' : Γ, B }} by (econstructor; mauto).
+      enough {{ Γ ⊢ C[Id ,, L] ≈ C[Id ,, L'] : Type@i }}...
 
-    -- inversion_clear HΔ...
-       econstructor...
-       eapply wf_conv...
-       eapply wf_eq_conv...
+    + assert {{ Γ ⊢ N[σ] : Π B[σ] C[q σ] }} by mauto.
+      assert {{ Γ ⊢ L[σ] : B[σ] }} by mauto.
+      assert {{ Γ ⊢s (Id ,, L)∘σ ≈ Id∘σ ,, L[σ] : Δ, B }} by (econstructor; mauto).
+      assert {{ Γ ⊢s (Id ,, L)∘σ ≈ σ ,, L[σ] : Δ, B }} by mauto.
+      assert {{ Γ ⊢ C[(Id ,, L)∘σ] ≈ C[σ ,, L[σ]] : Type@i }} by mauto.
+      enough {{ Γ ⊢ C[Id ,, L][σ] ≈ C[σ ,, L[σ]] : Type@i }}...
 
-    Unshelve.
-    all: constructor.
+    + assert {{ Γ ⊢ N[σ] : Π B[σ] C[q σ] }} by mauto.
+      assert {{ Γ ⊢ L[σ] : B[σ] }} by mauto.
+      assert {{ Γ, B[σ] ⊢s q σ : Δ, B }} by mauto.
+      assert {{ Γ ⊢s q σ∘(Id ,, L[σ]) ≈ σ ,, L[σ] : Δ, B }} by mauto.
+      assert {{ Γ ⊢ C[q σ∘(Id ,, L[σ])] ≈ C[σ ,, L[σ]] : Type@i }} by mauto.
+      enough {{ Γ ⊢ C[q σ][(Id ,, L[σ])] ≈ C[σ ,, L[σ]] : Type@i }}...
+
+    + assert {{ Γ, B ⊢ B[Wk] : Type@i }} by mauto.
+      assert {{ Γ, B, B[Wk] ⊢ C[q Wk] : Type@i }} by mauto.
+      assert {{ Γ, B ⊢ M[Wk] : (Π B C)[Wk] }} by mauto.
+      assert {{ Γ, B ⊢ M[Wk] : Π B[Wk] C[q Wk] }} by mauto.
+      assert {{ Γ, B ⊢ #0 : B[Wk] }} by mauto.
+      assert {{ Γ, B ⊢s Id ,, #0 : Γ, B, B[Wk] }} by mauto.
+      assert {{ Γ, B ⊢ M[Wk] #0 : C[q Wk][Id,,#0] }} by mauto.
+      assert {{ Γ, B ⊢ M[Wk] #0 : C[q Wk∘(Id,,#0)] }} by mauto.
+      assert {{ Γ, B ⊢ #0 : B[Wk][Id] }} by mauto.
+      assert {{ Γ, B ⊢s Id ,, #0 : Γ, B, B[Wk] }} by mauto.
+      assert {{ Γ, B ⊢s Wk : Γ }} by mauto.
+      assert {{ Γ, B ⊢s Wk∘(Id ,, # 0) ≈ Id : Γ, B }} by mauto.
+      assert {{ Γ, B ⊢s Wk∘Id ≈ (Wk∘Wk)∘(Id ,, # 0) : Γ }} by mauto.
+      assert {{ Γ, B, B[Wk] ⊢ #0 : B[Wk][Wk] }} by mauto.
+      assert {{ Γ, B, B[Wk] ⊢ #0 : B[Wk∘Wk] }} by mauto.
+      assert {{ Γ, B ⊢s q Wk ∘ (Id ,, #0) ≈ (Wk∘Wk)∘(Id ,, #0) ,, #0[Id ,, #0] : Γ, B }} by mauto.
+      assert {{ Γ, B ⊢s (Wk∘Wk)∘(Id ,, #0) ≈ Wk∘(Wk∘(Id ,, #0)) : Γ }} by mauto.
+      assert {{ Γ, B ⊢s (Wk∘Wk)∘(Id ,, #0) ≈ Wk∘Id : Γ }} by mauto.
+      assert {{ Γ, B ⊢ #0[Id ,, #0] ≈ #0 : B[Wk][Id] }} by mauto.
+      assert {{ Γ, B ⊢ #0 ≈ #0[Id] : B[Wk][Id] }} by mauto.
+      assert {{ Γ, B ⊢ #0[Id ,, #0] ≈ #0[Id] : B[Wk][Id] }} by mauto.
+      assert {{ Γ, B ⊢ #0[Id ,, #0] ≈ #0[Id] : B[Wk∘Id] }} by mauto.
+      assert {{ Γ, B ⊢ #0[Id ,, #0] ≈ #0[Id] : B[(Wk∘Wk)∘(Id ,, #0)] }} by mauto.
+      assert {{ Γ, B ⊢s (Wk∘Wk)∘(Id ,, #0) ,, #0[Id ,, #0] ≈ Wk∘Id ,, #0[Id] : Γ, B }} by mauto.
+      assert {{ Γ, B ⊢s Wk∘Id ,, #0[Id] ≈ Id : Γ, B }} by mauto.
+      assert {{ Γ, B ⊢s q Wk ∘ (Id ,, #0) ≈ Id : Γ, B }} by mauto.
+      assert {{ Γ, B ⊢ M[Wk] #0 : C[Id] }} by mauto.
+      enough {{ Γ, B ⊢ M[Wk] #0 : C }}...
+
+    + assert {{ Γ ⊢s Wk∘(σ ,, N') ≈ σ : Δ }} by mauto.
+      assert {{ Γ ⊢ B[Wk∘(σ ,, N')] ≈ B[σ] : Type@i }} by mauto.
+      assert {{ Δ, B ⊢s Wk : Δ }} by mauto.
+      assert {{ Γ ⊢ B[Wk][σ ,, N'] ≈ B[σ] : Type@i }} by mauto.
+      enough {{ Γ ⊢ #0[σ ,, N'] : B[Wk][σ ,, N'] }}...
+
+    + assert (∃ i, {{ Δ ⊢ C : Type@i }}) as [i'] by mauto.
+      assert {{ Γ ⊢s Wk∘(σ ,, N) ≈ σ : Δ }} by mauto.
+      assert {{ Γ ⊢ C[Wk∘(σ ,, N)] ≈ C[σ] : Type@i' }} by mauto.
+      assert {{ Δ, B ⊢s Wk : Δ }} by mauto.
+      assert {{ Γ ⊢ C[Wk][σ ,, N] ≈ C[σ] : Type@i' }} by mauto.
+      assert {{ Δ, B ⊢ #(S x) : C[Wk] }} by mauto.
+      enough {{ Γ ⊢ #(S x)[σ ,, N] : C[Wk][σ ,, N] }}...
+
+    + assert (∃ i, {{ Δ ⊢ C : Type@i }}) as []...
+
+  - intros * Hσσ'.
+    inversion_clear Hσσ'; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq); clear presup_exp presup_exp_eq presup_sub_eq; repeat split; mauto.
+    + econstructor...
+
+    + assert (exists i, {{ Γ0 ⊢ A : Type@i }}) as [] by mauto.
+      assert {{ Γ ⊢ #0[σ] : A[Wk][σ] }} by mauto.
+      enough {{ Γ ⊢ #0[σ] : A[Wk∘σ] }}...
+
+  Unshelve.
+  all: constructor.
 Qed.
 
 #[export]
-Hint Resolve presup_tm presup_eq presup_sb_eq : mcltt.
+Hint Resolve presup_exp presup_exp_eq presup_sub_eq : mcltt.
 
-Ltac gen_presup H := gen_presup_IH presup_tm presup_eq presup_sb_eq H; gen_presup_ctx H.
+Ltac gen_presup H := gen_presup_IH presup_exp presup_exp_eq presup_sub_eq H; gen_presup_ctx H.

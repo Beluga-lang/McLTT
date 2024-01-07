@@ -26,10 +26,10 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve ctx_decomp ctx_decomp_left ctx_decomp_right : mcltt.
+Hint Resolve ctx_decomp_left ctx_decomp_right : mcltt.
 
 Lemma lift_exp_ge : forall {Γ A n m}, n <= m -> {{ Γ ⊢ A : Type@n }} -> {{ Γ ⊢ A : Type@m }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros * Hnm HA.
   induction Hnm...
 Qed.
@@ -38,19 +38,19 @@ Qed.
 Hint Resolve lift_exp_ge : mcltt.
 
 Lemma lift_exp_max_left : forall {Γ A n} m, {{ Γ ⊢ A : Type@n }} -> {{ Γ ⊢ A : Type@(max n m) }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros.
   assert (n <= max n m) by lia...
 Qed.
 
 Lemma lift_exp_max_right : forall {Γ A} n {m}, {{ Γ ⊢ A : Type@m }} -> {{ Γ ⊢ A : Type@(max n m) }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros.
   assert (m <= max n m) by lia...
 Qed.
 
 Lemma lift_exp_eq_ge : forall {Γ A A' n m}, n <= m -> {{ Γ ⊢ A ≈ A': Type@n }} -> {{ Γ ⊢ A ≈ A' : Type@m }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros * Hnm HAA'.
   induction Hnm; subst...
 Qed.
@@ -59,20 +59,19 @@ Qed.
 Hint Resolve lift_exp_eq_ge : mcltt.
 
 Lemma lift_exp_eq_max_left : forall {Γ A A' n} m, {{ Γ ⊢ A ≈ A' : Type@n }} -> {{ Γ ⊢ A ≈ A' : Type@(max n m) }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros.
   assert (n <= max n m) by lia...
 Qed.
 
 Lemma lift_exp_eq_max_right : forall {Γ A A'} n {m}, {{ Γ ⊢ A ≈ A' : Type@m }} -> {{ Γ ⊢ A ≈ A' : Type@(max n m) }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros.
   assert (m <= max n m) by lia...
 Qed.
 
-(* Corresponds to presup-⊢≈ in the Agda proof *)
 Lemma presup_ctx_eq : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Γ }} ∧ {{ ⊢ Δ }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros * HΓΔ.
   induction HΓΔ as [|* ? []]...
 Qed.
@@ -106,7 +105,7 @@ Qed.
 Hint Resolve exp_eq_refl sub_eq_refl : mcltt.
 
 Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} ∧ {{ ⊢ Δ }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros * Hσ.
   induction Hσ; repeat destruct_one_pair...
 Qed.
@@ -126,34 +125,14 @@ Qed.
 #[export]
 Hint Resolve presup_sub_ctx presup_sub_ctx_left presup_sub_ctx_right : mcltt.
 
-Lemma presup_ctx : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }}.
-Proof with mauto.
+Lemma presup_exp_ctx : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }}.
+Proof with solve [mauto].
   intros * HM.
   induction HM...
 Qed.
 
 #[export]
-Hint Resolve presup_ctx : mcltt.
-
-(* Corresponds to ∈!⇒ty≈ in Agda proof *)
-Lemma ctxeq_ctx_lookup : forall {Γ Δ A x}, {{ ⊢ Γ ≈ Δ }} -> {{ #x : A ∈ Γ }} -> ∃ B i, {{ #x : B ∈ Δ }} ∧ {{ Γ ⊢ A ≈ B : Type@i }} ∧ {{ Δ ⊢ A ≈ B : Type@i }}.
-Proof with mauto.
-  intros * HΓΔ Hx.
-  gen Δ; induction Hx; intros; inversion_clear HΓΔ as [|? ? ? ? ? HΓΔ'].
-  - do 2 eexists; repeat split...
-  - destruct (IHHx _ HΓΔ') as [? [? [? [? ?]]]].
-    do 2 eexists; repeat split...
-Qed.
-
-(* Corresponds to ⊢≈-sym in Agda proof *)
-Lemma ctx_eq_sym : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ ≈ Γ }}.
-Proof with mauto.
-  intros.
-  induction H...
-Qed.
-
-#[export]
-Hint Resolve ctxeq_ctx_lookup ctx_eq_sym : mcltt.
+Hint Resolve presup_exp_ctx : mcltt.
 
 Lemma presup_sub_eq_ctx : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
