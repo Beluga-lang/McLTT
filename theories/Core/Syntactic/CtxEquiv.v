@@ -5,58 +5,91 @@ Require Import Syntactic.Syntax.
 Require Import Syntactic.System.
 Require Import Syntactic.SystemLemmas.
 
-Lemma ctxeq_tm : forall {Γ Δ t T}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ t : T }} -> {{ Δ ⊢ t : T }}
+#[local]
+Ltac gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper H :=
+  match type of H with
+  | {{ ?Γ ⊢ ?M : ?A }} => pose proof ctxeq_exp_helper _ _ _ H
+  | {{ ?Γ ⊢ ?M ≈ ?N : ?A }} => pose proof ctxeq_exp_eq_helper _ _ _ _ H
+  | {{ ?Γ ⊢s ?σ : ?Δ }} => pose proof ctxeq_sub_helper _ _ _ H
+  | {{ ?Γ ⊢s ?σ ≈ ?τ : ?Δ }} => pose proof ctxeq_sub_eq_helper _ _ _ _ H
+  | _ => idtac
+  end.
+
+Lemma ctxeq_exp_helper : forall {Γ M A}, {{ Γ ⊢ M : A }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢ M : A }}
 with
-ctxeq_eq : forall {Γ Δ t t' T}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ t ≈ t' : T }} -> {{ Δ ⊢ t ≈ t' : T }}
+ctxeq_exp_eq_helper : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢ M ≈ M' : A }}
 with
-ctxeq_s : forall {Γ Γ' Δ σ}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ : Γ' }} -> {{ Δ ⊢s σ : Γ' }}
+ctxeq_sub_helper : forall {Γ Γ' σ}, {{ Γ ⊢s σ : Γ' }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ : Γ' }}
 with
-ctxeq_s_eq : forall {Γ Γ' Δ σ σ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ ≈ σ' : Γ' }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
-Proof with mauto.
-  (*ctxeq_tm*)
-  - clear ctxeq_tm.
-    intros * HΓΔ Ht.
-    gen Δ.
-    induction Ht; intros; destruct (presup_ctx_eq HΓΔ)...
-    -- pose proof (IHHt1 _ HΓΔ).
-       assert ({{ ⊢ Γ , A ≈ Δ , A }})...
-    -- destruct (var_in_eq HΓΔ H0) as [T' [i [xT'G [GTT' DTT']]]].
-       eapply wf_conv...
-    -- assert ({{ ⊢ Γ , A ≈ Δ , A }}); mauto 6.
-    -- pose proof (IHHt1 _ HΓΔ).
-       assert ({{ ⊢ Γ , A ≈ Δ , A }})...
-  (*ctxeq_eq*)
-  - clear ctxeq_eq.
-    intros * HΓΔ Htt'.
-    gen Δ.
-    induction Htt'; intros; destruct (presup_ctx_eq HΓΔ).
-    1-4,6-19: mauto.
-    -- pose proof (IHHtt'1 _ HΓΔ).
-       pose proof (ctxeq_tm _ _ _ _ HΓΔ H).
-       assert ({{ ⊢ Γ , M ≈ Δ , M }})...
-    -- inversion_clear HΓΔ.
-       pose proof (var_in_eq H3 H0) as [T'' [n [xT'' [GTT'' DTT'']]]].
-       destruct (presup_ctx_eq H3).
-       eapply wf_eq_conv...
-    -- pose proof (var_in_eq HΓΔ H0) as [T'' [n [xT'' [GTT'' DTT'']]]].
-       eapply wf_eq_conv...
-  (*ctxeq_s*)
-  - clear ctxeq_s.
-    intros * HΓΔ Hσ.
-    gen Δ.
-    induction Hσ; intros; destruct (presup_ctx_eq HΓΔ)...
+ctxeq_sub_eq_helper : forall {Γ Γ' σ σ'}, {{ Γ ⊢s σ ≈ σ' : Γ' }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
+Proof with solve [mauto].
+  (* ctxeq_exp_helper *)
+  - intros * HM * HΓΔ. gen Δ.
+    inversion_clear HM; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
+    all: try (rename B into C); try (rename A0 into B).
+    2-4: assert {{ Δ ⊢ B : Type@i }} as HB by eauto.
+    2-4: assert {{ ⊢ Γ, B ≈ Δ, B }} by mauto; clear HB.
+    2-3: solve [mauto].
+
+    + assert {{ ⊢ Γ, ℕ ≈ Δ, ℕ }} by (econstructor; mauto).
+      assert {{ Δ, ℕ ⊢ B : Type@i }} by mauto.
+      econstructor...
+
+    + econstructor...
+
+    + assert (∃ B i, {{ #x : B ∈ Δ }} ∧ {{ Γ ⊢ A ≈ B : Type@i }} ∧ {{ Δ ⊢ A ≈ B : Type@i }}) as [? [? [? [? ?]]]]...
+
+  (* ctxeq_exp_eq_helper *)
+  - intros * HMM' * HΓΔ. gen Δ.
+    inversion_clear HMM'; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
+    all: try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
+    1-3: assert {{ ⊢ Γ, ℕ ≈ Δ, ℕ }} by (econstructor; mauto).
+    1-3: assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto.
+    1-3: econstructor...
+    1-5: assert {{ Δ ⊢ B : Type@i }} by eauto.
+    1-5: assert {{ ⊢ Γ, B ≈ Δ, B }}...
+
+    + assert (∃ B i, {{ #x : B ∈ Δ }} ∧ {{ Γ ⊢ A ≈ B : Type@i }} ∧ {{ Δ ⊢ A ≈ B : Type@i }}) as [? [? [? [? ?]]]]...
+
+    + inversion_clear HΓΔ as [|? Δ0 ? ? C'].
+      assert (∃ D i', {{ #x : D ∈ Δ0 }} ∧ {{ Γ0 ⊢ B ≈ D : Type@i' }} ∧ {{ Δ0 ⊢ B ≈ D : Type@i' }}) as [D [i0 [? [? ?]]]] by mauto.
+      assert {{ Δ0, C' ⊢ B[Wk] ≈ D[Wk] : Type @ i0 }}...
+
+  (* ctxeq_sub_helper *)
+  - intros * Hσ * HΓΔ. gen Δ.
+    inversion_clear Hσ; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
     inversion_clear HΓΔ.
     econstructor...
-  (*ctxeq_s_eq*)
-  - clear ctxeq_s_eq.
-    intros * HΓΔ Hσσ'.
-    gen Δ.
-    induction Hσσ'; intros; destruct (presup_ctx_eq HΓΔ).
-    3-9,11-13: mauto.
-    -- inversion_clear HΓΔ; eapply wf_sub_eq_conv...
-    -- inversion_clear HΓΔ; eapply wf_sub_eq_conv...
-    -- econstructor. eapply ctxeq_s...
+
+  (* ctxeq_sub_eq_helper *)
+  - intros * Hσσ' * HΓΔ. gen Δ.
+    inversion_clear Hσσ'; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
+    inversion_clear HΓΔ.
+    eapply wf_sub_eq_conv...
+
+  Unshelve.
+  all: constructor.
+Qed.
+
+Lemma ctxeq_exp : forall {Γ Δ M A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M : A }} -> {{ Δ ⊢ M : A }}.
+Proof.
+  eauto using ctxeq_exp_helper.
+Qed.
+
+Lemma ctxeq_exp_eq : forall {Γ Δ M M' A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M ≈ M' : A }} -> {{ Δ ⊢ M ≈ M' : A }}.
+Proof.
+  eauto using ctxeq_exp_eq_helper.
+Qed.
+
+Lemma ctxeq_sub : forall {Γ Δ σ Γ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ : Γ' }} -> {{ Δ ⊢s σ : Γ' }}.
+Proof.
+  eauto using ctxeq_sub_helper.
+Qed.
+
+Lemma ctxeq_sub_eq : forall {Γ Δ σ σ' Γ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ ≈ σ' : Γ' }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
+Proof.
+  eauto using ctxeq_sub_eq_helper.
 Qed.
 
 #[export]
-Hint Resolve ctxeq_tm ctxeq_eq ctxeq_s ctxeq_s_eq : mcltt.
+Hint Resolve ctxeq_exp ctxeq_exp_eq ctxeq_sub ctxeq_sub_eq : mcltt.

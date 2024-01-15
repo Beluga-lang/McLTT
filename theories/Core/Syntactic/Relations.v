@@ -24,10 +24,10 @@ Proof with mauto.
   induction HΓ01 as [|? ? ? i01 * HΓ01 IHΓ01 HΓ0T0 _ HΓ0T01 _]; intros...
   rename HΓ12 into HT1Γ12.
   inversion_clear HT1Γ12 as [|? ? ? i12 * HΓ12' _ HΓ2'T2 _ HΓ2'T12].
-  pose proof (lift_tm_max_left i12 HΓ0T0).
-  pose proof (lift_tm_max_right i01 HΓ2'T2).
-  pose proof (lift_eq_max_left i12 HΓ0T01).
-  pose proof (lift_eq_max_right i01 HΓ2'T12).
+  pose proof (lift_exp_max_left i12 HΓ0T0).
+  pose proof (lift_exp_max_right i01 HΓ2'T2).
+  pose proof (lift_exp_eq_max_left i12 HΓ0T01).
+  pose proof (lift_exp_eq_max_right i01 HΓ2'T12).
   econstructor...
 Qed.
 
@@ -37,11 +37,11 @@ Add Relation (ctx) (wf_ctx_eq)
     as ctx_eq.
 
 Add Parametric Relation (Γ : ctx) (T : typ) : (exp) (λ t t', {{ Γ ⊢ t ≈ t' : T }})
-    symmetry proved by (λ t t', wf_eq_sym Γ t t' T)
-    transitivity proved by (λ t t' t'', wf_eq_trans Γ t t' T t'')
-    as tm_eq.                                                
+    symmetry proved by (λ t t', wf_exp_eq_sym Γ t t' T)
+    transitivity proved by (λ t t' t'', wf_exp_eq_trans Γ t t' T t'')
+    as exp_eq.                                                
 
 Add Parametric Relation (Γ Δ : ctx) : (sub) (λ σ τ, {{ Γ ⊢s σ ≈ τ : Δ }})
     symmetry proved by (λ σ τ, wf_sub_eq_sym Γ σ τ Δ)
     transitivity proved by (λ σ τ ρ, wf_sub_eq_trans Γ σ τ Δ ρ)
-    as sb_eq.
+    as sub_eq.

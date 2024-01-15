@@ -42,6 +42,11 @@ Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : option exp :=
       | Some a => Some (a_succ a)
       | None => None
       end
+  | Cst.natrec n mx m z sx sr s =>
+      match elaborate m (mx :: ctx), elaborate z ctx, elaborate s (sx :: sr :: ctx), elaborate n ctx with
+      | Some m, Some z, Some s, Some n => Some (a_natrec m z s n)
+      | _, _, _, _ => None
+      end
   | Cst.var s =>
       match lookup s ctx with
       | Some n => Some (a_var n)
@@ -72,6 +77,7 @@ Fixpoint cst_variables (cst : Cst.obj) : StrSet.t :=
   | Cst.nat => StrSet.empty
   | Cst.zero => StrSet.empty
   | Cst.succ c => cst_variables c
+  | Cst.natrec n mx m z sx sy s => StrSet.union (StrSet.union (cst_variables n) (StrSet.remove mx (cst_variables m))) (StrSet.union (cst_variables z) (StrSet.remove sx (StrSet.remove sy (cst_variables s))))
   | Cst.var s => StrSet.singleton s
   | Cst.fn s t c => StrSet.union (cst_variables t) (StrSet.remove s (cst_variables c))
   | Cst.pi s t c => StrSet.union (cst_variables t) (StrSet.remove s (cst_variables c))
@@ -89,6 +95,7 @@ Inductive closed_at : exp -> nat -> Prop :=
  | ca_zero : forall n, closed_at (a_zero) n
  | ca_type : forall n m, closed_at (a_typ m) n
  | ca_succ : forall a n, closed_at a n -> closed_at (a_succ a) n
+ | ca_natrec : forall n m z s l, closed_at n l -> closed_at m (1+l) -> closed_at z l -> closed_at s (2+l) -> closed_at (a_natrec m z s n) l
 .
 (* TODO: JH: create our own hint database. *)
 #[local]
@@ -160,6 +167,14 @@ exists a : exp, (elaborate cst ctx = Some a) /\ (closed_at a (length ctx)).
 Proof.
   induction cst; intros; simpl in *; eauto.
   - destruct (IHcst _ H) as [ast [-> ?]]; eauto.
+  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
+    assert (cst_variables cst3 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst4 [<=] StrSProp.of_list (s0 :: s1 :: ctx)) by (simpl; fsetdec).
+    destruct (IHcst1 _ H0) as [ast [-> ?]];
+      destruct (IHcst2 _ H1) as [ast' [-> ?]];
+      destruct (IHcst3 _ H2) as [ast'' [-> ?]];
+      destruct (IHcst4 _ H3) as [ast''' [-> ?]]; eauto.
   - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list ctx) by fsetdec.
     destruct (IHcst1 _ H0) as [ast [-> ?]];
