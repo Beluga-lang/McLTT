@@ -91,19 +91,6 @@ Qed.
 #[export]
 Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mcltt.
 
-Lemma exp_eq_refl : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ Γ ⊢ M ≈ M : A }}.
-Proof.
-  mauto.
-Qed.
-
-Lemma sub_eq_refl : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢s σ ≈ σ : Δ }}.
-Proof.
-  mauto.
-Qed.
-
-#[export]
-Hint Resolve exp_eq_refl sub_eq_refl : mcltt.
-
 Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} ∧ {{ ⊢ Δ }}.
 Proof with solve [mauto].
   intros * Hσ.
