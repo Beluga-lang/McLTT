@@ -2,6 +2,8 @@
 
 -arg -w -arg -notation-overridden
 
+./Core/Semantic/Domain.v
+./Core/Semantic/Evaluate.v
 ./Core/Syntactic/CtxEquiv.v
 ./Core/Syntactic/Presup.v
 ./Core/Syntactic/Relations.v
