@@ -10,7 +10,7 @@ Reserved Notation "'⟦' σ '⟧s' p '↘' p'" (in custom judg at level 80, σ c
 Generalizable All Variables.
 
 Inductive eval_exp : exp -> env -> domain -> Type :=
-| eval_exp_univ :
+| eval_exp_typ :
   `( {{ ⟦ Type@i ⟧ p ↘ 𝕌@i }} )
 | eval_exp_nat :
   `( {{ ⟦ ℕ ⟧ p ↘ 𝕟 }} )

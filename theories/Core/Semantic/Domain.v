@@ -9,17 +9,17 @@ Inductive domain : Set :=
 | d_zero : domain
 | d_succ : domain -> domain
 | d_fn : env -> exp -> domain
-| d_neut : domain -> domain_neut -> domain
-with domain_neut : Set :=
+| d_neut : domain -> domain_ne -> domain
+with domain_ne : Set :=
 (** Notice that the number x here is not a de Bruijn index but an absolute
     representation of names.  That is, this number does not change relative to the
     binding structure it currently exists in.
  *)
-| d_var : forall (x : nat), domain_neut
-| d_app : domain_neut -> domain_norm -> domain_neut
-| d_natrec : env -> typ -> domain -> exp -> domain_neut -> domain_neut
-with domain_norm : Set :=
-| d_dom : domain -> domain -> domain_norm
+| d_var : forall (x : nat), domain_ne
+| d_app : domain_ne -> domain_nf -> domain_ne
+| d_natrec : env -> typ -> domain -> exp -> domain_ne -> domain_ne
+with domain_nf : Set :=
+| d_dom : domain -> domain -> domain_nf
 where "'env'" := (nat -> domain).
 
 #[global] Declare Custom Entry domain.
@@ -40,6 +40,7 @@ Notation "'rec' m 'under' p 'return' P | 'zero' -> mz | 'succ' -> MS 'end'" := (
 Notation "'!' n" := (d_var n) (in custom domain at level 0, n constr at level 0) : exp_scope.
 Notation "'⇑' a m" := (d_neut a m) (in custom domain at level 0, a custom domain at level 30, m custom domain at level 30) : exp_scope.
 Notation "'⇓' a m" := (d_dom a m) (in custom domain at level 0, a custom domain at level 30, m custom domain at level 30) : exp_scope.
+Notation "'⇑!' a n" := (d_neut a (d_var n)) (in custom domain at level 0, a custom domain at level 30, n constr at level 0) : exp_scope.
 
 Definition empty_env : env := fun x => d{{{ zero }}}.
 Definition extend_env (p : env) (d : domain) : env :=
