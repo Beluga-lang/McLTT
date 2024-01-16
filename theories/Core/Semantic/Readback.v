@@ -1,7 +1,8 @@
-Require Import Syntactic.Syntax.
-Require Import Syntactic.System.
-Require Import Semantic.Domain.
-Require Import Semantic.Evaluate.
+From Mcltt Require Import Base.
+From Mcltt Require Import Domain.
+From Mcltt Require Import Evaluate.
+From Mcltt Require Import Syntax.
+From Mcltt Require Import System.
 
 Reserved Notation "'Rnf' m 'in' s ↘ M" (in custom judg at level 80, m custom domain, s constr, M custom nf).
 Reserved Notation "'Rne' m 'in' s ↘ M" (in custom judg at level 80, m custom domain, s constr, M custom nf).
@@ -9,7 +10,7 @@ Reserved Notation "'Rtyp' m 'in' s ↘ M" (in custom judg at level 80, m custom 
 
 Generalizable All Variables.
 
-Inductive read_nf : nat -> domain_nf -> nf -> Type :=
+Inductive read_nf : nat -> domain_nf -> nf -> Prop :=
 | read_nf_type :
   `( {{ Rtyp a in s ↘ A }} ->
      {{ Rnf ⇓ 𝕌@i a in s ↘ A }} )
@@ -35,7 +36,7 @@ Inductive read_nf : nat -> domain_nf -> nf -> Type :=
   `( {{ Rne m in s ↘ M }} ->
      {{ Rnf ⇓ (⇑ a b) (⇑ c m) in s ↘ ⇑ M }} )
 where "'Rnf' m 'in' s ↘ M" := (read_nf s m M) (in custom judg) : exp_scope
-with read_ne : nat -> domain_ne -> ne -> Type :=
+with read_ne : nat -> domain_ne -> ne -> Prop :=
 | read_ne_var :
   `( {{ Rne !x in s ↘ #(s - x - 1) }} )
 | read_ne_app :
@@ -61,7 +62,7 @@ with read_ne : nat -> domain_ne -> ne -> Type :=
 
      {{ Rne rec m under p return B | zero -> mz | succ -> MS end in s ↘ rec M return B' | zero -> MZ | succ -> MS' end }} )
 where "'Rne' m 'in' s ↘ M" := (read_ne s m M) (in custom judg) : exp_scope
-with read_typ : nat -> domain -> nf -> Type :=
+with read_typ : nat -> domain -> nf -> Prop :=
 | read_typ_univ :
   `( {{ Rtyp 𝕌@i in s ↘ Type@i }} )
 | read_typ_nat :

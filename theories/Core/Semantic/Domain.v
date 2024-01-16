@@ -1,4 +1,4 @@
-Require Import Syntactic.Syntax.
+From Mcltt Require Import Syntax.
 
 Reserved Notation "'env'".
 

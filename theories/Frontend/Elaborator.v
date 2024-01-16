@@ -1,11 +1,12 @@
-Require Export String.
-Require Export List.
-Require Export Coq.Structures.OrderedTypeEx.
-Require Export MSets.
-Require Export Arith.
-Require Export Lia.
+From Coq Require Import Arith.
+From Coq Require Import Lia.
+From Coq Require Import List.
+From Coq Require Import String.
+From Coq Require Import Structures.OrderedTypeEx.
 
-Require Import Syntactic.Syntax.
+From Coq Require Import MSets.
+
+From Mcltt Require Import Syntax.
 
 Open Scope string_scope.
 

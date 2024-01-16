@@ -1,5 +1,7 @@
-Require Import String.
-Require Import List.
+From Coq Require Import List.
+From Coq Require Import String.
+
+From Mcltt Require Import Base.
 
 (* CST term *)
 Module Cst.
@@ -63,15 +65,11 @@ Definition exp_to_num e :=
   | None => None
   end.
 
-#[global] Declare Custom Entry exp.
-
-#[global] Declare Scope exp_scope.
-#[global] Delimit Scope exp_scope with exp.
 #[global] Bind Scope exp_scope with exp.
 #[global] Bind Scope exp_scope with sub.
-#[global] Bind Scope exp_scope with Sortclass.
 Open Scope exp_scope.
-Open Scope nat_scope.
+
+#[global] Declare Custom Entry exp.
 
 Notation "{{{ x }}}" := x (at level 0, x custom exp at level 99, format "'{{{'  x  '}}}'") : exp_scope.
 Notation "( x )" := x (in custom exp at level 0, x custom exp at level 60) : exp_scope.

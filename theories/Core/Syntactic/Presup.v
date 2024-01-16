@@ -1,12 +1,10 @@
-Require Import Unicode.Utf8_core.
-Require Import Setoid.
-
-Require Import LibTactics.
-Require Import Syntactic.Syntax.
-Require Import Syntactic.System.
-Require Import Syntactic.SystemLemmas.
-Require Import Syntactic.CtxEquiv.
-Require Import Syntactic.Relations.
+From Mcltt Require Import Base.
+From Mcltt Require Import CtxEquiv.
+From Mcltt Require Import LibTactics.
+From Mcltt Require Import Relations.
+From Mcltt Require Import Syntax.
+From Mcltt Require Import System.
+From Mcltt Require Import SystemLemmas.
 
 Ltac gen_presup_ctx H :=
   match type of H with
@@ -44,9 +42,9 @@ Ltac gen_presup_IH presup_exp presup_exp_eq presup_sub_eq H :=
   | _ => gen_presup_ctx H
   end.
 
-Lemma presup_exp : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }} ∧ ∃ i, {{ Γ ⊢ A : Type@i }}
-with presup_exp_eq : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }} ∧ {{ Γ ⊢ M : A }} ∧ {{ Γ ⊢ M' : A }} ∧ ∃ i, {{ Γ ⊢ A : Type@i }}
-with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} ∧ {{ Γ ⊢s σ : Δ }} ∧ {{ Γ ⊢s σ' : Δ }} ∧ {{ ⊢ Δ }}.
+Lemma presup_exp : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}
+with presup_exp_eq : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢ M : A }} /\ {{ Γ ⊢ M' : A }} /\ exists i, {{ Γ ⊢ A : Type@i }}
+with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢s σ : Δ }} /\ {{ Γ ⊢s σ' : Δ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
   (* presup_exp *)
   - intros * HM.
@@ -179,7 +177,7 @@ Proof with solve [mauto].
       assert {{ Γ ⊢ B[Wk][σ ,, N'] ≈ B[σ] : Type@i }} by mauto.
       enough {{ Γ ⊢ #0[σ ,, N'] : B[Wk][σ ,, N'] }}...
 
-    + assert (∃ i, {{ Δ ⊢ C : Type@i }}) as [i'] by mauto.
+    + assert (exists i, {{ Δ ⊢ C : Type@i }}) as [i'] by mauto.
       assert {{ Γ ⊢s Wk∘(σ ,, N) ≈ σ : Δ }} by mauto.
       assert {{ Γ ⊢ C[Wk∘(σ ,, N)] ≈ C[σ] : Type@i' }} by mauto.
       assert {{ Δ, B ⊢s Wk : Δ }} by mauto.
@@ -187,7 +185,7 @@ Proof with solve [mauto].
       assert {{ Δ, B ⊢ #(S x) : C[Wk] }} by mauto.
       enough {{ Γ ⊢ #(S x)[σ ,, N] : C[Wk][σ ,, N] }}...
 
-    + assert (∃ i, {{ Δ ⊢ C : Type@i }}) as []...
+    + assert (exists i, {{ Δ ⊢ C : Type@i }}) as []...
 
   - intros * Hσσ'.
     inversion_clear Hσσ'; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq); clear presup_exp presup_exp_eq presup_sub_eq; repeat split; mauto.

@@ -1,12 +1,11 @@
-Require Import Unicode.Utf8_core.
-Require Import Setoid.
-Require Import Coq.Program.Equality.
+From Coq Require Import Setoid.
 
-Require Import LibTactics.
-Require Import Syntactic.Syntax.
-Require Import Syntactic.System.
-Require Import Syntactic.SystemLemmas.
-Require Import Syntactic.CtxEquiv.
+From Mcltt Require Import Base.
+From Mcltt Require Import CtxEquiv.
+From Mcltt Require Import LibTactics.
+From Mcltt Require Import Syntax.
+From Mcltt Require Import System.
+From Mcltt Require Import SystemLemmas.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
 Proof with mauto.
@@ -36,12 +35,12 @@ Add Relation (ctx) (wf_ctx_eq)
     transitivity proved by @ctx_eq_trans
     as ctx_eq.
 
-Add Parametric Relation (Γ : ctx) (T : typ) : (exp) (λ t t', {{ Γ ⊢ t ≈ t' : T }})
-    symmetry proved by (λ t t', wf_exp_eq_sym Γ t t' T)
-    transitivity proved by (λ t t' t'', wf_exp_eq_trans Γ t t' T t'')
+Add Parametric Relation (Γ : ctx) (T : typ) : (exp) (fun t t' => {{ Γ ⊢ t ≈ t' : T }})
+    symmetry proved by (fun t t' => wf_exp_eq_sym Γ t t' T)
+    transitivity proved by (fun t t' t'' => wf_exp_eq_trans Γ t t' T t'')
     as exp_eq.                                                
 
-Add Parametric Relation (Γ Δ : ctx) : (sub) (λ σ τ, {{ Γ ⊢s σ ≈ τ : Δ }})
-    symmetry proved by (λ σ τ, wf_sub_eq_sym Γ σ τ Δ)
-    transitivity proved by (λ σ τ ρ, wf_sub_eq_trans Γ σ τ Δ ρ)
+Add Parametric Relation (Γ Δ : ctx) : (sub) (fun σ τ => {{ Γ ⊢s σ ≈ τ : Δ }})
+    symmetry proved by (fun σ τ => wf_sub_eq_sym Γ σ τ Δ)
+    transitivity proved by (fun σ τ ρ => wf_sub_eq_trans Γ σ τ Δ ρ)
     as sub_eq.

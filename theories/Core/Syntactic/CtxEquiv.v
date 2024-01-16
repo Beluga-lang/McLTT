@@ -1,9 +1,8 @@
-Require Import Unicode.Utf8_core.
-
-Require Import LibTactics.
-Require Import Syntactic.Syntax.
-Require Import Syntactic.System.
-Require Import Syntactic.SystemLemmas.
+From Mcltt Require Import Base.
+From Mcltt Require Import LibTactics.
+From Mcltt Require Import Syntax.
+From Mcltt Require Import System.
+From Mcltt Require Import SystemLemmas.
 
 #[local]
 Ltac gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper H :=
@@ -15,13 +14,13 @@ Ltac gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper c
   | _ => idtac
   end.
 
-Lemma ctxeq_exp_helper : forall {Γ M A}, {{ Γ ⊢ M : A }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢ M : A }}
+Lemma ctxeq_exp_helper : forall {Γ M A}, {{ Γ ⊢ M : A }} -> forall {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢ M : A }}
 with
-ctxeq_exp_eq_helper : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢ M ≈ M' : A }}
+ctxeq_exp_eq_helper : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> forall {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢ M ≈ M' : A }}
 with
-ctxeq_sub_helper : forall {Γ Γ' σ}, {{ Γ ⊢s σ : Γ' }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ : Γ' }}
+ctxeq_sub_helper : forall {Γ Γ' σ}, {{ Γ ⊢s σ : Γ' }} -> forall {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ : Γ' }}
 with
-ctxeq_sub_eq_helper : forall {Γ Γ' σ σ'}, {{ Γ ⊢s σ ≈ σ' : Γ' }} -> ∀ {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
+ctxeq_sub_eq_helper : forall {Γ Γ' σ σ'}, {{ Γ ⊢s σ ≈ σ' : Γ' }} -> forall {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
 Proof with solve [mauto].
   (* ctxeq_exp_helper *)
   - intros * HM * HΓΔ. gen Δ.
@@ -37,7 +36,7 @@ Proof with solve [mauto].
 
     + econstructor...
 
-    + assert (∃ B i, {{ #x : B ∈ Δ }} ∧ {{ Γ ⊢ A ≈ B : Type@i }} ∧ {{ Δ ⊢ A ≈ B : Type@i }}) as [? [? [? [? ?]]]]...
+    + assert (exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}) as [? [? [? [? ?]]]]...
 
   (* ctxeq_exp_eq_helper *)
   - intros * HMM' * HΓΔ. gen Δ.
@@ -49,10 +48,10 @@ Proof with solve [mauto].
     1-5: assert {{ Δ ⊢ B : Type@i }} by eauto.
     1-5: assert {{ ⊢ Γ, B ≈ Δ, B }}...
 
-    + assert (∃ B i, {{ #x : B ∈ Δ }} ∧ {{ Γ ⊢ A ≈ B : Type@i }} ∧ {{ Δ ⊢ A ≈ B : Type@i }}) as [? [? [? [? ?]]]]...
+    + assert (exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}) as [? [? [? [? ?]]]]...
 
     + inversion_clear HΓΔ as [|? Δ0 ? ? C'].
-      assert (∃ D i', {{ #x : D ∈ Δ0 }} ∧ {{ Γ0 ⊢ B ≈ D : Type@i' }} ∧ {{ Δ0 ⊢ B ≈ D : Type@i' }}) as [D [i0 [? [? ?]]]] by mauto.
+      assert (exists D i', {{ #x : D ∈ Δ0 }} /\ {{ Γ0 ⊢ B ≈ D : Type@i' }} /\ {{ Δ0 ⊢ B ≈ D : Type@i' }}) as [D [i0 [? [? ?]]]] by mauto.
       assert {{ Δ0, C' ⊢ B[Wk] ≈ D[Wk] : Type @ i0 }}...
 
   (* ctxeq_sub_helper *)

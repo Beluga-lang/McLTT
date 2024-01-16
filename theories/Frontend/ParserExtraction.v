@@ -1,11 +1,12 @@
-Require Extraction.
-Require Import Frontend.Parser.
+From Coq Require Extraction.
 
+From Coq Require Import ExtrOcamlBasic.
+From Coq Require Import ExtrOcamlNatInt.
+From Coq Require Import ExtrOcamlNativeString.
+
+From Mcltt Require Import Parser.
 Import MenhirLibParser.Inter.
-Extraction Language OCaml.
 
-Require Import ExtrOcamlBasic.
-Require Import ExtrOcamlNatInt.
-Require Import ExtrOcamlNativeString.
+Extraction Language OCaml.
 
 Extraction "parser.ml" Parser.prog.

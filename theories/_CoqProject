@@ -2,6 +2,7 @@
 
 -arg -w -arg -notation-overridden
 
+./Core/Base.v
 ./Core/Semantic/Domain.v
 ./Core/Semantic/Evaluate.v
 ./Core/Semantic/Readback.v
