@@ -10,11 +10,11 @@ Require Import Syntactic.Relations.
 
 Ltac gen_presup_ctx H :=
   match type of H with
-  | {{ ⊢ ?Γ ≈ ?Δ }} =>
+  | {{ ⊢ ~?Γ ≈ ~?Δ }} =>
       let HΓ := fresh "HΓ" in
       let HΔ := fresh "HΔ" in
       pose proof presup_ctx_eq H as [HΓ HΔ]
-  | {{ ?Γ ⊢s ?σ : ?Δ }} =>
+  | {{ ~?Γ ⊢s ~?σ : ~?Δ }} =>
       let HΓ := fresh "HΓ" in
       let HΔ := fresh "HΔ" in
       pose proof presup_sub_ctx H as [HΓ HΔ]
@@ -23,19 +23,19 @@ Ltac gen_presup_ctx H :=
 
 Ltac gen_presup_IH presup_exp presup_exp_eq presup_sub_eq H :=
   match type of H with
-  | {{ ?Γ ⊢ ?M : ?A }} =>
+  | {{ ~?Γ ⊢ ~?M : ~?A }} =>
       let HΓ := fresh "HΓ" in
       let i := fresh "i" in
       let HAi := fresh "HAi" in
       pose proof presup_exp _ _ _ H as [HΓ [i HAi]]
-  | {{ ?Γ ⊢ ?M ≈ ?N : ?A }} =>
+  | {{ ~?Γ ⊢ ~?M ≈ ~?N : ~?A }} =>
       let HΓ := fresh "HΓ" in
       let i := fresh "i" in
       let HM := fresh "HM" in
       let HN := fresh "HN" in
       let HAi := fresh "HAi" in
       pose proof presup_exp_eq _ _ _ _ H as [HΓ [HM [HN [i HAi]]]]
-  | {{ ?Γ ⊢s ?σ ≈ ?τ : ?Δ }} =>
+  | {{ ~?Γ ⊢s ~?σ ≈ ~?τ : ~?Δ }} =>
       let HΓ := fresh "HΓ" in
       let Hσ := fresh "Hσ" in
       let Hτ := fresh "Hτ" in

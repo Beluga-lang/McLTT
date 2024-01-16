@@ -8,10 +8,10 @@ Require Import Syntactic.SystemLemmas.
 #[local]
 Ltac gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper H :=
   match type of H with
-  | {{ ?Γ ⊢ ?M : ?A }} => pose proof ctxeq_exp_helper _ _ _ H
-  | {{ ?Γ ⊢ ?M ≈ ?N : ?A }} => pose proof ctxeq_exp_eq_helper _ _ _ _ H
-  | {{ ?Γ ⊢s ?σ : ?Δ }} => pose proof ctxeq_sub_helper _ _ _ H
-  | {{ ?Γ ⊢s ?σ ≈ ?τ : ?Δ }} => pose proof ctxeq_sub_eq_helper _ _ _ _ H
+  | {{ ~?Γ ⊢ ~?M : ~?A }} => pose proof ctxeq_exp_helper _ _ _ H
+  | {{ ~?Γ ⊢ ~?M ≈ ~?N : ~?A }} => pose proof ctxeq_exp_eq_helper _ _ _ _ H
+  | {{ ~?Γ ⊢s ~?σ : ~?Δ }} => pose proof ctxeq_sub_helper _ _ _ H
+  | {{ ~?Γ ⊢s ~?σ ≈ ~?τ : ~?Δ }} => pose proof ctxeq_sub_eq_helper _ _ _ _ H
   | _ => idtac
   end.
 
