@@ -4,6 +4,7 @@
 
 ./Core/Semantic/Domain.v
 ./Core/Semantic/Evaluate.v
+./Core/Semantic/Readback.v
 ./Core/Syntactic/CtxEquiv.v
 ./Core/Syntactic/Presup.v
 ./Core/Syntactic/Relations.v
