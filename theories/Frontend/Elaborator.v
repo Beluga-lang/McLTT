@@ -1,10 +1,8 @@
-From Coq Require Import Arith.
 From Coq Require Import Lia.
 From Coq Require Import List.
-From Coq Require Import String.
-From Coq Require Import Structures.OrderedTypeEx.
-
 From Coq Require Import MSets.
+From Coq Require Import PeanoNat.
+From Coq Require Import String.
 
 From Mcltt Require Import Syntax.
 
@@ -103,7 +101,7 @@ Inductive closed_at : exp -> nat -> Prop :=
 Hint Constructors closed_at: core.
 
 (*Lemma for the well_scoped proof, lookup succeeds if var is in context*)
-Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n /\ n < length ctx).
+Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n /\ n < List.length ctx).
 Proof.
   induction ctx as [| c ctx' IHctx]; simpl in *.
   - contradiction.
@@ -116,7 +114,7 @@ Proof.
 Qed.
 
 (*Lemma for the well_scoped proof, lookup result always less than context length*)
-Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (length ctx).
+Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (List.length ctx).
   induction ctx.
   - intros. discriminate H.
   - intros. destruct (string_dec a s).
@@ -139,7 +137,7 @@ Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (length ctx).
           rewrite (Nat.add_sub n1 1) in l.
           rewrite <- H1.
           rewrite Nat.add_1_r.
-          apply (Arith_prebase.lt_n_S_stt (n1) (length ctx)).
+          apply (Arith_prebase.lt_n_S_stt (n1) (List.length ctx)).
           apply l.
           reflexivity.
         --discriminate H.
@@ -164,7 +162,7 @@ Qed.
 (*Well scopedness lemma: If the set of free variables in a cst are contained in a context
   then elaboration succeeds with that context, and the result is a closed term*)
 Lemma well_scoped (cst : Cst.obj) : forall ctx,  cst_variables cst [<=] StrSProp.of_list ctx  ->
-exists a : exp, (elaborate cst ctx = Some a) /\ (closed_at a (length ctx)).
+exists a : exp, (elaborate cst ctx = Some a) /\ (closed_at a (List.length ctx)).
 Proof.
   induction cst; intros; simpl in *; eauto.
   - destruct (IHcst _ H) as [ast [-> ?]]; eauto.
