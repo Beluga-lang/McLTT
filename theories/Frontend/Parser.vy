@@ -1,7 +1,6 @@
 %{
 
-Require Import String.
-Require Import List.
+From Coq Require Import List String.
 
 From Mcltt Require Import Syntax.
 

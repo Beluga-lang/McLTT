@@ -2,6 +2,7 @@
 
 -arg -w -arg -notation-overridden
 
+./Core/Base.v
 ./Core/Syntactic/CtxEquiv.v
 ./Core/Syntactic/Presup.v
 ./Core/Syntactic/Relations.v
