@@ -6,35 +6,27 @@ Notation "'Exp' a ≈ b ∈ R" := (R a b) (in custom judg at level 90, a custom 
 
 Generalizable All Variables.
 
-Record rel_mod_eval_R R A p A' p' := mk_rel_mod_eval_R
-  { rel_mod_eval_R_a : domain
-  ; rel_mod_eval_R_a' : domain
-  ; rel_mod_eval_R_eval_A : {{ ⟦ A ⟧ p ↘ rel_mod_eval_R_a }}
-  ; rel_mod_eval_R_eval_A' : {{ ⟦ A' ⟧ p' ↘ rel_mod_eval_R_a' }}
-  ; rel_mod_eval_R_eq : {{ Dom rel_mod_eval_R_a ≈ rel_mod_eval_R_a' ∈ R }}
-  }
-.  
-
-Arguments rel_mod_eval_R_a {_} {_} {_} {_} {_} _.
-Arguments rel_mod_eval_R_a' {_} {_} {_} {_} {_} _.
-Arguments rel_mod_eval_R_eval_A {_} {_} {_} {_} {_} _.
-Arguments rel_mod_eval_R_eval_A' {_} {_} {_} {_} {_} _.
-Arguments rel_mod_eval_R_eq {_} {_} {_} {_} {_} _.
-
-Record rel_mod_app_R R f a f' a' := mk_rel_mod_app_R
-  { rel_mod_app_R_fa : domain
-  ; rel_mod_app_R_f'a' : domain
-  ; rel_mod_app_R_app_fa : {{ $| f & a |↘ rel_mod_app_R_fa }}
-  ; rel_mod_app_R_app_f'a' : {{ $| f' & a'|↘ rel_mod_app_R_f'a' }}
-  ; rel_mod_app_R_eq : {{ Dom rel_mod_app_R_fa ≈ rel_mod_app_R_f'a' ∈ R }}
+Record rel_mod_eval (R : relation domain) A p A' p' : Prop := mk_rel_mod_eval
+  { rel_mod_eval_A : exists a, {{ ⟦ A ⟧ p ↘ a }}
+  ; rel_mod_eval_A' : exists a', {{ ⟦ A' ⟧ p' ↘ a' }}
+  ; rel_mod_eval_equiv : forall {a a'}, {{ ⟦ A ⟧ p ↘ a }} -> {{ ⟦ A' ⟧ p' ↘ a' }} -> {{ Dom a ≈ a' ∈ R }}
   }
 .
+Arguments mk_rel_mod_eval {_} {_} {_} {_} {_}.
+Arguments rel_mod_eval_A {_} {_} {_} {_} {_}.
+Arguments rel_mod_eval_A' {_} {_} {_} {_} {_}.
+Arguments rel_mod_eval_equiv {_} {_} {_} {_} {_} _ {_} {_} _ _.
 
-Arguments rel_mod_app_R_fa {_} {_} {_} {_} {_} _.
-Arguments rel_mod_app_R_f'a' {_} {_} {_} {_} {_} _.
-Arguments rel_mod_app_R_app_fa {_} {_} {_} {_} {_} _.
-Arguments rel_mod_app_R_app_f'a' {_} {_} {_} {_} {_} _.
-Arguments rel_mod_app_R_eq {_} {_} {_} {_} {_} _.
+Record rel_mod_app (R : relation domain) f a f' a' : Prop := mk_rel_mod_app
+  { rel_mod_app_fa : exists fa, {{ $| f & a |↘ fa }}
+  ; rel_mod_app_f'a' : exists f'a', {{ $| f' & a'|↘ f'a' }}
+  ; rel_mod_app_equiv : forall {fa f'a'}, {{ $| f & a |↘ fa }} -> {{ $| f' & a' |↘ f'a' }} -> {{ Dom fa ≈ f'a' ∈ R }}
+  }
+.
+Arguments mk_rel_mod_app {_} {_} {_} {_} {_}.
+Arguments rel_mod_app_fa {_} {_} {_} {_} {_}.
+Arguments rel_mod_app_f'a' {_} {_} {_} {_} {_}.
+Arguments rel_mod_app_equiv {_} {_} {_} {_} {_} _ {_} {_} _ _.
 
 Definition per_bot : relation domain_ne := fun m n => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne n in s ↘ L }}).
 
@@ -74,7 +66,7 @@ Module Per_univ_def.
             (eq_a_a' : {{ Dom a ≈ a' ∈ univ_rel }}),
             (forall {c c'},
                 {{ Dom c ≈ c' ∈ elem_rel eq_a_a' }} ->
-                rel_mod_eval_R per_univ_template B d{{{ p ↦ c }}} B' d{{{ p ↦ c' }}}) ->
+                rel_mod_eval per_univ_template B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}) ->
             {{ Dom Π a p B ≈ Π a' p' B' ∈ per_univ_template }} }
     | per_univ_template_neut :
       `{ {{ Dom m ≈ m' ∈ per_bot }} ->
@@ -95,9 +87,10 @@ Module Per_univ_def.
             (eq_a_a' : {{ Dom a ≈ a' ∈ univ_rel }})
             (rel_B_B' : forall {c c'},
                 {{ Dom c ≈ c' ∈ elem_rel eq_a_a' }} ->
-                rel_mod_eval_R per_univ_template B d{{{ p ↦ c }}} B' d{{{ p ↦ c' }}}),
-            (forall {c c'} (eq_c_c' : {{ Dom c ≈ c' ∈ elem_rel eq_a_a' }}),
-                rel_mod_app_R (per_elem_template (rel_mod_eval_R_eq (rel_B_B' eq_c_c'))) f c f' c') ->
+                rel_mod_eval per_univ_template B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}),
+            (forall {c c'} (eq_c_c' : {{ Dom c ≈ c' ∈ elem_rel eq_a_a' }})
+                {b b'} (eval_B : {{ ⟦ B ⟧ p ↦ c ↘ b }}) (eval_B' : {{ ⟦ B' ⟧ p' ↦ c' ↘ b' }}),
+                rel_mod_app (per_elem_template (rel_mod_eval_equiv (rel_B_B' eq_c_c') eval_B eval_B')) f c f' c') ->
             {{ Dom f ≈ f' ∈ per_elem_template (@per_univ_template_pi a a' B p B' p' univ_rel (@elem_rel) eq_a_a' (@rel_B_B')) }} }
     | per_elem_template_neut :
       `{ forall (eq_a_a' : {{ Dom a ≈ a' ∈ per_bot }}),
@@ -113,11 +106,11 @@ Module Per_univ_def.
       `{ forall (eq_a_a' : {{ Dom a ≈ a' ∈ per_univ_template }})
             (rel_B_B' : forall {c c'},
                 {{ Dom c ≈ c' ∈ per_elem_template eq_a_a' }} ->
-                rel_mod_eval_R per_univ_template B d{{{ p ↦ c }}} B' d{{{ p ↦ c' }}}),
+                rel_mod_eval per_univ_template B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}),
             per_univ_check eq_a_a' ->
-            (forall {c c'}
-                (eq_c_c' : {{ Dom c ≈ c' ∈ per_elem_template eq_a_a' }}),
-                per_univ_check (rel_mod_eval_R_eq (rel_B_B' eq_c_c'))) ->
+            (forall {c c'} (eq_c_c' : {{ Dom c ≈ c' ∈ per_elem_template eq_a_a' }})
+                {b b'} (eval_B : {{ ⟦ B ⟧ p ↦ c ↘ b }}) (eval_B' : {{ ⟦ B' ⟧ p' ↦ c' ↘ b' }}),
+                per_univ_check (rel_mod_eval_equiv (rel_B_B' eq_c_c') eval_B eval_B')) ->
             per_univ_check (@per_univ_template_pi a a' B p B' p' per_univ_template (@per_elem_template) eq_a_a' (@rel_B_B')) }
     | per_univ_check_neut :
       `{ per_univ_check (@per_univ_template_neut m m' a a' eq_m_m') }
@@ -144,7 +137,7 @@ Defined.
 Definition per_univ (i : nat) : relation domain := Per_univ_def.per_univ i (@per_univ_base i).
 Definition per_elem {i a a'} (eq_a_a' : {{ Dom a ≈ a' ∈ per_univ i }}) : relation domain := Per_univ_def.per_elem i (@per_univ_base i) eq_a_a'.
 
-Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) := rel_mod_eval_R (per_univ i) A p A' p'.
+Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) := rel_mod_eval (per_univ i) A p A' p'.
 
 Module Per_ctx_def.
   Inductive per_ctx_template : relation ctx :=
@@ -165,8 +158,9 @@ Module Per_ctx_def.
           (env_rel : forall {Γ Γ'}, {{ Exp Γ ≈ Γ' ∈ ctx_rel }} -> relation env)
           (eq_Γ_Γ' : {{ Exp Γ ≈ Γ' ∈ ctx_rel }})
           (rel_A_A' : forall {p p'}, {{ Dom p ≈ p' ∈ env_rel eq_Γ_Γ' }} -> rel_typ i A p A' p')
-          (eq_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ env_rel eq_Γ_Γ' }}),
-          {{ Dom ~(p 0) ≈ ~(p' 0) ∈ per_elem (rel_mod_eval_R_eq (rel_A_A' eq_p_drop_p'_drop)) }} ->
+          (eq_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ env_rel eq_Γ_Γ' }})
+          (eval_A : {{ ⟦ A ⟧ p ↯ ↘ a }}) (eval_A' : {{ ⟦ A' ⟧ p' ↯ ↘ a' }}),
+          {{ Dom ~(p 0) ≈ ~(p' 0) ∈ per_elem (rel_mod_eval_equiv (rel_A_A' eq_p_drop_p'_drop) eval_A eval_A') }} ->
           {{ Dom p ≈ p ∈ per_env_template (per_ctx_template_cons ctx_rel (@env_rel) eq_Γ_Γ' (@rel_A_A')) }} }
   .
 
