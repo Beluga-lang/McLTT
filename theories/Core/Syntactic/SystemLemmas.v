@@ -1,10 +1,6 @@
-Require Import Unicode.Utf8_core.
+From Mcltt Require Import Base LibTactics System Syntax.
 
-Require Import LibTactics.
-Require Import Syntactic.Syntax.
-Require Import Syntactic.System.
-
-Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} ∧ ∃ i, {{ Γ ⊢ A : Type@i }}.
+Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with solve [mauto].
   intros * HAΓ.
   inversion HAΓ; subst...
@@ -19,7 +15,7 @@ Proof with solve [eauto].
   eapply proj1, ctx_decomp...
 Qed.
 
-Lemma ctx_decomp_right : forall {Γ A}, {{ ⊢ Γ , A }} -> ∃ i, {{ Γ ⊢ A : Type@i }}.
+Lemma ctx_decomp_right : forall {Γ A}, {{ ⊢ Γ , A }} -> exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with solve [eauto].
   intros * HAΓ.
   eapply proj2, ctx_decomp...
@@ -70,7 +66,7 @@ Proof with solve [mauto].
   assert (m <= max n m) by lia...
 Qed.
 
-Lemma presup_ctx_eq : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Γ }} ∧ {{ ⊢ Δ }}.
+Lemma presup_ctx_eq : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
   intros * HΓΔ.
   induction HΓΔ as [|* ? []]...
@@ -91,7 +87,7 @@ Qed.
 #[export]
 Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mcltt.
 
-Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} ∧ {{ ⊢ Δ }}.
+Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
   intros * Hσ.
   induction Hσ; repeat destruct_one_pair...
@@ -487,7 +483,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_sub_sub_compose_cong : mcltt.
 
-Lemma ctx_lookup_wf : forall {Γ A x}, {{ ⊢ Γ }} -> {{ #x : A ∈ Γ }} -> ∃ i, {{ Γ ⊢ A : Type@i }}.
+Lemma ctx_lookup_wf : forall {Γ A x}, {{ ⊢ Γ }} -> {{ #x : A ∈ Γ }} -> exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with solve [mauto].
   intros * HΓ Hx.
   induction Hx; inversion_clear HΓ; [|assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by eauto]...
@@ -496,7 +492,7 @@ Qed.
 #[export]
 Hint Resolve ctx_lookup_wf : mcltt.
 
-Lemma ctxeq_ctx_lookup : forall {Γ Δ A x}, {{ ⊢ Γ ≈ Δ }} -> {{ #x : A ∈ Γ }} -> ∃ B i, {{ #x : B ∈ Δ }} ∧ {{ Γ ⊢ A ≈ B : Type@i }} ∧ {{ Δ ⊢ A ≈ B : Type@i }}.
+Lemma ctxeq_ctx_lookup : forall {Γ Δ A x}, {{ ⊢ Γ ≈ Δ }} -> {{ #x : A ∈ Γ }} -> exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}.
 Proof with solve [mauto].
   intros * HΓΔ Hx; gen Δ.
   induction Hx as [|* ? IHHx]; intros; inversion_clear HΓΔ as [|? ? ? ? ? HΓΔ'];
@@ -506,7 +502,7 @@ Qed.
 #[export]
 Hint Resolve ctxeq_ctx_lookup : mcltt.
 
-Lemma sub_id_extend : ∀ {Γ M A i}, {{ Γ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A }} -> {{ Γ ⊢s Id,,M : Γ, A }}.
+Lemma sub_id_extend : forall {Γ M A i}, {{ Γ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A }} -> {{ Γ ⊢s Id,,M : Γ, A }}.
 Proof with solve [mauto].
   intros.
   econstructor...
@@ -515,7 +511,7 @@ Qed.
 #[export]
 Hint Resolve sub_id_extend : mcltt.
 
-Lemma sub_eq_p_id_extend : ∀ {Γ M A i}, {{ Γ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A }} -> {{ Γ ⊢s Wk∘(Id ,, M) ≈ Id : Γ }}.
+Lemma sub_eq_p_id_extend : forall {Γ M A i}, {{ Γ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A }} -> {{ Γ ⊢s Wk∘(Id ,, M) ≈ Id : Γ }}.
 Proof with solve [mauto].
   intros.
   econstructor...
@@ -572,12 +568,12 @@ Qed.
 #[export]
 Hint Resolve exp_eq_var_1_sub_q_sigma_nat : mcltt.
 
-Lemma sub_id_extend_zero : ∀ {Γ}, {{ ⊢ Γ }} -> {{ Γ ⊢s Id,,zero : Γ, ℕ }}.
+Lemma sub_id_extend_zero : forall {Γ}, {{ ⊢ Γ }} -> {{ Γ ⊢s Id,,zero : Γ, ℕ }}.
 Proof.
   mauto.
 Qed.
 
-Lemma sub_weak_compose_weak_extend_succ_var_1 : ∀ {Γ A i}, {{ Γ, ℕ ⊢ A : Type@i }} -> {{ Γ, ℕ, A ⊢s Wk∘Wk,,succ #1 : Γ, ℕ }}.
+Lemma sub_weak_compose_weak_extend_succ_var_1 : forall {Γ A i}, {{ Γ, ℕ ⊢ A : Type@i }} -> {{ Γ, ℕ, A ⊢s Wk∘Wk,,succ #1 : Γ, ℕ }}.
 Proof with solve [mauto].
   intros.
   assert {{ ⊢ Γ, ℕ }} by mauto.
@@ -585,7 +581,7 @@ Proof with solve [mauto].
   eapply sub_extend_nat...
 Qed.
 
-Lemma sub_eq_id_extend_nat_compose_sigma : ∀ {Γ M σ Δ}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ M : ℕ }} -> {{ Γ ⊢s (Id,,M)∘σ ≈ σ,,M[σ] : Δ, ℕ }}.
+Lemma sub_eq_id_extend_nat_compose_sigma : forall {Γ M σ Δ}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ M : ℕ }} -> {{ Γ ⊢s (Id,,M)∘σ ≈ σ,,M[σ] : Δ, ℕ }}.
 Proof with solve [mauto].
   intros.
   assert {{ Γ ⊢s (Id ,, M)∘σ ≈ Id∘σ ,, M[σ] : Δ, ℕ }} by (eapply sub_eq_extend_compose_nat; mauto).
@@ -594,7 +590,7 @@ Proof with solve [mauto].
   constructor.
 Qed.
 
-Lemma sub_eq_id_extend_compose_sigma : ∀ {Γ M A σ Δ i}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Δ ⊢ M : A }} -> {{ Γ ⊢s (Id,,M)∘σ ≈ σ,,M[σ] : Δ, A }}.
+Lemma sub_eq_id_extend_compose_sigma : forall {Γ M A σ Δ i}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Δ ⊢ M : A }} -> {{ Γ ⊢s (Id,,M)∘σ ≈ σ,,M[σ] : Δ, A }}.
 Proof with solve [mauto].
   intros.
   assert {{ Γ ⊢s (Id ,, M)∘σ ≈ Id∘σ ,, M[σ] : Δ, A }} by (eapply wf_sub_eq_extend_compose; mauto).
@@ -605,7 +601,7 @@ Qed.
 #[export]
 Hint Resolve sub_id_extend_zero sub_weak_compose_weak_extend_succ_var_1 sub_eq_id_extend_nat_compose_sigma sub_eq_id_extend_compose_sigma : mcltt.
 
-Lemma sub_eq_sigma_compose_weak_id_extend : ∀ {Γ M A i σ Δ}, {{ Γ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A }} -> {{ Γ ⊢s (σ∘Wk)∘(Id,,M) ≈ σ : Δ }}.
+Lemma sub_eq_sigma_compose_weak_id_extend : forall {Γ M A i σ Δ}, {{ Γ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A }} -> {{ Γ ⊢s (σ∘Wk)∘(Id,,M) ≈ σ : Δ }}.
 Proof with solve [mauto].
   intros.
   assert {{ Γ ⊢s Id,,M : Γ, A }} by mauto.
@@ -617,7 +613,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_sigma_compose_weak_id_extend : mcltt.
 
-Lemma sub_eq_q_sigma_id_extend : ∀ {Γ M A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A[σ] }} -> {{ Γ ⊢s q σ∘(Id,,M) ≈ σ,,M : Δ, A }}.
+Lemma sub_eq_q_sigma_id_extend : forall {Γ M A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A[σ] }} -> {{ Γ ⊢s q σ∘(Id,,M) ≈ σ,,M : Δ, A }}.
 Proof with solve [mauto].
   intros.
   assert {{ Γ ⊢s Id ,, M : Γ, A[σ] }} by mauto.
@@ -634,7 +630,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_q_sigma_id_extend : mcltt.
 
-Lemma sub_eq_p_q_sigma : ∀ {Γ A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, A[σ] ⊢s Wk∘q σ ≈ σ∘Wk : Δ }}.
+Lemma sub_eq_p_q_sigma : forall {Γ A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, A[σ] ⊢s Wk∘q σ ≈ σ∘Wk : Δ }}.
 Proof with solve [mauto].
   intros.
   assert {{ ⊢ Γ }} by mauto.
@@ -645,7 +641,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_p_q_sigma : mcltt.
 
-Lemma sub_eq_p_q_sigma_nat : ∀ {Γ σ Δ}, {{ Γ ⊢s σ : Δ }} -> {{ Γ, ℕ ⊢s Wk∘q σ ≈ σ∘Wk : Δ }}.
+Lemma sub_eq_p_q_sigma_nat : forall {Γ σ Δ}, {{ Γ ⊢s σ : Δ }} -> {{ Γ, ℕ ⊢s Wk∘q σ ≈ σ∘Wk : Δ }}.
 Proof with solve [mauto].
   intros.
   assert {{ ⊢ Γ }} by mauto.
@@ -655,7 +651,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_p_q_sigma_nat : mcltt.
 
-Lemma sub_eq_p_p_q_q_sigma_nat : ∀ {Γ A i σ Δ}, {{ Δ, ℕ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, ℕ, A[q σ] ⊢s Wk∘(Wk∘q (q σ)) ≈ (σ∘Wk)∘Wk : Δ }}.
+Lemma sub_eq_p_p_q_q_sigma_nat : forall {Γ A i σ Δ}, {{ Δ, ℕ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, ℕ, A[q σ] ⊢s Wk∘(Wk∘q (q σ)) ≈ (σ∘Wk)∘Wk : Δ }}.
 Proof with solve [mauto].
   intros.
   assert {{ ⊢ Γ }} by mauto.
@@ -670,7 +666,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_p_p_q_q_sigma_nat : mcltt.
 
-Lemma sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : ∀ {Γ A i σ Δ}, {{ Δ, ℕ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, ℕ, A[q σ] ⊢s q σ∘(Wk∘Wk,,succ #1) ≈ (Wk∘Wk,,succ #1)∘q (q σ) : Δ, ℕ }}.
+Lemma sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : forall {Γ A i σ Δ}, {{ Δ, ℕ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, ℕ, A[q σ] ⊢s q σ∘(Wk∘Wk,,succ #1) ≈ (Wk∘Wk,,succ #1)∘q (q σ) : Δ, ℕ }}.
 Proof with solve [mauto].
   intros.
   assert {{ ⊢ Δ }} by mauto.

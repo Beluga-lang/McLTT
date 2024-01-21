@@ -1,6 +1,4 @@
-Require Export Coq.Program.Tactics.
-
-Require Export Lia.
+From Coq Require Export Program.Tactics Lia.
 
 Create HintDb mcltt discriminated.
 

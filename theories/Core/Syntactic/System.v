@@ -1,11 +1,7 @@
-Require Import List.
-Require Import Unicode.Utf8_core.
+From Coq Require Import List.
 
-Require Import LibTactics.
-Require Import Syntactic.Syntax.
+From Mcltt Require Import Base LibTactics Syntax.
 
-#[global] Declare Custom Entry judg.
-Notation "{{ x }}" := x (at level 0, x custom judg at level 99, format "'{{'  x  '}}'").
 Reserved Notation "⊢ Γ" (in custom judg at level 80, Γ custom exp).
 Reserved Notation "⊢ Γ ≈ Γ'" (in custom judg at level 80, Γ custom exp, Γ' custom exp).
 Reserved Notation "Γ ⊢ M ≈ M' : A" (in custom judg at level 80, Γ custom exp, M custom exp, M' custom exp, A custom exp).
