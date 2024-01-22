@@ -82,6 +82,8 @@ Lemma per_univ_ind : forall i P,
         (forall c c',
             {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }} ->
             rel_mod_eval (per_univ i) B d{{{ p ↦ c}}} B' d{{{ p' ↦ c'}}}) ->
+        (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }}),
+            rel_mod_eval P B d{{{ p ↦ c}}} B' d{{{ p' ↦ c'}}}) ->
         {{ Dom Π a p B ≈ Π a' p' B' ∈ P }}) ->
     (forall m m' a a', {{ Dom m ≈ m' ∈ per_bot }} -> {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ P }}) ->
     forall d d', {{ Dom d ≈ d' ∈ per_univ i }} -> {{ Dom d ≈ d' ∈ P }}.
@@ -90,13 +92,14 @@ Proof with solve [mauto].
   induction equiv_d_d'_check; only 1-2,4: solve [mauto].
   unshelve epose (equiv_a_a'_real := _ : {{ Dom a ≈ a' ∈ per_univ i }}).
   { econstructor... }
-  eapply Hpi with (equiv_a_a' := equiv_a_a'_real); subst equiv_a_a'_real; [solve [mauto]|].
-  intros * equiv_c_c'.
-  unfold per_elem, Per_univ_def.per_elem in equiv_c_c'.
-  destruct (rel_B_B' _ _ equiv_c_c').
-  econstructor; only 1-2: solve [mauto].
-  intros b b' eval_B eval_B'.
-  econstructor; apply H.
-  Unshelve.
-  3-5: eassumption.
+  eapply Hpi with (equiv_a_a' := equiv_a_a'_real); subst equiv_a_a'_real; [solve [mauto]| |];
+    intros * equiv_c_c'; unfold per_elem, Per_univ_def.per_elem in equiv_c_c'; destruct (rel_B_B' _ _ equiv_c_c').
+  - econstructor; only 1-2: solve [mauto].
+    intros b b' eval_B eval_B'.
+    econstructor; apply H.
+    Unshelve.
+    3-5: eassumption.
+  - econstructor; only 1-2: solve [mauto].
+    intros b b' eval_B eval_B'.
+    eapply H0; solve [mauto].
 Qed.
