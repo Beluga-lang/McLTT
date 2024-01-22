@@ -65,9 +65,9 @@ Module Per_univ_def.
     | per_univ_template_pi :
       `{ forall (univ_rel : relation domain)
             (elem_rel : forall {c c'}, {{ Dom c ≈ c' ∈ univ_rel }} -> relation domain)
-            (eq_a_a' : {{ Dom a ≈ a' ∈ univ_rel }}),
+            (equiv_a_a' : {{ Dom a ≈ a' ∈ univ_rel }}),
             (forall {c c'},
-                {{ Dom c ≈ c' ∈ elem_rel eq_a_a' }} ->
+                {{ Dom c ≈ c' ∈ elem_rel equiv_a_a' }} ->
                 rel_mod_eval per_univ_template B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}) ->
             {{ Dom Π a p B ≈ Π a' p' B' ∈ per_univ_template }} }
     | per_univ_template_neut :
@@ -86,18 +86,18 @@ Module Per_univ_def.
     | per_elem_template_pi :
       `{ forall (univ_rel : relation domain)
             (elem_rel : forall {c c'}, {{ Dom c ≈ c' ∈ univ_rel }} -> relation domain)
-            (eq_a_a' : {{ Dom a ≈ a' ∈ univ_rel }})
+            (equiv_a_a' : {{ Dom a ≈ a' ∈ univ_rel }})
             (rel_B_B' : forall {c c'},
-                {{ Dom c ≈ c' ∈ elem_rel eq_a_a' }} ->
+                {{ Dom c ≈ c' ∈ elem_rel equiv_a_a' }} ->
                 rel_mod_eval per_univ_template B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}),
-            (forall {c c'} (eq_c_c' : {{ Dom c ≈ c' ∈ elem_rel eq_a_a' }})
+            (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ elem_rel equiv_a_a' }})
                 {b b'} (eval_B : {{ ⟦ B ⟧ p ↦ c ↘ b }}) (eval_B' : {{ ⟦ B' ⟧ p' ↦ c' ↘ b' }}),
-                rel_mod_app (per_elem_template (rel_mod_eval_equiv (rel_B_B' eq_c_c') eval_B eval_B')) f c f' c') ->
-            {{ Dom f ≈ f' ∈ per_elem_template (@per_univ_template_pi a a' B p B' p' univ_rel (@elem_rel) eq_a_a' (@rel_B_B')) }} }
+                rel_mod_app (per_elem_template (rel_mod_eval_equiv (rel_B_B' equiv_c_c') eval_B eval_B')) f c f' c') ->
+            {{ Dom f ≈ f' ∈ per_elem_template (@per_univ_template_pi a a' B p B' p' univ_rel (@elem_rel) equiv_a_a' (@rel_B_B')) }} }
     | per_elem_template_neut :
-      `{ forall (eq_a_a' : {{ Dom a ≈ a' ∈ per_bot }}),
+      `{ forall (equiv_a_a' : {{ Dom a ≈ a' ∈ per_bot }}),
             {{ Dom m ≈ m' ∈ per_ne }} ->
-            {{ Dom m ≈ m' ∈ per_elem_template (@per_univ_template_neut a a' b b' eq_a_a') }} }
+            {{ Dom m ≈ m' ∈ per_elem_template (@per_univ_template_neut a a' b b' equiv_a_a') }} }
     .
 
     Inductive per_univ_check : forall {m m'}, per_univ_template m m' -> Prop :=
@@ -105,23 +105,26 @@ Module Per_univ_def.
       `{ per_univ_check (@per_univ_template_univ j j' lt_j_i eq_j_j') }
     | per_univ_check_nat : per_univ_check per_univ_template_nat
     | per_univ_check_pi :
-      `{ forall (eq_a_a' : {{ Dom a ≈ a' ∈ per_univ_template }})
+      `{ forall (equiv_a_a' : {{ Dom a ≈ a' ∈ per_univ_template }})
             (rel_B_B' : forall {c c'},
-                {{ Dom c ≈ c' ∈ per_elem_template eq_a_a' }} ->
+                {{ Dom c ≈ c' ∈ per_elem_template equiv_a_a' }} ->
                 rel_mod_eval per_univ_template B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}),
-            per_univ_check eq_a_a' ->
-            (forall {c c'} (eq_c_c' : {{ Dom c ≈ c' ∈ per_elem_template eq_a_a' }})
+            per_univ_check equiv_a_a' ->
+            (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ per_elem_template equiv_a_a' }})
                 {b b'} (eval_B : {{ ⟦ B ⟧ p ↦ c ↘ b }}) (eval_B' : {{ ⟦ B' ⟧ p' ↦ c' ↘ b' }}),
-                per_univ_check (rel_mod_eval_equiv (rel_B_B' eq_c_c') eval_B eval_B')) ->
-            per_univ_check (@per_univ_template_pi a a' B p B' p' per_univ_template (@per_elem_template) eq_a_a' (@rel_B_B')) }
+                per_univ_check (rel_mod_eval_equiv (rel_B_B' equiv_c_c') eval_B eval_B')) ->
+            per_univ_check (@per_univ_template_pi a a' B p B' p' per_univ_template (@per_elem_template) equiv_a_a' (@rel_B_B')) }
     | per_univ_check_neut :
-      `{ per_univ_check (@per_univ_template_neut m m' a a' eq_m_m') }
+      `{ per_univ_check (@per_univ_template_neut m m' a a' equiv_m_m') }
     .
 
-    Definition per_univ : relation domain := fun a a' => exists (eq_a_a' : per_univ_template a a'), per_univ_check eq_a_a'.
+    Definition per_univ : relation domain := fun a a' => exists (equiv_a_a' : per_univ_template a a'), per_univ_check equiv_a_a'.
 
-    Definition per_elem {a a'} (eq_a_a' : per_univ a a') : relation domain := per_elem_template (ex_proj1 eq_a_a').
+    Definition per_elem {a a'} (equiv_a_a' : per_univ a a') : relation domain := per_elem_template (ex_proj1 equiv_a_a').
   End Per_univ_def.
+
+  #[global]
+  Hint Constructors per_univ_template per_elem_template per_univ_check : mcltt.
 End Per_univ_def.
 
 Fixpoint per_univ_base (i : nat) {j} (lt_j_i : j < i) : relation domain.
@@ -137,7 +140,7 @@ Proof.
 Defined.
 
 Definition per_univ (i : nat) : relation domain := Per_univ_def.per_univ i (@per_univ_base i).
-Definition per_elem {i a a'} (eq_a_a' : {{ Dom a ≈ a' ∈ per_univ i }}) : relation domain := Per_univ_def.per_elem i (@per_univ_base i) eq_a_a'.
+Definition per_elem {i a a'} (equiv_a_a' : {{ Dom a ≈ a' ∈ per_univ i }}) : relation domain := Per_univ_def.per_elem i (@per_univ_base i) equiv_a_a'.
 
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) := rel_mod_eval (per_univ i) A p A' p'.
 
@@ -174,6 +177,9 @@ Module Per_ctx_def.
           per_ctx_check eq_Γ_Γ' ->
           per_ctx_check (per_ctx_template_cons per_ctx_template (@per_env_template) eq_Γ_Γ' (@rel_A_A')) }
   .
+
+  #[global]
+  Hint Constructors per_ctx_template per_env_template per_ctx_check : mcltt.
 End Per_ctx_def.
 
 Definition per_ctx : relation ctx := fun Γ Γ' => exists (eq_Γ_Γ' : Per_ctx_def.per_ctx_template Γ Γ'), Per_ctx_def.per_ctx_check eq_Γ_Γ'.
