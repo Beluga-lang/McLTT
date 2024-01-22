@@ -1,10 +1,11 @@
 From Coq Require Import Lia PeanoNat Relations.
 From Mcltt Require Import Base Domain Evaluate Readback Syntax System.
 
-Definition in_rel {A} (R : relation A) := R.
+Definition in_dom_rel {A} (R : relation A) := R.
+Definition in_exp_rel {A} (R : relation A) := R.
 
-Notation "'Dom' a ≈ b ∈ R" := (in_rel R a b) (in custom judg at level 90, a custom domain, b custom domain, R constr).
-Notation "'Exp' a ≈ b ∈ R" := (in_rel R a b) (in custom judg at level 90, a custom exp, b custom exp, R constr).
+Notation "'Dom' a ≈ b ∈ R" := (in_dom_rel R a b) (in custom judg at level 90, a custom domain, b custom domain, R constr).
+Notation "'Exp' a ≈ b ∈ R" := (in_exp_rel R a b) (in custom judg at level 90, a custom exp, b custom exp, R constr).
 
 Generalizable All Variables.
 
