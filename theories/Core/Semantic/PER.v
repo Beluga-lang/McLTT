@@ -39,17 +39,17 @@ Definition per_top_typ : relation domain := fun a b => (forall s, exists C, {{ R
 Inductive per_nat : relation domain :=
 | per_nat_zero : {{ Dom zero ≈ zero ∈ per_nat }}
 | per_nat_succ :
-  `( {{ Dom m ≈ n ∈ per_nat }} ->
-     {{ Dom succ m ≈ succ n ∈ per_nat }} )
+  `{ {{ Dom m ≈ n ∈ per_nat }} ->
+     {{ Dom succ m ≈ succ n ∈ per_nat }} }
 | per_nat_neut :
-  `( {{ Dom m ≈ n ∈ per_bot }} ->
-     {{ Dom ⇑ ℕ m ≈ ⇑ ℕ n ∈ per_nat }} )
+  `{ {{ Dom m ≈ n ∈ per_bot }} ->
+     {{ Dom ⇑ ℕ m ≈ ⇑ ℕ n ∈ per_nat }} }
 .
 
 Inductive per_ne : relation domain :=
 | per_ne_neut :
-  `( {{ Dom m ≈ n ∈ per_bot }} ->
-     {{ Dom ⇑ a m ≈ ⇑ a' n ∈ per_ne }} )
+  `{ {{ Dom m ≈ n ∈ per_bot }} ->
+     {{ Dom ⇑ a m ≈ ⇑ a' n ∈ per_ne }} }
 .
 
 Module Per_univ_def.
