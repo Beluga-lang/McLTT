@@ -72,6 +72,7 @@ Module Per_univ_def.
 End Per_univ_def.
 
 Definition per_univ_like (R : domain -> domain -> relation domain -> Prop) := fun a a' => exists R', {{ DF a ≈ a' ∈ R ↘ R' }}.
+#[global]
 Transparent per_univ_like.
 
 Program Fixpoint per_univ_elem (i : nat) {wf lt i} : domain -> domain -> relation domain -> Prop := Per_univ_def.per_univ_elem i (fun _ lt_j_i => per_univ_like (per_univ_elem _ lt_j_i)).
@@ -98,5 +99,4 @@ Inductive per_ctx_env : ctx -> ctx -> relation env -> Prop :=
 .
 
 Definition per_ctx : relation ctx := fun Γ Γ' => exists R', per_ctx_env Γ Γ' R'.
-
 Definition valid_ctx : ctx -> Prop := fun Γ => per_ctx Γ Γ.
