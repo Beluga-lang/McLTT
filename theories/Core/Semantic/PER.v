@@ -41,35 +41,30 @@ Inductive per_ne : relation domain :=
      {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_ne }} }
 .
 
-Module Per_univ_def.
-  Section Per_univ_def.
-    Variable (i : nat) (per_univ_rec : forall {j}, j < i -> relation domain).
+Section Per_univ_elem_core_def.
+  Variable (i : nat) (per_univ_rec : forall {j}, j < i -> relation domain).
 
-    Inductive per_univ_elem : domain -> domain -> relation domain -> Prop :=
-    | per_univ_elem_univ : 
-      `{ forall (lt_j_i : j < i),
-            j = j' ->
-            {{ DF 𝕌@j ≈ 𝕌@j' ∈ per_univ_elem ↘ per_univ_rec lt_j_i }} }
-    | per_univ_elem_nat : {{ DF ℕ ≈ ℕ ∈ per_univ_elem ↘ per_nat }}
-    | per_univ_elem_pi :
-      `{ forall (in_rel : relation domain)
-            (out_rel : forall {c c'}, {{ Dom c ≈ c' ∈ in_rel }} -> relation domain)
-            (equiv_a_a' : {{ DF a ≈ a' ∈ per_univ_elem ↘ in_rel}}),
-            (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-                rel_mod_eval per_univ_elem B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
-            let
-              elem_rel f f' := forall {c c'} (equiv_c_c' : in_rel c c'),
-                rel_mod_app (out_rel equiv_c_c') f c f' c'
-            in
-            {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem ↘ elem_rel }} }
-    | per_univ_elem_neut :
-      `{ {{ DF ⇑ a b ≈ ⇑ a' b' ∈ per_univ_elem ↘ per_ne }} }
-    .
-  End Per_univ_def.
+  Inductive per_univ_elem_core : domain -> domain -> relation domain -> Prop :=
+  | per_univ_elem_core_univ :
+    `{ forall (lt_j_i : j < i),
+          j = j' ->
+          {{ DF 𝕌@j ≈ 𝕌@j' ∈ per_univ_elem_core ↘ per_univ_rec lt_j_i }} }
+  | per_univ_elem_core_nat : {{ DF ℕ ≈ ℕ ∈ per_univ_elem_core ↘ per_nat }}
+  | per_univ_elem_core_pi :
+    `{ forall (in_rel : relation domain)
+          (out_rel : forall {c c'}, {{ Dom c ≈ c' ∈ in_rel }} -> relation domain)
+          (equiv_a_a' : {{ DF a ≈ a' ∈ per_univ_elem_core ↘ in_rel}}),
+          (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
+              rel_mod_eval per_univ_elem_core B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+          (elem_rel = fun f f' => forall {c c'} (equiv_c_c' : in_rel c c'),
+                          rel_mod_app (out_rel equiv_c_c') f c f' c') ->
+          {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem_core ↘ elem_rel }} }
+  | per_univ_elem_core_neut :
+    `{ {{ DF ⇑ a b ≈ ⇑ a' b' ∈ per_univ_elem_core ↘ per_ne }} }
+  .
+End Per_univ_elem_core_def.
 
-  #[global]
-  Hint Constructors per_univ_elem : mcltt.
-End Per_univ_def.
+Global Hint Constructors per_univ_elem_core : mcltt.
 
 Definition per_univ_like (R : domain -> domain -> relation domain -> Prop) := fun a a' => exists R', {{ DF a ≈ a' ∈ R ↘ R' }}.
 #[global]
@@ -82,19 +77,15 @@ Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel
 
 Inductive per_ctx_env : ctx -> ctx -> relation env -> Prop :=
 | per_ctx_env_nil :
-  let
-    Env p p' := True
-  in
-  {{ EF ⋅ ≈ ⋅ ∈ per_ctx_env ↘ Env }}
+  `{ (Env = fun p p' => True) ->
+     {{ EF ⋅ ≈ ⋅ ∈ per_ctx_env ↘ Env }} }
 | per_ctx_env_cons :
   `{ forall (tail_rel : relation env)
         (head_rel : forall {p p'}, {{ Dom p ≈ p' ∈ tail_rel }} -> relation domain)
         (equiv_Γ_Γ' : {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ tail_rel }})
         (rel_A_A' : forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}), rel_typ i A p A' p' (head_rel equiv_p_p')),
-        let
-          Env p p' := exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel }}),
-            {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}
-        in
+        (Env = fun p p' => exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel }}),
+                   {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}) ->
         {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ Env }} }
 .
 
