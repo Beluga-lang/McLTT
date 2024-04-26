@@ -1,9 +1,4 @@
 From Coq Require Import Lia PeanoNat Relations.
-<<<<<<< HEAD
-=======
-From Equations Require Import Equations.
-
->>>>>>> 47fa52f5eb989104966e70555de900ab7ce0e164
 From Mcltt Require Import Base Domain Evaluate Readback Syntax System.
 From Equations Require Import Equations.
 
