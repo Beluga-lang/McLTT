@@ -1,5 +1,21 @@
 From Coq Require Import Lia PeanoNat Relations Program.Equality.
-From Mcltt Require Import Base Domain Evaluate LibTactics PER Readback Syntax System.
+From Mcltt Require Import Axioms Base Domain Evaluate LibTactics PER Readback Syntax System.
+
+Lemma per_univ_elem_sym : forall i A B R,
+    per_univ_elem i A B R ->
+    exists R', per_univ_elem i B A R' /\ (forall a b, R a b <-> R b a).
+Proof.
+  intros. induction H using per_univ_elem_ind; subst.
+  - exists (per_univ j'). split.
+    + apply per_univ_elem_core_univ'; trivial.
+    + intros. split; unfold per_univ; intros HD; destruct HD.
+      * specialize (H1 _ _ _ H0).
+        firstorder.
+      * specialize (H1 _ _ _ H0).
+        firstorder.
+  - admit.
+  -
+
 
 (* Lemma per_univ_univ : forall {i j j'}, *)
 (*     j < i -> *)
