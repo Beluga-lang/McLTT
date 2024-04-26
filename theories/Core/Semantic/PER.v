@@ -1,4 +1,9 @@
 From Coq Require Import Lia PeanoNat Relations.
+<<<<<<< HEAD
+=======
+From Equations Require Import Equations.
+
+>>>>>>> 47fa52f5eb989104966e70555de900ab7ce0e164
 From Mcltt Require Import Base Domain Evaluate Readback Syntax System.
 From Equations Require Import Equations.
 
@@ -53,8 +58,13 @@ Section Per_univ_elem_core_def.
   | per_univ_elem_core_nat : {{ DF ℕ ≈ ℕ ∈ per_univ_elem_core ↘ per_nat }}
   | per_univ_elem_core_pi :
     `{ forall (in_rel : relation domain)
+<<<<<<< HEAD
          (out_rel : forall {c c'}, {{ Dom c ≈ c' ∈ in_rel }} -> relation domain)
          (equiv_a_a' : {{ DF a ≈ a' ∈ per_univ_elem_core ↘ in_rel}}),
+=======
+          (out_rel : forall {c c'}, {{ Dom c ≈ c' ∈ in_rel }} -> relation domain)
+          (equiv_a_a' : {{ DF a ≈ a' ∈ per_univ_elem_core ↘ in_rel }}),
+>>>>>>> 47fa52f5eb989104966e70555de900ab7ce0e164
           (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
               rel_mod_eval per_univ_elem_core B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
           (forall f f', elem_rel f f' <-> forall {c c'} (equiv_c_c' : in_rel c c'),
@@ -108,6 +118,7 @@ Global Hint Constructors per_univ_elem_core : mcltt.
 
 Equations per_univ_elem (i : nat) : domain -> domain -> relation domain -> Prop by wf i :=
 | i => per_univ_elem_core i (fun j lt_j_i a a' => exists R', per_univ_elem j a a' R').
+<<<<<<< HEAD
 
 Definition per_univ (i : nat) : relation domain := fun a a' => exists R', per_univ_elem i a a' R'.
 
@@ -175,6 +186,10 @@ Definition per_univ_like (R : domain -> domain -> relation domain -> Prop) := fu
 #[global]
 Transparent per_univ_like.
 
+=======
+Definition per_univ (i : nat) : relation domain := fun a a' => exists R', per_univ_elem i a a' R'.
+
+>>>>>>> 47fa52f5eb989104966e70555de900ab7ce0e164
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
 
 Inductive per_ctx_env : ctx -> ctx -> relation env -> Prop :=
@@ -184,8 +199,8 @@ Inductive per_ctx_env : ctx -> ctx -> relation env -> Prop :=
 | per_ctx_env_cons :
   `{ forall (tail_rel : relation env)
         (head_rel : forall {p p'}, {{ Dom p ≈ p' ∈ tail_rel }} -> relation domain)
-        (equiv_Γ_Γ' : {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ tail_rel }})
-        (rel_A_A' : forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}), rel_typ i A p A' p' (head_rel equiv_p_p')),
+        (equiv_Γ_Γ' : {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ tail_rel }}),
+        (forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}), rel_typ i A p A' p' (head_rel equiv_p_p')) ->
         (Env = fun p p' => exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel }}),
                    {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}) ->
         {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ Env }} }

@@ -1,5 +1,6 @@
 From Coq Require Import Lia PeanoNat Relations Program.Equality.
 From Mcltt Require Import Axioms Base Domain Evaluate LibTactics PER Readback Syntax System.
+From Equations Require Import Equations.
 
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
@@ -121,37 +122,42 @@ Proof.
 (* Qed. *)
 
 Lemma per_univ_sym : forall m m' i,
-    {{ Dom m ≈ m' ∈ per_univ i }} ->
-    {{ Dom m' ≈ m ∈ per_univ i }}
-with per_elem_sym : forall m m' i R R'
+    {{ Dom m ≈ m' ∈ per_univ i }} -> {{ Dom m' ≈ m ∈ per_univ i }}
+with per_elem_sym : forall m m' i R R' a a'
   (equiv_m_m' : {{ DF m ≈ m' ∈ per_univ_elem i ↘ R }})
   (equiv_m'_m : {{ DF m' ≈ m ∈ per_univ_elem i ↘ R' }}),
-    {{ Dom m ≈ m' ∈ R }} ->
-    {{ Dom m' ≈ m ∈ R' }}.
+    {{ Dom a ≈ a' ∈ R }} <-> {{ Dom a' ≈ a ∈ R' }}.
 Proof with mauto.
-  - intros.
-    destruct H as [per_elem Hper_univ].
-    unfold in_dom_fun_rel in *.
-    dependent induction Hper_univ; try solve [subst; eexists; econstructor; mauto].
-    + fold per_univ_elem in equiv_a_a'.
-    (*   eexists; econstructor... *)
-    (* +  *)
-    (* unfold per_univ, Per_univ_def.per_univ, in_dom_rel in *. *)
-    (* destruct H as [equiv_a_a' Hcheck]. *)
-    (* dependent induction Hcheck; subst. *)
-    (* + eexists. *)
-    (*   eapply Per_univ_def.per_univ_check_univ. *)
-    (*   Unshelve. all: auto. *)
-    (* + eexists. *)
-    (*   econstructor. *)
-    (* + destruct IHHcheck. *)
-    (*   assert (Per_univ_def.per_univ_template i d{{{ Π a' p' B'}}} d{{{ Π a p B}}}). *)
-    (*   { eapply (@Per_univ_def.per_univ_template_pi i _ _ _ _ _ _ (per_univ i) (fun _ _ => per_elem) (ex_intro _ x H1)). *)
-    (*     intros. *)
-    (*     unfold in_dom_rel, per_elem, Per_univ_def.per_elem in *. *)
-    (*   } *)
+  all: intros *; try split.
+  1: intro Hper_univ.
+  2-3: intro Hper_elem.
+  - destruct Hper_univ as [per_elem equiv_m_m'].
+    autorewrite with per_univ_elem in equiv_m_m'.
+    dependent induction equiv_m_m'; subst; only 1-2,4: solve [eexists; econstructor; mauto].
+    (* Pi case *)
+    destruct IHequiv_m_m' as [in_rel' IHequiv_a_a'].
+    rewrite <- per_univ_elem_equation_1 in H, equiv_a_a'.
+    (* (* One attempt *) *)
+    (* unshelve epose (out_rel' := _ : forall c' c : domain, {{ Dom c' ≈ c ∈ in_rel' }} -> relation domain). *)
+    (* { *)
+    (*   intros * equiv_c'_c. *)
+    (*   assert (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}) by (erewrite per_elem_sym; eassumption). *)
+    (*   assert (rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) by mauto. *)
+    (*   (* Failure point *) *)
+    (*   destruct_last. *)
+    (* } *)
+
+    (* (* The other *) *)
+    (* assert (exists (out_rel' : forall c' c : domain, {{ Dom c' ≈ c ∈ in_rel' }} -> relation domain), *)
+    (*          forall (c' c : domain) (equiv_c'_c : {{ Dom c' ≈ c ∈ in_rel' }}), *)
+    (*            rel_mod_eval (per_univ_elem i) B' d{{{ p' ↦ c' }}} B d{{{ p ↦ c }}} (out_rel' c' c equiv_c'_c)). *)
+    (* { *)
+    (*   (* This "eexists" is problematic *) *)
     (*   eexists. *)
-    (*   econstructor. *)
-    (*   * eassumption. *)
-    (*   * intros. *)
+    (*   intros. *)
+    (*   assert (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}) by (erewrite per_elem_sym; eassumption). *)
+    (*   assert (rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) by mauto. *)
+    (*   destruct_last. *)
+    (*   econstructor; try eassumption. *)
+    (* } *)
       
