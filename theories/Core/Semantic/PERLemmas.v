@@ -1,10 +1,56 @@
 From Coq Require Import Lia PeanoNat Relations Program.Equality.
 From Mcltt Require Import Axioms Base Domain Evaluate LibTactics PER Readback Syntax System.
 From Equations Require Import Equations.
+From Coq.Logic Require Import ChoiceFacts.
+
+
+Lemma per_univ_elem_right_irrel_gen : forall i A B R,
+    per_univ_elem i A B R ->
+    forall A' B' R',
+      A = A' ->
+      per_univ_elem i A' B' R' ->
+      R = R'.
+Proof.
+  induction 1 using per_univ_elem_ind; intros ? ? ? Heq Hright;
+    try solve [induction Hright using per_univ_elem_ind;
+               try congruence].
+
+  subst.
+  simp per_univ_elem in Hright; inversion Hright; try congruence; subst.
+  rewrite <- per_univ_elem_equation_1 in *.
+  unfold in_dom_fun_rel in *.
+  specialize (IHper_univ_elem _ _ _ eq_refl equiv_a_a').
+  subst.
+  extensionality f.
+  extensionality f'.
+  rewrite H0, H7.
+  extensionality c.
+  extensionality c'.
+  extensionality equiv_c_c'.
+  specialize (H1 _ _ equiv_c_c').
+  destruct H1 as [? [[? ? ? ? [? ?]] ?]].
+
+  specialize (H8 _ _ equiv_c_c').
+  destruct H8 as [? [[? ? ? ? ?] ?]].
+
+  assert (a = a0) by admit.
+  subst.
+  specialize (H4 _ _ _ eq_refl H9).
+  subst.
+  congruence.
+Admitted.
+
+Lemma per_univ_elem_right_irrel : forall i A B R B' R',
+    per_univ_elem i A B R ->
+    per_univ_elem i A B' R' ->
+    R = R'.
+Proof.
+  intros. eauto using per_univ_elem_right_irrel_gen.
+Qed.
 
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
-    exists R', per_univ_elem i B A R' /\ (forall a b, R a b <-> R b a).
+    exists R', per_univ_elem i B A R' /\ (forall a b, R a b <-> R' b a).
 Proof.
   intros. induction H using per_univ_elem_ind; subst.
   - exists (per_univ j'). split.
@@ -15,8 +61,136 @@ Proof.
       * specialize (H1 _ _ _ H0).
         firstorder.
   - admit.
-  -
+  - destruct IHper_univ_elem as [in_rel' [? ?]].
+    unfold in_dom_rel in *.
+    setoid_rewrite rel_mod_eval_simp_ex in H1.
+    setoid_rewrite exists_absorption in H1.
+    repeat setoid_rewrite dep_functional_choice_equiv in H1.
+    destruct H1 as [out_rel [out_rel' ?]].
+    assert (forall a b : domain, in_rel' a b -> in_rel b a) as Hconv by firstorder.
+    setoid_rewrite H0.
+    exists (fun f f' => forall (c c' : domain) (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel' }}), rel_mod_app (out_rel' c' c (Hconv _ _ equiv_c_c')) f' c' f c).
+    split.
+    + simp per_univ_elem; econstructor; try rewrite <- per_univ_elem_equation_1 in *; eauto.
+      * intros. reflexivity.
+      * intros.
+        destruct (H1 _ _ (Hconv _ _ equiv_c_c')) as [[? ? ? ? [? [? ?]]] ?].
+        exists (out_rel c' c (Hconv c c' equiv_c_c')). split; try econstructor; eauto.
+        admit.
 
+        intros.
+        apply propositional_extensionality.
+        split; intros HR; destruct HR; econstructor; eauto; firstorder.
+
+    + split; intros.
+      * destruct (H1 _ _ (Hconv _ _ equiv_c_c')) as [[? ? ? ? [? [? ?]]] ?].
+        specialize (H4 _ _ (Hconv c c' equiv_c_c')).
+        rewrite H10 in H4.
+        destruct H4; econstructor; eauto; firstorder.
+
+        unfold in_dom_rel in *. rewrite <- H9. firstorder.
+
+(* Lemma per_univ_elem_sym : forall i A B R, *)
+(*     per_univ_elem i A B R -> *)
+(*     per_univ_elem i B A R. *)
+(* Proof. *)
+(*   intros. induction H using per_univ_elem_ind; subst. *)
+(*   - apply per_univ_elem_core_univ'; trivial. *)
+(*   - admit. *)
+(*   - simp per_univ_elem; econstructor; try rewrite <- per_univ_elem_equation_1 in *; eauto. *)
+(*     intros. *)
+(*     destruct (H1 _ _ equiv_c_c') as [? [[? ? ? ? [? ?]] ?]]. *)
+(*     eexists. split; try eassumption. *)
+(*     econstructor; eauto. *)
+
+(*     specialize (H1 _ _ equiv_c_c'). *)
+(*     destruct H1 as *)
+
+
+Lemma per_univ_elem_sym : forall i A B R,
+    per_univ_elem i A B R ->
+    per_univ_elem i B A R /\ (forall a b, R a b <-> R b a).
+Proof.
+  intros. induction H using per_univ_elem_ind; subst.
+  - split.
+    + apply per_univ_elem_core_univ'; trivial.
+    + intros. split; unfold per_univ; intros HD; destruct HD.
+      * specialize (H1 _ _ _ H0).
+        firstorder.
+      * specialize (H1 _ _ _ H0).
+        firstorder.
+  - admit.
+  - destruct IHper_univ_elem as [? ?].
+
+    unfold in_dom_rel in *.
+    split.
+    + simp per_univ_elem; econstructor; try rewrite <- per_univ_elem_equation_1 in *; eauto.
+      intros.
+      destruct (H1 _ _ equiv_c_c') as [? [[? ? ? ? [? [? ?]]] ?]].
+      assert (in_rel c' c) by firstorder.
+      destruct (H1 _ _ H10) as [? [[? ? ? ? [? [? ?]]] ?]].
+      eexists. split; try eassumption.
+      econstructor; eauto.
+      eexists.
+
+      admit.
+    + assert (forall a b, elem_rel a b -> elem_rel b a). {
+        intros.
+        rewrite H0 in *.
+        intros.
+        destruct (H1 _ _ equiv_c_c') as [? [[? ? ? ? [? [? ?]]] ?]].
+        rewrite H10.
+
+        (* econstructor. *)
+
+        assert (in_rel c' c) by firstorder.
+        (* destruct (H1 _ _ H11) as [? [[? ? ? ? [? [? ?]]] ?]]. *)
+        assert (rel_mod_app x0 a c' b c) by admit.
+        destruct H18.
+        rewrite H17 in H4.
+      }
+      firstorder.
+
+
+      intros.
+      do 2 rewrite H0.
+
+      extensionality c.
+      extensionality c'.
+      extensionality equiv_c_c'.
+
+    setoid_rewrite H3 in H1.
+    setoid_rewrite rel_mod_eval_simp_ex in H0.
+    setoid_rewrite exists_absorption in H0.
+    repeat setoid_rewrite dep_functional_choice_equiv in H0.
+    destruct H0 as [out_rel [out_rel' ?]].
+    setoid_rewrite <- and_assoc in H0.
+
+    setoid_rewrite rel_mod_eval_simp_and in H0.
+
+    repeat setoid_rewrite functional_choice_equiv in H0.
+    setoid_rewrite and_comm in H0.
+    setoid_rewrite exists_absorption in H0.
+
+    assert (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
+             exists R', rel_mod_eval (fun (x y : domain) (z : relation domain) =>
+                                   per_univ_elem i x y z /\
+                                     (per_univ_elem i y x R' /\ (forall a b : domain, z a b <-> R' b a)))
+                     B d{{{p ↦ c}}} B' d{{{ p' ↦ c'}}} (out_rel c c' equiv_c_c')).
+    {
+      intros. specialize (H0 _ _ equiv_c_c').
+      destruct H0.
+      unfold in_dom_fun_rel in H5.
+      destruct H5 as [? [R' [? ?]]].
+      exists R'. econstructor; unfold in_dom_fun_rel; eauto.
+    }
+    unfold in_dom_rel in *.
+    setoid_rewrite H3 in H4.
+
+    clear H0
+    repeat setoid_rewrite dep_functional_choice_equiv in H4.
+    destruct H4 as [out_rel' ?].
+    exists (fun f' f => forall c' c (equiv_c'_c : R c' c), rel_mod_app (out_rel' _ _ ()) f' c' f c).
 
 (* Lemma per_univ_univ : forall {i j j'}, *)
 (*     j < i -> *)
