@@ -53,12 +53,11 @@ Section Per_univ_elem_core_def.
   | per_univ_elem_core_nat : {{ DF ℕ ≈ ℕ ∈ per_univ_elem_core ↘ per_nat }}
   | per_univ_elem_core_pi :
     `{ forall (in_rel : relation domain)
-         {Re : domain -> domain -> forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), Prop}
+         (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain)
          (equiv_a_a' : {{ DF a ≈ a' ∈ per_univ_elem_core ↘ in_rel}}),
-          (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), Re f f' equiv_c_c') ->
           (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-            exists R, rel_mod_eval per_univ_elem_core B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} R
-                 /\ (forall f f', Re f f' equiv_c_c' = rel_mod_app R f c f' c')) ->
+              rel_mod_eval per_univ_elem_core B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+          (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
           {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem_core ↘ elem_rel }} }
   | per_univ_elem_core_neut :
     `{ {{ DF ⇑ a b ≈ ⇑ a' b' ∈ per_univ_elem_core ↘ per_ne }} }
@@ -76,13 +75,12 @@ Section Per_univ_elem_core_def.
   Hypothesis
     (case_Pi :
       forall {A p B A' p' B' in_rel elem_rel}
-        {Re : domain -> domain -> forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), Prop},
+        (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
         {{ DF A ≈ A' ∈ per_univ_elem_core ↘ in_rel }} ->
         motive A A' in_rel ->
-        (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), Re f f' equiv_c_c') ->
         (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-          exists R, rel_mod_eval (fun x y z => per_univ_elem_core x y z /\ motive x y z) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} R
-               /\ (forall f f', Re f f' equiv_c_c' = rel_mod_app R f c f' c')) ->
+            rel_mod_eval (fun x y z => per_univ_elem_core x y z /\ motive x y z) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+        (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
         motive d{{{ Π A p B}}} d{{{ Π A' p' B'}}} elem_rel).
 
   Hypothesis
@@ -93,12 +91,13 @@ Section Per_univ_elem_core_def.
     per_univ_elem_core_strong_ind a b R (per_univ_elem_core_univ lt_j_i eq) := case_U _ _ lt_j_i eq;
     per_univ_elem_core_strong_ind a b R per_univ_elem_core_nat := case_nat;
     per_univ_elem_core_strong_ind a b R
-      (per_univ_elem_core_pi in_rel equiv_a_a' eq HE) :=
-      case_Pi equiv_a_a' (per_univ_elem_core_strong_ind _ _ _ equiv_a_a') eq
-        (fun _ _ equiv_c_c' => match HE _ _ equiv_c_c' with
-                            | ex_intro _ R (conj (mk_rel_mod_eval b b' evb evb' Rel) P2) =>
-                                ex_intro _ R (conj (mk_rel_mod_eval b b' evb evb' (conj _ (per_univ_elem_core_strong_ind _ _ _ Rel))) P2)
-                            end);
+      (per_univ_elem_core_pi in_rel out_rel equiv_a_a' HT HE) :=
+          case_Pi out_rel equiv_a_a' (per_univ_elem_core_strong_ind _ _ _ equiv_a_a')
+            (fun _ _ equiv_c_c' => match HT _ _ equiv_c_c' with
+                                | mk_rel_mod_eval b b' evb evb' Rel =>
+                                    mk_rel_mod_eval b b' evb evb' (conj _ (per_univ_elem_core_strong_ind _ _ _ Rel))
+                                end)
+            HE;
     per_univ_elem_core_strong_ind a b R per_univ_elem_core_neut :=  case_ne.
 
 End Per_univ_elem_core_def.
@@ -138,13 +137,12 @@ Section Per_univ_elem_ind_def.
   Hypothesis
     (case_Pi :
       forall i {A p B A' p' B' in_rel elem_rel}
-        {Re : domain -> domain -> forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), Prop},
+        (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
         {{ DF A ≈ A' ∈ per_univ_elem i ↘ in_rel }} ->
         motive i A A' in_rel ->
-        (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), Re f f' equiv_c_c') ->
         (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-          exists R, rel_mod_eval (fun x y z => per_univ_elem i x y z /\ motive i x y z) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} R
-               /\ (forall f f', Re f f' equiv_c_c' = rel_mod_app R f c f' c')) ->
+            rel_mod_eval (fun x y z => per_univ_elem i x y z /\ motive i x y z) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+        (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
         motive i d{{{ Π A p B}}} d{{{ Π A' p' B'}}} elem_rel).
 
   Hypothesis
@@ -160,7 +158,7 @@ Section Per_univ_elem_ind_def.
       per_univ_elem_core_strong_ind i _ (motive i)
         (fun j j' j_lt_i eq => case_U j j' i j_lt_i eq (fun A B R' H' => per_univ_elem_ind' _ A B R' _))
         (case_N i)
-        (fun A p B A' p' B' in_rel elem_rel Re HA IHA eq HE => case_Pi i _ IHA eq _)
+        (fun A p B A' p' B' in_rel elem_rel out_rel HA IHA HT HE => case_Pi i out_rel _ IHA _ HE)
         (@case_ne i)
         a b R H.
 
@@ -170,6 +168,17 @@ Section Per_univ_elem_ind_def.
 
 End Per_univ_elem_ind_def.
 
+Lemma rel_mod_eval_ex_pull :
+  forall (A : Type) (P : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R,
+    rel_mod_eval (fun a b R => exists x : A, P a b R x) T p T' p' R <->
+      exists x : A, rel_mod_eval (fun a b R => P a b R x) T p T' p' R.
+Proof.
+  split; intros.
+  - destruct H; unfold in_dom_fun_rel in *.
+    destruct H1 as [? ?].
+    eexists; econstructor; eauto.
+  - do 2 destruct H; econstructor; unfold in_dom_fun_rel in *; eauto.
+Qed.
 
 Lemma rel_mod_eval_simp_ex :
   forall (A : Type) (P : domain -> domain -> relation domain -> Prop) (Q : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R,

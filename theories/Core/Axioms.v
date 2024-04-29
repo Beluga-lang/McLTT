@@ -34,19 +34,6 @@ Proof.
   - firstorder.
 Qed.
 
-
-Lemma rel_mod_eval_ex_pull :
-  forall (A : Type) (P : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R,
-    rel_mod_eval (fun a b R => exists x : A, P a b R x) T p T' p' R <->
-      exists x : A, rel_mod_eval (fun a b R => P a b R x) T p T' p' R.
-Proof.
-  split; intros.
-  - destruct H; unfold in_dom_fun_rel in *.
-    destruct H1 as [? ?].
-    eexists; econstructor; eauto.
-  - do 2 destruct H; econstructor; unfold in_dom_fun_rel in *; eauto.
-Qed.
-
 Lemma exists_absorption :
   forall (A : Type) (P : A -> Prop) (Q : Prop),
     (exists x : A, P x) /\ Q <-> (exists x : A, P x /\ Q).

@@ -23,20 +23,19 @@ Proof.
   subst.
   extensionality f.
   extensionality f'.
-  rewrite H0, H7.
+  rewrite H1, H8.
   extensionality c.
   extensionality c'.
   extensionality equiv_c_c'.
-  specialize (H1 _ _ equiv_c_c').
-  destruct H1 as [? [[? ? ? ? [? ?]] ?]].
+  specialize (H0 _ _ equiv_c_c').
+  destruct H0 as [? ? ? ? [? ?]].
 
-  specialize (H8 _ _ equiv_c_c').
-  destruct H8 as [? [[? ? ? ? ?] ?]].
+  specialize (H7 _ _ equiv_c_c').
+  destruct H7 as [? ? ? ? ?].
 
   assert (a = a0) by admit.
   subst.
-  specialize (H4 _ _ _ eq_refl H9).
-  subst.
+  specialize (H4 _ _ _ eq_refl H7).
   congruence.
 Admitted.
 
@@ -63,12 +62,31 @@ Proof.
   - admit.
   - destruct IHper_univ_elem as [in_rel' [? ?]].
     unfold in_dom_rel in *.
-    setoid_rewrite rel_mod_eval_simp_ex in H1.
-    setoid_rewrite exists_absorption in H1.
-    repeat setoid_rewrite dep_functional_choice_equiv in H1.
-    destruct H1 as [out_rel [out_rel' ?]].
+    setoid_rewrite rel_mod_eval_simp_ex in H0.
+    repeat setoid_rewrite dep_functional_choice_equiv in H0.
+    destruct H0 as [out_rel' ?].
     assert (forall a b : domain, in_rel' a b -> in_rel b a) as Hconv by firstorder.
-    setoid_rewrite H0.
+    setoid_rewrite H1.
+    exists (fun f f' => forall (c c' : domain) (equiv_c_c' : in_rel' c c'), rel_mod_app (out_rel c' c (Hconv _ _ equiv_c_c')) f' c f c').
+    split.
+    + simp per_univ_elem; econstructor; try rewrite <- per_univ_elem_equation_1 in *; eauto.
+
+      * intros.
+        destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
+        econstructor; eauto.
+        apply H7.
+
+      * intros. apply propositional_extensionality; split; intros.
+        {
+          specialize (H4 _ _ equiv_c_c').
+        }
+
+        exists (out_rel c' c (Hconv c c' equiv_c_c')). split; try econstructor; eauto.
+
+
+
+
+
     exists (fun f f' => forall (c c' : domain) (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel' }}), rel_mod_app (out_rel' c' c (Hconv _ _ equiv_c_c')) f' c' f c).
     split.
     + simp per_univ_elem; econstructor; try rewrite <- per_univ_elem_equation_1 in *; eauto.
