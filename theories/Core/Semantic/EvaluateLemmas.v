@@ -1,9 +1,13 @@
 From Coq Require Import Lia PeanoNat Relations.
 From Mcltt Require Import Base Domain Evaluate LibTactics Syntax System.
 
+#[local]
 Definition functional_eval_exp_prop M p m1 (_ : {{ ⟦ M ⟧ p ↘ m1 }}) : Prop := forall m2 (Heval2: {{ ⟦ M ⟧ p ↘ m2 }}), m1 = m2.
+#[local]
 Definition functional_eval_natrec_prop A MZ MS m p r1 (_ : {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r1 }}) : Prop := forall r2 (Heval2 : {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r2 }}), r1 = r2.
+#[local]
 Definition functional_eval_app_prop m n r1 (_ : {{ $| m & n |↘ r1 }}) : Prop := forall r2 (Heval2 : {{ $| m & n |↘ r2 }}), r1 = r2.
+#[local]
 Definition functional_eval_sub_prop σ p p1 (_ : {{ ⟦ σ ⟧s p ↘ p1 }}) : Prop := forall p2 (Heval2 : {{ ⟦ σ ⟧s p ↘ p2 }}), p1 = p2.
 Arguments functional_eval_exp_prop /.
 Arguments functional_eval_natrec_prop /.
