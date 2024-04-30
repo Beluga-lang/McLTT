@@ -147,7 +147,7 @@ Section Per_univ_elem_ind_def.
     (case_ne : (forall i {a b a' b'}, motive i d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
 
   #[local]
-   Ltac def_simp := simp per_univ_elem in *.
+  Ltac def_simp := simp per_univ_elem in *.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations per_univ_elem_ind' (i : nat) (a b : domain) (R : relation domain)
