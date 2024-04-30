@@ -25,7 +25,7 @@ where "'env'" := (nat -> domain).
 #[global] Declare Custom Entry domain.
 #[global] Bind Scope exp_scope with domain.
 
-Notation "'d{{{' x '}}}'" := x (at level 0, x custom domain at level 99) : exp_scope.
+Notation "'d{{{' x '}}}'" := x (at level 0, x custom domain at level 99, format "'d{{{'  x  '}}}'") : exp_scope.
 Notation "( x )" := x (in custom domain at level 0, x custom domain at level 60) : exp_scope.
 Notation "~ x" := x (in custom domain at level 0, x constr at level 0) : exp_scope.
 Notation "x" := x (in custom domain at level 0, x global) : exp_scope.
