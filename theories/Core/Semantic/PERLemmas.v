@@ -1,31 +1,83 @@
 From Coq Require Import Lia PeanoNat Relations ChoiceFacts Program.Equality.
 From Equations Require Import Equations.
-From Mcltt Require Import Axioms Base Domain Evaluate LibTactics PER Readback Syntax System.
+From Mcltt Require Import Axioms Base Domain Evaluate EvaluateLemmas LibTactics PER Readback ReadbackLemmas Syntax System.
 
 Lemma per_bot_sym : forall m n,
     {{ Dom m ≈ n ∈ per_bot }} ->
     {{ Dom n ≈ m ∈ per_bot }}.
-Proof.
-  unfold per_bot.
-  intros.
-  unfold in_dom_rel in *.
-  intro.
-  destruct (H s) as [? []].
-  mauto.
+Proof with mauto.
+  unfold per_bot, in_dom_rel.
+  intros * H.
+  intro s.
+  destruct (H s) as [? []]...
 Qed.
 
 #[export]
 Hint Resolve per_bot_sym : mcltt.
 
+Lemma per_bot_trans : forall m n l,
+    {{ Dom m ≈ n ∈ per_bot }} ->
+    {{ Dom n ≈ l ∈ per_bot }} ->
+    {{ Dom m ≈ l ∈ per_bot }}.
+Proof.
+  unfold per_bot, in_dom_rel.
+  intros * Hmn Hnl.
+  intro s.
+  destruct (Hmn s) as [L []].
+  destruct (Hnl s) as [L' []].
+  replace L' with L in * by (eapply functional_read_ne; mauto).
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve per_bot_trans : mcltt.
+
 Lemma per_nat_sym : forall m n,
     {{ Dom m ≈ n ∈ per_nat }} ->
     {{ Dom n ≈ m ∈ per_nat }}.
 Proof.
-  intros *. induction 1; econstructor; mauto.
+  intros *.
+  induction 1; econstructor; mauto.
 Qed.
 
 #[export]
 Hint Resolve per_nat_sym : mcltt.
+
+Lemma per_nat_trans : forall m n l,
+    {{ Dom m ≈ n ∈ per_nat }} ->
+    {{ Dom n ≈ l ∈ per_nat }} ->
+    {{ Dom m ≈ l ∈ per_nat }}.
+Proof.
+  intros * H.
+  gen l.
+  induction H; intros * H'; inversion_clear H'; econstructor; mauto.
+Qed.
+
+#[export]
+Hint Resolve per_nat_trans : mcltt.
+
+Lemma per_ne_sym : forall m n,
+    {{ Dom m ≈ n ∈ per_ne }} ->
+    {{ Dom n ≈ m ∈ per_ne }}.
+Proof.
+  intros * []. econstructor. mauto.
+Qed.
+
+#[export]
+Hint Resolve per_ne_sym : mcltt.
+
+Lemma per_ne_trans : forall m n l,
+    {{ Dom m ≈ n ∈ per_ne }} ->
+    {{ Dom n ≈ l ∈ per_ne }} ->
+    {{ Dom m ≈ l ∈ per_ne }}.
+Proof with mauto.
+  intros * [] Hnl.
+  inversion_clear Hnl.
+  econstructor...
+Qed.
+
+#[export]
+Hint Resolve per_ne_trans : mcltt.
 
 Lemma per_univ_elem_right_irrel_gen : forall i A B R,
     per_univ_elem i A B R ->
@@ -35,9 +87,7 @@ Lemma per_univ_elem_right_irrel_gen : forall i A B R,
       R = R'.
 Proof.
   induction 1 using per_univ_elem_ind; intros ? ? ? Heq Hright;
-    try solve [induction Hright using per_univ_elem_ind;
-               try congruence].
-
+    try solve [induction Hright using per_univ_elem_ind; congruence].
   subst.
   simp per_univ_elem in Hright; inversion Hright; try congruence; subst.
   rewrite <- per_univ_elem_equation_1 in *.
@@ -50,17 +100,12 @@ Proof.
   extensionality c.
   extensionality c'.
   extensionality equiv_c_c'.
-  specialize (H0 _ _ equiv_c_c').
-  destruct H0 as [? ? ? ? [? ?]].
-
-  specialize (H7 _ _ equiv_c_c').
-  destruct H7 as [? ? ? ? ?].
-
-  assert (a = a0) by admit.
-  subst.
+  specialize (H0 _ _ equiv_c_c') as [a ? ? ? [? ?]].
+  specialize (H7 _ _ equiv_c_c') as [a0 ? ? ? ?].
+  replace a0 with a in * by (eapply functional_eval_exp; mauto).
   specialize (H4 _ _ _ eq_refl H7).
   congruence.
-Admitted.
+Qed.
 
 Lemma per_univ_elem_right_irrel : forall i A B R B' R',
     per_univ_elem i A B R ->
@@ -72,7 +117,7 @@ Qed.
 
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
-    exists R', per_univ_elem i B A R' /\ (forall a b, R a b <-> R' b a).
+    exists R', per_univ_elem i B A R' /\ (forall a b, {{ Dom a ≈ b ∈ R }} <-> {{ Dom b ≈ a ∈ R' }}).
 Proof.
   intros. induction H using per_univ_elem_ind; subst.
   - exists (per_univ j'). split.
@@ -84,7 +129,7 @@ Proof.
         firstorder.
   - exists per_nat. split.
     + econstructor.
-    + intros; split; apply per_nat_sym.
+    + intros; split; mauto.
   - destruct IHper_univ_elem as [in_rel' [? ?]].
     unfold in_dom_rel in *.
     setoid_rewrite rel_mod_eval_simp_ex in H0.
@@ -114,8 +159,10 @@ Proof.
         replace (Hconv c' c (Hconv' c c' equiv_c_c')) with equiv_c_c' in H11 by apply proof_irrelevance.
         unfold in_dom_rel.
         firstorder.
-  - admit.
-Admitted.
+  - exists per_ne. split.
+    + econstructor.
+    + intros; split; mauto.
+Qed.
 
 Ltac invert_per_univ_elem H :=
   simp per_univ_elem in H;
@@ -143,151 +190,9 @@ Proof.
       destruct H0, H2.
       destruct (H1 _ _ _ H0 _ _ H2) as [? [? ?]].
       eauto.
-  - admit.
+  - exists per_nat.
+    split...
+    + mauto.
+    + eapply per_nat_trans.
   - specialize (IHper_univ_elem _ _ equiv_a_a').
     destruct IHper_univ_elem as [in_rel3 [? ?]].
-
-
-(* Lemma per_univ_univ : forall {i j j'}, *)
-(*     j < i -> *)
-(*     j = j' -> *)
-(*     {{ Dom 𝕌@j ≈ 𝕌@j' ∈ per_univ i }}. *)
-(* Proof with solve [mauto]. *)
-(*   intros * lt_j_i eq_j_j'. *)
-(*   eexists... *)
-(*   Unshelve. *)
-(*   all: assumption. *)
-(* Qed. *)
-
-(* Lemma per_univ_nat : forall {i}, *)
-(*     {{ Dom ℕ ≈ ℕ ∈ per_univ i }}. *)
-(* Proof with solve [mauto]. *)
-(*   intros *. *)
-(*   eexists... *)
-(* Qed. *)
-
-(* Lemma per_univ_pi_lem : forall {i a a' B p B' p'} *)
-(*                            (equiv_a_a' : {{ Dom a ≈ a' ∈ per_univ i }}), *)
-(*     (forall {c c'}, *)
-(*         {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }} -> *)
-(*         rel_mod_eval (per_univ i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}) -> *)
-(*     exists (rel_B_B'_template : forall {c c'}, *)
-(*         {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }} -> *)
-(*         rel_mod_eval (Per_univ_def.per_univ_template i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}), *)
-(*       (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }}) *)
-(*           b b' (eval_B : {{ ⟦ B ⟧ p ↦ c ↘ b }}) (eval_B' : {{ ⟦ B' ⟧ p' ↦ c' ↘ b' }}), *)
-(*           Per_univ_def.per_univ_check i (@per_univ_base i) (rel_mod_eval_equiv (rel_B_B'_template equiv_c_c') eval_B eval_B')). *)
-(* Proof with solve [mauto]. *)
-(*   intros * rel_B_B'. *)
-(*   unshelve epose (rel_B_B'_template := _ : forall {c c'}, *)
-(*              {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }} -> *)
-(*              rel_mod_eval (Per_univ_def.per_univ_template i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}). *)
-(*   { *)
-(*     intros * equiv_c_c'. *)
-(*     econstructor; destruct (rel_B_B' _ _ equiv_c_c') as [? ? ?]; only 1-2: solve [mauto]. *)
-(*     intros b b' eval_B eval_B'. *)
-(*     eapply ex_proj1, rel_mod_eval_equiv... *)
-(*   } *)
-(*   simpl in rel_B_B'_template. *)
-(*   exists rel_B_B'_template. *)
-(*   intros *. *)
-(*   unfold rel_B_B'_template; simpl. *)
-(*   destruct (rel_B_B' _ _ equiv_c_c') as [? ? ?]. *)
-(*   eapply ex_proj2. *)
-(* Qed. *)
-
-(* Lemma per_univ_pi : forall {i a a' B p B' p'} *)
-(*                        (equiv_a_a' : {{ Dom a ≈ a' ∈ per_univ i }}), *)
-(*       (forall {c c'}, *)
-(*           {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }} -> *)
-(*           rel_mod_eval (per_univ i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}}) -> *)
-(*       {{ Dom Π a p B ≈ Π a' p' B' ∈ per_univ i }}. *)
-(* Proof with solve [mauto]. *)
-(*   intros *; destruct equiv_a_a' as [equiv_a_a'_template equiv_a_a'_check]; intro rel_B_B'. *)
-(*   eassert (H_per_univ_pi_lem : _). *)
-(*   { eapply per_univ_pi_lem... } *)
-(*   destruct H_per_univ_pi_lem as [rel_B_B'_template rel_B_B'_check]. *)
-(*   eexists; econstructor... *)
-(* Qed. *)
-
-(* Lemma per_univ_neut : forall {i m m' a a'}, *)
-(*     {{ Dom m ≈ m' ∈ per_bot }} -> *)
-(*     {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_univ i }}. *)
-(* Proof with solve [mauto]. *)
-(*   intros * equiv_m_m'. *)
-(*   eexists... *)
-(*   Unshelve. *)
-(*   all: assumption. *)
-(* Qed. *)
-
-(* Lemma per_univ_ind : forall i P, *)
-(*     (forall j j', j < i -> j = j' -> {{ Dom 𝕌@j ≈ 𝕌@j' ∈ P }}) -> *)
-(*     {{ Dom ℕ ≈ ℕ ∈ P }} -> *)
-(*     (forall a a' B p B' p' *)
-(*         (equiv_a_a' : {{ Dom a ≈ a' ∈ per_univ i }}), *)
-(*         {{ Dom a ≈ a' ∈ P }} -> *)
-(*         (forall c c', *)
-(*             {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }} -> *)
-(*             rel_mod_eval (per_univ i) B d{{{ p ↦ c}}} B' d{{{ p' ↦ c'}}}) -> *)
-(*         (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ per_elem equiv_a_a' }}), *)
-(*             rel_mod_eval P B d{{{ p ↦ c}}} B' d{{{ p' ↦ c'}}}) -> *)
-(*         {{ Dom Π a p B ≈ Π a' p' B' ∈ P }}) -> *)
-(*     (forall m m' a a', {{ Dom m ≈ m' ∈ per_bot }} -> {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ P }}) -> *)
-(*     forall d d', {{ Dom d ≈ d' ∈ per_univ i }} -> {{ Dom d ≈ d' ∈ P }}. *)
-(* Proof with solve [mauto]. *)
-(*   intros * Huniv Hnat Hpi Hneut d d' [equiv_d_d'_template equiv_d_d'_check]. *)
-(*   induction equiv_d_d'_check; only 1-2,4: solve [mauto]. *)
-(*   unshelve epose (equiv_a_a'_real := _ : {{ Dom a ≈ a' ∈ per_univ i }}). *)
-(*   { econstructor... } *)
-(*   eapply Hpi with (equiv_a_a' := equiv_a_a'_real); subst equiv_a_a'_real; [solve [mauto]| |]; *)
-(*     intros * equiv_c_c'; unfold per_elem, Per_univ_def.per_elem in equiv_c_c'; destruct (rel_B_B' _ _ equiv_c_c'). *)
-(*   - econstructor; only 1-2: solve [mauto]. *)
-(*     intros b b' eval_B eval_B'. *)
-(*     econstructor; apply H. *)
-(*     Unshelve. *)
-(*     3-5: eassumption. *)
-(*   - econstructor; only 1-2: solve [mauto]. *)
-(*     intros b b' eval_B eval_B'. *)
-(*     eapply H0; solve [mauto]. *)
-(* Qed. *)
-
-Lemma per_univ_sym : forall m m' i,
-    {{ Dom m ≈ m' ∈ per_univ i }} -> {{ Dom m' ≈ m ∈ per_univ i }}
-with per_elem_sym : forall m m' i R R' a a'
-  (equiv_m_m' : {{ DF m ≈ m' ∈ per_univ_elem i ↘ R }})
-  (equiv_m'_m : {{ DF m' ≈ m ∈ per_univ_elem i ↘ R' }}),
-    {{ Dom a ≈ a' ∈ R }} <-> {{ Dom a' ≈ a ∈ R' }}.
-Proof with mauto.
-  all: intros *; try split.
-  1: intro Hper_univ.
-  2-3: intro Hper_elem.
-  - destruct Hper_univ as [per_elem equiv_m_m'].
-    autorewrite with per_univ_elem in equiv_m_m'.
-    dependent induction equiv_m_m'; subst; only 1-2,4: solve [eexists; econstructor; mauto].
-    (* Pi case *)
-    destruct IHequiv_m_m' as [in_rel' IHequiv_a_a'].
-    rewrite <- per_univ_elem_equation_1 in H, equiv_a_a'.
-    (* (* One attempt *) *)
-    (* unshelve epose (out_rel' := _ : forall c' c : domain, {{ Dom c' ≈ c ∈ in_rel' }} -> relation domain). *)
-    (* { *)
-    (*   intros * equiv_c'_c. *)
-    (*   assert (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}) by (erewrite per_elem_sym; eassumption). *)
-    (*   assert (rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) by mauto. *)
-    (*   (* Failure point *) *)
-    (*   destruct_last. *)
-    (* } *)
-
-    (* (* The other *) *)
-    (* assert (exists (out_rel' : forall c' c : domain, {{ Dom c' ≈ c ∈ in_rel' }} -> relation domain), *)
-    (*          forall (c' c : domain) (equiv_c'_c : {{ Dom c' ≈ c ∈ in_rel' }}), *)
-    (*            rel_mod_eval (per_univ_elem i) B' d{{{ p' ↦ c' }}} B d{{{ p ↦ c }}} (out_rel' c' c equiv_c'_c)). *)
-    (* { *)
-    (*   (* This "eexists" is problematic *) *)
-    (*   eexists. *)
-    (*   intros. *)
-    (*   assert (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}) by (erewrite per_elem_sym; eassumption). *)
-    (*   assert (rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) by mauto. *)
-    (*   destruct_last. *)
-    (*   econstructor; try eassumption. *)
-    (* } *)
-      
