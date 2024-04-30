@@ -1,8 +1,31 @@
-From Coq Require Import Lia PeanoNat Relations Program.Equality.
-From Mcltt Require Import Axioms Base Domain Evaluate LibTactics PER Readback Syntax System.
+From Coq Require Import Lia PeanoNat Relations ChoiceFacts Program.Equality.
 From Equations Require Import Equations.
-From Coq.Logic Require Import ChoiceFacts.
+From Mcltt Require Import Axioms Base Domain Evaluate EvaluateLemma LibTactics PER Readback Syntax System.
 
+Lemma per_bot_sym : forall m n,
+    {{ Dom m ≈ n ∈ per_bot }} ->
+    {{ Dom n ≈ m ∈ per_bot }}.
+Proof.
+  unfold per_bot.
+  intros.
+  unfold in_dom_rel in *.
+  intro.
+  destruct (H s) as [? []].
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve per_bot_sym : mcltt.
+
+Lemma per_nat_sym : forall m n,
+    {{ Dom m ≈ n ∈ per_nat }} ->
+    {{ Dom n ≈ m ∈ per_nat }}.
+Proof.
+  intros *. induction 1; econstructor; mauto.
+Qed.
+
+#[export]
+Hint Resolve per_nat_sym : mcltt.
 
 Lemma per_univ_elem_right_irrel_gen : forall i A B R,
     per_univ_elem i A B R ->
@@ -59,7 +82,9 @@ Proof.
         firstorder.
       * specialize (H1 _ _ _ H0).
         firstorder.
-  - admit.
+  - exists per_nat. split.
+    + econstructor.
+    + intros; split; apply per_nat_sym.
   - destruct IHper_univ_elem as [in_rel' [? ?]].
     unfold in_dom_rel in *.
     setoid_rewrite rel_mod_eval_simp_ex in H0.
