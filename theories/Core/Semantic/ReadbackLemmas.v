@@ -1,5 +1,5 @@
 From Coq Require Import Lia PeanoNat Relations.
-From Mcltt Require Import Base Domain Evaluate EvaluateLemma LibTactics Readback Syntax System.
+From Mcltt Require Import Base Domain Evaluate EvaluateLemmas LibTactics Readback Syntax System.
 
 Definition functional_read_nf_prop s m M1 (_ : {{ Rnf m in s ↘ M1 }}) : Prop := forall M2 (Hread2: {{ Rnf m in s ↘ M2 }}), M1 = M2.
 Definition functional_read_ne_prop s m M1 (_ : {{ Rne m in s ↘ M1 }}) : Prop := forall M2 (Hread2 : {{ Rne m in s ↘ M2 }}), M1 = M2.
