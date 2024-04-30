@@ -6,9 +6,7 @@ Lemma per_bot_sym : forall m n,
     {{ Dom m ≈ n ∈ per_bot }} ->
     {{ Dom n ≈ m ∈ per_bot }}.
 Proof with mauto.
-  unfold per_bot.
-  intros * H.
-  intro s.
+  intros * H s.
   destruct (H s) as [? []]...
 Qed.
 
@@ -20,9 +18,7 @@ Lemma per_bot_trans : forall m n l,
     {{ Dom n ≈ l ∈ per_bot }} ->
     {{ Dom m ≈ l ∈ per_bot }}.
 Proof.
-  unfold per_bot.
-  intros * Hmn Hnl.
-  intro s.
+  intros * Hmn Hnl s.
   destruct (Hmn s) as [L []].
   destruct (Hnl s) as [L' []].
   replace L' with L in * by (eapply functional_read_ne; mauto).
@@ -48,8 +44,7 @@ Lemma per_nat_trans : forall m n l,
     {{ Dom n ≈ l ∈ per_nat }} ->
     {{ Dom m ≈ l ∈ per_nat }}.
 Proof.
-  intros * H.
-  gen l.
+  intros * H. gen l.
   induction H; intros * H'; inversion_clear H'; econstructor; mauto.
 Qed.
 
@@ -60,7 +55,9 @@ Lemma per_ne_sym : forall m n,
     {{ Dom m ≈ n ∈ per_ne }} ->
     {{ Dom n ≈ m ∈ per_ne }}.
 Proof.
-  intros * []. econstructor. mauto.
+  intros * [].
+  econstructor.
+  mauto.
 Qed.
 
 #[export]
@@ -86,7 +83,7 @@ Lemma per_univ_elem_right_irrel_gen : forall i A B R,
       per_univ_elem i A' B' R' ->
       R = R'.
 Proof.
-  induction 1 using per_univ_elem_ind; intros ? ? ? Heq Hright;
+  induction 1 using per_univ_elem_ind; intros * Heq Hright;
     try solve [induction Hright using per_univ_elem_ind; congruence].
   subst.
   simp per_univ_elem in Hright; inversion Hright; try congruence; subst.
@@ -121,7 +118,7 @@ Proof.
   intros. induction H using per_univ_elem_ind; subst.
   - exists (per_univ j'). split.
     + apply per_univ_elem_core_univ'; trivial.
-    + intros. split; unfold per_univ; intros HD; destruct HD.
+    + intros. split; intros HD; destruct HD.
       * specialize (H1 _ _ _ H0).
         firstorder.
       * specialize (H1 _ _ _ H0).
@@ -139,14 +136,11 @@ Proof.
     exists (fun f f' => forall (c c' : domain) (equiv_c_c' : in_rel' c c'), rel_mod_app (out_rel' c' c (Hconv _ _ equiv_c_c')) f c f' c').
     split.
     + simp per_univ_elem; econstructor; try rewrite <- per_univ_elem_equation_1 in *; eauto.
-
       * intros.
         destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
         econstructor; eauto.
         apply H7.
-
       * auto.
-
     + split; intros.
       * destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
         specialize (H4 _ _ (Hconv c c' equiv_c_c')).
@@ -161,11 +155,11 @@ Proof.
     + intros; split; mauto.
 Qed.
 
-Ltac invert_per_univ_elem H :=
-  simp per_univ_elem in H;
-  inversion H;
-  subst;
-  try rewrite <- per_univ_elem_equation_1 in *.
+(* Ltac invert_per_univ_elem H := *)
+(*   simp per_univ_elem in H; *)
+(*   inversion H; *)
+(*   subst; *)
+(*   try rewrite <- per_univ_elem_equation_1 in *. *)
 
 (* Ltac per_univ_elem_econstructor := *)
 (*   simp per_univ_elem; *)
