@@ -21,8 +21,7 @@ Proof.
   intros * Hmn Hnl s.
   destruct (Hmn s) as [L []].
   destruct (Hnl s) as [L' []].
-  replace L' with L in * by (eapply functional_read_ne; mauto).
-  mauto.
+  replace L' with L in *; mauto.
 Qed.
 
 #[export]
@@ -98,7 +97,7 @@ Proof.
   extensionality equiv_c_c'.
   specialize (H0 _ _ equiv_c_c') as [a ? ? ? [? ?]].
   specialize (H7 _ _ equiv_c_c') as [a0 ? ? ? ?].
-  replace a0 with a in * by (eapply functional_eval_exp; mauto).
+  replace a0 with a in * by mauto.
   specialize (H4 _ _ _ eq_refl H7).
   congruence.
 Qed.
