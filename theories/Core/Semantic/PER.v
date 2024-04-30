@@ -16,10 +16,13 @@ Inductive rel_mod_app (R : relation domain) f a f' a' : Prop := mk_rel_mod_app :
 Arguments mk_rel_mod_app {_ _ _ _ _}.
 
 Definition per_bot : relation domain_ne := fun m n => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne n in s ↘ L }}).
+Arguments per_bot /.
 
 Definition per_top : relation domain_nf := fun m n => (forall s, exists L, {{ Rnf m in s ↘ L }} /\ {{ Rnf n in s ↘ L }}).
+Arguments per_top /.
 
 Definition per_top_typ : relation domain := fun a b => (forall s, exists C, {{ Rtyp a in s ↘ C }} /\ {{ Rtyp b in s ↘ C }}).
+Arguments per_top_typ /.
 
 Inductive per_nat : relation domain :=
 | per_nat_zero : {{ Dom zero ≈ zero ∈ per_nat }}
@@ -103,6 +106,7 @@ Equations per_univ_elem (i : nat) : domain -> domain -> relation domain -> Prop 
 | i => per_univ_elem_core i (fun j lt_j_i a a' => exists R', {{ DF a ≈ a' ∈ per_univ_elem j ↘ R' }}).
 
 Definition per_univ (i : nat) : relation domain := fun a a' => exists R', {{ DF a ≈ a' ∈ per_univ_elem i ↘ R' }}.
+Arguments per_univ _ _ _ /.
 
 Lemma per_univ_elem_core_univ' : forall j i,
     j < i ->
@@ -117,7 +121,6 @@ Qed.
 Global Hint Resolve per_univ_elem_core_univ' : mcltt.
 
 Section Per_univ_elem_ind_def.
-
   Hypothesis
     (motive : nat -> domain -> domain -> relation domain -> Prop).
 
