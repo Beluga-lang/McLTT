@@ -1,6 +1,6 @@
 From Coq Require Import Lia PeanoNat Relations ChoiceFacts Program.Equality.
 From Equations Require Import Equations.
-From Mcltt Require Import Axioms Base Domain Evaluate EvaluateLemma LibTactics PER Readback Syntax System.
+From Mcltt Require Import Axioms Base Domain Evaluate LibTactics PER Readback Syntax System.
 
 Lemma per_bot_sym : forall m n,
     {{ Dom m ≈ n ∈ per_bot }} ->

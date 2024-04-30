@@ -67,24 +67,24 @@ Section Per_univ_elem_core_def.
     (motive : domain -> domain -> relation domain -> Prop).
 
   Hypothesis
-    (case_U : forall (j j' : nat) (lt_j_i : j < i), j = j' -> {{ DF 𝕌 @ j ≈ 𝕌 @ j' ∈ motive ↘ per_univ_rec lt_j_i }}).
+    (case_U : forall (j j' : nat) (lt_j_i : j < i), j = j' -> motive d{{{ 𝕌@j }}} d{{{ 𝕌@j' }}} (per_univ_rec lt_j_i)).
 
   Hypothesis
-    (case_nat : {{ DF ℕ ≈ ℕ ∈ motive ↘ per_nat }}).
+    (case_nat : motive d{{{ ℕ }}} d{{{ ℕ }}} per_nat).
 
   Hypothesis
     (case_Pi :
       forall {A p B A' p' B' in_rel elem_rel}
         (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
         {{ DF A ≈ A' ∈ per_univ_elem_core ↘ in_rel }} ->
-        {{ DF A ≈ A' ∈ motive ↘ in_rel }} ->
+        motive A A' in_rel ->
         (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-            rel_mod_eval (fun x y R => {{ DF x ≈ y ∈ per_univ_elem_core ↘ R }} /\ {{ DF x ≈ y ∈ motive ↘ R}}) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+            rel_mod_eval (fun x y R => {{ DF x ≈ y ∈ per_univ_elem_core ↘ R }} /\ motive x y R) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
         (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
-        {{ DF Π A p B ≈ Π A' p' B' ∈ motive ↘ elem_rel }}).
+        motive d{{{ Π A p B }}} d{{{ Π A' p' B' }}} elem_rel).
 
   Hypothesis
-    (case_ne : (forall {a b a' b'}, {{ DF ⇑ a b ≈ ⇑ a' b' ∈ motive ↘ per_ne }})).
+    (case_ne : (forall {a b a' b'}, motive d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
 
   #[derive(equations=no, eliminator=no)]
   Equations per_univ_elem_core_strong_ind a b R (H : {{ DF a ≈ b ∈ per_univ_elem_core ↘ R }}) : {{ DF a ≈ b ∈ motive ↘ R }} :=
@@ -128,25 +128,25 @@ Section Per_univ_elem_ind_def.
 
   Hypothesis
     (case_U : forall j j' i, j < i -> j = j' ->
-                        (forall A B R, {{ DF A ≈ B ∈ per_univ_elem j ↘ R }} -> {{ DF A ≈ B ∈ motive j ↘ R }}) ->
-                        {{ DF 𝕌@j ≈ 𝕌@j' ∈ motive i ↘ per_univ j }}).
+                        (forall A B R, {{ DF A ≈ B ∈ per_univ_elem j ↘ R }} -> motive j A B R) ->
+                        motive i d{{{ 𝕌@j }}} d{{{ 𝕌@j' }}} (per_univ j)).
 
   Hypothesis
-    (case_N : forall i, {{ DF ℕ ≈ ℕ ∈ motive i ↘ per_nat }}).
+    (case_N : forall i, motive i d{{{ ℕ }}} d{{{ ℕ }}} per_nat).
 
   Hypothesis
     (case_Pi :
       forall i {A p B A' p' B' in_rel elem_rel}
         (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
         {{ DF A ≈ A' ∈ per_univ_elem i ↘ in_rel }} ->
-        {{ DF A ≈ A' ∈ motive i ↘ in_rel}} ->
+        motive i A A' in_rel ->
         (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-            rel_mod_eval (fun x y R => {{ DF x ≈ y ∈ per_univ_elem i ↘ R }} /\ {{ DF x ≈ y ∈ motive i ↘ R }}) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+            rel_mod_eval (fun x y R => {{ DF x ≈ y ∈ per_univ_elem i ↘ R }} /\ motive i x y R) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
         (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
-        {{ DF Π A p B ≈ Π A' p' B' ∈ motive i ↘ elem_rel }}).
+        motive i d{{{ Π A p B }}} d{{{ Π A' p' B' }}} elem_rel).
 
   Hypothesis
-    (case_ne : (forall i {a b a' b'}, {{ DF ⇑ a b ≈ ⇑ a' b' ∈ motive i ↘ per_ne }})).
+    (case_ne : (forall i {a b a' b'}, motive i d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
 
   #[local]
    Ltac def_simp := unfold in_dom_fun_rel in *; simp per_univ_elem in *.
@@ -163,7 +163,7 @@ Section Per_univ_elem_ind_def.
         a b R H.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
-  Equations per_univ_elem_ind i a b R (H : per_univ_elem i a b R) : {{ DF a ≈ b ∈ motive i ↘ R }} :=
+  Equations per_univ_elem_ind i a b R (H : per_univ_elem i a b R) : motive i a b R :=
     per_univ_elem_ind i a b R H := per_univ_elem_ind' i a b R _.
 
 End Per_univ_elem_ind_def.
