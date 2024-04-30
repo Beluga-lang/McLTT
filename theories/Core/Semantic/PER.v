@@ -115,7 +115,7 @@ Lemma per_univ_elem_core_univ' : forall j i,
 Proof.
   intros.
   simp per_univ_elem.
-  unfold per_univ.
+
   eapply (per_univ_elem_core_univ i (fun j lt_j_i a a' => exists R', per_univ_elem j a a' R') H).
   reflexivity.
 Qed.
