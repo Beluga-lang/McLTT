@@ -167,29 +167,29 @@ Ltac invert_per_univ_elem H :=
   subst;
   try rewrite <- per_univ_elem_equation_1 in *.
 
-Ltac per_univ_elem_econstructor :=
-  simp per_univ_elem;
-  econstructor;
-  try rewrite <- per_univ_elem_equation_1 in *.
+(* Ltac per_univ_elem_econstructor := *)
+(*   simp per_univ_elem; *)
+(*   econstructor; *)
+(*   try rewrite <- per_univ_elem_equation_1 in *. *)
 
-Lemma per_univ_elem_trans : forall i A1 A2 R1,
-    per_univ_elem i A1 A2 R1 ->
-    forall A3 R2,
-    per_univ_elem i A2 A3 R2 ->
-    exists R3, per_univ_elem i A1 A3 R3 /\ (forall a1 a2 a3, R1 a1 a2 -> R2 a2 a3 -> R3 a1 a3).
-Proof.
-  induction 1 using per_univ_elem_ind; intros ? ? HT2;
-    invert_per_univ_elem HT2.
-  - exists (per_univ j'0).
-    split.
-    + apply per_univ_elem_core_univ'; trivial.
-    + intros. unfold per_univ in *.
-      destruct H0, H2.
-      destruct (H1 _ _ _ H0 _ _ H2) as [? [? ?]].
-      eauto.
-  - exists per_nat.
-    split...
-    + mauto.
-    + eapply per_nat_trans.
-  - specialize (IHper_univ_elem _ _ equiv_a_a').
-    destruct IHper_univ_elem as [in_rel3 [? ?]].
+(* Lemma per_univ_elem_trans : forall i A1 A2 R1, *)
+(*     per_univ_elem i A1 A2 R1 -> *)
+(*     forall A3 R2, *)
+(*     per_univ_elem i A2 A3 R2 -> *)
+(*     exists R3, per_univ_elem i A1 A3 R3 /\ (forall a1 a2 a3, R1 a1 a2 -> R2 a2 a3 -> R3 a1 a3). *)
+(* Proof. *)
+(*   induction 1 using per_univ_elem_ind; intros ? ? HT2; *)
+(*     invert_per_univ_elem HT2. *)
+(*   - exists (per_univ j'0). *)
+(*     split. *)
+(*     + apply per_univ_elem_core_univ'; trivial. *)
+(*     + intros. unfold per_univ in *. *)
+(*       destruct H0, H2. *)
+(*       destruct (H1 _ _ _ H0 _ _ H2) as [? [? ?]]. *)
+(*       eauto. *)
+(*   - exists per_nat. *)
+(*     split... *)
+(*     + mauto. *)
+(*     + eapply per_nat_trans. *)
+(*   - specialize (IHper_univ_elem _ _ equiv_a_a'). *)
+(*     destruct IHper_univ_elem as [in_rel3 [? ?]]. *)
