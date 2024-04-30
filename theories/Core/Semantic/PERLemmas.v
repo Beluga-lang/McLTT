@@ -6,7 +6,7 @@ Lemma per_bot_sym : forall m n,
     {{ Dom m ≈ n ∈ per_bot }} ->
     {{ Dom n ≈ m ∈ per_bot }}.
 Proof with mauto.
-  unfold per_bot, in_dom_rel.
+  unfold per_bot.
   intros * H.
   intro s.
   destruct (H s) as [? []]...
@@ -20,7 +20,7 @@ Lemma per_bot_trans : forall m n l,
     {{ Dom n ≈ l ∈ per_bot }} ->
     {{ Dom m ≈ l ∈ per_bot }}.
 Proof.
-  unfold per_bot, in_dom_rel.
+  unfold per_bot.
   intros * Hmn Hnl.
   intro s.
   destruct (Hmn s) as [L []].
@@ -91,7 +91,6 @@ Proof.
   subst.
   simp per_univ_elem in Hright; inversion Hright; try congruence; subst.
   rewrite <- per_univ_elem_equation_1 in *.
-  unfold in_dom_fun_rel in *.
   specialize (IHper_univ_elem _ _ _ eq_refl equiv_a_a').
   subst.
   extensionality f.
@@ -131,7 +130,6 @@ Proof.
     + econstructor.
     + intros; split; mauto.
   - destruct IHper_univ_elem as [in_rel' [? ?]].
-    unfold in_dom_rel in *.
     setoid_rewrite rel_mod_eval_simp_ex in H0.
     repeat setoid_rewrite dep_functional_choice_equiv in H0.
     destruct H0 as [out_rel' ?].
@@ -157,7 +155,6 @@ Proof.
         specialize (H4 _ _ (Hconv' _ _ equiv_c_c')).
         destruct H4; econstructor; eauto; firstorder.
         replace (Hconv c' c (Hconv' c c' equiv_c_c')) with equiv_c_c' in H11 by apply proof_irrelevance.
-        unfold in_dom_rel.
         firstorder.
   - exists per_ne. split.
     + econstructor.

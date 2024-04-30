@@ -2,15 +2,10 @@ From Coq Require Import Lia PeanoNat Relations.
 From Equations Require Import Equations.
 From Mcltt Require Import Base Domain Evaluate Readback Syntax System.
 
-Definition in_dom_rel {A} (R : relation A) := R.
-Definition in_dom_fun_rel {A} {B} (R : A -> A -> relation B -> Prop) := R.
-Definition in_exp_rel {A} (R : relation A) := R.
-Definition in_exp_fun_rel {A} {B} (R : A -> A -> relation B -> Prop) := R.
-
-Notation "'Dom' a ≈ b ∈ R" := (in_dom_rel R a b) (in custom judg at level 90, a custom domain, b custom domain, R constr).
-Notation "'DF' a ≈ b ∈ R ↘ R'" := (in_dom_fun_rel R a b R') (in custom judg at level 90, a custom domain, b custom domain, R constr, R' constr).
-Notation "'Exp' a ≈ b ∈ R" := (in_exp_rel R a b) (in custom judg at level 90, a custom exp, b custom exp, R constr).
-Notation "'EF' a ≈ b ∈ R ↘ R'" := (in_exp_fun_rel R a b R') (in custom judg at level 90, a custom exp, b custom exp, R constr, R' constr).
+Notation "'Dom' a ≈ b ∈ R" := (R a b : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr).
+Notation "'DF' a ≈ b ∈ R ↘ R'" := (R a b R' : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr, R' constr).
+Notation "'Exp' a ≈ b ∈ R" := (R a b : Prop) (in custom judg at level 90, a custom exp, b custom exp, R constr).
+Notation "'EF' a ≈ b ∈ R ↘ R'" := (R a b R' : Prop) (in custom judg at level 90, a custom exp, b custom exp, R constr, R' constr).
 
 Generalizable All Variables.
 
@@ -149,7 +144,7 @@ Section Per_univ_elem_ind_def.
     (case_ne : (forall i {a b a' b'}, motive i d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
 
   #[local]
-   Ltac def_simp := unfold in_dom_fun_rel in *; simp per_univ_elem in *.
+   Ltac def_simp := simp per_univ_elem in *.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations per_univ_elem_ind' (i : nat) (a b : domain) (R : relation domain)
@@ -174,10 +169,10 @@ Lemma rel_mod_eval_ex_pull :
       exists x : A, rel_mod_eval (fun a b R => P a b R x) T p T' p' R.
 Proof.
   split; intros.
-  - destruct H; unfold in_dom_fun_rel in *.
+  - destruct H.
     destruct H1 as [? ?].
     eexists; econstructor; eauto.
-  - do 2 destruct H; econstructor; unfold in_dom_fun_rel in *; eauto.
+  - do 2 destruct H; econstructor; eauto.
 Qed.
 
 Lemma rel_mod_eval_simp_ex :
@@ -186,10 +181,10 @@ Lemma rel_mod_eval_simp_ex :
       exists x : A, rel_mod_eval (fun a b R => P a b R /\ Q a b R x) T p T' p' R.
 Proof.
   split; intros.
-  - destruct H; unfold in_dom_fun_rel in *.
+  - destruct H.
     destruct H1 as [? [? ?]].
-    eexists; econstructor; unfold in_dom_fun_rel in *; eauto.
-  - do 2 destruct H; econstructor; unfold in_dom_fun_rel in *; eauto.
+    eexists; econstructor; eauto.
+  - do 2 destruct H; econstructor; eauto.
     firstorder.
 Qed.
 
@@ -199,16 +194,11 @@ Lemma rel_mod_eval_simp_and :
       rel_mod_eval P T p T' p' R /\ Q R.
 Proof.
   split; intros.
-  - destruct H; unfold in_dom_fun_rel in *.
+  - destruct H.
     destruct H1 as [? ?].
-    split; try econstructor; unfold in_dom_fun_rel in *; eauto.
-  - do 2 destruct H; econstructor; unfold in_dom_fun_rel in *; eauto.
+    split; try econstructor; eauto.
+  - do 2 destruct H; econstructor; eauto.
 Qed.
-
-
-Definition per_univ_like (R : domain -> domain -> relation domain -> Prop) := fun a a' => exists R', {{ DF a ≈ a' ∈ R ↘ R' }}.
-#[global]
-Transparent per_univ_like.
 
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
 
