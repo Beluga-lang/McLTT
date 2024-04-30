@@ -14,7 +14,7 @@ Inductive eval_exp : exp -> env -> domain -> Prop :=
 | eval_exp_typ :
   `( {{ ⟦ Type@i ⟧ p ↘ 𝕌@i }} )
 | eval_exp_nat :
-  `( {{ ⟦ ℕ ⟧ p ↘ 𝕟 }} )
+  `( {{ ⟦ ℕ ⟧ p ↘ ℕ }} )
 | eval_exp_zero :
   `( {{ ⟦ zero ⟧ p ↘ zero }} )
 | eval_exp_succ :
@@ -49,8 +49,8 @@ with eval_natrec : exp -> exp -> exp -> domain -> env -> domain -> Prop :=
      {{ rec succ b ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ ms }} )
 | eval_natrec_neut :
   `( {{ ⟦ MZ ⟧ p ↘ mz }} ->
-     {{ ⟦ A ⟧ p ↦ ⇑ 𝕟 m ↘ a }} ->
-     {{ rec ⇑ 𝕟 m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ ⇑ a (rec m under p return A | zero -> mz | succ -> MS end) }} )
+     {{ ⟦ A ⟧ p ↦ ⇑ ℕ m ↘ a }} ->
+     {{ rec ⇑ ℕ m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ ⇑ a (rec m under p return A | zero -> mz | succ -> MS end) }} )
 where "'rec' m '⟦return' A | 'zero' -> MZ | 'succ' -> MS 'end⟧' p '↘' r" := (eval_natrec A MZ MS m p r) (in custom judg)
 with eval_app : domain -> domain -> domain -> Prop :=
 | eval_app_fn :
@@ -58,7 +58,7 @@ with eval_app : domain -> domain -> domain -> Prop :=
      {{ $| λ p M & n |↘ m }} )
 | eval_app_neut :
   `( {{ ⟦ B ⟧ p ↦ n ↘ b }} ->
-     {{ $| ⇑ (Π a p B) m & n |↘ ⇑ b (m (⇓ a N)) }} )
+     {{ $| ⇑ (Π a p B) m & n |↘ ⇑ b (m (⇓ a n)) }} )
 where "'$|' m '&' n '|↘' r" := (eval_app m n r) (in custom judg)
 with eval_sub : sub -> env -> env -> Prop :=
 | eval_sub_id :
@@ -75,3 +75,8 @@ with eval_sub : sub -> env -> env -> Prop :=
      {{ ⟦ σ ∘ τ ⟧s p ↘ p'' }} )
 where "'⟦' σ '⟧s' p '↘' p'" := (eval_sub σ p p') (in custom judg)
 .
+
+Scheme eval_exp_mut_ind := Induction for eval_exp Sort Prop
+with eval_natrec_mut_ind := Induction for eval_natrec Sort Prop
+with eval_app_mut_ind := Induction for eval_app Sort Prop
+with eval_sub_mut_ind := Induction for eval_sub Sort Prop.
