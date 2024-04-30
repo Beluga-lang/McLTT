@@ -81,3 +81,7 @@ with read_typ : nat -> domain -> nf -> Prop :=
      {{ Rtyp ⇑ a b in s ↘ ⇑ B }})
 where "'Rtyp' m 'in' s ↘ M" := (read_typ s m M) (in custom judg) : exp_scope
 .
+
+Scheme read_nf_mut_ind := Induction for read_nf Sort Prop
+with read_ne_mut_ind := Induction for read_ne Sort Prop
+with read_typ_mut_ind := Induction for read_typ Sort Prop.
