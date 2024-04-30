@@ -142,11 +142,11 @@ Proof.
       * auto.
     + split; intros.
       * destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
-        specialize (H4 _ _ (Hconv c c' equiv_c_c')).
-        destruct H4; econstructor; eauto; firstorder.
+        specialize (H4 _ _ (Hconv c c' equiv_c_c')) as [].
+        econstructor; eauto; firstorder.
       * destruct (H0 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
-        specialize (H4 _ _ (Hconv' _ _ equiv_c_c')).
-        destruct H4; econstructor; eauto; firstorder.
+        specialize (H4 _ _ (Hconv' _ _ equiv_c_c')) as [].
+        econstructor; eauto; firstorder.
         replace (Hconv c' c (Hconv' c c' equiv_c_c')) with equiv_c_c' in H11 by apply proof_irrelevance.
         firstorder.
   - exists per_ne. split.
