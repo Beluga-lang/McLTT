@@ -5,7 +5,7 @@ From Mcltt Require Import Axioms Base Domain Evaluate EvaluateLemmas LibTactics 
 Lemma per_bot_sym : forall m n,
     {{ Dom m ≈ n ∈ per_bot }} ->
     {{ Dom n ≈ m ∈ per_bot }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros * H s.
   destruct (H s) as [? []]...
 Qed.
@@ -17,11 +17,11 @@ Lemma per_bot_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_bot }} ->
     {{ Dom n ≈ l ∈ per_bot }} ->
     {{ Dom m ≈ l ∈ per_bot }}.
-Proof.
+Proof with solve [mauto].
   intros * Hmn Hnl s.
-  destruct (Hmn s) as [L []].
-  destruct (Hnl s) as [L' []].
-  replace L' with L in *; mauto.
+  destruct (Hmn s) as [? []].
+  destruct (Hnl s) as [? []].
+  functional_read_rewrite_clear...
 Qed.
 
 #[export]
@@ -30,9 +30,8 @@ Hint Resolve per_bot_trans : mcltt.
 Lemma per_nat_sym : forall m n,
     {{ Dom m ≈ n ∈ per_nat }} ->
     {{ Dom n ≈ m ∈ per_nat }}.
-Proof.
-  intros *.
-  induction 1; econstructor; mauto.
+Proof with solve [mauto].
+  induction 1; econstructor...
 Qed.
 
 #[export]
@@ -42,9 +41,9 @@ Lemma per_nat_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_nat }} ->
     {{ Dom n ≈ l ∈ per_nat }} ->
     {{ Dom m ≈ l ∈ per_nat }}.
-Proof.
+Proof with solve [mauto].
   intros * H. gen l.
-  induction H; intros * H'; inversion_clear H'; econstructor; mauto.
+  induction H; intros * H'; inversion_clear H'; econstructor...
 Qed.
 
 #[export]
@@ -53,10 +52,9 @@ Hint Resolve per_nat_trans : mcltt.
 Lemma per_ne_sym : forall m n,
     {{ Dom m ≈ n ∈ per_ne }} ->
     {{ Dom n ≈ m ∈ per_ne }}.
-Proof.
+Proof with solve [mauto].
   intros * [].
-  econstructor.
-  mauto.
+  econstructor...
 Qed.
 
 #[export]
@@ -66,7 +64,7 @@ Lemma per_ne_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_ne }} ->
     {{ Dom n ≈ l ∈ per_ne }} ->
     {{ Dom m ≈ l ∈ per_ne }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros * [] Hnl.
   inversion_clear Hnl.
   econstructor...
@@ -74,6 +72,17 @@ Qed.
 
 #[export]
 Hint Resolve per_ne_trans : mcltt.
+
+Ltac invert_per_univ_elem H :=
+  simp per_univ_elem in H;
+  inversion H;
+  subst;
+  try rewrite <- per_univ_elem_equation_1 in *.
+
+Ltac per_univ_elem_econstructor :=
+  simp per_univ_elem;
+  econstructor;
+  try rewrite <- per_univ_elem_equation_1 in *.
 
 Lemma per_univ_elem_right_irrel_gen : forall i A B R,
     per_univ_elem i A B R ->
@@ -85,8 +94,7 @@ Proof.
   induction 1 using per_univ_elem_ind; intros * Heq Hright;
     try solve [induction Hright using per_univ_elem_ind; congruence].
   subst.
-  simp per_univ_elem in Hright; inversion Hright; try congruence; subst.
-  rewrite <- per_univ_elem_equation_1 in *.
+  invert_per_univ_elem Hright; try congruence.
   specialize (IHper_univ_elem _ _ _ eq_refl equiv_a_a').
   subst.
   extensionality f.
@@ -95,9 +103,9 @@ Proof.
   extensionality c.
   extensionality c'.
   extensionality equiv_c_c'.
-  specialize (H0 _ _ equiv_c_c') as [a ? ? ? [? ?]].
-  specialize (H7 _ _ equiv_c_c') as [a0 ? ? ? ?].
-  replace a0 with a in * by mauto.
+  specialize (H0 _ _ equiv_c_c') as [? ? ? ? []].
+  specialize (H7 _ _ equiv_c_c') as [? ? ? ? ?].
+  functional_eval_rewrite_clear.
   specialize (H4 _ _ _ eq_refl H7).
   congruence.
 Qed.
@@ -134,7 +142,7 @@ Proof.
     setoid_rewrite H1.
     exists (fun f f' => forall (c c' : domain) (equiv_c_c' : in_rel' c c'), rel_mod_app (out_rel' c' c (Hconv _ _ equiv_c_c')) f c f' c').
     split.
-    + simp per_univ_elem; econstructor; try rewrite <- per_univ_elem_equation_1 in *; eauto.
+    + per_univ_elem_econstructor; eauto.
       * intros.
         destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
         econstructor; eauto.
@@ -143,27 +151,16 @@ Proof.
     + split; intros.
       * destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
         specialize (H4 _ _ (Hconv c c' equiv_c_c')) as [].
-        econstructor; eauto; firstorder.
+        econstructor; firstorder eauto.
       * destruct (H0 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
         specialize (H4 _ _ (Hconv' _ _ equiv_c_c')) as [].
-        econstructor; eauto; firstorder.
+        econstructor; firstorder eauto.
         replace (Hconv c' c (Hconv' c c' equiv_c_c')) with equiv_c_c' in H11 by apply proof_irrelevance.
         firstorder.
   - exists per_ne. split.
     + econstructor.
     + intros; split; mauto.
 Qed.
-
-(* Ltac invert_per_univ_elem H := *)
-(*   simp per_univ_elem in H; *)
-(*   inversion H; *)
-(*   subst; *)
-(*   try rewrite <- per_univ_elem_equation_1 in *. *)
-
-(* Ltac per_univ_elem_econstructor := *)
-(*   simp per_univ_elem; *)
-(*   econstructor; *)
-(*   try rewrite <- per_univ_elem_equation_1 in *. *)
 
 (* Lemma per_univ_elem_trans : forall i A1 A2 R1, *)
 (*     per_univ_elem i A1 A2 R1 -> *)
