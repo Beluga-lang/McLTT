@@ -20,7 +20,10 @@ ctxeq_sub_eq_helper : forall {Γ Γ' σ σ'}, {{ Γ ⊢s σ ≈ σ' : Γ' }} -> 
 Proof with solve [mauto].
   (* ctxeq_exp_helper *)
   - intros * HM * HΓΔ. gen Δ.
-    inversion_clear HM; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
+    inversion_clear HM;
+      (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
+      clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
+      intros; destruct (presup_ctx_eq HΓΔ); mauto.
     all: try (rename B into C); try (rename A0 into B).
     2-4: assert {{ Δ ⊢ B : Type@i }} as HB by eauto.
     2-4: assert {{ ⊢ Γ, B ≈ Δ, B }} by mauto; clear HB.
@@ -36,7 +39,10 @@ Proof with solve [mauto].
 
   (* ctxeq_exp_eq_helper *)
   - intros * HMM' * HΓΔ. gen Δ.
-    inversion_clear HMM'; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
+    inversion_clear HMM';
+      (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
+      clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
+      intros; destruct (presup_ctx_eq HΓΔ); mauto.
     all: try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
     1-3: assert {{ ⊢ Γ, ℕ ≈ Δ, ℕ }} by (econstructor; mauto).
     1-3: assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto.
@@ -52,13 +58,19 @@ Proof with solve [mauto].
 
   (* ctxeq_sub_helper *)
   - intros * Hσ * HΓΔ. gen Δ.
-    inversion_clear Hσ; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
+    inversion_clear Hσ;
+      (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
+      clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
+      intros; destruct (presup_ctx_eq HΓΔ); mauto.
     inversion_clear HΓΔ.
     econstructor...
 
   (* ctxeq_sub_eq_helper *)
   - intros * Hσσ' * HΓΔ. gen Δ.
-    inversion_clear Hσσ'; (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper); clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper; intros; destruct (presup_ctx_eq HΓΔ); mauto.
+    inversion_clear Hσσ';
+      (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
+      clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
+      intros; destruct (presup_ctx_eq HΓΔ); mauto.
     inversion_clear HΓΔ.
     eapply wf_sub_eq_conv...
 
