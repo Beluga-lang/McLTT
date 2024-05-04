@@ -99,14 +99,14 @@ Proof.
   subst.
   extensionality f.
   extensionality f'.
-  rewrite H3, H12.
+  rewrite H2, H10.
   extensionality c.
   extensionality c'.
   extensionality equiv_c_c'.
-  specialize (H2 _ _ equiv_c_c') as [? ? ? ? []].
-  specialize (H11 _ _ equiv_c_c') as [? ? ? ? ?].
+  specialize (H1 _ _ equiv_c_c') as [? ? ? ? []].
+  specialize (H9 _ _ equiv_c_c') as [? ? ? ? ?].
   functional_eval_rewrite_clear.
-  specialize (H6 _ _ _ eq_refl H11).
+  specialize (H5 _ _ _ eq_refl H9).
   congruence.
 Qed.
 
@@ -134,6 +134,13 @@ Ltac functional_per_univ_elem_rewrite_clear :=
         assert (R2 = R1) by (eapply per_univ_elem_right_irrel; eassumption); subst; clear H2
     end.
 
+Lemma iff_extensionality : forall (A : Type) (Q P : A -> Prop),
+    (forall a, P a <-> Q a) ->
+    (forall a, P a) <-> (forall a, Q a).
+Proof.
+  firstorder.
+Qed.
+
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
     per_univ_elem i B A R /\ (forall a b, {{ Dom a ≈ b ∈ R }} <-> {{ Dom b ≈ a ∈ R }}).
@@ -150,15 +157,15 @@ Proof.
     + econstructor.
     + intros; split; mauto.
   - destruct IHper_univ_elem as [? ?].
-    setoid_rewrite H3.
+    setoid_rewrite H2.
     split.
     + per_univ_elem_econstructor; eauto.
       intros.
       assert (equiv_c'_c : in_rel c' c) by firstorder.
       assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
-      destruct (H2 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
-      destruct (H2 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
-      destruct (H2 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
+      destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
+      destruct (H1 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
+      destruct (H1 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
       econstructor; eauto.
       functional_eval_rewrite_clear.
       per_univ_elem_right_irrel_rewrite.
@@ -166,14 +173,28 @@ Proof.
 
     + split; intros.
       * assert (equiv_c'_c : in_rel c' c) by firstorder.
-        destruct (H6 _ _ equiv_c'_c) as [? ? ? ? ?].
+        assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
+        destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
+        destruct (H1 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
+        destruct (H1 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
+        destruct (H5 _ _ equiv_c'_c) as [? ? ? ? ?].
+        functional_eval_rewrite_clear.
+        per_univ_elem_right_irrel_rewrite.
         econstructor; eauto.
-        eapply IPP_sym; eassumption.
+        rewrite H17, H16.
+        firstorder.
 
       * assert (equiv_c'_c : in_rel c' c) by firstorder.
-        destruct (H6 _ _ equiv_c'_c) as [? ? ? ? ?].
+        assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
+        destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
+        destruct (H1 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
+        destruct (H1 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
+        destruct (H5 _ _ equiv_c'_c) as [? ? ? ? ?].
+        functional_eval_rewrite_clear.
+        per_univ_elem_right_irrel_rewrite.
         econstructor; eauto.
-        eapply IPP_sym; eassumption.
+        rewrite H17, H16.
+        firstorder.
   - split.
     + econstructor.
     + intros; split; mauto.
