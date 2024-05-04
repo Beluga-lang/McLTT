@@ -198,24 +198,13 @@ Proof.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
-Lemma per_univ_elem_cross_irrel1 : forall i A B R B' R',
+Lemma per_univ_elem_cross_irrel : forall i A B R B' R',
     per_univ_elem i A B R ->
     per_univ_elem i B' A R' ->
     R = R'.
 Proof.
   intros.
   apply per_univ_elem_sym in H0.
-  destruct_all.
-  eauto using per_univ_elem_right_irrel.
-Qed.
-
-Lemma per_univ_elem_cross_irrel2 : forall i A B R A' R',
-    per_univ_elem i A B R ->
-    per_univ_elem i B A' R' ->
-    R = R'.
-Proof.
-  intros.
-  apply per_univ_elem_sym in H.
   destruct_all.
   eauto using per_univ_elem_right_irrel.
 Qed.
@@ -235,12 +224,7 @@ Ltac do_per_univ_elem_irrel_rewrite1 :=
     | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
         H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
         tryif unify R1 R2 then fail else
-          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_cross_irrel1; eassumption); subst;
-                                 try rewrite <- H in *)
-    | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
-        H2 : {{ DF ~?B ≈ ~_ ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-        tryif unify R1 R2 then fail else
-          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_cross_irrel2; eassumption); subst;
+          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_cross_irrel; eassumption); subst;
                                  try rewrite <- H in *)
     end.
 
