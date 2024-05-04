@@ -10,7 +10,7 @@ error_out () {
 
 cd "${dir}"
 
-for f in *.v; do
+for f in `find -name '*.v'`; do
     grep -q -F "${f}" _CoqProject || error_out "${f}"
 done
 
