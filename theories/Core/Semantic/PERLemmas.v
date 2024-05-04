@@ -134,13 +134,6 @@ Ltac functional_per_univ_elem_rewrite_clear :=
         assert (R2 = R1) by (eapply per_univ_elem_right_irrel; eassumption); subst; clear H2
     end.
 
-Lemma iff_extensionality : forall (A : Type) (Q P : A -> Prop),
-    (forall a, P a <-> Q a) ->
-    (forall a, P a) <-> (forall a, Q a).
-Proof.
-  firstorder.
-Qed.
-
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
     per_univ_elem i B A R /\ (forall a b, {{ Dom a ≈ b ∈ R }} <-> {{ Dom b ≈ a ∈ R }}).
@@ -253,14 +246,6 @@ Ltac do_per_univ_elem_irrel_rewrite1 :=
 
 Ltac do_per_univ_elem_irrel_rewrite :=
   repeat do_per_univ_elem_irrel_rewrite1.
-
-Ltac per_univ_elem_left_irrel_rewrite :=
-  repeat match goal with
-    | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A' ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }} |- _ =>
-        mark H2
-    | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A' ≈ ~?B ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-        assert (R2 = R1) by (eapply per_univ_elem_left_irrel; eassumption); subst; mark H2
-    end; unmark_all.
 
 Ltac per_univ_elem_irrel_rewrite :=
   functional_eval_rewrite_clear;
