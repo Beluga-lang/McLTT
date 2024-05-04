@@ -1,4 +1,4 @@
-From Coq Require Import Lia PeanoNat Relations ChoiceFacts Program.Equality.
+From Coq Require Import Lia PeanoNat Relations.Relation_Definitions RelationClasses Program.Equality.
 From Equations Require Import Equations.
 From Mcltt Require Import Axioms Base Domain Evaluate EvaluateLemmas LibTactics PER Readback ReadbackLemmas Syntax System.
 
@@ -99,14 +99,14 @@ Proof.
   subst.
   extensionality f.
   extensionality f'.
-  rewrite H1, H8.
+  rewrite H3, H12.
   extensionality c.
   extensionality c'.
   extensionality equiv_c_c'.
-  specialize (H0 _ _ equiv_c_c') as [? ? ? ? []].
-  specialize (H7 _ _ equiv_c_c') as [? ? ? ? ?].
+  specialize (H2 _ _ equiv_c_c') as [? ? ? ? []].
+  specialize (H11 _ _ equiv_c_c') as [? ? ? ? ?].
   functional_eval_rewrite_clear.
-  specialize (H4 _ _ _ eq_refl H7).
+  specialize (H6 _ _ _ eq_refl H11).
   congruence.
 Qed.
 
@@ -136,44 +136,45 @@ Ltac functional_per_univ_elem_rewrite_clear :=
 
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
-    exists R', per_univ_elem i B A R' /\ (forall a b, {{ Dom a ≈ b ∈ R }} <-> {{ Dom b ≈ a ∈ R' }}).
+    per_univ_elem i B A R /\ (forall a b, {{ Dom a ≈ b ∈ R }} <-> {{ Dom b ≈ a ∈ R }}).
 Proof.
   intros. induction H using per_univ_elem_ind; subst.
-  - exists (per_univ j'). split.
+  - split.
     + apply per_univ_elem_core_univ'; trivial.
     + intros. split; intros HD; destruct HD.
       * specialize (H1 _ _ _ H0).
         firstorder.
       * specialize (H1 _ _ _ H0).
         firstorder.
-  - exists per_nat. split.
+  - split.
     + econstructor.
     + intros; split; mauto.
-  - destruct IHper_univ_elem as [in_rel' [? ?]].
-    setoid_rewrite rel_mod_eval_simp_ex in H0.
-    repeat setoid_rewrite dep_functional_choice_equiv in H0.
-    destruct H0 as [out_rel' ?].
-    assert (forall a b : domain, in_rel' a b -> in_rel b a) as Hconv by firstorder.
-    assert (forall a b : domain, in_rel a b -> in_rel' b a) as Hconv' by firstorder.
-    setoid_rewrite H1.
-    exists (fun f f' => forall (c c' : domain) (equiv_c_c' : in_rel' c c'), rel_mod_app (out_rel' c' c (Hconv _ _ equiv_c_c')) f c f' c').
+  - destruct IHper_univ_elem as [? ?].
+    setoid_rewrite H3.
     split.
     + per_univ_elem_econstructor; eauto.
-      * intros.
-        destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
-        econstructor; eauto.
-        apply H7.
-      * auto.
+      intros.
+      assert (equiv_c'_c : in_rel c' c) by firstorder.
+      assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
+      destruct (H2 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
+      destruct (H2 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
+      destruct (H2 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
+      econstructor; eauto.
+      functional_eval_rewrite_clear.
+      per_univ_elem_right_irrel_rewrite.
+      congruence.
+
     + split; intros.
-      * destruct (H0 _ _ (Hconv _ _ equiv_c_c')) as [? ? ? ? [? [? ?]]].
-        specialize (H4 _ _ (Hconv c c' equiv_c_c')) as [].
-        econstructor; firstorder eauto.
-      * destruct (H0 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
-        specialize (H4 _ _ (Hconv' _ _ equiv_c_c')) as [].
-        econstructor; firstorder eauto.
-        replace (Hconv c' c (Hconv' c c' equiv_c_c')) with equiv_c_c' in H11 by apply proof_irrelevance.
-        firstorder.
-  - exists per_ne. split.
+      * assert (equiv_c'_c : in_rel c' c) by firstorder.
+        destruct (H6 _ _ equiv_c'_c) as [? ? ? ? ?].
+        econstructor; eauto.
+        eapply IPP_sym; eassumption.
+
+      * assert (equiv_c'_c : in_rel c' c) by firstorder.
+        destruct (H6 _ _ equiv_c'_c) as [? ? ? ? ?].
+        econstructor; eauto.
+        eapply IPP_sym; eassumption.
+  - split.
     + econstructor.
     + intros; split; mauto.
 Qed.
@@ -183,14 +184,14 @@ Lemma per_univ_elem_left_irrel : forall i A B R A' R',
     per_univ_elem i A' B R' ->
     R = R'.
 Proof.
-  intros * [? []]%per_univ_elem_sym [? []]%per_univ_elem_sym.
-  per_univ_elem_right_irrel_rewrite.
-  extensionality a.
-  extensionality b.
-  specialize (H0 a b).
-  specialize (H2 a b).
-  apply propositional_extensionality; firstorder.
+  intros.
+  apply per_univ_elem_sym in H.
+  apply per_univ_elem_sym in H0.
+  destruct_all.
+  eauto using per_univ_elem_right_irrel.
 Qed.
+
+(* JH: the code below has not been fixed yet *)
 
 Ltac per_univ_elem_left_irrel_rewrite :=
   repeat match goal with

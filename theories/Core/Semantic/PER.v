@@ -1,4 +1,4 @@
-From Coq Require Import Lia PeanoNat Relations.
+From Coq Require Import Lia PeanoNat Relations.Relation_Definitions Classes.RelationClasses.
 From Equations Require Import Equations.
 From Mcltt Require Import Base Domain Evaluate Readback Syntax System.
 
@@ -14,6 +14,12 @@ Arguments mk_rel_mod_eval {_ _ _ _ _ _}.
 
 Inductive rel_mod_app (R : relation domain) f a f' a' : Prop := mk_rel_mod_app : forall fa f'a', {{ $| f & a |↘ fa }} -> {{ $| f' & a' |↘ f'a' }} -> {{ Dom fa ≈ f'a' ∈ R }} -> rel_mod_app R f a f' a'.
 Arguments mk_rel_mod_app {_ _ _ _ _}.
+
+Class IrrelevantParametrizedPER {A : Type} (IR : relation A) (OR : forall {a b}, IR a b -> relation A) : Prop := {
+    IPP_irrelevance : forall {a b} (ab ab' : IR a b), OR ab = OR ab';
+    IPP_sym : forall {a b} (ab : IR a b) (ba : IR b a), forall c d, OR ab c d -> OR ba d c;
+    IPP_trans : forall {a1 a2 a3} (a12 : IR a1 a2) (a23 : IR a2 a3) (a13 : IR a1 a3), forall b1 b2 b3, OR a12 b1 b2 -> OR a23 b2 b3 -> OR a13 b1 b3;
+  }.
 
 Definition per_bot : relation domain_ne := fun m n => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne n in s ↘ L }}).
 Arguments per_bot /.
@@ -53,6 +59,8 @@ Section Per_univ_elem_core_def.
     `{ forall (in_rel : relation domain)
          (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain)
          (equiv_a_a' : {{ DF a ≈ a' ∈ per_univ_elem_core ↘ in_rel}}),
+          PER in_rel ->
+          IrrelevantParametrizedPER in_rel (@out_rel) ->
           (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
               rel_mod_eval per_univ_elem_core B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
           (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
@@ -76,6 +84,8 @@ Section Per_univ_elem_core_def.
         (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
         {{ DF A ≈ A' ∈ per_univ_elem_core ↘ in_rel }} ->
         motive A A' in_rel ->
+        PER in_rel ->
+        IrrelevantParametrizedPER in_rel (@out_rel) ->
         (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
             rel_mod_eval (fun x y R => {{ DF x ≈ y ∈ per_univ_elem_core ↘ R }} /\ motive x y R) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
         (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
@@ -89,8 +99,8 @@ Section Per_univ_elem_core_def.
     per_univ_elem_core_strong_ind a b R (per_univ_elem_core_univ lt_j_i eq) := case_U _ _ lt_j_i eq;
     per_univ_elem_core_strong_ind a b R per_univ_elem_core_nat := case_nat;
     per_univ_elem_core_strong_ind a b R
-      (per_univ_elem_core_pi in_rel out_rel equiv_a_a' HT HE) :=
-          case_Pi out_rel equiv_a_a' (per_univ_elem_core_strong_ind _ _ _ equiv_a_a')
+      (per_univ_elem_core_pi in_rel out_rel equiv_a_a' per ipp HT HE) :=
+          case_Pi out_rel equiv_a_a' (per_univ_elem_core_strong_ind _ _ _ equiv_a_a') per ipp
             (fun _ _ equiv_c_c' => match HT _ _ equiv_c_c' with
                                 | mk_rel_mod_eval b b' evb evb' Rel =>
                                     mk_rel_mod_eval b b' evb evb' (conj _ (per_univ_elem_core_strong_ind _ _ _ Rel))
@@ -138,6 +148,8 @@ Section Per_univ_elem_ind_def.
         (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
         {{ DF A ≈ A' ∈ per_univ_elem i ↘ in_rel }} ->
         motive i A A' in_rel ->
+        PER in_rel ->
+        IrrelevantParametrizedPER in_rel (@out_rel) ->
         (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
             rel_mod_eval (fun x y R => {{ DF x ≈ y ∈ per_univ_elem i ↘ R }} /\ motive i x y R) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
         (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
@@ -156,7 +168,7 @@ Section Per_univ_elem_ind_def.
       per_univ_elem_core_strong_ind i _ (motive i)
         (fun j j' j_lt_i eq => case_U j j' i j_lt_i eq (fun A B R' H' => per_univ_elem_ind' _ A B R' _))
         (case_N i)
-        (fun A p B A' p' B' in_rel elem_rel out_rel HA IHA HT HE => case_Pi i out_rel _ IHA _ HE)
+        (fun A p B A' p' B' in_rel elem_rel out_rel HA IHA per ipp HT HE => case_Pi i out_rel _ IHA per ipp _ HE)
         (@case_ne i)
         a b R H.
 
