@@ -171,8 +171,11 @@ Proof.
       per_univ_elem_right_irrel_rewrite.
       congruence.
 
-    + split; intros.
-      * assert (equiv_c'_c : in_rel c' c) by firstorder.
+    + assert (forall a b : domain,
+                 (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') a c b c') ->
+                 (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') b c a c')). {
+        intros.
+        assert (equiv_c'_c : in_rel c' c) by firstorder.
         assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
         destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
         destruct (H1 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
@@ -183,18 +186,8 @@ Proof.
         econstructor; eauto.
         rewrite H17, H16.
         firstorder.
-
-      * assert (equiv_c'_c : in_rel c' c) by firstorder.
-        assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
-        destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
-        destruct (H1 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
-        destruct (H1 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
-        destruct (H5 _ _ equiv_c'_c) as [? ? ? ? ?].
-        functional_eval_rewrite_clear.
-        per_univ_elem_right_irrel_rewrite.
-        econstructor; eauto.
-        rewrite H17, H16.
-        firstorder.
+      }
+      firstorder.
   - split.
     + econstructor.
     + intros; split; mauto.
@@ -212,7 +205,54 @@ Proof.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
-(* JH: the code below has not been fixed yet *)
+Lemma per_univ_elem_cross_irrel1 : forall i A B R B' R',
+    per_univ_elem i A B R ->
+    per_univ_elem i B' A R' ->
+    R = R'.
+Proof.
+  intros.
+  apply per_univ_elem_sym in H0.
+  destruct_all.
+  eauto using per_univ_elem_right_irrel.
+Qed.
+
+Lemma per_univ_elem_cross_irrel2 : forall i A B R A' R',
+    per_univ_elem i A B R ->
+    per_univ_elem i B A' R' ->
+    R = R'.
+Proof.
+  intros.
+  apply per_univ_elem_sym in H.
+  destruct_all.
+  eauto using per_univ_elem_right_irrel.
+Qed.
+
+Ltac do_per_univ_elem_irrel_rewrite1 :=
+  match goal with
+    | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
+        H2 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+        tryif unify R1 R2 then fail else
+          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_right_irrel; eassumption); subst;
+                                 try rewrite <- H in *)
+    | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
+        H2 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+        tryif unify R1 R2 then fail else
+          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_left_irrel; eassumption); subst;
+                                 try rewrite <- H in *)
+    | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
+        H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+        tryif unify R1 R2 then fail else
+          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_cross_irrel1; eassumption); subst;
+                                 try rewrite <- H in *)
+    | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
+        H2 : {{ DF ~?B ≈ ~_ ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+        tryif unify R1 R2 then fail else
+          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_cross_irrel2; eassumption); subst;
+                                 try rewrite <- H in *)
+    end.
+
+Ltac do_per_univ_elem_irrel_rewrite :=
+  repeat do_per_univ_elem_irrel_rewrite1.
 
 Ltac per_univ_elem_left_irrel_rewrite :=
   repeat match goal with
@@ -222,78 +262,47 @@ Ltac per_univ_elem_left_irrel_rewrite :=
         assert (R2 = R1) by (eapply per_univ_elem_left_irrel; eassumption); subst; mark H2
     end; unmark_all.
 
-Ltac per_univ_elem_irrel_rewrite := functional_per_univ_elem_rewrite_clear; per_univ_elem_right_irrel_rewrite; per_univ_elem_left_irrel_rewrite.
+Ltac per_univ_elem_irrel_rewrite :=
+  functional_eval_rewrite_clear;
+  do_per_univ_elem_irrel_rewrite;
+  clear_dups.
 
-Lemma per_univ_elem_trans : forall i A1 A2 R1,
-    per_univ_elem i A1 A2 R1 ->
-    forall A3 R2,
-    per_univ_elem i A2 A3 R2 ->
-    exists R3, per_univ_elem i A1 A3 R3 /\ (forall a1 a2 a3, R1 a1 a2 -> R2 a2 a3 -> R3 a1 a3).
+Lemma per_univ_elem_trans : forall i A1 A2 R,
+    per_univ_elem i A1 A2 R ->
+    forall A3,
+    per_univ_elem i A2 A3 R ->
+    per_univ_elem i A1 A3 R /\ (forall a1 a2 a3, R a1 a2 -> R a2 a3 -> R a1 a3).
 Proof with solve [mauto].
   induction 1 using per_univ_elem_ind; intros * HT2;
     invert_per_univ_elem HT2; clear HT2.
-  - exists (per_univ j'0).
-    split; mauto.
+  - split; mauto.
     intros.
     destruct H0, H2.
-    destruct (H1 _ _ _ H0 _ _ H2) as [? [? ?]].
+    per_univ_elem_irrel_rewrite.
+    destruct (H1 _ _ _ H0 _ H2) as [? ?].
     econstructor...
-  - exists per_nat.
-    split; try econstructor...
-  - rename R2 into elem_rel0.
-    destruct (IHper_univ_elem _ _ equiv_a_a') as [in_rel3 [? in_rel_trans]].
-    per_univ_elem_irrel_rewrite.
-    pose proof (per_univ_elem_sym _ _ _ _ H) as [in_rel' [? in_rel_sym]].
-    specialize (IHper_univ_elem _ _ H3) as [in_rel'' [? _]].
-    per_univ_elem_irrel_rewrite.
-    rename in_rel0 into in_rel.
-    assert (in_rel_refl : forall c c', in_rel c c' -> in_rel c' c').
-    {
-      intros.
-      assert (equiv_c'_c : in_rel c' c) by (destruct in_rel_sym with c c'; mauto)...
-    }
-    assert (forall (c c' : domain) (equiv_c_c' : in_rel c c'),
-             exists R3,
-               rel_mod_eval
-                 (fun (x y : domain) (R : relation domain) =>
-                    per_univ_elem i x y R)
-                 B d{{{ p ↦ c }}} B'0 d{{{ p'0 ↦ c' }}} R3
-               /\ (forall c'' (equiv_c_c'' : in_rel c c'') (equiv_c''_c' : in_rel c'' c') b0 b1 b2,
-                      out_rel _ _ equiv_c_c'' b0 b1 -> out_rel0 _ _ equiv_c''_c' b1 b2 -> R3 b0 b2)).
-    {
-      intros.
-      assert (equiv_c'_c' : in_rel c' c') by mauto.
-      destruct (H0 _ _ equiv_c_c') as [? ? ? ? []].
-      destruct (H7 _ _ equiv_c'_c') as [].
-      functional_eval_rewrite_clear.
-      destruct (H10 _ _ H13) as [R []].
-      exists R.
-      split.
-      - econstructor...
-      - intros.
-        specialize (H0 _ _ equiv_c_c'') as [? ? ? ? []].
-        specialize (H7 _ _ equiv_c''_c') as [].
-        functional_eval_rewrite_clear.
-        specialize (H19 _ _ H21) as [R' []].
-        per_univ_elem_irrel_rewrite.
-        eapply H7...
-    }
-    repeat setoid_rewrite dep_functional_choice_equiv in H5.
-    destruct H5 as [out_rel3 ?].
-    exists (fun f f' => forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel3 c c' equiv_c_c') f c f' c').
+  - split; try econstructor...
+  - per_univ_elem_irrel_rewrite.
+    specialize (IHper_univ_elem _ equiv_a_a') as [? _].
     split.
     + per_univ_elem_econstructor; mauto.
       intros.
-      specialize (H5 _ _ equiv_c_c') as []...
-    + intros.
-      assert (equiv_c'_c' : in_rel c' c') by mauto.
-      rewrite H1 in H6.
-      rewrite H8 in H9.
-      specialize (H6 _ _ equiv_c_c') as [].
+      assert (equiv_c_c : in_rel c c) by (etransitivity; [ | symmetry]; eassumption).
+      specialize (H1 _ _ equiv_c_c) as [? ? ? ? [? ?]].
+      specialize (H9 _ _ equiv_c_c') as [].
+      per_univ_elem_irrel_rewrite.
+      econstructor; eauto. firstorder.
+    + setoid_rewrite H2.
+      intros.
+      assert (equiv_c'_c' : in_rel c' c') by (etransitivity; [symmetry | ]; eassumption).
+      destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? ?]].
+      specialize (H1 _ _ equiv_c'_c') as [? ? ? ? [? ?]].
       specialize (H9 _ _ equiv_c'_c') as [].
-      functional_eval_rewrite_clear.
-      specialize (H5 _ _ equiv_c_c') as [].
-      econstructor...
-  - exists per_ne.
-    split; try per_univ_elem_econstructor...
+      specialize (H3 _ _ equiv_c_c') as [].
+      specialize (H4 _ _ equiv_c'_c') as [].
+      per_univ_elem_irrel_rewrite.
+      econstructor; eauto.
+      firstorder.
+
+  - split; try per_univ_elem_econstructor...
 Qed.
