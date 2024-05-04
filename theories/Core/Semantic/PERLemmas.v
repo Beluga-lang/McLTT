@@ -260,7 +260,7 @@ Proof with solve [mauto].
       specialize (H1 _ _ equiv_c_c) as [? ? ? ? [? ?]].
       specialize (H9 _ _ equiv_c_c') as [].
       per_univ_elem_irrel_rewrite.
-      econstructor; eauto. firstorder.
+      firstorder (econstructor; eauto).
     + setoid_rewrite H2.
       intros.
       assert (equiv_c'_c' : in_rel c' c') by (etransitivity; [symmetry | ]; eassumption).
@@ -270,8 +270,7 @@ Proof with solve [mauto].
       specialize (H3 _ _ equiv_c_c') as [].
       specialize (H4 _ _ equiv_c'_c') as [].
       per_univ_elem_irrel_rewrite.
-      econstructor; eauto.
-      firstorder.
+      firstorder (econstructor; eauto).
 
   - split; try per_univ_elem_econstructor...
 Qed.
