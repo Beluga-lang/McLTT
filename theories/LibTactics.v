@@ -48,6 +48,38 @@ Ltac destruct_logic :=
 
 Ltac destruct_all := repeat destruct_logic.
 
+Ltac not_let_bind name :=
+  match goal with
+  | [x := _ |- _] =>
+      lazymatch name with
+      | x => fail 1
+      | _ => fail
+      end
+  | _ => idtac
+  end.
+
+Ltac find_dup_hyp tac non :=
+  match goal with
+  | [ H : ?X, H' : ?X |- _ ] =>
+    not_let_bind H;
+    not_let_bind H';
+    lazymatch type of X with
+    | Prop => tac H H' X
+    | _ => idtac
+    end
+  | _ => non
+  end.
+
+Ltac fail_at_if_dup n :=
+  find_dup_hyp ltac:(fun H H' X => fail n "dup hypothesis" H "and" H' ":" X)
+                      ltac:(idtac).
+
+Ltac fail_if_dup := fail_at_if_dup ltac:(1).
+
+Ltac clear_dups :=
+  repeat find_dup_hyp ltac:(fun H H' _ => clear H || clear H')
+                             ltac:(idtac).
+
 (** McLTT automation *)
 
 Tactic Notation "mauto" :=
