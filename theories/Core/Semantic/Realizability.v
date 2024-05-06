@@ -1,6 +1,6 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions.
 From Equations Require Import Equations.
-From Mcltt Require Import Base Domain Evaluate EvaluateLemmas LibTactics PER PERLemmas Syntax System.
+From Mcltt Require Import Base Domain Evaluation EvaluationLemmas LibTactics PER PERLemmas Syntax System.
 
 Lemma per_nat_then_per_top : forall {n m},
     {{ Dom n ≈ m ∈ per_nat }} ->

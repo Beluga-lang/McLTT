@@ -1,8 +1,4 @@
-From Mcltt Require Import Base.
-From Mcltt Require Import Domain.
-From Mcltt Require Import Evaluate.
-From Mcltt Require Import Syntax.
-From Mcltt Require Import System.
+From Mcltt Require Import Base Domain Evaluation Syntax System.
 
 Reserved Notation "'Rnf' m 'in' s ↘ M" (in custom judg at level 80, m custom domain, s constr, M custom nf).
 Reserved Notation "'Rne' m 'in' s ↘ M" (in custom judg at level 80, m custom domain, s constr, M custom nf).
