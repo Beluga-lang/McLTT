@@ -17,59 +17,57 @@ Qed.
 #[export]
 Hint Resolve per_nat_then_per_top : mcltt.
 
-Section Per_univ_elem_realize.
-  Lemma realize_per_univ_elem_gen : forall i a a' R,
-      {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
-      {{ Dom a ≈ a' ∈ per_top_typ }}
-      /\ (forall {c c'}, {{ Dom c ≈ c' ∈ per_bot }} -> {{ Dom ⇑ a c ≈ ⇑ a' c' ∈ R }})
-      /\ (forall {b b'}, {{ Dom b ≈ b' ∈ R }} -> {{ Dom ⇓ a b ≈ ⇓ a' b' ∈ per_top }}).
-  Proof with (solve [(((eexists; split) || idtac; econstructor) || idtac); mauto]).
-    intros * H; simpl in H.
-    induction H using per_univ_elem_ind; repeat split; intros.
-    - subst; intro s...
-    - eexists.
-      per_univ_elem_econstructor.
-      eauto.
-    - destruct H2.
-      specialize (H1 _ _ _ H2) as [? [? ?]].
-      intro s.
-      specialize (H1 s) as [? [? ?]]...
-    - intro s...
-    - idtac...
-    - eauto using per_nat_then_per_top.
-    - destruct IHper_univ_elem as [? []].
-      intro s.
-      assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
-      destruct_rel_mod_eval.
-      specialize (H10 (S s)) as [? []].
-      specialize (H3 s) as [? []]...
-    - rewrite H2; clear H2.
-      intros c0 c0' equiv_c0_c0'.
-      destruct IHper_univ_elem as [? []].
-      destruct_rel_mod_eval.
-      econstructor; try solve [econstructor; eauto].
-      enough ({{ Dom c ⇓ A c0 ≈ c' ⇓ A' c0' ∈ per_bot }}) by mauto.
-      intro s.
-      specialize (H3 s) as [? [? ?]].
-      specialize (H5 _ _ equiv_c0_c0' s) as [? [? ?]]...
-    - rewrite H2 in *; clear H2.
-      destruct IHper_univ_elem as [? []].
-      intro s.
-      assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
-      destruct_rel_mod_eval.
-      destruct_rel_mod_app.
-      assert {{ Dom ⇓ a fa ≈ ⇓ a' f'a' ∈ per_top }} by mauto.
-      specialize (H2 s) as [? []].
-      specialize (H16 (S s)) as [? []]...
-    - intro s.
-      specialize (H s) as [? []]...
-    - idtac...
-    - intro s.
-      specialize (H s) as [? []].
-      inversion_clear H0.
-      specialize (H2 s) as [? []]...
-  Qed.
-End Per_univ_elem_realize.
+Lemma realize_per_univ_elem_gen : forall i a a' R,
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+    {{ Dom a ≈ a' ∈ per_top_typ }}
+    /\ (forall {c c'}, {{ Dom c ≈ c' ∈ per_bot }} -> {{ Dom ⇑ a c ≈ ⇑ a' c' ∈ R }})
+    /\ (forall {b b'}, {{ Dom b ≈ b' ∈ R }} -> {{ Dom ⇓ a b ≈ ⇓ a' b' ∈ per_top }}).
+Proof with (solve [(((eexists; split) || idtac; econstructor) || idtac); mauto]).
+  intros * H; simpl in H.
+  induction H using per_univ_elem_ind; repeat split; intros.
+  - subst; intro s...
+  - eexists.
+    per_univ_elem_econstructor.
+    eauto.
+  - destruct H2.
+    specialize (H1 _ _ _ H2) as [? [? ?]].
+    intro s.
+    specialize (H1 s) as [? [? ?]]...
+  - intro s...
+  - idtac...
+  - eauto using per_nat_then_per_top.
+  - destruct IHper_univ_elem as [? []].
+    intro s.
+    assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
+    destruct_rel_mod_eval.
+    specialize (H10 (S s)) as [? []].
+    specialize (H3 s) as [? []]...
+  - rewrite H2; clear H2.
+    intros c0 c0' equiv_c0_c0'.
+    destruct IHper_univ_elem as [? []].
+    destruct_rel_mod_eval.
+    econstructor; try solve [econstructor; eauto].
+    enough ({{ Dom c ⇓ A c0 ≈ c' ⇓ A' c0' ∈ per_bot }}) by mauto.
+    intro s.
+    specialize (H3 s) as [? [? ?]].
+    specialize (H5 _ _ equiv_c0_c0' s) as [? [? ?]]...
+  - rewrite H2 in *; clear H2.
+    destruct IHper_univ_elem as [? []].
+    intro s.
+    assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
+    destruct_rel_mod_eval.
+    destruct_rel_mod_app.
+    assert {{ Dom ⇓ a fa ≈ ⇓ a' f'a' ∈ per_top }} by mauto.
+    specialize (H2 s) as [? []].
+    specialize (H16 (S s)) as [? []]...
+  - intro s.
+    specialize (H s) as [? []]...
+  - idtac...
+  - intro s.
+    specialize (H s) as [? []].
+    inversion_clear H0.
+    specialize (H2 s) as [? []]...
+Qed.
 
 Lemma per_univ_then_per_top_typ : forall i a a' R, {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} -> {{ Dom a ≈ a' ∈ per_top_typ }}.
 Proof.
