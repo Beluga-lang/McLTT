@@ -1,5 +1,6 @@
 From Mcltt Require Import Base CtxEquiv LibTactics Relations Syntax System SystemLemmas.
 
+#[local]
 Ltac gen_presup_ctx H :=
   match type of H with
   | {{ ⊢ ~?Γ ≈ ~?Δ }} =>
@@ -13,6 +14,7 @@ Ltac gen_presup_ctx H :=
   | _ => idtac
   end.
 
+#[local]
 Ltac gen_presup_IH presup_exp presup_exp_eq presup_sub_eq H :=
   match type of H with
   | {{ ~?Γ ⊢ ~?M : ~?A }} =>

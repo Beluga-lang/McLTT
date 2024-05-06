@@ -2,8 +2,7 @@ From Mcltt Require Import Base LibTactics System Syntax.
 
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with solve [mauto].
-  intros * HAΓ.
-  inversion HAΓ; subst...
+  inversion 1; subst...
 Qed.
 
 #[export]
@@ -11,13 +10,13 @@ Hint Resolve ctx_decomp : mcltt.
 
 Lemma ctx_decomp_left : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }}.
 Proof with solve [eauto].
-  intros * HAΓ.
+  intros.
   eapply proj1, ctx_decomp...
 Qed.
 
 Lemma ctx_decomp_right : forall {Γ A}, {{ ⊢ Γ , A }} -> exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with solve [eauto].
-  intros * HAΓ.
+  intros.
   eapply proj2, ctx_decomp...
 Qed.
 
@@ -26,8 +25,7 @@ Hint Resolve ctx_decomp_left ctx_decomp_right : mcltt.
 
 Lemma lift_exp_ge : forall {Γ A n m}, n <= m -> {{ Γ ⊢ A : Type@n }} -> {{ Γ ⊢ A : Type@m }}.
 Proof with solve [mauto].
-  intros * Hnm HA.
-  induction Hnm...
+  induction 1...
 Qed.
 
 #[export]
@@ -47,8 +45,7 @@ Qed.
 
 Lemma lift_exp_eq_ge : forall {Γ A A' n m}, n <= m -> {{ Γ ⊢ A ≈ A': Type@n }} -> {{ Γ ⊢ A ≈ A' : Type@m }}.
 Proof with solve [mauto].
-  intros * Hnm HAA'.
-  induction Hnm; subst...
+  induction 1; subst...
 Qed.
 
 #[export]
@@ -68,19 +65,18 @@ Qed.
 
 Lemma presup_ctx_eq : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
-  intros * HΓΔ.
-  induction HΓΔ as [|* ? []]...
+  induction 1 as [|* ? []]...
 Qed.
 
 Lemma presup_ctx_eq_left : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Γ }}.
 Proof with solve [eauto].
-  intros * HΓΔ.
+  intros.
   eapply proj1, presup_ctx_eq...
 Qed.
 
 Lemma presup_ctx_eq_right : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ }}.
 Proof with solve [eauto].
-  intros * HΓΔ.
+  intros.
   eapply proj2, presup_ctx_eq...
 Qed.
 
@@ -89,19 +85,18 @@ Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mcltt.
 
 Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
-  intros * Hσ.
-  induction Hσ; repeat destruct_one_pair...
+  induction 1; repeat destruct_one_pair...
 Qed.
 
 Lemma presup_sub_ctx_left : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }}.
 Proof with solve [eauto].
-  intros * Hσ.
+  intros.
   eapply proj1, presup_sub_ctx...
 Qed.
 
 Lemma presup_sub_ctx_right : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Δ }}.
 Proof with solve [eauto].
-  intros * Hσ.
+  intros.
   eapply proj2, presup_sub_ctx...
 Qed.
 
@@ -110,8 +105,7 @@ Hint Resolve presup_sub_ctx presup_sub_ctx_left presup_sub_ctx_right : mcltt.
 
 Lemma presup_exp_ctx : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }}.
 Proof with solve [mauto].
-  intros * HM.
-  induction HM...
+  induction 1...
 Qed.
 
 #[export]
@@ -119,19 +113,18 @@ Hint Resolve presup_exp_ctx : mcltt.
 
 Lemma presup_sub_eq_ctx : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
-  intros * Hσσ'.
-  induction Hσσ'; repeat destruct_one_pair...
+  induction 1; repeat destruct_one_pair...
 Qed.
 
 Lemma presup_sub_eq_ctx_left : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }}.
 Proof with solve [eauto].
-  intros * Hσσ'.
+  intros.
   eapply proj1, presup_sub_eq_ctx...
 Qed.
 
 Lemma presup_sub_eq_ctx_right : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Δ }}.
 Proof with solve [eauto].
-  intros * Hσσ'.
+  intros.
   eapply proj2, presup_sub_eq_ctx...
 Qed.
 
@@ -140,8 +133,7 @@ Hint Resolve presup_sub_eq_ctx presup_sub_eq_ctx_left presup_sub_eq_ctx_right : 
 
 Lemma presup_exp_eq_ctx : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }}.
 Proof with solve [mauto].
-  intros * HMM'.
-  induction HMM'...
+  induction 1...
   Unshelve.
   all: constructor.
 Qed.
@@ -167,8 +159,7 @@ Hint Resolve sub_eq_refl : mcltt.
 
 Lemma ctx_eq_sym : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ ≈ Γ }}.
 Proof with solve [mauto].
-  intros * HΓΔ.
-  induction HΓΔ...
+  induction 1...
 Qed.
 
 #[export]
@@ -240,8 +231,7 @@ Qed.
 
 Lemma exp_eq_var_1_sub_typ : forall {Γ σ Δ A i M j}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A[σ] }} -> {{ #0 : Type@j[Wk] ∈ Δ }} -> {{ Γ ⊢ #1[σ ,, M] ≈ #0[σ] : Type@j }}.
 Proof with solve [mauto].
-  intros * ? ? ? Hvar0.
-  inversion Hvar0 as [? Δ'|]; subst.
+  inversion 4 as [? Δ'|]; subst.
   assert {{ ⊢ Δ' }} by mauto.
   eapply wf_exp_eq_conv...
 Qed.
@@ -251,9 +241,9 @@ Hint Resolve exp_eq_var_0_sub_typ exp_eq_var_1_sub_typ : mcltt.
 
 Lemma exp_eq_var_0_weaken_typ : forall {Γ A i}, {{ ⊢ Γ , A }} -> {{ #0 : Type@i[Wk] ∈ Γ }} -> {{ Γ , A ⊢ #0[Wk] ≈ #1 : Type@i }}.
 Proof with solve [mauto].
-  intros * ? Hvar0.
+  intros * ?.
   assert {{ ⊢ Γ }} by mauto.
-  inversion Hvar0 as [? Γ'|]; subst.
+  inversion 1 as [? Γ'|]; subst.
   assert {{ ⊢ Γ' }} by mauto.
   eapply wf_exp_eq_conv; only 1: solve [mauto].
   eapply exp_eq_typ_sub_sub; [|solve [mauto]]...
@@ -394,8 +384,7 @@ Qed.
 
 Lemma exp_eq_var_1_sub_nat : forall {Γ σ Δ A i M}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A[σ] }} -> {{ #0 : ℕ[Wk] ∈ Δ }} -> {{ Γ ⊢ #1[σ ,, M] ≈ #0[σ] : ℕ }}.
 Proof with solve [mauto].
-  intros * ? ? ? Hvar0.
-  inversion Hvar0 as [? Δ'|]; subst.
+  inversion 4 as [? Δ'|]; subst.
   assert {{ ⊢ Δ' }} by mauto.
   assert {{ Γ ⊢ #1[σ,, M] ≈ #0[σ] : ℕ[Wk][σ] }}...
   Unshelve.
@@ -407,9 +396,9 @@ Hint Resolve exp_eq_var_0_sub_nat exp_eq_var_1_sub_nat : mcltt.
 
 Lemma exp_eq_var_0_weaken_nat : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ #0 : ℕ[Wk] ∈ Γ }} -> {{ Γ , A ⊢ #0[Wk] ≈ #1 : ℕ }}.
 Proof with solve [mauto].
-  intros * ? Hvar0.
+  intros * ?.
   assert {{ ⊢ Γ }} by mauto.
-  inversion Hvar0 as [? Γ'|]; subst.
+  inversion 1 as [? Γ'|]; subst.
   assert {{ ⊢ Γ' }} by mauto.
   assert {{ Γ', ℕ, A ⊢ #0[Wk] ≈ # 1 : ℕ[Wk][Wk] }}...
   Unshelve.
@@ -485,8 +474,8 @@ Hint Resolve exp_eq_sub_sub_compose_cong : mcltt.
 
 Lemma ctx_lookup_wf : forall {Γ A x}, {{ ⊢ Γ }} -> {{ #x : A ∈ Γ }} -> exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with solve [mauto].
-  intros * HΓ Hx.
-  induction Hx; inversion_clear HΓ; [|assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by eauto]...
+  intros * HΓ.
+  induction 1; inversion_clear HΓ; [|assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by eauto]...
 Qed.
 
 #[export]
