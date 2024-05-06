@@ -22,7 +22,7 @@ Lemma realize_per_univ_elem_gen : forall i a a' R,
     {{ Dom a ≈ a' ∈ per_top_typ }}
     /\ (forall {c c'}, {{ Dom c ≈ c' ∈ per_bot }} -> {{ Dom ⇑ a c ≈ ⇑ a' c' ∈ R }})
     /\ (forall {b b'}, {{ Dom b ≈ b' ∈ R }} -> {{ Dom ⇓ a b ≈ ⇓ a' b' ∈ per_top }}).
-Proof with (solve [(((eexists; split) || idtac; econstructor) || idtac); mauto]).
+Proof with (solve [try (try (eexists; split); econstructor); mauto]).
   intros * H; simpl in H.
   induction H using per_univ_elem_ind; repeat split; intros.
   - subst; intro s...
