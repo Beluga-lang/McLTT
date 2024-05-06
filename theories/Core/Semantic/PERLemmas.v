@@ -63,6 +63,15 @@ Qed.
 #[export]
 Hint Resolve per_bot_trans : mcltt.
 
+Lemma var_per_bot : forall {n},
+    {{ Dom !n ≈ !n ∈ per_bot }}.
+Proof.
+  intros n s. repeat econstructor.
+Qed.
+
+#[export]
+Hint Resolve var_per_bot : mcltt.
+
 Lemma per_top_sym : forall m n,
     {{ Dom m ≈ n ∈ per_top }} ->
     {{ Dom n ≈ m ∈ per_top }}.
