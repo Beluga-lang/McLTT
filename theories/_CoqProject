@@ -11,6 +11,7 @@
 ./Core/Semantic/PERLemmas.v
 ./Core/Semantic/Readback.v
 ./Core/Semantic/ReadbackLemmas.v
+./Core/Semantic/Realize.v
 ./Core/Syntactic/CtxEquiv.v
 ./Core/Syntactic/Presup.v
 ./Core/Syntactic/Relations.v
