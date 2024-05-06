@@ -123,17 +123,16 @@ Section Per_univ_elem_core_def.
 
   #[derive(equations=no, eliminator=no)]
   Equations per_univ_elem_core_strong_ind a b R (H : {{ DF a ≈ b ∈ per_univ_elem_core ↘ R }}) : {{ DF a ≈ b ∈ motive ↘ R }} :=
-    per_univ_elem_core_strong_ind a b R (per_univ_elem_core_univ lt_j_i eq) := case_U _ _ lt_j_i eq;
-    per_univ_elem_core_strong_ind a b R per_univ_elem_core_nat := case_nat;
-    per_univ_elem_core_strong_ind a b R
-      (per_univ_elem_core_pi in_rel out_rel equiv_a_a' per HT HE) :=
-          case_Pi out_rel equiv_a_a' (per_univ_elem_core_strong_ind _ _ _ equiv_a_a') per
-            (fun _ _ equiv_c_c' => match HT _ _ equiv_c_c' with
-                                | mk_rel_mod_eval b b' evb evb' Rel =>
-                                    mk_rel_mod_eval b b' evb evb' (conj _ (per_univ_elem_core_strong_ind _ _ _ Rel))
-                                end)
-            HE;
-    per_univ_elem_core_strong_ind a b R (per_univ_elem_core_neut equiv_b_b') := case_ne equiv_b_b'.
+  | a, b, R, (per_univ_elem_core_univ lt_j_i eq)                         => case_U _ _ lt_j_i eq;
+  | a, b, R, per_univ_elem_core_nat                                      => case_nat;
+  | a, b, R, (per_univ_elem_core_pi in_rel out_rel equiv_a_a' per HT HE) =>
+      case_Pi out_rel equiv_a_a' (per_univ_elem_core_strong_ind _ _ _ equiv_a_a') per
+        (fun _ _ equiv_c_c' => match HT _ _ equiv_c_c' with
+                              | mk_rel_mod_eval b b' evb evb' Rel =>
+                                  mk_rel_mod_eval b b' evb evb' (conj _ (per_univ_elem_core_strong_ind _ _ _ Rel))
+                              end)
+        HE;
+  | a, b, R, (per_univ_elem_core_neut equiv_b_b')                        => case_ne equiv_b_b'.
 
 End Per_univ_elem_core_def.
 
@@ -193,7 +192,7 @@ Section Per_univ_elem_ind_def.
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations per_univ_elem_ind' (i : nat) (a b : domain) (R : relation domain)
     (H : {{ DF a ≈ b ∈ per_univ_elem_core i (fun j lt_j_i a a' => exists R', {{ DF a ≈ a' ∈ per_univ_elem j ↘ R' }}) ↘ R }}) : {{ DF a ≈ b ∈ motive i ↘ R }} by wf i :=
-    per_univ_elem_ind' i a b R H :=
+  | i, a, b, R, H =>
       per_univ_elem_core_strong_ind i _ (motive i)
         (fun j j' j_lt_i eq => case_U j j' i j_lt_i eq (fun A B R' H' => per_univ_elem_ind' _ A B R' _))
         (case_N i)
@@ -203,7 +202,7 @@ Section Per_univ_elem_ind_def.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations per_univ_elem_ind i a b R (H : per_univ_elem i a b R) : motive i a b R :=
-    per_univ_elem_ind i a b R H := per_univ_elem_ind' i a b R _.
+  | i, a, b, R, H := per_univ_elem_ind' i a b R _.
 
 End Per_univ_elem_ind_def.
 

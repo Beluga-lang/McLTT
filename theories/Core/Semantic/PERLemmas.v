@@ -63,11 +63,6 @@ Qed.
 #[export]
 Hint Resolve per_bot_trans : mcltt.
 
-Lemma PER_per_bot : PER per_bot.
-Proof with solve [mauto].
-  econstructor...
-Qed.
-
 Lemma per_top_sym : forall m n,
     {{ Dom m ≈ n ∈ per_top }} ->
     {{ Dom n ≈ m ∈ per_top }}.
@@ -92,11 +87,6 @@ Qed.
 
 #[export]
 Hint Resolve per_top_trans : mcltt.
-
-Lemma PER_per_top : PER per_top.
-Proof with solve [mauto].
-  econstructor...
-Qed.
 
 Lemma per_top_typ_sym : forall m n,
     {{ Dom m ≈ n ∈ per_top_typ }} ->
