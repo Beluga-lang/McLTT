@@ -1,27 +1,27 @@
 From Coq Require Import Setoid.
-
 From Mcltt Require Import Base CtxEquiv LibTactics Syntax System SystemLemmas.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
-Proof with mauto.
-  intros * HΓ.
-  induction HΓ...
+Proof with solve [mauto].
+  induction 1...
 Qed.
 
 #[export]
 Hint Resolve ctx_eq_refl : mcltt.
 
 Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, {{ ⊢ Γ0 ≈ Γ1 }} -> {{ ⊢ Γ1 ≈ Γ2 }} -> {{ ⊢ Γ0 ≈ Γ2 }}.
-Proof with mauto.
+Proof with solve [mauto].
   intros * HΓ01 HΓ12.
   gen Γ2.
-  induction HΓ01 as [|? ? ? i01 * HΓ01 IHΓ01 HΓ0T0 _ HΓ0T01 _]; intros...
+  induction HΓ01 as [|Γ0 ? T0 i01 T1]; intros; mauto.
   rename HΓ12 into HT1Γ12.
-  inversion_clear HT1Γ12 as [|? ? ? i12 * HΓ12' _ HΓ2'T2 _ HΓ2'T12].
-  pose proof (lift_exp_max_left i12 HΓ0T0).
-  pose proof (lift_exp_max_right i01 HΓ2'T2).
-  pose proof (lift_exp_eq_max_left i12 HΓ0T01).
-  pose proof (lift_exp_eq_max_right i01 HΓ2'T12).
+  inversion_clear HT1Γ12 as [|? Γ2' ? i12 T2].
+  clear Γ2; rename Γ2' into Γ2.
+  set (i := max i01 i12).
+  assert {{ Γ0 ⊢ T0 : Type@i }} by mauto using lift_exp_max_left.
+  assert {{ Γ2 ⊢ T2 : Type@i }} by mauto using lift_exp_max_right.
+  assert {{ Γ0 ⊢ T0 ≈ T1 : Type@i }} by mauto using lift_exp_eq_max_left.
+  assert {{ Γ2 ⊢ T1 ≈ T2 : Type@i }} by mauto using lift_exp_eq_max_right.
   econstructor...
 Qed.
 
