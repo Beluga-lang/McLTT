@@ -1,6 +1,6 @@
 From Coq Require Import Lia PeanoNat Relations.Relation_Definitions Classes.RelationClasses.
 From Equations Require Import Equations.
-From Mcltt Require Import Base Domain Evaluate Readback Syntax System.
+From Mcltt Require Import Base Domain Evaluate LibTactics Readback Syntax System.
 
 Notation "'Dom' a ≈ b ∈ R" := (R a b : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr).
 Notation "'DF' a ≈ b ∈ R ↘ R'" := (R a b R' : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr, R' constr).
@@ -9,19 +9,51 @@ Notation "'EF' a ≈ b ∈ R ↘ R'" := (R a b R' : Prop) (in custom judg at lev
 
 Generalizable All Variables.
 
+(** Helper Bundles *)
 Inductive rel_mod_eval (R : domain -> domain -> relation domain -> Prop) A p A' p' R' : Prop := mk_rel_mod_eval : forall a a', {{ ⟦ A ⟧ p ↘ a }} -> {{ ⟦ A' ⟧ p' ↘ a' }} -> {{ DF a ≈ a' ∈ R ↘ R' }} -> rel_mod_eval R A p A' p' R'.
+#[global]
 Arguments mk_rel_mod_eval {_ _ _ _ _ _}.
 
 Inductive rel_mod_app (R : relation domain) f a f' a' : Prop := mk_rel_mod_app : forall fa f'a', {{ $| f & a |↘ fa }} -> {{ $| f' & a' |↘ f'a' }} -> {{ Dom fa ≈ f'a' ∈ R }} -> rel_mod_app R f a f' a'.
+#[global]
 Arguments mk_rel_mod_app {_ _ _ _ _}.
 
+Ltac destruct_rel_by_assumption in_rel H :=
+  repeat
+    match goal with
+    | H' : {{ Dom ~?c ≈ ~?c' ∈ ?in_rel0 }} |- _ =>
+        tryif (unify in_rel0 in_rel)
+        then (destruct (H _ _ H') as []; destruct_all; mark_with H' 1)
+        else fail
+    end;
+  unmark_all_with 1.
+Ltac destruct_rel_mod_eval :=
+  repeat
+    match goal with
+    | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_eval _ _ _ _ _ _) |- _ =>
+        destruct_rel_by_assumption in_rel H; mark H
+    end;
+  unmark_all.
+Ltac destruct_rel_mod_app :=
+  repeat
+    match goal with
+    | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_app _ _ _ _ _) |- _ =>
+        destruct_rel_by_assumption in_rel H; mark H
+    end;
+  unmark_all.
+
+(** (Some Elements of) PER Lattice *)
+
 Definition per_bot : relation domain_ne := fun m n => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne n in s ↘ L }}).
+#[global]
 Arguments per_bot /.
 
 Definition per_top : relation domain_nf := fun m n => (forall s, exists L, {{ Rnf m in s ↘ L }} /\ {{ Rnf n in s ↘ L }}).
+#[global]
 Arguments per_top /.
 
 Definition per_top_typ : relation domain := fun a b => (forall s, exists C, {{ Rtyp a in s ↘ C }} /\ {{ Rtyp b in s ↘ C }}).
+#[global]
 Arguments per_top_typ /.
 
 Inductive per_nat : relation domain :=
@@ -39,6 +71,8 @@ Inductive per_ne : relation domain :=
   `{ {{ Dom m ≈ m' ∈ per_bot }} ->
      {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_ne }} }
 .
+
+(** Universe/Element PER Definition *)
 
 Section Per_univ_elem_core_def.
   Variable (i : nat) (per_univ_rec : forall {j}, j < i -> relation domain).
@@ -108,6 +142,7 @@ Equations per_univ_elem (i : nat) : domain -> domain -> relation domain -> Prop 
 | i => per_univ_elem_core i (fun j lt_j_i a a' => exists R', {{ DF a ≈ a' ∈ per_univ_elem j ↘ R' }}).
 
 Definition per_univ (i : nat) : relation domain := fun a a' => exists R', {{ DF a ≈ a' ∈ per_univ_elem i ↘ R' }}.
+#[global]
 Arguments per_univ _ _ _ /.
 
 Lemma per_univ_elem_core_univ' : forall j i,
@@ -121,6 +156,8 @@ Proof.
   reflexivity.
 Qed.
 Global Hint Resolve per_univ_elem_core_univ' : mcltt.
+
+(** Universe/Element PER Induction Principle *)
 
 Section Per_univ_elem_ind_def.
   Hypothesis
@@ -168,6 +205,21 @@ Section Per_univ_elem_ind_def.
     per_univ_elem_ind i a b R H := per_univ_elem_ind' i a b R _.
 
 End Per_univ_elem_ind_def.
+
+(** Universe/Element PER Helper Tactics *)
+
+Ltac invert_per_univ_elem H :=
+  simp per_univ_elem in H;
+  inversion H;
+  subst;
+  try rewrite <- per_univ_elem_equation_1 in *.
+
+Ltac per_univ_elem_econstructor :=
+  simp per_univ_elem;
+  econstructor;
+  try rewrite <- per_univ_elem_equation_1 in *.
+
+(** Context/Environment PER *)
 
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
 
