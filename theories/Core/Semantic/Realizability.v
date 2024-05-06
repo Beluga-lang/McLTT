@@ -1,6 +1,6 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions.
 From Equations Require Import Equations.
-From Mcltt Require Import Base Domain Evaluate EvaluateLemmas LibTactics PER PERLemmas Syntax System.
+From Mcltt Require Import Base Domain Evaluation EvaluationLemmas LibTactics PER PERLemmas Syntax System.
 
 Lemma per_nat_then_per_top : forall {n m},
     {{ Dom n ≈ m ∈ per_nat }} ->
@@ -17,7 +17,7 @@ Qed.
 #[export]
 Hint Resolve per_nat_then_per_top : mcltt.
 
-Lemma realize_per_univ_elem_gen : forall i a a' R,
+Lemma realize_per_univ_elem_gen : forall {i a a' R},
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
     {{ Dom a ≈ a' ∈ per_top_typ }}
     /\ (forall {c c'}, {{ Dom c ≈ c' ∈ per_bot }} -> {{ Dom ⇑ a c ≈ ⇑ a' c' ∈ R }})
@@ -69,7 +69,9 @@ Proof with (solve [try (try (eexists; split); econstructor); mauto]).
     specialize (H2 s) as [? []]...
 Qed.
 
-Lemma per_univ_then_per_top_typ : forall i a a' R, {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} -> {{ Dom a ≈ a' ∈ per_top_typ }}.
+Lemma per_univ_then_per_top_typ : forall {i a a' R},
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+    {{ Dom a ≈ a' ∈ per_top_typ }}.
 Proof.
   intros.
   eapply realize_per_univ_elem_gen; mauto.

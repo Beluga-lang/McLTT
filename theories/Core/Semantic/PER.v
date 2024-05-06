@@ -1,6 +1,6 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
-From Mcltt Require Import Base Domain Evaluate LibTactics Readback Syntax System.
+From Mcltt Require Import Base Domain Evaluation LibTactics Readback Syntax System.
 
 Notation "'Dom' a ≈ b ∈ R" := ((R a b : Prop) : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr).
 Notation "'DF' a ≈ b ∈ R ↘ R'" := ((R a b R' : Prop) : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr, R' constr).
