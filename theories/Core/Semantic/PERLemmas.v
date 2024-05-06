@@ -257,7 +257,7 @@ Proof.
       }
       firstorder.
   - split.
-    + econstructor.
+    + econstructor; mauto.
     + intros; split; mauto.
 Qed.
 

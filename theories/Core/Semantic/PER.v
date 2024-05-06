@@ -2,10 +2,10 @@ From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
 From Mcltt Require Import Base Domain Evaluate LibTactics Readback Syntax System.
 
-Notation "'Dom' a ≈ b ∈ R" := (R a b : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr).
-Notation "'DF' a ≈ b ∈ R ↘ R'" := (R a b R' : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr, R' constr).
-Notation "'Exp' a ≈ b ∈ R" := (R a b : Prop) (in custom judg at level 90, a custom exp, b custom exp, R constr).
-Notation "'EF' a ≈ b ∈ R ↘ R'" := (R a b R' : Prop) (in custom judg at level 90, a custom exp, b custom exp, R constr, R' constr).
+Notation "'Dom' a ≈ b ∈ R" := ((R a b : Prop) : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr).
+Notation "'DF' a ≈ b ∈ R ↘ R'" := ((R a b R' : Prop) : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr, R' constr).
+Notation "'Exp' a ≈ b ∈ R" := (R a b : (Prop : Type)) (in custom judg at level 90, a custom exp, b custom exp, R constr).
+Notation "'EF' a ≈ b ∈ R ↘ R'" := (R a b R' : (Prop : Type)) (in custom judg at level 90, a custom exp, b custom exp, R constr, R' constr).
 
 Generalizable All Variables.
 
@@ -93,7 +93,8 @@ Section Per_univ_elem_core_def.
           (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
           {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem_core ↘ elem_rel }} }
   | per_univ_elem_core_neut :
-    `{ {{ DF ⇑ a b ≈ ⇑ a' b' ∈ per_univ_elem_core ↘ per_ne }} }
+    `{ {{ Dom b ≈ b' ∈ per_bot }} ->
+       {{ DF ⇑ a b ≈ ⇑ a' b' ∈ per_univ_elem_core ↘ per_ne }} }
   .
 
   Hypothesis
@@ -118,7 +119,7 @@ Section Per_univ_elem_core_def.
         motive d{{{ Π A p B }}} d{{{ Π A' p' B' }}} elem_rel).
 
   Hypothesis
-    (case_ne : (forall {a b a' b'}, motive d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
+    (case_ne : (forall {a b a' b'}, {{ Dom b ≈ b' ∈ per_bot }} -> motive d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
 
   #[derive(equations=no, eliminator=no)]
   Equations per_univ_elem_core_strong_ind a b R (H : {{ DF a ≈ b ∈ per_univ_elem_core ↘ R }}) : {{ DF a ≈ b ∈ motive ↘ R }} :=
@@ -132,7 +133,7 @@ Section Per_univ_elem_core_def.
                                     mk_rel_mod_eval b b' evb evb' (conj _ (per_univ_elem_core_strong_ind _ _ _ Rel))
                                 end)
             HE;
-    per_univ_elem_core_strong_ind a b R per_univ_elem_core_neut :=  case_ne.
+    per_univ_elem_core_strong_ind a b R (per_univ_elem_core_neut equiv_b_b') := case_ne equiv_b_b'.
 
 End Per_univ_elem_core_def.
 
@@ -184,7 +185,7 @@ Section Per_univ_elem_ind_def.
         motive i d{{{ Π A p B }}} d{{{ Π A' p' B' }}} elem_rel).
 
   Hypothesis
-    (case_ne : (forall i {a b a' b'}, motive i d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
+    (case_ne : (forall i {a b a' b'}, {{ Dom b ≈ b' ∈ per_bot }} -> motive i d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}} per_ne)).
 
   #[local]
   Ltac def_simp := simp per_univ_elem in *.
