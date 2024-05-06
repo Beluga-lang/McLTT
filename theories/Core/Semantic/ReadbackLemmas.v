@@ -49,12 +49,13 @@ End functional_read.
 #[export]
 Hint Resolve functional_read_nf functional_read_ne functional_read_typ : mcltt.
 
-Ltac functional_read_rewrite_clear := 
-  repeat match goal with
-    | H1 : {{ Rnf ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rnf ~?m in ?s ↘ ~?M2 }} |- _ =>
-        idtac H1; assert (M1 = M2) by mauto; subst; clear H2
-    | H1 : {{ Rne ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rne ~?m in ?s ↘ ~?M2 }} |- _ =>
-        idtac H1; assert (M1 = M2) by mauto; subst; clear H2
-    | H1 : {{ Rtyp ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rtyp ~?m in ?s ↘ ~?M2 }} |- _ =>
-        idtac H1; assert (M1 = M2) by mauto; subst; clear H2
-    end.
+Ltac functional_read_rewrite_clear1 :=
+  match goal with
+  | H1 : {{ Rnf ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rnf ~?m in ?s ↘ ~?M2 }} |- _ =>
+      clean replace M2 with M1 by mauto; clear H2
+  | H1 : {{ Rne ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rne ~?m in ?s ↘ ~?M2 }} |- _ =>
+      clean replace M2 with M1 by mauto; clear H2
+  | H1 : {{ Rtyp ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rtyp ~?m in ?s ↘ ~?M2 }} |- _ =>
+      clean replace M2 with M1 by mauto; clear H2
+  end.
+Ltac functional_read_rewrite_clear := repeat functional_read_rewrite_clear1.

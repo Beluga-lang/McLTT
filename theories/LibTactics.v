@@ -11,28 +11,40 @@ Tactic Notation "gen" ident(x) ident(y) ident(z) ident(w) := gen x y z; gen w.
 
 (** Marking-based Tactics *)
 
-Definition __mark__ A (a : A) : A := a.
-Arguments __mark__ {A} a : simpl never.
+Definition __mark__ (n : nat) A (a : A) : A := a.
+Arguments __mark__ n {A} a : simpl never.
 
 Ltac mark H :=
   let t := type of H in
-  fold (__mark__ t) in H.
+  fold (__mark__ 0 t) in H.
 Ltac unmark H := unfold __mark__ in H.
 
 Ltac mark_all :=
   repeat match goal with [H: ?P |- _] =>
-    try (match P with __mark__ _ => fail 2 end); mark H
+    try (match P with __mark__ _ _ => fail 2 end); mark H
   end.
 Ltac unmark_all := unfold __mark__ in *.
 
 Ltac on_all_marked_hyp tac :=
   match goal with
-  | [ H : __mark__ ?A |- _ ] => unmark H; tac H; on_all_marked_hyp tac; mark H
+  | [ H : __mark__ _ ?A |- _ ] => unmark H; tac H; on_all_marked_hyp tac; mark H
   | _ => idtac
   end.
 Tactic Notation "on_all_marked_hyp:" tactic4(tac) := on_all_marked_hyp tac.
 Tactic Notation "on_all_hyp:" tactic4(tac) :=
   mark_all; (on_all_marked_hyp: tac); unmark_all.
+
+Ltac mark_with H n :=
+  let t := type of H in
+  fold (__mark__ n t) in H.
+Ltac mark_all_with n :=
+  repeat match goal with [H: ?P |- _] =>
+    try (match P with __mark__ _ _ => fail 2 end); mark_with H n
+  end.
+Ltac unmark_all_with n :=
+  repeat match goal with [H: ?P |- _] =>
+    match P with __mark__ ?n' _ => tryif unify n n' then unmark H else fail 2 end
+  end.
 
 (** Simple helper *)
 
@@ -79,6 +91,17 @@ Ltac fail_if_dup := fail_at_if_dup ltac:(1).
 Ltac clear_dups :=
   repeat find_dup_hyp ltac:(fun H H' _ => clear H || clear H')
                              ltac:(idtac).
+
+Ltac clean_replace_by exp0 exp1 tac :=
+  tryif unify exp0 exp1
+  then fail
+  else
+    (let H := fresh "H" in
+     assert (exp0 = exp1) as H by ltac:(tac);
+     subst;
+     try rewrite <- H in *).
+
+Tactic Notation "clean" "replace" uconstr(exp0) "with" uconstr(exp1) "by" tactic3(tac) := clean_replace_by exp0 exp1 tac.
 
 (** McLTT automation *)
 

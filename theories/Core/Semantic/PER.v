@@ -169,43 +169,6 @@ Section Per_univ_elem_ind_def.
 
 End Per_univ_elem_ind_def.
 
-Lemma rel_mod_eval_ex_pull :
-  forall (A : Type) (P : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R,
-    rel_mod_eval (fun a b R => exists x : A, P a b R x) T p T' p' R <->
-      exists x : A, rel_mod_eval (fun a b R => P a b R x) T p T' p' R.
-Proof.
-  split; intros.
-  - destruct H.
-    destruct H1 as [? ?].
-    eexists; econstructor; eauto.
-  - do 2 destruct H; econstructor; eauto.
-Qed.
-
-Lemma rel_mod_eval_simp_ex :
-  forall (A : Type) (P : domain -> domain -> relation domain -> Prop) (Q : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R,
-    rel_mod_eval (fun a b R => P a b R /\ exists x : A, Q a b R x) T p T' p' R <->
-      exists x : A, rel_mod_eval (fun a b R => P a b R /\ Q a b R x) T p T' p' R.
-Proof.
-  split; intros.
-  - destruct H.
-    destruct H1 as [? [? ?]].
-    eexists; econstructor; eauto.
-  - do 2 destruct H; econstructor; eauto.
-    firstorder.
-Qed.
-
-Lemma rel_mod_eval_simp_and :
-  forall (P : domain -> domain -> relation domain -> Prop) (Q : relation domain -> Prop) {T p T' p'} R,
-    rel_mod_eval (fun a b R => P a b R /\ Q R) T p T' p' R <->
-      rel_mod_eval P T p T' p' R /\ Q R.
-Proof.
-  split; intros.
-  - destruct H.
-    destruct H1 as [? ?].
-    split; try econstructor; eauto.
-  - do 2 destruct H; econstructor; eauto.
-Qed.
-
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
 
 Inductive per_ctx_env : ctx -> ctx -> relation env -> Prop :=

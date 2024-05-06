@@ -2,6 +2,43 @@ From Coq Require Import Lia PeanoNat Relations.Relation_Definitions RelationClas
 From Equations Require Import Equations.
 From Mcltt Require Import Axioms Base Domain Evaluate EvaluateLemmas LibTactics PER Readback ReadbackLemmas Syntax System.
 
+(* Lemma rel_mod_eval_ex_pull : *)
+(*   forall (A : Type) (P : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R, *)
+(*     rel_mod_eval (fun a b R => exists x : A, P a b R x) T p T' p' R <-> *)
+(*       exists x : A, rel_mod_eval (fun a b R => P a b R x) T p T' p' R. *)
+(* Proof. *)
+(*   split; intros. *)
+(*   - destruct H. *)
+(*     destruct H1 as [? ?]. *)
+(*     eexists; econstructor; eauto. *)
+(*   - do 2 destruct H; econstructor; eauto. *)
+(* Qed. *)
+
+(* Lemma rel_mod_eval_simp_ex : *)
+(*   forall (A : Type) (P : domain -> domain -> relation domain -> Prop) (Q : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R, *)
+(*     rel_mod_eval (fun a b R => P a b R /\ exists x : A, Q a b R x) T p T' p' R <-> *)
+(*       exists x : A, rel_mod_eval (fun a b R => P a b R /\ Q a b R x) T p T' p' R. *)
+(* Proof. *)
+(*   split; intros. *)
+(*   - destruct H. *)
+(*     destruct H1 as [? [? ?]]. *)
+(*     eexists; econstructor; eauto. *)
+(*   - do 2 destruct H; econstructor; eauto. *)
+(*     firstorder. *)
+(* Qed. *)
+
+(* Lemma rel_mod_eval_simp_and : *)
+(*   forall (P : domain -> domain -> relation domain -> Prop) (Q : relation domain -> Prop) {T p T' p'} R, *)
+(*     rel_mod_eval (fun a b R => P a b R /\ Q R) T p T' p' R <-> *)
+(*       rel_mod_eval P T p T' p' R /\ Q R. *)
+(* Proof. *)
+(*   split; intros. *)
+(*   - destruct H. *)
+(*     destruct H1 as [? ?]. *)
+(*     split; try econstructor; eauto. *)
+(*   - do 2 destruct H; econstructor; eauto. *)
+(* Qed. *)
+
 Lemma per_bot_sym : forall m n,
     {{ Dom m ≈ n ∈ per_bot }} ->
     {{ Dom n ≈ m ∈ per_bot }}.
@@ -84,6 +121,30 @@ Ltac per_univ_elem_econstructor :=
   econstructor;
   try rewrite <- per_univ_elem_equation_1 in *.
 
+Ltac destruct_rel_by_assumption in_rel H :=
+  repeat
+    match goal with
+    | H' : {{ Dom ~?c ≈ ~?c' ∈ ?in_rel0 }} |- _ =>
+        tryif (unify in_rel0 in_rel)
+        then (destruct (H _ _ H') as []; destruct_all; mark_with H' 1)
+        else fail
+    end;
+  unmark_all_with 1.
+Ltac destruct_rel_mod_eval :=
+  repeat
+    match goal with
+    | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_eval _ _ _ _ _ _) |- _ =>
+        destruct_rel_by_assumption in_rel H; mark H
+    end;
+  unmark_all.
+Ltac destruct_rel_mod_app :=
+  repeat
+    match goal with
+    | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_app _ _ _ _ _) |- _ =>
+        destruct_rel_by_assumption in_rel H; mark H
+    end;
+  unmark_all.
+
 Lemma per_univ_elem_right_irrel_gen : forall i A B R,
     per_univ_elem i A B R ->
     forall A' B' R',
@@ -103,10 +164,9 @@ Proof.
   extensionality c.
   extensionality c'.
   extensionality equiv_c_c'.
-  specialize (H1 _ _ equiv_c_c') as [? ? ? ? []].
-  specialize (H9 _ _ equiv_c_c') as [? ? ? ? ?].
+  destruct_rel_mod_eval.
   functional_eval_rewrite_clear.
-  specialize (H5 _ _ _ eq_refl H9).
+  specialize (H12 _ _ _ eq_refl H5).
   congruence.
 Qed.
 
@@ -118,21 +178,12 @@ Proof.
   intros. eauto using per_univ_elem_right_irrel_gen.
 Qed.
 
-Ltac per_univ_elem_right_irrel_rewrite :=
-  repeat match goal with
-    | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A ≈ ~?B' ∈ per_univ_elem ?i ↘ ?R1 }} |- _ =>
-        mark H2
-    | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A ≈ ~?B' ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-        assert (R2 = R1) by (eapply per_univ_elem_right_irrel; eassumption); subst; mark H2
-    end; unmark_all.
-
-Ltac functional_per_univ_elem_rewrite_clear :=
-  repeat match goal with
-    | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }} |- _ =>
-        clear H2
-    | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-        assert (R2 = R1) by (eapply per_univ_elem_right_irrel; eassumption); subst; clear H2
-    end.
+Ltac per_univ_elem_right_irrel_rewrite1 :=
+  match goal with
+  | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A ≈ ~?B' ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+      clean replace R2 with R1 by (eauto using per_univ_elem_right_irrel)
+  end.
+Ltac per_univ_elem_right_irrel_rewrite := repeat per_univ_elem_right_irrel_rewrite1.
 
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
@@ -141,7 +192,7 @@ Proof.
   intros. induction H using per_univ_elem_ind; subst.
   - split.
     + apply per_univ_elem_core_univ'; trivial.
-    + intros. split; intros HD; destruct HD.
+    + intros. split; intros [].
       * specialize (H1 _ _ _ H0).
         firstorder.
       * specialize (H1 _ _ _ H0).
@@ -156,28 +207,24 @@ Proof.
       intros.
       assert (equiv_c'_c : in_rel c' c) by firstorder.
       assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
-      destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
-      destruct (H1 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
-      destruct (H1 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
+      destruct_rel_mod_eval.
       econstructor; eauto.
       functional_eval_rewrite_clear.
       per_univ_elem_right_irrel_rewrite.
-      congruence.
+      assumption.
 
     + assert (forall a b : domain,
                  (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') a c b c') ->
-                 (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') b c a c')). {
+                 (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') b c a c')).
+      {
         intros.
         assert (equiv_c'_c : in_rel c' c) by firstorder.
         assert (equiv_c_c : in_rel c c) by (etransitivity; eassumption).
-        destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? [? ?]]].
-        destruct (H1 _ _ equiv_c'_c) as [? ? ? ? [? [? ?]]].
-        destruct (H1 _ _ equiv_c_c) as [? ? ? ? [? [? ?]]].
-        destruct (H5 _ _ equiv_c'_c) as [? ? ? ? ?].
+        destruct_rel_mod_eval.
+        destruct_rel_mod_app.
         functional_eval_rewrite_clear.
         per_univ_elem_right_irrel_rewrite.
         econstructor; eauto.
-        rewrite H17, H16.
         firstorder.
       }
       firstorder.
@@ -191,10 +238,7 @@ Lemma per_univ_elem_left_irrel : forall i A B R A' R',
     per_univ_elem i A' B R' ->
     R = R'.
 Proof.
-  intros.
-  apply per_univ_elem_sym in H.
-  apply per_univ_elem_sym in H0.
-  destruct_all.
+  intros * []%per_univ_elem_sym []%per_univ_elem_sym.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
@@ -203,9 +247,7 @@ Lemma per_univ_elem_cross_irrel : forall i A B R B' R',
     per_univ_elem i B' A R' ->
     R = R'.
 Proof.
-  intros.
-  apply per_univ_elem_sym in H0.
-  destruct_all.
+  intros * ? []%per_univ_elem_sym.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
@@ -213,19 +255,14 @@ Ltac do_per_univ_elem_irrel_rewrite1 :=
   match goal with
     | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
         H2 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-        tryif unify R1 R2 then fail else
-          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_right_irrel; eassumption); subst;
-                                 try rewrite <- H in *)
+        clean replace R2 with R1 by (eauto using per_univ_elem_right_irrel)
     | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
         H2 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-        tryif unify R1 R2 then fail else
-          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_left_irrel; eassumption); subst;
-                                 try rewrite <- H in *)
+        clean replace R2 with R1 by (eauto using per_univ_elem_left_irrel)
     | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
         H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-        tryif unify R1 R2 then fail else
-          (let H := fresh "H" in assert (R1 = R2) as H by (eapply per_univ_elem_cross_irrel; eassumption); subst;
-                                 try rewrite <- H in *)
+        (* Order matters less here as H1 and H2 cannot be exchanged *)
+        clean replace R2 with R1 by (symmetry; eauto using per_univ_elem_cross_irrel)
     end.
 
 Ltac do_per_univ_elem_irrel_rewrite :=
@@ -245,32 +282,27 @@ Proof with solve [mauto].
   induction 1 using per_univ_elem_ind; intros * HT2;
     invert_per_univ_elem HT2; clear HT2.
   - split; mauto.
-    intros.
-    destruct H0, H2.
+    intros * [] [].
     per_univ_elem_irrel_rewrite.
     destruct (H1 _ _ _ H0 _ H2) as [? ?].
     econstructor...
   - split; try econstructor...
   - per_univ_elem_irrel_rewrite.
+    rename in_rel0 into in_rel.
     specialize (IHper_univ_elem _ equiv_a_a') as [? _].
     split.
     + per_univ_elem_econstructor; mauto.
       intros.
       assert (equiv_c_c : in_rel c c) by (etransitivity; [ | symmetry]; eassumption).
-      specialize (H1 _ _ equiv_c_c) as [? ? ? ? [? ?]].
-      specialize (H9 _ _ equiv_c_c') as [].
+      destruct_rel_mod_eval.
       per_univ_elem_irrel_rewrite.
       firstorder (econstructor; eauto).
     + setoid_rewrite H2.
       intros.
       assert (equiv_c'_c' : in_rel c' c') by (etransitivity; [symmetry | ]; eassumption).
-      destruct (H1 _ _ equiv_c_c') as [? ? ? ? [? ?]].
-      specialize (H1 _ _ equiv_c'_c') as [? ? ? ? [? ?]].
-      specialize (H9 _ _ equiv_c'_c') as [].
-      specialize (H3 _ _ equiv_c_c') as [].
-      specialize (H4 _ _ equiv_c'_c') as [].
+      destruct_rel_mod_eval.
+      destruct_rel_mod_app.
       per_univ_elem_irrel_rewrite.
       firstorder (econstructor; eauto).
-
   - split; try per_univ_elem_econstructor...
 Qed.

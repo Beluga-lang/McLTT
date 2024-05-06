@@ -64,14 +64,15 @@ End functional_eval.
 #[export]
 Hint Resolve functional_eval_exp functional_eval_natrec functional_eval_app functional_eval_sub : mcltt.
 
-Ltac functional_eval_rewrite_clear := 
-  repeat match goal with
-    | H1 : {{ ⟦ ~?M ⟧ ~?p ↘ ~?m1 }}, H2 : {{ ⟦ ~?M ⟧ ~?p ↘ ~?m2 }} |- _ =>
-        assert (m1 = m2) by mauto; subst; clear H2
-    | H1 : {{ $| ~?m & ~?n |↘ ~?r1 }}, H2 : {{ $| ~?m & ~?n |↘ ~?r2 }} |- _ =>
-        assert (r1 = r2) by mauto; subst; clear H2
-    | H1 : {{ rec ~?m ⟦return ~?A | zero -> ~?MZ | succ -> ~?MS end⟧ ~?p ↘ ~?r1 }}, H2 : {{ rec ~?m ⟦return ~?A | zero -> ~?MZ | succ -> ~?MS end⟧ ~?p ↘ ~?r2 }} |- _ =>
-        assert (r1 = r2) by mauto; subst; clear H2
-    | H1 : {{ ⟦ ~?σ ⟧s ~?p ↘ ~?p1 }}, H2 : {{ ⟦ ~?σ ⟧s ~?p ↘ ~?p2 }} |- _ =>
-        assert (p1 = p2) by mauto; subst; clear H2
-    end.
+Ltac functional_eval_rewrite_clear1 :=
+  match goal with
+  | H1 : {{ ⟦ ~?M ⟧ ~?p ↘ ~?m1 }}, H2 : {{ ⟦ ~?M ⟧ ~?p ↘ ~?m2 }} |- _ =>
+      clean replace m2 with m1 by mauto; clear H2
+  | H1 : {{ $| ~?m & ~?n |↘ ~?r1 }}, H2 : {{ $| ~?m & ~?n |↘ ~?r2 }} |- _ =>
+      clean replace r2 with r1 by mauto; clear H2
+  | H1 : {{ rec ~?m ⟦return ~?A | zero -> ~?MZ | succ -> ~?MS end⟧ ~?p ↘ ~?r1 }}, H2 : {{ rec ~?m ⟦return ~?A | zero -> ~?MZ | succ -> ~?MS end⟧ ~?p ↘ ~?r2 }} |- _ =>
+      clean replace r2 with r1 by mauto; clear H2
+  | H1 : {{ ⟦ ~?σ ⟧s ~?p ↘ ~?p1 }}, H2 : {{ ⟦ ~?σ ⟧s ~?p ↘ ~?p2 }} |- _ =>
+      clean replace p2 with p1 by mauto; clear H2
+  end.
+Ltac functional_eval_rewrite_clear := repeat functional_eval_rewrite_clear1.
