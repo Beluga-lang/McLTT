@@ -1,5 +1,4 @@
-From Coq Require Import Lia PeanoNat Relations.Relation_Definitions RelationClasses Program.Equality.
-From Equations Require Import Equations.
+From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
 From Mcltt Require Import Axioms Base Domain Evaluate EvaluateLemmas LibTactics PER Readback ReadbackLemmas Syntax System.
 
 (* Lemma rel_mod_eval_ex_pull : *)
@@ -63,6 +62,71 @@ Qed.
 
 #[export]
 Hint Resolve per_bot_trans : mcltt.
+
+Lemma PER_per_bot : PER per_bot.
+Proof with solve [mauto].
+  econstructor...
+Qed.
+
+Lemma per_top_sym : forall m n,
+    {{ Dom m ≈ n ∈ per_top }} ->
+    {{ Dom n ≈ m ∈ per_top }}.
+Proof with solve [mauto].
+  intros * H s.
+  destruct (H s) as [? []]...
+Qed.
+
+#[export]
+Hint Resolve per_top_sym : mcltt.
+
+Lemma per_top_trans : forall m n l,
+    {{ Dom m ≈ n ∈ per_top }} ->
+    {{ Dom n ≈ l ∈ per_top }} ->
+    {{ Dom m ≈ l ∈ per_top }}.
+Proof with solve [mauto].
+  intros * Hmn Hnl s.
+  destruct (Hmn s) as [? []].
+  destruct (Hnl s) as [? []].
+  functional_read_rewrite_clear...
+Qed.
+
+#[export]
+Hint Resolve per_top_trans : mcltt.
+
+Lemma PER_per_top : PER per_top.
+Proof with solve [mauto].
+  econstructor...
+Qed.
+
+Lemma per_top_typ_sym : forall m n,
+    {{ Dom m ≈ n ∈ per_top_typ }} ->
+    {{ Dom n ≈ m ∈ per_top_typ }}.
+Proof with solve [mauto].
+  intros * H s.
+  destruct (H s) as [? []]...
+Qed.
+
+#[export]
+Hint Resolve per_top_typ_sym : mcltt.
+
+Lemma per_top_typ_trans : forall m n l,
+    {{ Dom m ≈ n ∈ per_top_typ }} ->
+    {{ Dom n ≈ l ∈ per_top_typ }} ->
+    {{ Dom m ≈ l ∈ per_top_typ }}.
+Proof with solve [mauto].
+  intros * Hmn Hnl s.
+  destruct (Hmn s) as [? []].
+  destruct (Hnl s) as [? []].
+  functional_read_rewrite_clear...
+Qed.
+
+#[export]
+Hint Resolve per_top_typ_trans : mcltt.
+
+Lemma PER_per_top_typ : PER per_top_typ.
+Proof with solve [mauto].
+  econstructor...
+Qed.
 
 Lemma per_nat_sym : forall m n,
     {{ Dom m ≈ n ∈ per_nat }} ->
@@ -154,7 +218,7 @@ Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
     per_univ_elem i B A R /\ (forall a b, {{ Dom a ≈ b ∈ R }} <-> {{ Dom b ≈ a ∈ R }}).
 Proof.
-  intros. induction H using per_univ_elem_ind; subst.
+  induction 1 using per_univ_elem_ind; subst.
   - split.
     + apply per_univ_elem_core_univ'; trivial.
     + intros. split; intros [].
@@ -177,7 +241,6 @@ Proof.
       functional_eval_rewrite_clear.
       per_univ_elem_right_irrel_rewrite.
       assumption.
-
     + assert (forall a b : domain,
                  (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') a c b c') ->
                  (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') b c a c')).
