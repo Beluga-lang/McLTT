@@ -346,3 +346,19 @@ Proof with solve [mauto].
       firstorder (econstructor; eauto).
   - split; try per_univ_elem_econstructor...
 Qed.
+
+Lemma per_univ_elem_cumu : forall {i a0 a1 R},
+    {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
+    {{ DF a0 ≈ a1 ∈ per_univ_elem (S i) ↘ R }}.
+Proof.
+  simpl.
+  induction 1 using per_univ_elem_ind; subst.
+  - eapply per_univ_elem_core_univ'.
+    lia.
+  - per_univ_elem_econstructor.
+  - per_univ_elem_econstructor; mauto.
+    intros.
+    destruct_rel_mod_eval.
+    econstructor; mauto.
+  - per_univ_elem_econstructor; mauto.
+Qed.
