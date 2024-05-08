@@ -186,18 +186,19 @@ Qed.
 #[export]
 Hint Resolve per_ne_trans : mcltt.
 
-Lemma per_univ_elem_right_irrel_gen : forall i A B R,
+Lemma per_univ_elem_right_irrel : forall i i' A B R B' R',
     per_univ_elem i A B R ->
-    forall A' B' R',
-      A = A' ->
-      per_univ_elem i A' B' R' ->
-      R = R'.
+    per_univ_elem i' A B' R' ->
+    R = R'.
 Proof.
-  induction 1 using per_univ_elem_ind; intros * Heq Hright;
+  intros * Horig.
+  remember A as A' in |- *.
+  gen A' B' R'.
+  induction Horig using per_univ_elem_ind; intros * Heq Hright;
     try solve [induction Hright using per_univ_elem_ind; congruence].
   subst.
   invert_per_univ_elem Hright; try congruence.
-  specialize (IHper_univ_elem _ _ _ eq_refl equiv_a_a').
+  specialize (IHHorig _ _ _ eq_refl equiv_a_a').
   subst.
   extensionality f.
   extensionality f'.
@@ -211,36 +212,26 @@ Proof.
   congruence.
 Qed.
 
-Lemma per_univ_elem_right_irrel : forall i A B R B' R',
-    per_univ_elem i A B R ->
-    per_univ_elem i A B' R' ->
-    R = R'.
-Proof.
-  intros. eauto using per_univ_elem_right_irrel_gen.
-Qed.
-
 Ltac per_univ_elem_right_irrel_rewrite1 :=
   match goal with
   | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A ≈ ~?B' ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
       clean replace R2 with R1 by (eauto using per_univ_elem_right_irrel)
   end.
-Ltac per_univ_elem_right_irrel_rewrite := repeat per_univ_elem_right_irrel_rewrite1.
+Ltac per_univ_elem_right_irrel_rewrite := repeat per_univ_elem_right_irrel_rewrite1.  
 
 Lemma per_univ_elem_sym : forall i A B R,
     per_univ_elem i A B R ->
-    per_univ_elem i B A R /\ (forall a b, {{ Dom a ≈ b ∈ R }} <-> {{ Dom b ≈ a ∈ R }}).
+    per_univ_elem i B A R /\ (forall a b, {{ Dom a ≈ b ∈ R }} -> {{ Dom b ≈ a ∈ R }}).
 Proof.
   induction 1 using per_univ_elem_ind; subst.
   - split.
     + apply per_univ_elem_core_univ'; trivial.
-    + intros. split; intros [].
-      * specialize (H1 _ _ _ H0).
-        firstorder.
-      * specialize (H1 _ _ _ H0).
-        firstorder.
+    + intros * [].
+      specialize (H1 _ _ _ H0).
+      firstorder.
   - split.
     + econstructor.
-    + intros; split; mauto.
+    + intros; mauto.
   - destruct IHper_univ_elem as [? ?].
     setoid_rewrite H2.
     split.
@@ -265,26 +256,25 @@ Proof.
         functional_eval_rewrite_clear.
         per_univ_elem_right_irrel_rewrite.
         econstructor; eauto.
-        firstorder.
       }
       firstorder.
   - split.
     + econstructor; mauto.
-    + intros; split; mauto.
+    + intros; mauto.
 Qed.
 
-Lemma per_univ_elem_left_irrel : forall i A B R A' R',
+Lemma per_univ_elem_left_irrel : forall i i' A B R A' R',
     per_univ_elem i A B R ->
-    per_univ_elem i A' B R' ->
+    per_univ_elem i' A' B R' ->
     R = R'.
 Proof.
   intros * []%per_univ_elem_sym []%per_univ_elem_sym.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
-Lemma per_univ_elem_cross_irrel : forall i A B R B' R',
+Lemma per_univ_elem_cross_irrel : forall i i' A B R B' R',
     per_univ_elem i A B R ->
-    per_univ_elem i B' A R' ->
+    per_univ_elem i' B' A R' ->
     R = R'.
 Proof.
   intros * ? []%per_univ_elem_sym.
@@ -294,13 +284,13 @@ Qed.
 Ltac do_per_univ_elem_irrel_rewrite1 :=
   match goal with
     | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-        H2 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+        H2 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
         clean replace R2 with R1 by (eauto using per_univ_elem_right_irrel)
     | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
-        H2 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+        H2 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
         clean replace R2 with R1 by (eauto using per_univ_elem_left_irrel)
     | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-        H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
+        H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
         (* Order matters less here as H1 and H2 cannot be exchanged *)
         clean replace R2 with R1 by (symmetry; eauto using per_univ_elem_cross_irrel)
     end.
@@ -315,8 +305,8 @@ Ltac per_univ_elem_irrel_rewrite :=
 
 Lemma per_univ_elem_trans : forall i A1 A2 R,
     per_univ_elem i A1 A2 R ->
-    forall A3,
-    per_univ_elem i A2 A3 R ->
+    forall j A3,
+    per_univ_elem j A2 A3 R ->
     per_univ_elem i A1 A3 R /\ (forall a1 a2 a3, R a1 a2 -> R a2 a3 -> R a1 a3).
 Proof with solve [mauto].
   induction 1 using per_univ_elem_ind; intros * HT2;
@@ -324,12 +314,12 @@ Proof with solve [mauto].
   - split; mauto.
     intros * [] [].
     per_univ_elem_irrel_rewrite.
-    destruct (H1 _ _ _ H0 _ H2) as [? ?].
+    destruct (H1 _ _ _ H0 _ _ H2) as [? ?].
     econstructor...
   - split; try econstructor...
   - per_univ_elem_irrel_rewrite.
     rename in_rel0 into in_rel.
-    specialize (IHper_univ_elem _ equiv_a_a') as [? _].
+    specialize (IHper_univ_elem _ _ equiv_a_a') as [? _].
     split.
     + per_univ_elem_econstructor; mauto.
       intros.
