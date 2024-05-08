@@ -1,5 +1,6 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base CtxEquiv LibTactics Syntax System SystemLemmas.
+From Mcltt Require Import Base CtxEquiv LibTactics System.
+Import Syntax_Notations.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
 Proof with solve [mauto].

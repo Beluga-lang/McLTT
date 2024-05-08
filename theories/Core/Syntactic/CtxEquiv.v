@@ -1,4 +1,5 @@
-From Mcltt Require Import Base LibTactics Syntax System SystemLemmas.
+From Mcltt Require Import Base LibTactics System.
+Import Syntax_Notations.
 
 #[local]
 Ltac gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper H :=

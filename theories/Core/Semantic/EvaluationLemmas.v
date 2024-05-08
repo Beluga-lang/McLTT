@@ -1,5 +1,6 @@
 From Coq Require Import Lia PeanoNat Relations.
-From Mcltt Require Import Base Domain Evaluation LibTactics Syntax System.
+From Mcltt Require Import Base LibTactics EvaluationDefinitions.
+Import Domain_Notations.
 
 Section functional_eval.
   Let functional_eval_exp_prop M p m1 (_ : {{ ⟦ M ⟧ p ↘ m1 }}) : Prop := forall m2 (Heval2: {{ ⟦ M ⟧ p ↘ m2 }}), m1 = m2.

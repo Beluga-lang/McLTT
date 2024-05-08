@@ -1,4 +1,5 @@
-From Mcltt Require Import Base CtxEquiv LibTactics Relations Syntax System SystemLemmas.
+From Mcltt Require Import Base CtxEquiv LibTactics Relations System.
+Import Syntax_Notations.
 
 #[local]
 Ltac gen_presup_ctx H :=
