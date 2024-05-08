@@ -64,36 +64,6 @@ Definition exp_to_num e :=
   | None => None
   end.
 
-#[global] Bind Scope exp_scope with exp.
-#[global] Bind Scope exp_scope with sub.
-Open Scope exp_scope.
-
-#[global] Declare Custom Entry exp.
-
-Notation "{{{ x }}}" := x (at level 0, x custom exp at level 99, format "'{{{'  x  '}}}'") : exp_scope.
-Notation "( x )" := x (in custom exp at level 0, x custom exp at level 60) : exp_scope.
-Notation "~ x" := x (in custom exp at level 0, x constr at level 0) : exp_scope.
-Notation "x" := x (in custom exp at level 0, x global) : exp_scope.
-Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, s custom exp at level 60) : exp_scope.
-Notation "'λ' A e" := (a_fn A e) (in custom exp at level 0, A custom exp at level 0, e custom exp at level 60) : exp_scope.
-Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom exp at level 40, f custom exp, x custom exp at next level, y custom exp at next level) : exp_scope.
-Notation "'ℕ'" := a_nat (in custom exp) : exp_scope.
-Notation "'Type' @ n" := (a_typ n) (in custom exp at level 0, n constr at level 0) : exp_scope.
-Notation "'Π' A B" := (a_pi A B) (in custom exp at level 0, A custom exp at level 0, B custom exp at level 60) : exp_scope.
-Notation "'zero'" := a_zero (in custom exp at level 0) : exp_scope.
-Notation "'succ' e" := (a_succ e) (in custom exp at level 0, e custom exp at level 0) : exp_scope.
-Notation "'rec' e 'return' A | 'zero' -> ez | 'succ' -> es 'end'" := (a_natrec A ez es e) (in custom exp at level 0, A custom exp at level 60, ez custom exp at level 60, es custom exp at level 60, e custom exp at level 60) : exp_scope.
-Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0) : exp_scope.
-Notation "'Id'" := a_id (in custom exp at level 0) : exp_scope.
-Notation "'Wk'" := a_weaken (in custom exp at level 0) : exp_scope.
-
-Infix "∘" := a_compose (in custom exp at level 40) : exp_scope.
-Infix ",," := a_extend (in custom exp at level 50) : exp_scope.
-Notation "'q' σ" := ({{{ σ ∘ Wk ,, # 0 }}}) (in custom exp at level 30) : exp_scope.
-
-Notation "⋅" := nil (in custom exp at level 0) : exp_scope.
-Notation "x , y" := (cons y x) (in custom exp at level 50) : exp_scope.
-
 Inductive nf : Set :=
 | nf_typ : nat -> nf
 | nf_nat : nf
@@ -107,26 +77,6 @@ with ne : Set :=
 | ne_app : ne -> nf -> ne
 | ne_var : nat -> ne
 .
-
-#[global] Declare Custom Entry nf.
-
-#[global] Bind Scope exp_scope with nf.
-#[global] Bind Scope exp_scope with ne.
-
-Notation "n{{{ x }}}" := x (at level 0, x custom nf at level 99, format "'n{{{'  x  '}}}'") : exp_scope.
-Notation "( x )" := x (in custom nf at level 0, x custom nf at level 60) : exp_scope.
-Notation "~ x" := x (in custom nf at level 0, x constr at level 0) : exp_scope.
-Notation "x" := x (in custom nf at level 0, x global) : exp_scope.
-Notation "'λ' A e" := (nf_fn A e) (in custom nf at level 0, A custom nf at level 0, e custom nf at level 60) : exp_scope.
-Notation "f x .. y" := (ne_app .. (ne_app f x) .. y) (in custom nf at level 40, f custom nf, x custom nf at next level, y custom nf at next level) : exp_scope.
-Notation "'ℕ'" := nf_nat (in custom nf) : exp_scope.
-Notation "'Type' @ n" := (nf_typ n) (in custom nf at level 0, n constr at level 0) : exp_scope.
-Notation "'Π' A B" := (nf_pi A B) (in custom nf at level 0, A custom nf at level 0, B custom nf at level 60) : exp_scope.
-Notation "'zero'" := nf_zero (in custom nf at level 0) : exp_scope.
-Notation "'succ' M" := (nf_succ M) (in custom nf at level 0, M custom nf at level 0) : exp_scope.
-Notation "'rec' M 'return' A | 'zero' -> MZ | 'succ' -> MS 'end'" := (ne_natrec A MZ MS M) (in custom nf at level 0, A custom nf at level 60, MZ custom nf at level 60, MS custom nf at level 60, M custom nf at level 60) : exp_scope.
-Notation "'#' n" := (ne_var n) (in custom nf at level 0, n constr at level 0) : exp_scope.
-Notation "'⇑' M" := (nf_neut M) (in custom nf at level 0, M custom nf at level 0) : exp_scope.
 
 Fixpoint nf_to_exp (M : nf) : exp :=
   match M with
@@ -148,3 +98,53 @@ with ne_to_exp (M : ne) : exp :=
 
 Coercion nf_to_exp : nf >-> exp.
 Coercion ne_to_exp : ne >-> exp.
+
+#[global] Declare Custom Entry exp.
+#[global] Declare Custom Entry nf.
+
+#[global] Bind Scope mcltt_scope with exp.
+#[global] Bind Scope mcltt_scope with sub.
+#[global] Bind Scope mcltt_scope with nf.
+#[global] Bind Scope mcltt_scope with ne.
+Open Scope mcltt_scope.
+
+Module Syntax_Notations.
+  Notation "{{{ x }}}" := x (at level 0, x custom exp at level 99, format "'{{{'  x  '}}}'") : mcltt_scope.
+  Notation "( x )" := x (in custom exp at level 0, x custom exp at level 60) : mcltt_scope.
+  Notation "~ x" := x (in custom exp at level 0, x constr at level 0) : mcltt_scope.
+  Notation "x" := x (in custom exp at level 0, x global) : mcltt_scope.
+  Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, s custom exp at level 60) : mcltt_scope.
+  Notation "'λ' A e" := (a_fn A e) (in custom exp at level 0, A custom exp at level 0, e custom exp at level 60) : mcltt_scope.
+  Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom exp at level 40, f custom exp, x custom exp at next level, y custom exp at next level) : mcltt_scope.
+  Notation "'ℕ'" := a_nat (in custom exp) : mcltt_scope.
+  Notation "'Type' @ n" := (a_typ n) (in custom exp at level 0, n constr at level 0) : mcltt_scope.
+  Notation "'Π' A B" := (a_pi A B) (in custom exp at level 0, A custom exp at level 0, B custom exp at level 60) : mcltt_scope.
+  Notation "'zero'" := a_zero (in custom exp at level 0) : mcltt_scope.
+  Notation "'succ' e" := (a_succ e) (in custom exp at level 0, e custom exp at level 0) : mcltt_scope.
+  Notation "'rec' e 'return' A | 'zero' -> ez | 'succ' -> es 'end'" := (a_natrec A ez es e) (in custom exp at level 0, A custom exp at level 60, ez custom exp at level 60, es custom exp at level 60, e custom exp at level 60) : mcltt_scope.
+  Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0) : mcltt_scope.
+  Notation "'Id'" := a_id (in custom exp at level 0) : mcltt_scope.
+  Notation "'Wk'" := a_weaken (in custom exp at level 0) : mcltt_scope.
+
+  Infix "∘" := a_compose (in custom exp at level 40) : mcltt_scope.
+  Infix ",," := a_extend (in custom exp at level 50) : mcltt_scope.
+  Notation "'q' σ" := ({{{ σ ∘ Wk ,, # 0 }}}) (in custom exp at level 30) : mcltt_scope.
+
+  Notation "⋅" := nil (in custom exp at level 0) : mcltt_scope.
+  Notation "x , y" := (cons y x) (in custom exp at level 50) : mcltt_scope.
+
+  Notation "n{{{ x }}}" := x (at level 0, x custom nf at level 99, format "'n{{{'  x  '}}}'") : mcltt_scope.
+  Notation "( x )" := x (in custom nf at level 0, x custom nf at level 60) : mcltt_scope.
+  Notation "~ x" := x (in custom nf at level 0, x constr at level 0) : mcltt_scope.
+  Notation "x" := x (in custom nf at level 0, x global) : mcltt_scope.
+  Notation "'λ' A e" := (nf_fn A e) (in custom nf at level 0, A custom nf at level 0, e custom nf at level 60) : mcltt_scope.
+  Notation "f x .. y" := (ne_app .. (ne_app f x) .. y) (in custom nf at level 40, f custom nf, x custom nf at next level, y custom nf at next level) : mcltt_scope.
+  Notation "'ℕ'" := nf_nat (in custom nf) : mcltt_scope.
+  Notation "'Type' @ n" := (nf_typ n) (in custom nf at level 0, n constr at level 0) : mcltt_scope.
+  Notation "'Π' A B" := (nf_pi A B) (in custom nf at level 0, A custom nf at level 0, B custom nf at level 60) : mcltt_scope.
+  Notation "'zero'" := nf_zero (in custom nf at level 0) : mcltt_scope.
+  Notation "'succ' M" := (nf_succ M) (in custom nf at level 0, M custom nf at level 0) : mcltt_scope.
+  Notation "'rec' M 'return' A | 'zero' -> MZ | 'succ' -> MS 'end'" := (ne_natrec A MZ MS M) (in custom nf at level 0, A custom nf at level 60, MZ custom nf at level 60, MS custom nf at level 60, M custom nf at level 60) : mcltt_scope.
+  Notation "'#' n" := (ne_var n) (in custom nf at level 0, n constr at level 0) : mcltt_scope.
+  Notation "'⇑' M" := (nf_neut M) (in custom nf at level 0, M custom nf at level 0) : mcltt_scope.
+End Syntax_Notations.

@@ -6,10 +6,13 @@
 ./Core/Base.v
 ./Core/Semantic/Domain.v
 ./Core/Semantic/Evaluation.v
+./Core/Semantic/EvaluationDefinitions.v
 ./Core/Semantic/EvaluationLemmas.v
 ./Core/Semantic/PER.v
+./Core/Semantic/PERDefinitions.v
 ./Core/Semantic/PERLemmas.v
 ./Core/Semantic/Readback.v
+./Core/Semantic/ReadbackDefinitions.v
 ./Core/Semantic/ReadbackLemmas.v
 ./Core/Semantic/Realizability.v
 ./Core/Syntactic/CtxEquiv.v
@@ -17,6 +20,7 @@
 ./Core/Syntactic/Relations.v
 ./Core/Syntactic/Syntax.v
 ./Core/Syntactic/System.v
+./Core/Syntactic/SystemDefinitions.v
 ./Core/Syntactic/SystemLemmas.v
 ./Frontend/Elaborator.v
 ./Frontend/Parser.v

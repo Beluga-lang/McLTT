@@ -1,5 +1,6 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
-From Mcltt Require Import Axioms Base Domain Evaluation EvaluationLemmas LibTactics PER Readback ReadbackLemmas Syntax System.
+From Mcltt Require Import Axioms Base Evaluation LibTactics PERDefinitions Readback.
+Import Domain_Notations.
 
 (* Lemma rel_mod_eval_ex_pull : *)
 (*   forall (A : Type) (P : domain -> domain -> relation domain -> A -> Prop) {T p T' p'} R, *)
@@ -96,6 +97,18 @@ Qed.
 
 #[export]
 Hint Resolve per_top_trans : mcltt.
+
+Lemma per_bot_then_per_top : forall m m' a a' b b' c c',
+    {{ Dom m ≈ m' ∈ per_bot }} ->
+    {{ Dom ⇓ (⇑ a b) ⇑ c m ≈ ⇓ (⇑ a' b') ⇑ c' m' ∈ per_top }}.
+Proof.
+  intros * H s.
+  specialize (H s) as [? []].
+  eexists; split; constructor; eassumption.
+Qed.
+
+#[export]
+Hint Resolve per_bot_then_per_top : mcltt.
 
 Lemma per_top_typ_sym : forall m n,
     {{ Dom m ≈ n ∈ per_top_typ }} ->
