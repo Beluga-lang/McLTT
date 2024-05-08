@@ -1,6 +1,6 @@
 -R . Mcltt
 
--arg -w -arg -notation-overridden
+-arg -w -arg -cast-in-pattern,-notation-overridden
 
 ./Core/Axioms.v
 ./Core/Base.v
