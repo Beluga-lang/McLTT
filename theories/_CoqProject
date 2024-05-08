@@ -11,6 +11,7 @@
 ./Core/Semantic/PER.v
 ./Core/Semantic/PERBasicLemmas.v
 ./Core/Semantic/PERDefinitions.v
+./Core/Semantic/PERLemmas.v
 ./Core/Semantic/Readback.v
 ./Core/Semantic/ReadbackDefinitions.v
 ./Core/Semantic/ReadbackLemmas.v
