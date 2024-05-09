@@ -1,1 +1,1 @@
-From Mcltt Require Export EvaluationDefinitions EvaluationLemmas.
+From Mcltt Require Export Evaluation.Definitions Evaluation.Lemmas.

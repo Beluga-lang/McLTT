@@ -1,5 +1,5 @@
 From Coq Require Import Lia PeanoNat Relations.
-From Mcltt Require Import Base EvaluationLemmas LibTactics ReadbackDefinitions.
+From Mcltt Require Import Base Evaluation LibTactics Readback.Definitions.
 Import Domain_Notations.
 
 Section functional_read.

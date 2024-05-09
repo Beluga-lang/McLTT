@@ -1,4 +1,4 @@
-From Mcltt Require Import Base LibTactics SystemDefinitions.
+From Mcltt Require Import Base LibTactics System.Definitions.
 Import Syntax_Notations.
 
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
@@ -157,14 +157,6 @@ Qed.
 
 #[export]
 Hint Resolve sub_eq_refl : mcltt.
-
-Lemma ctx_eq_sym : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ ≈ Γ }}.
-Proof with solve [mauto].
-  induction 1...
-Qed.
-
-#[export]
-Hint Resolve ctx_eq_sym : mcltt.
 
 Lemma exp_sub_typ : forall {Δ Γ A σ i}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ A[σ] : Type@i }}.
 Proof.
