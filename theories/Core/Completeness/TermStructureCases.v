@@ -1,4 +1,4 @@
-From Coq Require Import RelationClasses.
+From Coq Require Import Relations RelationClasses.
 From Mcltt Require Import Base LibTactics LogicalRelation System.
 Import Domain_Notations.
 
@@ -27,6 +27,51 @@ Proof.
   split; [> econstructor; only 1-2: econstructor; eauto ..].
 Qed.
 
+Lemma rel_exp_sub_id : forall {Γ M A},
+    {{ Γ ⊨ M : A }} ->
+    {{ Γ ⊨ M[Id] ≈ M : A }}.
+Proof.
+  intros * [env_relΓ].
+  destruct_conjs.
+  eexists.
+  eexists; try eassumption.
+  eexists.
+  intros.
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  destruct_by_head rel_exp.
+  destruct_by_head rel_typ.
+  eexists.
+  split; econstructor; eauto.
+  repeat econstructor; mauto.
+Qed.
+
+Lemma rel_exp_sub_compose : forall {Γ τ Γ' σ Γ'' M A},
+    {{ Γ ⊨s τ : Γ' }} ->
+    {{ Γ' ⊨s σ : Γ'' }} ->
+    {{ Γ'' ⊨ M : A }} ->
+    {{ Γ ⊨ M[σ ∘ τ] ≈ M[σ][τ] : A[σ ∘ τ] }}.
+Proof.
+  intros * [env_relΓ [? [env_relΓ']]] [? [? [env_relΓ'']]] [].
+  destruct_conjs.
+  per_ctx_env_irrel_rewrite.
+  eexists.
+  eexists; try eassumption.
+  eexists.
+  intros.
+  assert (env_relΓ p' p) by (eapply per_env_sym; eauto).
+  assert (env_relΓ p p) by (eapply per_env_trans; eauto).
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  per_univ_elem_irrel_rewrite.
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ' H).
+  per_univ_elem_irrel_rewrite.
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ'' H).
+  destruct_by_head rel_exp.
+  destruct_by_head rel_typ.
+  per_univ_elem_irrel_rewrite.
+  eexists.
+  split; [> econstructor; only 1-2: repeat econstructor; mauto ..].
+Qed.
+
 Lemma rel_exp_conv : forall {Γ M M' A A' i},
     {{ Γ ⊨ M ≈ M' : A }} ->
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -49,7 +94,7 @@ Proof.
   destruct_conjs.
   per_univ_elem_irrel_rewrite.
   eexists.
-  split; [> econstructor; eauto ..].
+  split; econstructor; eauto.
   eapply per_univ_trans; [eapply per_univ_sym |]; eauto.
 Qed.
 
