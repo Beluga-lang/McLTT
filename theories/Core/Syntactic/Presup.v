@@ -13,7 +13,6 @@ Ltac gen_presup_ctx H :=
       let HΓ := fresh "HΓ" in
       let HΔ := fresh "HΔ" in
       pose proof presup_sub_ctx H as [HΓ HΔ]
-  | _ => idtac
   end.
 
 #[local]
@@ -46,17 +45,26 @@ with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ 
 Proof with solve [mauto].
   (* presup_exp *)
   - intros * HM.
-    inversion_clear HM; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq); clear presup_exp presup_exp_eq presup_sub_eq; repeat split; mauto.
+    inversion_clear HM; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq);
+      clear presup_exp presup_exp_eq presup_sub_eq;
+      repeat split; mauto.
     all: try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
+
     + eexists.
       assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
       assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
 
   - intros * HMM'.
     set (WkWksucc := {{{ Wk∘Wk ,, succ #1 }}}).
-    inversion_clear HMM'; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq); clear presup_exp presup_exp_eq presup_sub_eq; repeat split; mauto.
+    inversion_clear HMM'; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq);
+      clear presup_exp presup_exp_eq presup_sub_eq;
+      repeat split; mauto.
     all: try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B');
-      try (rename N into L); try (rename N' into L'); try (rename M0 into N); try (rename MZ into NZ); try (rename MS into NS); try (rename M'0 into N'); try (rename MZ' into NZ'); try (rename MS' into NS'); try (rename M' into N').
+      try (rename N into L); try (rename N' into L');
+      try (rename M0 into N); try (rename MZ into NZ); try (rename MS into NS);
+      try (rename M'0 into N'); try (rename MZ' into NZ'); try (rename MS' into NS');
+      try (rename M' into N').
+
     + assert {{ Γ ⊢s Id ,, N ≈ Id ,, N' : Γ, ℕ }} by mauto.
       assert {{ Γ ⊢ B[Id ,, N] ≈ B[Id ,, N'] : Type@i }} by mauto.
       assert {{ Γ ⊢ B[Id ,, N] ≈ B'[Id ,, N'] : Type@i }} by mauto.
@@ -186,7 +194,10 @@ Proof with solve [mauto].
     + assert (exists i, {{ Δ ⊢ C : Type@i }}) as []...
 
   - intros * Hσσ'.
-    inversion_clear Hσσ'; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq); clear presup_exp presup_exp_eq presup_sub_eq; repeat split; mauto.
+    inversion_clear Hσσ'; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq);
+      clear presup_exp presup_exp_eq presup_sub_eq;
+      repeat split; mauto.
+
     + econstructor...
 
     + assert (exists i, {{ Γ0 ⊢ A : Type@i }}) as [] by mauto.

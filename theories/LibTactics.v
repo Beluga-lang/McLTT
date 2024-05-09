@@ -1,4 +1,4 @@
-From Coq Require Export Program.Tactics Lia.
+From Coq Require Export Program.Equality Program.Tactics Lia.
 
 Create HintDb mcltt discriminated.
 
@@ -27,7 +27,7 @@ Ltac unmark_all := unfold __mark__ in *.
 
 Ltac on_all_marked_hyp tac :=
   match goal with
-  | [ H : __mark__ _ ?A |- _ ] => unmark H; tac H; on_all_marked_hyp tac; mark H
+  | [ H : __mark__ _ ?A |- _ ] => unmark H; tac H; on_all_marked_hyp tac; try mark H
   | _ => idtac
   end.
 Tactic Notation "on_all_marked_hyp:" tactic4(tac) := on_all_marked_hyp tac.

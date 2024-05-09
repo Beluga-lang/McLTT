@@ -210,6 +210,7 @@ Ltac per_univ_elem_econstructor :=
 (** Context/Environment PER *)
 
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
+Arguments rel_typ _ _ _ _ _ _ /.
 
 Definition per_total : relation env := fun p p' => True.
 
