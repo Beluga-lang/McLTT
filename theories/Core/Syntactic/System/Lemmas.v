@@ -2,7 +2,7 @@ From Mcltt Require Import Base LibTactics System.Definitions.
 Import Syntax_Notations.
 
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
-Proof with solve [mauto].
+Proof with solve [eauto].
   inversion 1; subst...
 Qed.
 
@@ -12,13 +12,13 @@ Hint Resolve ctx_decomp : mcltt.
 Lemma ctx_decomp_left : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }}.
 Proof with solve [eauto].
   intros.
-  eapply proj1, ctx_decomp...
+  eapply ctx_decomp...
 Qed.
 
 Lemma ctx_decomp_right : forall {Γ A}, {{ ⊢ Γ , A }} -> exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with solve [eauto].
   intros.
-  eapply proj2, ctx_decomp...
+  eapply ctx_decomp...
 Qed.
 
 #[export]
@@ -78,7 +78,7 @@ Qed.
 Lemma presup_ctx_eq_right : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ }}.
 Proof with solve [eauto].
   intros.
-  eapply proj2, presup_ctx_eq...
+  eapply presup_ctx_eq...
 Qed.
 
 #[export]
@@ -86,7 +86,7 @@ Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mcltt.
 
 Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
-  induction 1; repeat destruct_one_pair...
+  induction 1; destruct_pairs...
 Qed.
 
 Lemma presup_sub_ctx_left : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }}.
@@ -98,7 +98,7 @@ Qed.
 Lemma presup_sub_ctx_right : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Δ }}.
 Proof with solve [eauto].
   intros.
-  eapply proj2, presup_sub_ctx...
+  eapply presup_sub_ctx...
 Qed.
 
 #[export]
@@ -114,7 +114,7 @@ Hint Resolve presup_exp_ctx : mcltt.
 
 Lemma presup_sub_eq_ctx : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with solve [mauto].
-  induction 1; repeat destruct_one_pair...
+  induction 1; destruct_pairs...
 Qed.
 
 Lemma presup_sub_eq_ctx_left : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }}.
@@ -126,7 +126,7 @@ Qed.
 Lemma presup_sub_eq_ctx_right : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Δ }}.
 Proof with solve [eauto].
   intros.
-  eapply proj2, presup_sub_eq_ctx...
+  eapply presup_sub_eq_ctx...
 Qed.
 
 #[export]
@@ -234,8 +234,7 @@ Hint Resolve exp_eq_var_0_sub_typ exp_eq_var_1_sub_typ : mcltt.
 
 Lemma exp_eq_var_0_weaken_typ : forall {Γ A i}, {{ ⊢ Γ , A }} -> {{ #0 : Type@i[Wk] ∈ Γ }} -> {{ Γ , A ⊢ #0[Wk] ≈ #1 : Type@i }}.
 Proof with solve [mauto].
-  intros * ?.
-  assert {{ ⊢ Γ }} by mauto.
+  inversion_clear 1.
   inversion 1 as [? Γ'|]; subst.
   assert {{ ⊢ Γ' }} by mauto.
   eapply wf_exp_eq_conv; only 1: solve [mauto].
@@ -276,7 +275,7 @@ Lemma sub_eq_p_extend_typ : forall {Γ σ Γ' M i}, {{ Γ' ⊢s σ : Γ }} -> {{
 Proof with solve [mauto].
   intros.
   assert {{ ⊢ Γ }} by mauto.
-  econstructor; only 1,3: solve [mauto]...
+  econstructor; only 3: solve [mauto]...
   Unshelve.
   constructor.
 Qed.
@@ -389,8 +388,7 @@ Hint Resolve exp_eq_var_0_sub_nat exp_eq_var_1_sub_nat : mcltt.
 
 Lemma exp_eq_var_0_weaken_nat : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ #0 : ℕ[Wk] ∈ Γ }} -> {{ Γ , A ⊢ #0[Wk] ≈ #1 : ℕ }}.
 Proof with solve [mauto].
-  intros * ?.
-  assert {{ ⊢ Γ }} by mauto.
+  inversion 1; subst.
   inversion 1 as [? Γ'|]; subst.
   assert {{ ⊢ Γ' }} by mauto.
   assert {{ Γ', ℕ, A ⊢ #0[Wk] ≈ # 1 : ℕ[Wk][Wk] }}...
@@ -434,7 +432,7 @@ Lemma sub_eq_p_extend_nat : forall {Γ σ Γ' M}, {{ Γ' ⊢s σ : Γ }} -> {{ �
 Proof with solve [mauto].
   intros.
   assert {{ ⊢ Γ }} by mauto.
-  econstructor; only 1,3: solve [mauto]...
+  econstructor; only 3: solve [mauto]...
   Unshelve.
   all: constructor.
 Qed.
@@ -477,8 +475,8 @@ Hint Resolve ctx_lookup_wf : mcltt.
 Lemma ctxeq_ctx_lookup : forall {Γ Δ A x}, {{ ⊢ Γ ≈ Δ }} -> {{ #x : A ∈ Γ }} -> exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}.
 Proof with solve [mauto].
   intros * HΓΔ Hx; gen Δ.
-  induction Hx as [|* ? IHHx]; intros; inversion_clear HΓΔ as [|? ? ? ? ? HΓΔ'];
-    [|destruct (IHHx _ HΓΔ') as [? [? [? [? ?]]]]]; repeat eexists; repeat split...
+  induction Hx as [|* ? IHHx]; inversion_clear 1 as [|? ? ? ? ? HΓΔ'];
+    [|specialize (IHHx _ HΓΔ')]; destruct_conjs; repeat eexists...
 Qed.
 
 #[export]
