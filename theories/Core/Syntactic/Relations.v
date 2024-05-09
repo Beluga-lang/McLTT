@@ -1,5 +1,6 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base CtxEquiv LibTactics System.
+From Mcltt Require Import Base CtxEquiv LibTactics.
+From Mcltt Require Export System.
 Import Syntax_Notations.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.

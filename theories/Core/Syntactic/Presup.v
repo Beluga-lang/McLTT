@@ -1,4 +1,5 @@
-From Mcltt Require Import Base CtxEquiv LibTactics Relations System.
+From Mcltt Require Import Base CtxEquiv LibTactics Relations.
+From Mcltt Require Export System.
 Import Syntax_Notations.
 
 #[local]

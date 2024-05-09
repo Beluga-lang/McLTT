@@ -1,4 +1,5 @@
-From Mcltt Require Import Base LibTactics System.
+From Mcltt Require Import Base LibTactics.
+From Mcltt Require Export System.
 Import Syntax_Notations.
 
 #[local]
