@@ -15,9 +15,8 @@
 ./Core/Semantic/Readback/Definitions.v
 ./Core/Semantic/Readback/Lemmas.v
 ./Core/Semantic/Realizability.v
-./Core/Syntactic/CtxEquiv.v
+./Core/Syntactic/CtxEq.v
 ./Core/Syntactic/Presup.v
-./Core/Syntactic/Relations.v
 ./Core/Syntactic/Syntax.v
 ./Core/Syntactic/System.v
 ./Core/Syntactic/System/Definitions.v
