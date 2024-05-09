@@ -1,5 +1,5 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
-From Mcltt Require Import Axioms Base Evaluation LibTactics PERDefinitions Readback.
+From Mcltt Require Import Axioms Base Evaluation LibTactics PER.Definitions Readback.
 Import Domain_Notations.
 
 Lemma per_bot_sym : forall m n,

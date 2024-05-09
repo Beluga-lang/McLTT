@@ -1,4 +1,4 @@
-From Mcltt Require Import Base LibTactics SystemDefinitions.
+From Mcltt Require Import Base LibTactics System.Definitions.
 Import Syntax_Notations.
 
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
