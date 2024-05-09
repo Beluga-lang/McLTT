@@ -12,6 +12,8 @@ Generalizable All Variables.
 Inductive eval_exp : exp -> env -> domain -> Prop :=
 | eval_exp_typ :
   `( {{ ⟦ Type@i ⟧ p ↘ 𝕌@i }} )
+| eval_exp_var :
+  `( {{ ⟦ # x ⟧ p ↘ ~(p x) }} )
 | eval_exp_nat :
   `( {{ ⟦ ℕ ⟧ p ↘ ℕ }} )
 | eval_exp_zero :

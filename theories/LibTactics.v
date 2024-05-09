@@ -103,6 +103,26 @@ Ltac clean_replace_by exp0 exp1 tac :=
 
 Tactic Notation "clean" "replace" uconstr(exp0) "with" uconstr(exp1) "by" tactic3(tac) := clean_replace_by exp0 exp1 tac.
 
+Ltac match_by_head1 head tac :=
+  match goal with
+  | [ H : ?X _ _ _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ _ _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ _ |- _ ] => unify X head; tac H
+  | [ H : ?X _ |- _ ] => unify X head; tac H
+  | [ H : ?X |- _ ] => unify X head; tac H
+  end.
+Ltac match_by_head head tac := repeat (match_by_head1 head ltac:(fun H => tac H; try mark H)); unmark_all.
+
+Ltac inversion_by_head head := match_by_head head ltac:(fun H => inversion H).
+Ltac inversion_clear_by_head head := match_by_head head ltac:(fun H => inversion_clear H).
+Ltac destruct_by_head head := match_by_head head ltac:(fun H => destruct H).
+
 (** McLTT automation *)
 
 Tactic Notation "mauto" :=
