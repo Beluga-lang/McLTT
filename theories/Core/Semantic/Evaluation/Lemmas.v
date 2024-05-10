@@ -14,7 +14,7 @@ Section functional_eval.
     clear functional_eval_exp_prop functional_eval_natrec_prop functional_eval_app_prop functional_eval_sub_prop.
 
   Lemma functional_eval_exp : forall M p m1 (Heval1 : {{ ⟦ M ⟧ p ↘ m1 }}), functional_eval_exp_prop M p m1 Heval1.
-  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); eauto) using.
+  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); solve [eauto]) using.
     induction Heval1
       using eval_exp_mut_ind
       with (P0 := functional_eval_natrec_prop)
@@ -25,7 +25,7 @@ Section functional_eval.
   Qed.
 
   Lemma functional_eval_natrec : forall A MZ MS m p r1 (Heval1 : {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r1 }}), functional_eval_natrec_prop A MZ MS m p r1 Heval1.
-  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); eauto) using.
+  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); solve [eauto]) using.
     induction Heval1
       using eval_natrec_mut_ind
       with (P := functional_eval_exp_prop)
@@ -36,7 +36,7 @@ Section functional_eval.
   Qed.
 
   Lemma functional_eval_app : forall m n r1 (Heval1 : {{ $| m & n |↘ r1 }}), functional_eval_app_prop m n r1 Heval1.
-  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); eauto) using.
+  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); solve [eauto]) using.
     induction Heval1
       using eval_app_mut_ind
       with (P := functional_eval_exp_prop)
@@ -47,7 +47,7 @@ Section functional_eval.
   Qed.
 
   Lemma functional_eval_sub : forall σ p p1 (Heval1 : {{ ⟦ σ ⟧s p ↘ p1 }}), functional_eval_sub_prop σ p p1 Heval1.
-  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); eauto) using.
+  Proof with ((on_all_hyp: fun H => erewrite H in *; eauto); solve [eauto]) using.
     induction Heval1
       using eval_sub_mut_ind
       with (P := functional_eval_exp_prop)
