@@ -68,7 +68,8 @@ Lemma per_bot_then_per_top : forall m m' a a' b b' c c',
     {{ Dom ⇓ (⇑ a b) ⇑ c m ≈ ⇓ (⇑ a' b') ⇑ c' m' ∈ per_top }}.
 Proof.
   intros * H s.
-  specialize (H s) as [? []].
+  pose proof H s.
+  destruct_conjs.
   eexists; split; constructor; eassumption.
 Qed.
 
@@ -104,7 +105,7 @@ Hint Resolve per_top_typ_trans : mcltt.
 Lemma per_nat_sym : forall m n,
     {{ Dom m ≈ n ∈ per_nat }} ->
     {{ Dom n ≈ m ∈ per_nat }}.
-Proof with solve [eauto using per_bot_sym].
+Proof with mautosolve.
   induction 1; econstructor...
 Qed.
 
@@ -115,7 +116,7 @@ Lemma per_nat_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_nat }} ->
     {{ Dom n ≈ l ∈ per_nat }} ->
     {{ Dom m ≈ l ∈ per_nat }}.
-Proof with solve [eauto using per_bot_trans].
+Proof with mautosolve.
   intros * H. gen l.
   induction H; inversion_clear 1; econstructor...
 Qed.
@@ -126,7 +127,7 @@ Hint Resolve per_nat_trans : mcltt.
 Lemma per_ne_sym : forall m n,
     {{ Dom m ≈ n ∈ per_ne }} ->
     {{ Dom n ≈ m ∈ per_ne }}.
-Proof with solve [eauto using per_bot_sym].
+Proof with mautosolve.
   intros * [].
   econstructor...
 Qed.
@@ -138,7 +139,7 @@ Lemma per_ne_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_ne }} ->
     {{ Dom n ≈ l ∈ per_ne }} ->
     {{ Dom m ≈ l ∈ per_ne }}.
-Proof with solve [eauto using per_bot_trans].
+Proof with mautosolve.
   intros * [].
   inversion_clear 1.
   econstructor...
@@ -151,13 +152,13 @@ Lemma per_univ_elem_right_irrel : forall i i' A B R B' R',
     per_univ_elem i A B R ->
     per_univ_elem i' A B' R' ->
     R = R'.
-Proof with solve [eauto].
+Proof with mautosolve.
   intros * Horig.
   remember A as A' in |- *.
   gen A' B' R'.
   induction Horig using per_univ_elem_ind; intros * Heq Hright;
     subst; invert_per_univ_elem Hright; unfold per_univ;
-    try congruence.
+    trivial.
   specialize (IHHorig _ _ _ eq_refl equiv_a_a').
   subst.
   extensionality f.
@@ -186,7 +187,7 @@ Lemma per_univ_elem_sym : forall i A B R,
       (forall a b,
           {{ Dom a ≈ b ∈ R }} ->
           {{ Dom b ≈ a ∈ R }}).
-Proof with solve [try econstructor; eauto using per_bot_sym, per_nat_sym, per_ne_sym].
+Proof with (try econstructor; mautosolve).
   induction 1 using per_univ_elem_ind; subst.
   - split.
     + apply per_univ_elem_core_univ'...
@@ -219,9 +220,8 @@ Corollary per_univ_sym : forall i A B R,
     per_univ_elem i A B R ->
     per_univ_elem i B A R.
 Proof.
-  intros.
-  apply per_univ_elem_sym.
-  assumption.
+  intros * ?%per_univ_elem_sym.
+  firstorder.
 Qed.
 
 Corollary per_elem_sym : forall i A B a b R,
@@ -229,12 +229,11 @@ Corollary per_elem_sym : forall i A B a b R,
     R a b ->
     R b a.
 Proof.
-  intros * ?.
-  eapply per_univ_elem_sym.
-  eassumption.
+  intros * ?%per_univ_elem_sym.
+  firstorder.
 Qed.
 
-Lemma per_univ_elem_left_irrel : forall i i' A B R A' R',
+Corollary per_univ_elem_left_irrel : forall i i' A B R A' R',
     per_univ_elem i A B R ->
     per_univ_elem i' A' B R' ->
     R = R'.
@@ -243,7 +242,7 @@ Proof.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
-Lemma per_univ_elem_cross_irrel : forall i i' A B R B' R',
+Corollary per_univ_elem_cross_irrel : forall i i' A B R B' R',
     per_univ_elem i A B R ->
     per_univ_elem i' B' A R' ->
     R = R'.
@@ -284,7 +283,7 @@ Lemma per_univ_elem_trans : forall i A1 A2 R,
           R a1 a2 ->
           R a2 a3 ->
           R a1 a3).
-Proof with solve [eauto using per_bot_trans | econstructor; eauto].
+Proof with ((econstructor + per_univ_elem_econstructor); mautosolve).
   induction 1 using per_univ_elem_ind;
     [> split;
      [ intros * HT2; invert_per_univ_elem HT2; clear HT2
@@ -309,7 +308,7 @@ Proof with solve [eauto using per_bot_trans | econstructor; eauto].
     destruct_rel_mod_eval.
     destruct_rel_mod_app.
     per_univ_elem_irrel_rewrite...
-  - per_univ_elem_econstructor...
+  - idtac...
 Qed.
 
 Corollary per_univ_trans : forall i j A1 A2 A3 R,
@@ -317,9 +316,8 @@ Corollary per_univ_trans : forall i j A1 A2 A3 R,
     per_univ_elem j A2 A3 R ->
     per_univ_elem i A1 A3 R.
 Proof.
-  intros * ?.
-  apply per_univ_elem_trans.
-  assumption.
+  intros * ?%per_univ_elem_trans.
+  firstorder.
 Qed.
 
 Corollary per_elem_trans : forall i A1 A2 a1 a2 a3 R,
@@ -328,9 +326,8 @@ Corollary per_elem_trans : forall i A1 A2 a1 a2 a3 R,
     R a2 a3 ->
     R a1 a3.
 Proof.
-  intros * ?.
-  eapply per_univ_elem_trans.
-  eassumption.
+  intros * ?% per_univ_elem_trans.
+  firstorder.
 Qed.
 
 Lemma per_univ_elem_cumu : forall {i a0 a1 R},
@@ -399,9 +396,8 @@ Corollary per_ctx_sym : forall Γ Δ R,
     {{ DF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
     {{ DF Δ ≈ Γ ∈ per_ctx_env ↘ R }}.
 Proof.
-  intros.
-  apply per_ctx_env_sym.
-  assumption.
+  intros * ?%per_ctx_env_sym.
+  firstorder.
 Qed.
 
 Corollary per_env_sym : forall Γ Δ R o p,
@@ -409,12 +405,11 @@ Corollary per_env_sym : forall Γ Δ R o p,
     {{ Dom o ≈ p ∈ R }} ->
     {{ Dom p ≈ o ∈ R }}.
 Proof.
-  intros * ?.
-  eapply per_ctx_env_sym.
-  eassumption.
+  intros * ?%per_ctx_env_sym.
+  firstorder.
 Qed.
 
-Lemma per_ctx_env_left_irrel : forall Γ Γ' Δ R R',
+Corollary per_ctx_env_left_irrel : forall Γ Γ' Δ R R',
     {{ DF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
     {{ DF Γ' ≈ Δ ∈ per_ctx_env ↘ R' }} ->
     R = R'.
@@ -423,7 +418,7 @@ Proof.
   eauto using per_ctx_env_right_irrel.
 Qed.
 
-Lemma per_ctx_env_cross_irrel : forall Γ Δ Δ' R R',
+Corollary per_ctx_env_cross_irrel : forall Γ Δ Δ' R R',
     {{ DF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
     {{ DF Δ' ≈ Γ ∈ per_ctx_env ↘ R' }} ->
     R = R'.
@@ -474,16 +469,14 @@ Proof with solve [eauto using per_univ_trans].
   - rename tail_rel0 into tail_rel.
     econstructor; eauto.
     + eapply IHper_ctx_env...
-    + simpl in *.
-      intros.
+    + intros.
       assert (tail_rel p p) by (etransitivity; [| symmetry]; eauto).
-      destruct_rel_mod_eval.
+      (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
       per_univ_elem_irrel_rewrite.
       econstructor...
   - assert (tail_rel d{{{ p1 ↯ }}} d{{{ p3 ↯ }}}) by mauto.
     eexists.
-    simpl in *.
-    destruct_rel_mod_eval.
+    (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
     per_univ_elem_irrel_rewrite.
     eapply per_elem_trans...
 Qed.
@@ -493,9 +486,8 @@ Corollary per_ctx_trans : forall Γ1 Γ2 Γ3 R,
     {{ DF Γ2 ≈ Γ3 ∈ per_ctx_env ↘ R }} ->
     {{ DF Γ1 ≈ Γ3 ∈ per_ctx_env ↘ R }}.
 Proof.
-  intros * ?.
-  apply per_ctx_env_trans.
-  assumption.
+  intros * ?% per_ctx_env_trans.
+  firstorder.
 Qed.
 
 Corollary per_env_trans : forall Γ1 Γ2 R p1 p2 p3,
@@ -504,7 +496,6 @@ Corollary per_env_trans : forall Γ1 Γ2 R p1 p2 p3,
     {{ Dom p2 ≈ p3 ∈ R }} ->
     {{ Dom p1 ≈ p3 ∈ R }}.
 Proof.
-  intros * ?.
-  eapply per_ctx_env_trans.
-  eassumption.
+  intros * ?% per_ctx_env_trans.
+  firstorder.
 Qed.

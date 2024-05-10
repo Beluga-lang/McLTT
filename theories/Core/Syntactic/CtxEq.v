@@ -3,7 +3,7 @@ From Mcltt Require Export System.
 Import Syntax_Notations.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
-Proof with solve [mauto].
+Proof with mautosolve.
   induction 1...
 Qed.
 
@@ -11,7 +11,7 @@ Qed.
 Hint Resolve ctx_eq_refl : mcltt.
 
 Lemma ctx_eq_sym : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ ≈ Γ }}.
-Proof with solve [mauto].
+Proof with mautosolve.
   induction 1...
 Qed.
 
@@ -36,80 +36,46 @@ Module ctxeq_judg.
   ctxeq_sub_helper : forall {Γ Γ' σ}, {{ Γ ⊢s σ : Γ' }} -> forall {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ : Γ' }}
   with
   ctxeq_sub_eq_helper : forall {Γ Γ' σ σ'}, {{ Γ ⊢s σ ≈ σ' : Γ' }} -> forall {Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
-  Proof with solve [mauto].
-    (* ctxeq_exp_helper *)
-    - intros * HM * HΓΔ. gen Δ.
-      inversion_clear HM;
-        (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
-        clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
-        intros * HΓΔ **; destruct (presup_ctx_eq HΓΔ); mauto.
-      all: try (rename B into C); try (rename A0 into B).
-      2-4: assert {{ Δ ⊢ B : Type@i }} as HB by eauto; assert {{ ⊢ Γ, B ≈ Δ, B }} by mauto; clear HB.
-      2-3: solve [mauto].
+  Proof with mautosolve.
+    all: inversion_clear 1;
+      (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
+      clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
+      intros * HΓΔ; destruct (presup_ctx_eq HΓΔ); mauto;
+      try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
+    (* ctxeq_exp_helper & ctxeq_exp_eq_helper recursion cases *)
+    1,6-8: assert {{ ⊢ Γ, ℕ ≈ Δ, ℕ }} by (econstructor; mautosolve);
+      assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
+    (* ctxeq_exp_helper & ctxeq_exp_eq_helper function cases *)
+    1-3,5-9: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Γ, B ≈ Δ, B }} by mauto;
+      try econstructor; mautosolve.
+    (* ctxeq_exp_helper & ctxeq_exp_eq_helper variable cases *)
+    1-2: assert (exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}); destruct_conjs...
+    (* ctxeq_sub_helper & ctxeq_sub_eq_helper weakening cases *)
+    2-3: inversion_clear HΓΔ; econstructor...
 
-      + assert {{ ⊢ Γ, ℕ ≈ Δ, ℕ }} by (econstructor; mauto).
-        assert {{ Δ, ℕ ⊢ B : Type@i }} by mauto.
-        econstructor...
-
-      + econstructor...
-
-      + assert (exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}); destruct_conjs...
-
-    (* ctxeq_exp_eq_helper *)
-    - intros * HMM' * HΓΔ. gen Δ.
-      inversion_clear HMM';
-        (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
-        clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
-        intros; destruct (presup_ctx_eq HΓΔ); mauto.
-      all: try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
-      1-3: assert {{ ⊢ Γ, ℕ ≈ Δ, ℕ }} by (econstructor; mauto); assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
-      1-5: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Γ, B ≈ Δ, B }}...
-
-      + assert (exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}); destruct_conjs...
-
-      + inversion_clear HΓΔ as [|? Δ0 ? ? C'].
-        assert (exists D i', {{ #x : D ∈ Δ0 }} /\ {{ Γ0 ⊢ B ≈ D : Type@i' }} /\ {{ Δ0 ⊢ B ≈ D : Type@i' }}) as [D [i0 ?]] by mauto.
-        destruct_conjs.
-        assert {{ Δ0, C' ⊢ B[Wk] ≈ D[Wk] : Type @ i0 }}...
-
-    (* ctxeq_sub_helper *)
-    - intros * Hσ * HΓΔ. gen Δ.
-      inversion_clear Hσ;
-        (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
-        clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
-        intros; destruct (presup_ctx_eq HΓΔ); mauto.
-      inversion_clear HΓΔ.
-      econstructor...
-
-    (* ctxeq_sub_eq_helper *)
-    - intros * Hσσ' * HΓΔ. gen Δ.
-      inversion_clear Hσσ';
-        (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
-        clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
-        intros; destruct (presup_ctx_eq HΓΔ); mauto.
-      inversion_clear HΓΔ.
-      eapply wf_sub_eq_conv...
-
-      Unshelve.
-      all: constructor.
+    (* ctxeq_exp_eq_helper variable case *)
+    inversion_clear HΓΔ as [|? Δ0 ? ? C'].
+    assert (exists D i', {{ #x : D ∈ Δ0 }} /\ {{ Γ0 ⊢ B ≈ D : Type@i' }} /\ {{ Δ0 ⊢ B ≈ D : Type@i' }}) as [D [i0 ?]] by mauto.
+    destruct_conjs.
+    assert {{ Δ0, C' ⊢ B[Wk] ≈ D[Wk] : Type @ i0 }}...
   Qed.
 
-  Lemma ctxeq_exp : forall {Γ Δ M A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M : A }} -> {{ Δ ⊢ M : A }}.
+  Corollary ctxeq_exp : forall {Γ Δ M A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M : A }} -> {{ Δ ⊢ M : A }}.
   Proof.
     eauto using ctxeq_exp_helper.
   Qed.
 
-  Lemma ctxeq_exp_eq : forall {Γ Δ M M' A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M ≈ M' : A }} -> {{ Δ ⊢ M ≈ M' : A }}.
+  Corollary ctxeq_exp_eq : forall {Γ Δ M M' A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M ≈ M' : A }} -> {{ Δ ⊢ M ≈ M' : A }}.
   Proof.
     eauto using ctxeq_exp_eq_helper.
   Qed.
 
-  Lemma ctxeq_sub : forall {Γ Δ σ Γ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ : Γ' }} -> {{ Δ ⊢s σ : Γ' }}.
+  Corollary ctxeq_sub : forall {Γ Δ σ Γ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ : Γ' }} -> {{ Δ ⊢s σ : Γ' }}.
   Proof.
     eauto using ctxeq_sub_helper.
   Qed.
 
-  Lemma ctxeq_sub_eq : forall {Γ Δ σ σ' Γ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ ≈ σ' : Γ' }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
+  Corollary ctxeq_sub_eq : forall {Γ Δ σ σ' Γ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ ≈ σ' : Γ' }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
   Proof.
     eauto using ctxeq_sub_eq_helper.
   Qed.
@@ -121,12 +87,11 @@ End ctxeq_judg.
 Export ctxeq_judg.
 
 Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, {{ ⊢ Γ0 ≈ Γ1 }} -> {{ ⊢ Γ1 ≈ Γ2 }} -> {{ ⊢ Γ0 ≈ Γ2 }}.
-Proof with solve [mauto].
-  intros * HΓ01 HΓ12.
+Proof with mautosolve.
+  intros * HΓ01.
   gen Γ2.
-  induction HΓ01 as [|Γ0 ? T0 i01 T1]; intros; mauto.
-  rename HΓ12 into HT1Γ12.
-  inversion_clear HT1Γ12 as [|? Γ2' ? i12 T2].
+  induction HΓ01 as [|Γ0 ? T0 i01 T1]; mauto.
+  inversion_clear 1 as [|? Γ2' ? i12 T2].
   clear Γ2; rename Γ2' into Γ2.
   set (i := max i01 i12).
   assert {{ Γ0 ⊢ T0 : Type@i }} by mauto using lift_exp_max_left.
