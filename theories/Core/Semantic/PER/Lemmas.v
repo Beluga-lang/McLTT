@@ -333,6 +333,38 @@ Proof.
   eassumption.
 Qed.
 
+Require Import Coq.Classes.RelationClasses.
+
+#[global]
+  Instance per_elem_PER {i A B R} `(H : per_univ_elem i A B R) : PER R | 10.
+Proof.
+  split.
+  - auto using (per_elem_sym _ _ _ _ _ _ H).
+  - eauto using (per_elem_trans _ _ _ _ _ _ _ H).
+Qed.
+
+
+#[global]
+  Instance per_univ_PER {i R} : PER (fun A B => per_univ_elem i A B R).
+Proof.
+  split.
+  - auto using per_univ_sym.
+  - eauto using per_univ_trans.
+Qed.
+
+
+Goal forall i A B R a b, per_univ_elem i A B R -> R a b.
+Proof.
+  intros.
+  assert (PER R). {
+    Print Instances PER.
+    Typeclasses eauto := debug.
+    Set Typeclasses Debug.
+    typeclasses eauto.
+  }
+  etransitivity.
+Abort.
+
 Lemma per_univ_elem_cumu : forall {i a0 a1 R},
     {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
     {{ DF a0 ≈ a1 ∈ per_univ_elem (S i) ↘ R }}.
