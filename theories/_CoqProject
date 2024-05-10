@@ -5,6 +5,9 @@
 ./Core/Axioms.v
 ./Core/Base.v
 ./Core/Completeness/LogicalRelation.v
+./Core/Completeness/TermStructureCases.v
+./Core/Completeness/UniverseCases.v
+./Core/Completeness/VariableCases.v
 ./Core/Semantic/Domain.v
 ./Core/Semantic/Evaluation.v
 ./Core/Semantic/Evaluation/Definitions.v

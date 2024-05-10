@@ -23,14 +23,18 @@ with domain_nf : Set :=
 where "'env'" := (nat -> domain).
 
 Definition empty_env : env := fun x => d_zero.
+Arguments empty_env _ /.
+
 Definition extend_env (p : env) (d : domain) : env :=
   fun n =>
     match n with
     | 0 => d
     | S n' => p n'
     end.
+Arguments extend_env _ _ _ /.
 
 Definition drop_env (p : env) : env := fun n => p (S n).
+Arguments drop_env _ _ /.
 
 #[global] Declare Custom Entry domain.
 #[global] Bind Scope mcltt_scope with domain.
