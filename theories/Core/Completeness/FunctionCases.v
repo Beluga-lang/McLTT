@@ -34,7 +34,7 @@ Proof.
     simpl.
     intros.
     assert (equiv_pc_p'c' : {{ Dom p ↦ c ≈ p' ↦ c' ∈ env_relΓA }}) by (unmark_all_with uconstr:("temp"%string); subst; mauto).
-    (on_all_hyp: fun H => destruct (H _ _ equiv_pc_p'c')).
+    (on_all_hyp: fun H => destruct (H _ _ equiv_pc_p'c') as [? []]).
     unmark_all_with uconstr:("temp"%string).
     subst.
     destruct_by_head rel_typ.
