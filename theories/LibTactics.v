@@ -1,4 +1,4 @@
-From Coq Require Export Program.Equality Program.Tactics Lia.
+From Coq Require Export Lia Program.Equality Program.Tactics String.
 
 Create HintDb mcltt discriminated.
 
@@ -11,40 +11,31 @@ Tactic Notation "gen" ident(x) ident(y) ident(z) ident(w) := gen x y z; gen w.
 
 (** Marking-based Tactics *)
 
-Definition __mark__ (n : nat) A (a : A) : A := a.
-Arguments __mark__ n {A} a : simpl never.
+Definition __mark__ (s : string) A (a : A) : A := a.
+Arguments __mark__ s {A} a : simpl never.
 
-Ltac mark H :=
-  let t := type of H in
-  fold (__mark__ 0 t) in H.
 Ltac unmark H := unfold __mark__ in H.
-
-Ltac mark_all :=
-  repeat match goal with [H: ?P |- _] =>
-    try (match P with __mark__ _ _ => fail 2 end); mark H
-  end.
 Ltac unmark_all := unfold __mark__ in *.
 
-Ltac on_all_marked_hyp tac :=
+Ltac mark_with H s :=
+  let t := type of H in
+  fold (__mark__ s t) in H.
+Ltac mark_all_with s :=
+  repeat match goal with [H: ?P |- _] =>
+    try (match P with __mark__ _ _ => fail 2 end); mark_with H s
+  end.
+Ltac unmark_all_with s :=
+  repeat match goal with [H: ?P |- _] =>
+    match P with __mark__ ?s' _ => tryif unify s s' then unmark H else fail 1 end
+  end.
+
+Ltac on_all_marked_hyp_with tac s :=
   match goal with
-  | [ H : __mark__ _ ?A |- _ ] => unmark H; tac H; on_all_marked_hyp tac; try mark H
+  | [ H : __mark__ ?s' ?A |- _ ] => unmark H; (tryif unify s s' then tac H else idtac); on_all_marked_hyp_with tac s; try mark_with H s'
   | _ => idtac
   end.
-Tactic Notation "on_all_marked_hyp:" tactic4(tac) := on_all_marked_hyp tac.
 Tactic Notation "on_all_hyp:" tactic4(tac) :=
-  mark_all; (on_all_marked_hyp: tac); unmark_all.
-
-Ltac mark_with H n :=
-  let t := type of H in
-  fold (__mark__ n t) in H.
-Ltac mark_all_with n :=
-  repeat match goal with [H: ?P |- _] =>
-    try (match P with __mark__ _ _ => fail 2 end); mark_with H n
-  end.
-Ltac unmark_all_with n :=
-  repeat match goal with [H: ?P |- _] =>
-    match P with __mark__ ?n' _ => tryif unify n n' then unmark H else fail 2 end
-  end.
+  mark_all_with uconstr:("on_all_hyp"%string); on_all_marked_hyp_with tac uconstr:("on_all_hyp"%string); unmark_all_with uconstr:("on_all_hyp"%string).
 
 (** Simple helper *)
 
@@ -117,7 +108,8 @@ Ltac match_by_head1 head tac :=
   | [ H : ?X _ |- _ ] => unify X head; tac H
   | [ H : ?X |- _ ] => unify X head; tac H
   end.
-Ltac match_by_head head tac := repeat (match_by_head1 head ltac:(fun H => tac H; try mark H)); unmark_all.
+Ltac match_by_head_with head tac s := repeat (match_by_head1 head ltac:(fun H => tac H; try mark_with H s)); unmark_all_with s.
+Ltac match_by_head head tac := match_by_head_with head tac uconstr:("match_by_head"%string).
 
 Ltac inversion_by_head head := match_by_head head ltac:(fun H => inversion H).
 Ltac inversion_clear_by_head head := match_by_head head ltac:(fun H => inversion_clear H).

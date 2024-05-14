@@ -25,24 +25,24 @@ Ltac destruct_rel_by_assumption in_rel H :=
     match goal with
     | H' : {{ Dom ~?c ≈ ~?c' ∈ ?in_rel0 }} |- _ =>
         tryif (unify in_rel0 in_rel)
-        then (destruct (H _ _ H') as []; destruct_all; mark_with H' 1)
+        then (destruct (H _ _ H') as []; destruct_all; mark_with H' uconstr:("destruct_rel_by_assumption"%string))
         else fail
     end;
-  unmark_all_with 1.
+  unmark_all_with uconstr:("destruct_rel_by_assumption"%string).
 Ltac destruct_rel_mod_eval :=
   repeat
     match goal with
     | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_eval _ _ _ _ _ _) |- _ =>
-        destruct_rel_by_assumption in_rel H; mark H
+        destruct_rel_by_assumption in_rel H; mark_with H uconstr:("destruct_rel_mod_eval"%string)
     end;
-  unmark_all.
+  unmark_all_with uconstr:("destruct_rel_mod_eval"%string).
 Ltac destruct_rel_mod_app :=
   repeat
     match goal with
     | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_app _ _ _ _ _) |- _ =>
-        destruct_rel_by_assumption in_rel H; mark H
+        destruct_rel_by_assumption in_rel H; mark_with H uconstr:("destruct_rel_mod_eval"%string)
     end;
-  unmark_all.
+  unmark_all_with uconstr:("destruct_rel_mod_eval"%string).
 
 (** (Some Elements of) PER Lattice *)
 
