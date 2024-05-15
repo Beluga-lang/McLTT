@@ -1,4 +1,5 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
+From Equations Require Import Equations.
 From Mcltt Require Import Axioms Base Evaluation LibTactics PER.Definitions Readback.
 Import Domain_Notations.
 
@@ -148,9 +149,9 @@ Qed.
 #[export]
 Hint Resolve per_ne_trans : mcltt.
 
-Lemma per_univ_elem_right_irrel : forall i i' A B R B' R',
-    per_univ_elem i A B R ->
-    per_univ_elem i' A B' R' ->
+Lemma per_univ_elem_right_irrel : forall i i' R A B R' B',
+    per_univ_elem i R A B ->
+    per_univ_elem i' R' A B' ->
     R = R'.
 Proof with mautosolve.
   intros * Horig.
@@ -181,9 +182,9 @@ Ltac per_univ_elem_right_irrel_rewrite1 :=
 #[local]
 Ltac per_univ_elem_right_irrel_rewrite := repeat per_univ_elem_right_irrel_rewrite1.  
 
-Lemma per_univ_elem_sym : forall i A B R,
-    per_univ_elem i A B R ->
-    per_univ_elem i B A R /\
+Lemma per_univ_elem_sym : forall i R A B,
+    per_univ_elem i R A B ->
+    per_univ_elem i R B A /\
       (forall a b,
           {{ Dom a ≈ b ∈ R }} ->
           {{ Dom b ≈ a ∈ R }}).
@@ -216,16 +217,16 @@ Proof with (try econstructor; mautosolve).
   - split...
 Qed.
 
-Corollary per_univ_sym : forall i A B R,
-    per_univ_elem i A B R ->
-    per_univ_elem i B A R.
+Corollary per_univ_sym : forall i R A B,
+    per_univ_elem i R A B ->
+    per_univ_elem i R B A.
 Proof.
   intros * ?%per_univ_elem_sym.
   firstorder.
 Qed.
 
-Corollary per_elem_sym : forall i A B a b R,
-    per_univ_elem i A B R ->
+Corollary per_elem_sym : forall i R A B a b,
+    per_univ_elem i R A B ->
     R a b ->
     R b a.
 Proof.
@@ -233,18 +234,18 @@ Proof.
   firstorder.
 Qed.
 
-Corollary per_univ_elem_left_irrel : forall i i' A B R A' R',
-    per_univ_elem i A B R ->
-    per_univ_elem i' A' B R' ->
+Corollary per_univ_elem_left_irrel : forall i i' R A B R' A',
+    per_univ_elem i R A B ->
+    per_univ_elem i' R' A' B ->
     R = R'.
 Proof.
   intros * ?%per_univ_sym ?%per_univ_sym.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
-Corollary per_univ_elem_cross_irrel : forall i i' A B R B' R',
-    per_univ_elem i A B R ->
-    per_univ_elem i' B' A R' ->
+Corollary per_univ_elem_cross_irrel : forall i i' R A B R' B',
+    per_univ_elem i R A B ->
+    per_univ_elem i' R' B' A ->
     R = R'.
 Proof.
   intros * ? ?%per_univ_sym.
@@ -274,11 +275,11 @@ Ltac per_univ_elem_irrel_rewrite :=
   do_per_univ_elem_irrel_rewrite;
   clear_dups.
 
-Lemma per_univ_elem_trans : forall i A1 A2 R,
-    per_univ_elem i A1 A2 R ->
+Lemma per_univ_elem_trans : forall i R A1 A2,
+    per_univ_elem i R A1 A2 ->
     (forall j A3,
-        per_univ_elem j A2 A3 R ->
-        per_univ_elem i A1 A3 R) /\
+        per_univ_elem j R A2 A3 ->
+        per_univ_elem i R A1 A3) /\
       (forall a1 a2 a3,
           R a1 a2 ->
           R a2 a3 ->
@@ -311,17 +312,17 @@ Proof with ((econstructor + per_univ_elem_econstructor); mautosolve).
   - idtac...
 Qed.
 
-Corollary per_univ_trans : forall i j A1 A2 A3 R,
-    per_univ_elem i A1 A2 R ->
-    per_univ_elem j A2 A3 R ->
-    per_univ_elem i A1 A3 R.
+Corollary per_univ_trans : forall i j R A1 A2 A3,
+    per_univ_elem i R A1 A2 ->
+    per_univ_elem j R A2 A3 ->
+    per_univ_elem i R A1 A3.
 Proof.
   intros * ?%per_univ_elem_trans.
   firstorder.
 Qed.
 
-Corollary per_elem_trans : forall i A1 A2 a1 a2 a3 R,
-    per_univ_elem i A1 A2 R ->
+Corollary per_elem_trans : forall i R A1 A2 a1 a2 a3,
+    per_univ_elem i R A1 A2 ->
     R a1 a2 ->
     R a2 a3 ->
     R a1 a3.
@@ -330,7 +331,42 @@ Proof.
   firstorder.
 Qed.
 
-Lemma per_univ_elem_cumu : forall {i a0 a1 R},
+
+#[export]
+  Instance per_elem_PER {i R A B} `(H : per_univ_elem i R A B) : PER R.
+Proof.
+  split.
+  - auto using (per_elem_sym _ _ _ _ _ _ H).
+  - eauto using (per_elem_trans _ _ _ _ _ _ _ H).
+Qed.
+
+
+#[export]
+  Instance per_univ_PER {i R} : PER (per_univ_elem i R).
+Proof.
+  split.
+  - auto using per_univ_sym.
+  - eauto using per_univ_trans.
+Qed.
+
+(* This lemma gets rid of the unnecessary PER premise. *)
+Lemma per_univ_elem_core_pi' :
+  forall i A p B A' p' B' elem_rel
+    (in_rel : relation domain)
+    (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain)
+    (equiv_a_a' : {{ DF A ≈ A' ∈ per_univ_elem i ↘ in_rel}}),
+    (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
+        rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+    (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
+    {{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }}.
+Proof.
+  intros.
+  per_univ_elem_econstructor; eauto.
+  typeclasses eauto.
+Qed.
+
+
+Lemma per_univ_elem_cumu : forall i a0 a1 R,
     {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
     {{ DF a0 ≈ a1 ∈ per_univ_elem (S i) ↘ R }}.
 Proof with solve [eauto].
@@ -498,4 +534,22 @@ Corollary per_env_trans : forall Γ1 Γ2 R p1 p2 p3,
 Proof.
   intros * ?% per_ctx_env_trans.
   firstorder.
+Qed.
+
+
+#[export]
+  Instance per_ctx_PER {R} : PER (per_ctx_env R).
+Proof.
+  split.
+  - auto using per_ctx_sym.
+  - eauto using per_ctx_trans.
+Qed.
+
+
+#[export]
+  Instance per_env_PER {R Γ Δ} (H : per_ctx_env R Γ Δ) : PER R.
+Proof.
+  split.
+  - auto using (per_env_sym _ _ _ _ _ H).
+  - eauto using (per_env_trans _ _ _ _ _ _ H).
 Qed.

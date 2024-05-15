@@ -153,3 +153,9 @@ Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) 
   eauto pow using use1, use2, use3, use4 with mcltt core.
 
 Ltac mautosolve := unshelve solve [mauto]; solve [constructor].
+
+
+(* Improve type class resolution *)
+
+#[export]
+  Hint Extern 1 => eassumption : typeclass_instances.
