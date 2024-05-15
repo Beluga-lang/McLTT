@@ -200,8 +200,8 @@ Section Per_univ_elem_ind_def.
       per_univ_elem_core_strong_ind i _ (motive i)
         (fun _ _ _ j_lt_i eq HE => case_U i j_lt_i eq HE (fun A B R' H' => per_univ_elem_ind' _ R' A B _))
         (fun _ => case_N i)
-        (fun _ _ _ _ _ _ _ out_rel _ HA IHA per HT HE => case_Pi i out_rel _ IHA per _ HE)
-        (@case_ne i)
+        (fun _ _ _ _ _ _ _ out_rel _ _ IHA per _ => case_Pi i out_rel _ IHA per _)
+        (fun _ _ _ _ _ => case_ne i)
         R a b H.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
