@@ -157,5 +157,5 @@ Ltac mautosolve := unshelve solve [mauto]; solve [constructor].
 
 (* Improve type class resolution *)
 
-#[global]
+#[export]
   Hint Extern 1 => eassumption : typeclass_instances.
