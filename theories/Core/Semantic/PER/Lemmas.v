@@ -332,7 +332,7 @@ Proof.
 Qed.
 
 
-#[global]
+#[export]
   Instance per_elem_PER {i R A B} `(H : per_univ_elem i R A B) : PER R.
 Proof.
   split.
@@ -341,7 +341,7 @@ Proof.
 Qed.
 
 
-#[global]
+#[export]
   Instance per_univ_PER {i R} : PER (per_univ_elem i R).
 Proof.
   split.
@@ -537,7 +537,7 @@ Proof.
 Qed.
 
 
-#[global]
+#[export]
   Instance per_ctx_PER {R} : PER (per_ctx_env R).
 Proof.
   split.
@@ -546,7 +546,7 @@ Proof.
 Qed.
 
 
-#[global]
+#[export]
   Instance per_env_PER {R Γ Δ} (H : per_ctx_env R Γ Δ) : PER R.
 Proof.
   split.
