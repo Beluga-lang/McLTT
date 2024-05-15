@@ -149,53 +149,82 @@ Qed.
 #[export]
 Hint Resolve per_ne_trans : mcltt.
 
-Lemma per_univ_elem_right_irrel : forall i i' R A B R' B',
-    per_univ_elem i R A B ->
-    per_univ_elem i' R' A B' ->
-    R = R'.
+Lemma per_univ_elem_respect_iff : forall i R a a' R',
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+    (forall m m', {{ Dom m ≈ m' ∈ R }} <-> {{ Dom m ≈ m' ∈ R' }}) ->
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R' }}.
 Proof with mautosolve.
+  simpl.
+  intros * Horig. gen R'.
+  induction Horig using per_univ_elem_ind; per_univ_elem_econstructor; mauto;
+    intros;
+    intuition.
+  destruct_rel_mod_eval.
+  econstructor...
+Qed.
+
+#[export]
+Hint Resolve per_univ_elem_respect_iff : mcltt.
+
+Lemma per_univ_elem_right_irrel : forall i i' R a b R' b',
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ DF a ≈ b' ∈ per_univ_elem i' ↘ R' }} ->
+    (forall m m', {{ Dom m ≈ m' ∈ R }} <-> {{ Dom m ≈ m' ∈ R' }}).
+Proof with mautosolve.
+  simpl.
   intros * Horig.
-  remember A as A' in |- *.
-  gen A' B' R'.
+  remember a as a' in |- *.
+  gen a' b' R'.
   induction Horig using per_univ_elem_ind; intros * Heq Hright;
     subst; invert_per_univ_elem Hright; unfold per_univ;
-    trivial.
-  specialize (IHHorig _ _ _ eq_refl equiv_a_a').
-  subst.
-  extensionality f.
-  extensionality f'.
-  (on_all_hyp: fun H => rewrite H).
-  extensionality c.
-  extensionality c'.
-  extensionality equiv_c_c'.
-  destruct_rel_mod_eval.
-  functional_eval_rewrite_clear.
-  f_equal...
+    intros;
+    (on_all_hyp: fun H => rewrite H; let n := numgoals in guard n <= 1);
+    firstorder;
+    specialize (IHHorig _ _ _ eq_refl equiv_a_a').
+  - rename equiv_c_c' into equiv0_c_c'.
+    assert (equiv_c_c' : in_rel c c') by firstorder.
+    destruct_rel_mod_eval.
+    destruct_rel_mod_app.
+    functional_eval_rewrite_clear.
+    econstructor; eauto.
+    intuition.
+  - assert (equiv0_c_c' : in_rel0 c c') by firstorder.
+    destruct_rel_mod_eval.
+    destruct_rel_mod_app.
+    functional_eval_rewrite_clear.
+    econstructor; eauto.
+    intuition.
 Qed.
 
 #[local]
-Ltac per_univ_elem_right_irrel_rewrite1 :=
+Ltac per_univ_elem_right_irrel_assert1 :=
   match goal with
-  | H1 : {{ DF ~?A ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }}, H2 : {{ DF ~?A ≈ ~?B' ∈ per_univ_elem ?i ↘ ?R2 }} |- _ =>
-      clean replace R2 with R1 by first [solve [eauto using per_univ_elem_right_irrel] | fail 3]
+  | H1 : {{ DF ~?a ≈ ~?b ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ~?a ≈ ~?b' ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+      assert_fails (unify R1 R2);
+      assert (forall m m', R1 m m' <-> R2 m m') by (eapply per_univ_elem_right_irrel; [apply H1 | apply H2]);
+      let H := fresh "H" in
+      assert (forall m m', R2 m m' <-> R1 m m') by (eapply per_univ_elem_right_irrel; [apply H2 | apply H1]);
+      fail_if_dup;
+      clear H
   end.
 #[local]
-Ltac per_univ_elem_right_irrel_rewrite := repeat per_univ_elem_right_irrel_rewrite1.  
+Ltac per_univ_elem_right_irrel_assert := repeat per_univ_elem_right_irrel_assert1.
 
-Lemma per_univ_elem_sym : forall i R A B,
-    per_univ_elem i R A B ->
-    per_univ_elem i R B A /\
-      (forall a b,
-          {{ Dom a ≈ b ∈ R }} ->
-          {{ Dom b ≈ a ∈ R }}).
-Proof with (try econstructor; mautosolve).
+Lemma per_univ_elem_sym : forall i R a b,
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ DF b ≈ a ∈ per_univ_elem i ↘ R }} /\
+      (forall m m',
+          {{ Dom m ≈ m' ∈ R }} ->
+          {{ Dom m' ≈ m ∈ R }}).
+Proof with mautosolve.
+  simpl.
   induction 1 using per_univ_elem_ind; subst.
   - split.
-    + apply per_univ_elem_core_univ'...
-    + intros * [? []%H1]...
-  - split...
+    + apply per_univ_elem_core_univ'; firstorder.
+    + intros. rewrite H1 in *. destruct H0. eexists. eapply proj1, H2...
+  - split; [econstructor | intros; rewrite H in *]...
   - destruct_conjs.
-    (on_all_hyp: fun H => setoid_rewrite H).
     split.
     + per_univ_elem_econstructor; eauto.
       intros.
@@ -203,76 +232,95 @@ Proof with (try econstructor; mautosolve).
       assert (in_rel c c) by (etransitivity; eassumption).
       destruct_rel_mod_eval.
       functional_eval_rewrite_clear.
-      per_univ_elem_right_irrel_rewrite...
-    + enough (forall a b : domain,
-                 (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') a c b c') ->
-                 (forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app (out_rel c c' equiv_c_c') b c a c')) by eauto.
+      econstructor; mauto.
+      eapply per_univ_elem_respect_iff; mauto.
+      intros.
+      per_univ_elem_right_irrel_assert.
+      intuition.
+    + (on_all_hyp: fun H => setoid_rewrite H).
       intros.
       assert (in_rel c' c) by eauto.
       assert (in_rel c c) by (etransitivity; eassumption).
       destruct_rel_mod_eval.
       destruct_rel_mod_app.
       functional_eval_rewrite_clear.
-      per_univ_elem_right_irrel_rewrite...
-  - split...
+      econstructor; mauto.
+      per_univ_elem_right_irrel_assert.
+      intuition.
+  - split; [econstructor | intros; rewrite H0 in *]...
 Qed.
 
-Corollary per_univ_sym : forall i R A B,
-    per_univ_elem i R A B ->
-    per_univ_elem i R B A.
+Corollary per_univ_sym : forall i R a b,
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ DF b ≈ a ∈ per_univ_elem i ↘ R }}.
 Proof.
   intros * ?%per_univ_elem_sym.
   firstorder.
 Qed.
 
-Corollary per_elem_sym : forall i R A B a b,
-    per_univ_elem i R A B ->
-    R a b ->
-    R b a.
+Corollary per_elem_sym : forall i R a b m m',
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ Dom m ≈ m' ∈ R }} ->
+    {{ Dom m' ≈ m ∈ R }}.
 Proof.
   intros * ?%per_univ_elem_sym.
   firstorder.
 Qed.
 
-Corollary per_univ_elem_left_irrel : forall i i' R A B R' A',
-    per_univ_elem i R A B ->
-    per_univ_elem i' R' A' B ->
-    R = R'.
+Corollary per_univ_elem_left_irrel : forall i i' R a b R' a',
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ DF a' ≈ b ∈ per_univ_elem i' ↘ R' }} ->
+    (forall m m', {{ Dom m ≈ m' ∈ R }} <-> {{ Dom m ≈ m' ∈ R' }}).
 Proof.
   intros * ?%per_univ_sym ?%per_univ_sym.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
-Corollary per_univ_elem_cross_irrel : forall i i' R A B R' B',
-    per_univ_elem i R A B ->
-    per_univ_elem i' R' B' A ->
-    R = R'.
+Corollary per_univ_elem_cross_irrel : forall i i' R a b R' b',
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ DF b' ≈ a ∈ per_univ_elem i' ↘ R' }} ->
+    (forall m m', {{ Dom m ≈ m' ∈ R }} <-> {{ Dom m ≈ m' ∈ R' }}).
 Proof.
   intros * ? ?%per_univ_sym.
   eauto using per_univ_elem_right_irrel.
 Qed.
 
-Ltac do_per_univ_elem_irrel_rewrite1 :=
-  let tactic_error o1 o2 := fail 3 "per_univ_elem_irrel equality between" o1 "and" o2 "cannot be solved by eauto" in
+Ltac do_per_univ_elem_irrel_assert1 :=
+  let tactic_error o1 o2 := fail 2 "per_univ_elem_irrel biconditional between" o1 "and" o2 "cannot be solved" in
   match goal with
-    | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-        H2 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
-        clean replace R2 with R1 by first [solve [eauto using per_univ_elem_right_irrel] | tactic_error R2 R1]
-    | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
-        H2 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
-        clean replace R2 with R1 by first [solve [eauto using per_univ_elem_left_irrel] | tactic_error R2 R1]
-    | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-        H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
-        (* Order matters less here as H1 and H2 cannot be exchanged *)
-        clean replace R2 with R1 by first [solve [symmetry; eauto using per_univ_elem_cross_irrel] | tactic_error R2 R1]
-    end.
+  | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+      assert_fails (unify R1 R2);
+      assert (forall m m', R1 m m' <-> R2 m m') by (eapply per_univ_elem_right_irrel; [apply H1 | apply H2]) || tactic_error R1 R2;
+      let H := fresh "H" in
+      assert (forall m m', R2 m m' <-> R1 m m') by (eapply per_univ_elem_right_irrel; [apply H2 | apply H1]) || tactic_error R2 R1;
+      fail_if_dup;
+      clear H
+  | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+      assert_fails (unify R1 R2);
+      assert (forall m m', R1 m m' <-> R2 m m') by (eapply per_univ_elem_left_irrel; [apply H1 | apply H2]) || tactic_error R1 R2;
+      let H := fresh "H" in
+      assert (forall m m', R2 m m' <-> R1 m m') by (eapply per_univ_elem_left_irrel; [apply H2 | apply H1]) || tactic_error R2 R1;
+      fail_if_dup;
+      clear H
+  | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+      (* Order matters less here as H1 and H2 cannot be exchanged *)
+      assert_fails (unify R1 R2);
+      assert (forall m m', R1 m m' <-> R2 m m') by (eapply per_univ_elem_cross_irrel; [apply H1 | apply H2]) || tactic_error R1 R2;
+      let H := fresh "H" in
+      assert (forall m m', R2 m m' <-> R1 m m') by (intros; intuition) || tactic_error R2 R1;
+      fail_if_dup;
+      clear H
+  end.
 
-Ltac do_per_univ_elem_irrel_rewrite :=
-  repeat do_per_univ_elem_irrel_rewrite1.
+Ltac do_per_univ_elem_irrel_assert :=
+  repeat do_per_univ_elem_irrel_assert1.
 
-Ltac per_univ_elem_irrel_rewrite :=
+Ltac handle_per_univ_elem_irrel :=
   functional_eval_rewrite_clear;
-  do_per_univ_elem_irrel_rewrite;
+  do_per_univ_elem_irrel_assert;
   clear_dups.
 
 Lemma per_univ_elem_trans : forall i R A1 A2,
@@ -284,32 +332,48 @@ Lemma per_univ_elem_trans : forall i R A1 A2,
           R a1 a2 ->
           R a2 a3 ->
           R a1 a3).
-Proof with ((econstructor + per_univ_elem_econstructor); mautosolve).
+Proof with (try (econstructor + per_univ_elem_econstructor); mautosolve).
   induction 1 using per_univ_elem_ind;
     [> split;
      [ intros * HT2; invert_per_univ_elem HT2; clear HT2
-     | intros * HTR1 HTR2 ] ..]; mauto.
-  - destruct HTR1, HTR2.
-    per_univ_elem_irrel_rewrite.
-    specialize (H1 _ _ _ H2) as [].
-    specialize (H0 _ _ H3)...
-  - idtac...
-  - per_univ_elem_irrel_rewrite.
-    rename in_rel0 into in_rel.
-    destruct IHper_univ_elem as [].
+     | intros * HTR1 HTR2; (on_all_hyp: fun H => apply H; apply H in HTR1, HTR2) ] ..]; mauto.
+  - (* univ case *)
+    destruct HTR1, HTR2.
+    handle_per_univ_elem_irrel.
+    specialize (H2 _ _ _ H3) as [].
+    (on_all_hyp: fun H => eapply per_univ_elem_respect_iff in H; intuition)...
+  - (* nat case *)
+    idtac...
+  - (* pi case *)
+    destruct_conjs.
     per_univ_elem_econstructor; eauto.
+    + (on_all_hyp: fun H => eapply per_univ_elem_respect_iff in H; intuition; let n := numgoals in guard n <= 1).
+      handle_per_univ_elem_irrel.
+      eapply per_univ_elem_respect_iff; mauto.
+      intuition.
+    + intros.
+      handle_per_univ_elem_irrel.
+      assert (in_rel c c') by firstorder.
+      assert (in_rel c c) by intuition.
+      assert (in_rel0 c c) by intuition.
+      destruct_rel_mod_eval.
+      functional_eval_rewrite_clear.
+      handle_per_univ_elem_irrel.
+      econstructor; eauto.
+      eapply per_univ_elem_respect_iff; mauto.
+      intuition.
+  - (* fun case *)
+    apply H2.
+    rewrite -> H2 in HTR1, HTR2.
     intros.
     assert (in_rel c c) by (etransitivity; [ | symmetry]; eassumption).
     destruct_rel_mod_eval.
-    per_univ_elem_irrel_rewrite...
-  - destruct IHper_univ_elem as [].
-    rewrite H2 in *.
-    intros.
-    assert (in_rel c' c') by (etransitivity; [symmetry | ]; eassumption).
-    destruct_rel_mod_eval.
     destruct_rel_mod_app.
-    per_univ_elem_irrel_rewrite...
-  - idtac...
+    handle_per_univ_elem_irrel.
+    econstructor; eauto.
+    intuition.
+  - (* neut case *)
+    idtac...
 Qed.
 
 Corollary per_univ_trans : forall i j R A1 A2 A3,
@@ -333,16 +397,16 @@ Qed.
 
 
 #[export]
-  Instance per_elem_PER {i R A B} `(H : per_univ_elem i R A B) : PER R.
+Instance per_elem_PER {i R A B} `(H : per_univ_elem i R A B) : PER R.
 Proof.
   split.
-  - auto using (per_elem_sym _ _ _ _ _ _ H).
+  - eauto using (per_elem_sym _ _ _ _ _ _ H).
   - eauto using (per_elem_trans _ _ _ _ _ _ _ H).
 Qed.
 
 
 #[export]
-  Instance per_univ_PER {i R} : PER (per_univ_elem i R).
+Instance per_univ_PER {i R} : PER (per_univ_elem i R).
 Proof.
   split.
   - auto using per_univ_sym.
@@ -357,14 +421,13 @@ Lemma per_univ_elem_core_pi' :
     (equiv_a_a' : {{ DF A ≈ A' ∈ per_univ_elem i ↘ in_rel}}),
     (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
         rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
-    (forall f f', elem_rel f f' = forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
+    (forall f f', elem_rel f f' <-> forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
     {{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }}.
 Proof.
   intros.
   per_univ_elem_econstructor; eauto.
   typeclasses eauto.
 Qed.
-
 
 Lemma per_univ_elem_cumu : forall i a0 a1 R,
     {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
@@ -373,7 +436,7 @@ Proof with solve [eauto].
   simpl.
   induction 1 using per_univ_elem_ind; subst.
   - eapply per_univ_elem_core_univ'...
-  - per_univ_elem_econstructor.
+  - per_univ_elem_econstructor...
   - per_univ_elem_econstructor; mauto.
     intros.
     destruct_rel_mod_eval.
@@ -384,7 +447,7 @@ Qed.
 Lemma per_ctx_env_right_irrel : forall Γ Δ Δ' R R',
     {{ DF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
     {{ DF Γ ≈ Δ' ∈ per_ctx_env ↘ R' }} ->
-    R = R'.
+    R <-> R'.
 Proof.
   intros * Horig; gen Δ' R'.
   induction Horig; intros * Hright;
