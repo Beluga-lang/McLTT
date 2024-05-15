@@ -28,4 +28,5 @@
 ./Frontend/Elaborator.v
 ./Frontend/Parser.v
 ./Frontend/ParserExtraction.v
+./Extraction/Evaluation.v
 ./LibTactics.v
