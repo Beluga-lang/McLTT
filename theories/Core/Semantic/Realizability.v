@@ -24,17 +24,22 @@ Lemma realize_per_univ_elem_gen : forall {i a a' R},
 Proof with (solve [try (try (eexists; split); econstructor); mauto]).
   intros * H. simpl in H.
   induction H using per_univ_elem_ind; repeat split; intros.
-  - subst...
-  - eexists.
+  - subst; repeat econstructor.
+  - subst.
+    (on_all_hyp: fun H => rewrite -> H).
+    eexists.
     per_univ_elem_econstructor...
-  - destruct_by_head per_univ.
-    specialize (H1 _ _ _ H2).
+  - subst.
+    match_by_head1 elem_rel ltac:(fun H => on_all_hyp: fun H' => setoid_rewrite H' in H).
+    destruct_by_head per_univ.
+    specialize (H2 _ _ _ H0).
     destruct_conjs.
     intro s.
-    specialize (H1 s) as [? []]...
+    specialize (H2 s) as [? []]...
   - idtac...
-  - idtac...
-  - eauto using per_nat_then_per_top.
+  - (on_all_hyp: fun H => rewrite H)...
+  - match_by_head1 elem_rel ltac:(fun H => on_all_hyp: fun H' => setoid_rewrite H' in H).
+    eauto using per_nat_then_per_top.
   - destruct IHper_univ_elem as [? []].
     intro s.
     assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
@@ -50,19 +55,21 @@ Proof with (solve [try (try (eexists; split); econstructor); mauto]).
     intro s.
     specialize (H3 s) as [? []].
     specialize (H5 _ _ equiv_c0_c0' s) as [? []]...
-  - (on_all_hyp: fun H => rewrite H in *; clear H).
+  - match_by_head1 elem_rel ltac:(fun H => on_all_hyp: fun H' => setoid_rewrite H' in H).
     destruct_conjs.
     intro s.
     assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
     destruct_rel_mod_eval.
     destruct_rel_mod_app.
     assert {{ Dom ⇓ a fa ≈ ⇓ a' f'a' ∈ per_top }} by eauto.
-    specialize (H2 s) as [? []].
-    specialize (H16 (S s)) as [? []]...
+    specialize (H4 s) as [? []].
+    specialize (H17 (S s)) as [? []]...
   - intro s.
     (on_all_hyp: fun H => destruct (H s) as [? []])...
-  - idtac...
-  - intro s.
+  - (on_all_hyp: fun H => rewrite H in *; clear H).
+    idtac...
+  - match_by_head1 elem_rel ltac:(fun H => on_all_hyp: fun H' => setoid_rewrite H' in H).
+    intro s.
     (on_all_hyp: fun H => specialize (H s) as [? []]).
     (on_all_hyp: fun H => inversion_clear H; let n := numgoals in guard n <= 1).
     (on_all_hyp: fun H => specialize (H s) as [? []])...
