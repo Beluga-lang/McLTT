@@ -94,7 +94,7 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; eauto).
   - clear eval_sub_order_sound; induction 1...
 Qed.
 
-#[local]
+#[export]
   Hint Resolve eval_exp_order_sound eval_natrec_order_sound eval_app_order_sound eval_sub_order_sound : mcltt.
 
 
