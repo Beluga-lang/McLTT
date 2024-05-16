@@ -94,10 +94,10 @@ Ltac clear_dups :=
 
 Ltac progressive_invert H :=
   let ng := numgoals in
-  inversion H; clear H;
+  (* dependent destruction is more general than inversion *)
+  dependent destruction H;
   let ng' := numgoals in
-  guard ng = ng';
-  subst.
+  guard ng = ng'.
 
 Ltac clean_replace_by exp0 exp1 tac :=
   tryif unify exp0 exp1
