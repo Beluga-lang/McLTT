@@ -1,4 +1,5 @@
 From Mcltt Require Export Syntax.
+From Equations Require Import Equations.
 
 Reserved Notation "'env'".
 
@@ -21,6 +22,8 @@ with domain_ne : Set :=
 with domain_nf : Set :=
 | d_dom : domain -> domain -> domain_nf
 where "'env'" := (nat -> domain).
+
+Derive NoConfusion for domain domain_ne domain_nf.
 
 Definition empty_env : env := fun x => d_zero.
 Arguments empty_env _ /.

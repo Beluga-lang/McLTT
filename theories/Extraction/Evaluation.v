@@ -5,7 +5,6 @@ Import Domain_Notations.
 
 Generalizable All Variables.
 
-
 Inductive eval_exp_order : exp -> env -> Prop :=
 | eeo_typ :
   `( eval_exp_order {{{ Type@i }}} p )
@@ -112,7 +111,6 @@ Qed.
   Ltac impl_obl_tac :=
   repeat impl_obl_tac1; try econstructor; eauto.
 
-Derive NoConfusion for exp domain.
 Derive Signature for eval_exp_order eval_natrec_order eval_app_order eval_sub_order.
 
 #[tactic="impl_obl_tac"]
@@ -213,13 +211,6 @@ Extraction Inline eval_exp_impl_functional
       edes_rewrite Hind
   | Hind : context[exists _, ?f _ _ _ _ _ _ = _] |- exists _, (let (_, _) := ?f _ _ _ _ _ _ in _) = _ =>
       edes_rewrite Hind
-  end.
-
-#[local]
-  Ltac find_rewrite :=
-  match goal with
-  | H : ?t = _ |- context[?t] =>
-      rewrite H
   end.
 
 (* The definitions of *_impl already come with soundness proofs, so we only need to prove completeness *)

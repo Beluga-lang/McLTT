@@ -1,4 +1,5 @@
 From Coq Require Import List String.
+From Equations Require Import Equations.
 
 From Mcltt Require Import Base.
 
@@ -40,6 +41,8 @@ with sub : Set :=
 
 Notation ctx := (list exp).
 Notation typ := exp.
+
+Derive NoConfusion for exp sub.
 
 Fixpoint nat_to_exp n : exp :=
   match n with
