@@ -181,3 +181,8 @@ Next Obligation. impl_obl_tac. Defined.
 Next Obligation. impl_obl_tac. Defined.
 Next Obligation. impl_obl_tac. Defined.
 Next Obligation. impl_obl_tac. Defined.
+
+Extraction Inline eval_exp_impl_functional
+  eval_natrec_impl_functional
+  eval_app_impl_functional
+  eval_sub_impl_functional.
