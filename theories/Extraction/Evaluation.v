@@ -95,20 +95,27 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; eauto).
   - clear eval_sub_order_sound; induction 1...
 Qed.
 
+Ltac progressive_dd H :=
+  let ng := numgoals in
+  dependent destruction H;
+  let ng' := numgoals in
+  guard ng = ng'.
+
 #[local]
   Ltac impl_obl_tac1 :=
   match goal with
-  | H : eval_exp_order _ _ |- _ => progressive_invert H
-  | H : eval_natrec_order _ _ _ _ _ |- _ => progressive_invert H
-  | H : eval_app_order _ _ |- _ => progressive_invert H
-  | H : eval_sub_order _ _ |- _ => progressive_invert H
+  | H : eval_exp_order _ _ |- _ => progressive_dd H
+  | H : eval_natrec_order _ _ _ _ _ |- _ => progressive_dd H
+  | H : eval_app_order _ _ |- _ => progressive_dd H
+  | H : eval_sub_order _ _ |- _ => progressive_dd H
   end.
 
 #[local]
   Ltac impl_obl_tac :=
-  repeat impl_obl_tac1; firstorder (econstructor; eauto).
+  repeat impl_obl_tac1; try econstructor; eauto.
 
 Derive NoConfusion for exp domain.
+Derive Signature for eval_exp_order.
 
 #[tactic="impl_obl_tac"]
   Equations eval_exp_impl m p (H : eval_exp_order m p) : { d | eval_exp m p d } by struct H :=
@@ -169,3 +176,14 @@ Derive NoConfusion for exp domain.
     let (p', Hp') := eval_sub_impl τ p _ in
     let (p'', Hp'') := eval_sub_impl σ p' _ in
     exist _ p'' _.
+
+(* I don't understand why these obligations must be defined separately *)
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
+Next Obligation. impl_obl_tac. Defined.
