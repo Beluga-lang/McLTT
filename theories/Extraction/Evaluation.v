@@ -1,5 +1,5 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation.
+From Mcltt.Core Require Import Evaluation ExpNoConfusion.
 From Equations Require Import Equations.
 Import Domain_Notations.
 

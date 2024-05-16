@@ -22,6 +22,7 @@
 ./Core/Syntactic/CtxEq.v
 ./Core/Syntactic/Presup.v
 ./Core/Syntactic/Syntax.v
+./Core/Syntactic/ExpNoConfusion.v
 ./Core/Syntactic/System.v
 ./Core/Syntactic/System/Definitions.v
 ./Core/Syntactic/System/Lemmas.v
