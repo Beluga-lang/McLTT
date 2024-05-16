@@ -39,7 +39,7 @@ Inductive eval_exp_order : exp -> env -> Prop :=
 with eval_natrec_order : exp -> exp -> exp -> domain -> env -> Prop :=
 | eno_zero :
   `( eval_exp_order MZ p ->
-     eval_natrec_order A MZ MS zero p )
+     eval_natrec_order A MZ MS d{{{ zero }}} p )
 | eno_succ :
   `( eval_natrec_order A MZ MS b p ->
      (forall r, {{ rec b ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} -> eval_exp_order {{{ MS }}} d{{{ p ↦ b ↦ r }}}) ->
@@ -71,12 +71,25 @@ with eval_sub_order : sub -> env -> Prop :=
      (forall p', {{ ⟦ τ ⟧s p ↘ p' }} -> eval_sub_order σ p') ->
      eval_sub_order {{{ σ ∘ τ }}} p ).
 
-#[export]
+#[local]
   Hint Constructors eval_exp_order eval_natrec_order eval_app_order eval_sub_order : mcltt.
 
 
 Lemma eval_exp_order_sound : forall m p a,
     {{ ⟦ m ⟧ p ↘ a }} ->
-    eval_exp_order m p.
-Proof.
-  induction 1; econstructor; mauto.
+    eval_exp_order m p
+with eval_natrec_order_sound : forall A MZ MS m p r,
+    {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} ->
+    eval_natrec_order A MZ MS m p
+with eval_app_order_sound: forall m n r,
+  {{ $| m & n |↘ r }} ->
+  eval_app_order m n
+with eval_sub_order_sound: forall σ p p',
+  {{ ⟦ σ ⟧s p ↘ p' }} ->
+  eval_sub_order σ p.
+Proof with (econstructor; intros; functional_eval_rewrite_clear; eauto).
+  - clear eval_exp_order_sound; induction 1...
+  - clear eval_natrec_order_sound; induction 1...
+  - clear eval_app_order_sound; induction 1...
+  - clear eval_sub_order_sound; induction 1...
+Qed.
