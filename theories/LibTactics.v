@@ -159,3 +159,6 @@ Ltac mautosolve := unshelve solve [mauto]; solve [constructor].
 
 #[export]
   Hint Extern 1 => eassumption : typeclass_instances.
+
+(* intuition tactic default setting *)
+Ltac Tauto.intuition_solver ::= auto with mcltt core solve_subterm.
