@@ -1,5 +1,6 @@
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Evaluation.
+From Equations Require Import Equations.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -93,3 +94,53 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; eauto).
   - clear eval_app_order_sound; induction 1...
   - clear eval_sub_order_sound; induction 1...
 Qed.
+
+#[local]
+  Ltac impl_obl_tac1 :=
+  match goal with
+  | H : eval_exp_order _ _ |- _ => progressive_invert H
+  | H : eval_natrec_order _ _ _ _ _ |- _ => progressive_invert H
+  end.
+
+#[local]
+  Ltac impl_obl_tac :=
+  repeat impl_obl_tac1; firstorder eauto.
+
+Derive NoConfusion for exp domain.
+
+#[tactic="impl_obl_tac"]
+  Equations? eval_exp_impl m p (H : eval_exp_order m p) : { d | eval_exp m p d } by struct H :=
+| {{{ Type@i }}}, p, H => exist _ d{{{ 𝕌@i }}} (eval_exp_typ _ _)
+| {{{ #x }}}, p, H => exist _ (p x) (eval_exp_var _ _)
+| {{{ ℕ }}}, p, H => exist _ d{{{ ℕ }}} (eval_exp_nat _)
+| {{{ zero }}}, p, H => exist _ d{{{ zero }}} (eval_exp_zero _)
+| {{{ succ m }}}, p, H =>
+    let (r , Hr) := eval_exp_impl m p _ in
+    exist _ d{{{ succ r }}} (eval_exp_succ _ _ _ Hr)
+| {{{ rec M return A | zero -> MZ | succ -> MS end }}}, p, H =>
+    let (m , Hm) := eval_exp_impl M p _ in
+    let (r, Hr) := eval_natrec_impl A MZ MS m p _ in
+    exist _ r (eval_exp_natrec _ _ _ _ _ _ _ Hm Hr)
+| {{{ Π A B }}}, p, H =>
+    let (r , Hr) := eval_exp_impl A p _ in
+    exist _ d{{{ Π r p B }}} (eval_exp_pi _ _ _ _ _)
+| {{{ λ A M }}}, p, H => exist _ d{{{ λ p M }}} (eval_exp_fn _ _ _)
+| {{{ M N }}}, p, H =>
+    let (m , Hm) := eval_exp_impl M p _ in
+    let (n , Hn) := eval_exp_impl N p _ in
+    exist _ _ (eval_exp_app _ _ _ _ _ _ Hm Hn _)
+| {{{ M[σ] }}}, p, H =>
+    exist _ _ (eval_exp_sub _ _ _ _ _ _ _)
+
+    with eval_natrec_impl A MZ MS m p (H : eval_natrec_order A MZ MS m p) : { d | eval_natrec A MZ MS m p d } by struct H :=
+| A, MZ, MS, d{{{ zero }}}, p, H =>
+    let (mz, Hmz) := eval_exp_impl MZ p _ in
+    exist _ mz (eval_natrec_zero _ _ _ _ _ Hmz)
+| A, MZ, MS, d{{{ succ m }}}, p, H =>
+    let (mr, Hmr) := eval_natrec_impl A MZ MS m p _ in
+    let (r, Hr) := eval_exp_impl MS d{{{ p ↦ m ↦ mr }}} _ in
+    exist _ r (eval_natrec_succ _ _ _ _ _ _ _ Hmr Hr)
+| A, MZ, MS, d{{{ ⇑ ℕ m }}}, p, H =>
+    let (mz, Hmz) := eval_exp_impl MZ p _ in
+    let (mA, HmA) := eval_exp_impl A d{{{ p ↦ ⇑ ℕ m }}} _ in
+    exist _ d{{{ ⇑ mA (rec m under p return A | zero -> mz | succ -> MS end) }}} (eval_natrec_neut _ _ _ _ _ _ _ Hmz HmA).
