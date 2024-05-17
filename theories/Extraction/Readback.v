@@ -175,4 +175,57 @@ Extraction Inline read_nf_impl_functional
   read_ne_impl_functional
   read_typ_impl_functional.
 
-Extraction read_nf_impl.
+#[local]
+  Ltac pose_other_lemmas :=
+  pose proof eval_exp_impl_complete';
+  pose proof eval_natrec_impl_complete';
+  pose proof eval_app_impl_complete';
+  pose proof eval_sub_impl_complete'.
+
+Lemma read_nf_impl_complete' : forall s d m,
+    {{ Rnf d in s ↘ m }} ->
+    forall (H : read_nf_order s d),
+      exists H', read_nf_impl s d H = exist _ m H'
+with read_ne_impl_complete' : forall s d m,
+    {{ Rne d in s ↘ m }} ->
+    forall (H : read_ne_order s d),
+      exists H', read_ne_impl s d H = exist _ m H'
+with read_typ_impl_complete' : forall s d m,
+    {{ Rtyp d in s ↘ m }} ->
+    forall (H : read_typ_order s d),
+      exists H', read_typ_impl s d H = exist _ m H'.
+Proof with (pose_other_lemmas;  (* so that complete_tac uses these lemmas *)
+            intros;
+            simp read_nf_impl;
+            do 8 try complete_tac;
+            eauto).
+  - clear read_nf_impl_complete'; induction 1...
+  - clear read_ne_impl_complete'; induction 1...
+  - clear read_typ_impl_complete'; induction 1...
+Qed.
+
+#[local]
+  Hint Resolve read_nf_impl_complete'
+  read_ne_impl_complete'
+  read_typ_impl_complete' : mcltt.
+
+Lemma read_nf_impl_complete : forall s d m,
+    {{ Rnf d in s ↘ m }} ->
+    exists H H', read_nf_impl s d H = exist _ m H'.
+Proof.
+  repeat unshelve mauto.
+Qed.
+
+Lemma read_ne_impl_complete : forall s d m,
+    {{ Rne d in s ↘ m }} ->
+    exists H H', read_ne_impl s d H = exist _ m H'.
+Proof.
+  repeat unshelve mauto.
+Qed.
+
+Lemma read_typ_impl_complete : forall s d m,
+    {{ Rtyp d in s ↘ m }} ->
+    exists H H', read_typ_impl s d H = exist _ m H'.
+Proof.
+  repeat unshelve mauto.
+Qed.

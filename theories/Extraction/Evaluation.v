@@ -191,15 +191,13 @@ Extraction Inline eval_exp_impl_functional
   eval_sub_impl_functional.
 
 
-#[local]
-  Ltac edes_rewrite Hind :=
+Ltac edes_rewrite Hind :=
   let Heq := fresh "Heq" in
   edestruct Hind as [? Heq];
   try rewrite Heq in *.
 
 
-#[local]
-  Ltac complete_tac :=
+Ltac complete_tac :=
   match goal with
   | Hind : context[exists _, ?f _ _ = _] |- exists _, (let (_, _) := ?f _ _ in _) = _ =>
       edes_rewrite Hind
@@ -233,9 +231,6 @@ with eval_sub_impl_complete' : forall σ p p',
     exists H', eval_sub_impl σ p H = exist _ p' H'.
 Proof with (intros;
       simp eval_exp_impl;
-      simp eval_natrec_impl;
-      simp eval_app_impl;
-      simp eval_sub_impl;
       do 3 try complete_tac;
       eauto).
   - clear eval_exp_impl_complete'; induction 1...
@@ -245,7 +240,10 @@ Proof with (intros;
 Qed.
 
 #[local]
- Hint Resolve eval_exp_impl_complete' eval_natrec_impl_complete' eval_app_impl_complete' eval_sub_impl_complete' : mcltt.
+  Hint Resolve eval_exp_impl_complete'
+  eval_natrec_impl_complete'
+  eval_app_impl_complete'
+  eval_sub_impl_complete' : mcltt.
 
 Lemma eval_exp_impl_complete : forall M p m,
     {{ ⟦ M ⟧ p ↘ m }} ->
