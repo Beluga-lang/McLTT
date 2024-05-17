@@ -10,7 +10,7 @@ Proof.
   split; intros ** ?; intuition.
 Qed.
 
-Add Parametric Morphism R0 `(R0_morphism : Proper _ (respectful (@relation_equivalence domain) (@relation_equivalence domain)) R0) A p A' p' : (rel_mod_eval R0 A p A' p')
+Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A p A' p' : (rel_mod_eval R0 A p A' p')
     with signature (@relation_equivalence domain) ==> iff as rel_mod_eval_morphism.
 Proof.
   split; intros []; econstructor; try eassumption;
@@ -222,7 +222,7 @@ Ltac rewrite_relation_equivalence_right :=
 Ltac clear_relation_equivalence :=
   repeat match goal with
     | H : ?R1 <~> ?R2 |- _ =>
-        (is_var R1; clear R1 H) + (is_var R2; clear R2 H)
+        (unify R1 R2; clear H) + (is_var R1; clear R1 H) + (is_var R2; clear R2 H)
     end.
 
 Ltac apply_relation_equivalence := rewrite_relation_equivalence_right; rewrite_relation_equivalence_left; clear_relation_equivalence.

@@ -4,6 +4,8 @@
 
 ./Core/Axioms.v
 ./Core/Base.v
+./Core/Completeness/LogicalRelation/Definitions.v
+./Core/Completeness/LogicalRelation/Lemmas.v
 ./Core/Completeness/LogicalRelation.v
 ./Core/Completeness/TermStructureCases.v
 ./Core/Completeness/UniverseCases.v
