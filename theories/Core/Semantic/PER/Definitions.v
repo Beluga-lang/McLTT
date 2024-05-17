@@ -8,43 +8,24 @@ Notation "'Dom' a ≈ b ∈ R" := ((R a b : Prop) : Prop) (in custom judg at lev
 Notation "'DF' a ≈ b ∈ R ↘ R'" := ((R R' a b : Prop) : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr, R' constr).
 Notation "'Exp' a ≈ b ∈ R" := (R a b : (Prop : Type)) (in custom judg at level 90, a custom exp, b custom exp, R constr).
 Notation "'EF' a ≈ b ∈ R ↘ R'" := (R R' a b : (Prop : Type)) (in custom judg at level 90, a custom exp, b custom exp, R constr, R' constr).
-Notation "R ~> R'" := (forall x y, R x y -> R' x y) (at level 90).
-Notation "R <~> R'" := (forall x y, R x y <-> R' x y) (at level 90).
+(* Precedences of the next notations follow the ones in the standard library.
+   However, we do not use the ones in the standard library so that we can change
+   the relation if necessary in the future. *)
+Notation "R ~> R'" := (subrelation R R') (at level 70, right associativity).
+Notation "R <~> R'" := (relation_equivalence R R') (at level 95, no associativity).
 
 Generalizable All Variables.
 
 (** Helper Bundles *)
+(* Related modulo evaluation *)
 Inductive rel_mod_eval (R : relation domain -> domain -> domain -> Prop) A p A' p' R' : Prop := mk_rel_mod_eval : forall a a', {{ ⟦ A ⟧ p ↘ a }} -> {{ ⟦ A' ⟧ p' ↘ a' }} -> {{ DF a ≈ a' ∈ R ↘ R' }} -> rel_mod_eval R A p A' p' R'.
 #[global]
 Arguments mk_rel_mod_eval {_ _ _ _ _ _}.
 
-Inductive rel_mod_app (R : relation domain) f a f' a' : Prop := mk_rel_mod_app : forall fa f'a', {{ $| f & a |↘ fa }} -> {{ $| f' & a' |↘ f'a' }} -> {{ Dom fa ≈ f'a' ∈ R }} -> rel_mod_app R f a f' a'.
+(* Related modulo application *)
+Inductive rel_mod_app f a f' a' (R : relation domain) : Prop := mk_rel_mod_app : forall fa f'a', {{ $| f & a |↘ fa }} -> {{ $| f' & a' |↘ f'a' }} -> {{ Dom fa ≈ f'a' ∈ R }} -> rel_mod_app f a f' a' R.
 #[global]
 Arguments mk_rel_mod_app {_ _ _ _ _}.
-
-Ltac destruct_rel_by_assumption in_rel H :=
-  repeat
-    match goal with
-    | H' : {{ Dom ~?c ≈ ~?c' ∈ ?in_rel0 }} |- _ =>
-        tryif (unify in_rel0 in_rel)
-        then (destruct (H _ _ H') as []; destruct_all; mark_with H' 1)
-        else fail
-    end;
-  unmark_all_with 1.
-Ltac destruct_rel_mod_eval :=
-  repeat
-    match goal with
-    | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_eval _ _ _ _ _ _) |- _ =>
-        destruct_rel_by_assumption in_rel H; mark H
-    end;
-  unmark_all.
-Ltac destruct_rel_mod_app :=
-  repeat
-    match goal with
-    | H : (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ ?in_rel }}), rel_mod_app _ _ _ _ _) |- _ =>
-        destruct_rel_by_assumption in_rel H; mark H
-    end;
-  unmark_all.
 
 (** (Some Elements of) PER Lattice *)
 
@@ -102,7 +83,7 @@ Section Per_univ_elem_core_def.
           PER in_rel ->
           (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
               rel_mod_eval per_univ_elem_core B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
-          (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
+          (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app f c f' c' (out_rel equiv_c_c')) ->
           {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem_core ↘ elem_rel }} }
   | per_univ_elem_core_neut :
     `{ forall (elem_rel : relation domain),
@@ -129,7 +110,7 @@ Section Per_univ_elem_core_def.
           PER in_rel ->
           (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
               rel_mod_eval (fun R x y => {{ DF x ≈ y ∈ per_univ_elem_core ↘ R }} /\ motive R x y) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
-          (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
+          (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app f c f' c' (out_rel equiv_c_c')) ->
           motive elem_rel d{{{ Π A p B }}} d{{{ Π A' p' B' }}})
       (case_ne : forall {a b a' b' elem_rel},
           {{ Dom b ≈ b' ∈ per_bot }} ->
@@ -196,7 +177,7 @@ Section Per_univ_elem_ind_def.
           PER in_rel ->
           (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
               rel_mod_eval (fun R x y => {{ DF x ≈ y ∈ per_univ_elem i ↘ R }} /\ motive i R x y) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
-          (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app (out_rel equiv_c_c') f c f' c') ->
+          (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app f c f' c' (out_rel equiv_c_c')) ->
           motive i elem_rel d{{{ Π A p B }}} d{{{ Π A' p' B' }}})
       (case_ne : forall i {a b a' b' elem_rel},
           {{ Dom b ≈ b' ∈ per_bot }} ->
@@ -221,19 +202,6 @@ Section Per_univ_elem_ind_def.
   Equations per_univ_elem_ind i a b R (H : per_univ_elem i a b R) : motive i a b R :=
   | i, a, b, R, H := per_univ_elem_ind' i a b R _.
 End Per_univ_elem_ind_def.
-
-(** Universe/Element PER Helper Tactics *)
-
-Ltac invert_per_univ_elem H :=
-  simp per_univ_elem in H;
-  inversion H;
-  subst;
-  try rewrite <- per_univ_elem_equation_1 in *.
-
-Ltac per_univ_elem_econstructor :=
-  simp per_univ_elem;
-  econstructor;
-  try rewrite <- per_univ_elem_equation_1 in *.
 
 (** Context/Environment PER *)
 
