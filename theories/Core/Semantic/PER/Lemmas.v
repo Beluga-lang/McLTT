@@ -10,6 +10,12 @@ Proof.
   split; intros ** ?; intuition.
 Qed.
 
+Add Parametric Morphism A : PER
+    with signature (@relation_equivalence A) ==> iff as PER_morphism.
+Proof.
+  split; intros []; econstructor; unfold Symmetric, Transitive in *; intuition.
+Qed.
+
 Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A p A' p' : (rel_mod_eval R0 A p A' p')
     with signature (@relation_equivalence domain) ==> iff as rel_mod_eval_morphism.
 Proof.
@@ -649,15 +655,16 @@ Proof with solve [eauto using per_univ_trans].
     pose proof (@relation_equivalence_pointwise env);
     handle_per_ctx_env_irrel;
     try solve [intuition].
-  - econstructor; only 4: symmetry; eauto.
+  - econstructor; only 4: reflexivity; eauto.
     + apply_relation_equivalence. intuition.
     + intros.
       assert (tail_rel p p) by intuition.
+      assert (tail_rel0 p p') by intuition.
       destruct_rel_typ.
       handle_per_univ_elem_irrel.
       econstructor; intuition.
       (* This one cannot be replaced with `etransitivity` as we need different `i`s. *)
-      eapply per_univ_trans; try eassumption.
+      eapply per_univ_trans; [| eassumption]; eassumption.
   - destruct_conjs.
     assert (tail_rel d{{{ p1 ↯ }}} d{{{ p3 ↯ }}}) by eauto.
     destruct_rel_typ.
