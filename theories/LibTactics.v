@@ -77,7 +77,7 @@ Ltac find_dup_hyp tac non :=
     not_let_bind H';
     lazymatch type of X with
     | Prop => tac H H' X
-    | _ => idtac
+    | _ => fail
     end
   | _ => non
   end.
@@ -166,3 +166,6 @@ Ltac mautosolve := unshelve solve [mauto]; solve [constructor].
 
 #[export]
   Hint Extern 1 => eassumption : typeclass_instances.
+
+(* intuition tactic default setting *)
+Ltac Tauto.intuition_solver ::= auto with mcltt core solve_subterm.
