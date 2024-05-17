@@ -1,4 +1,4 @@
-From Coq Require Import Lia PeanoNat Relation_Definitions.
+From Coq Require Import Lia Morphisms_Relations PeanoNat Relation_Definitions.
 From Equations Require Import Equations.
 From Mcltt Require Import Base Evaluation LibTactics Readback.
 From Mcltt Require Export PER.
@@ -22,49 +22,49 @@ Lemma realize_per_univ_elem_gen : forall {i a a' R},
     /\ (forall {c c'}, {{ Dom c ≈ c' ∈ per_bot }} -> {{ Dom ⇑ a c ≈ ⇑ a' c' ∈ R }})
     /\ (forall {b b'}, {{ Dom b ≈ b' ∈ R }} -> {{ Dom ⇓ a b ≈ ⇓ a' b' ∈ per_top }}).
 Proof with (solve [try (try (eexists; split); econstructor); mauto]).
-  intros * H. simpl in H.
-  induction H using per_univ_elem_ind; repeat split; intros.
-  - subst...
-  - eexists.
+  pose proof (@relation_equivalence_pointwise domain).
+  intros * Hunivelem. simpl in Hunivelem.
+  induction Hunivelem using per_univ_elem_ind; repeat split; intros;
+    apply_relation_equivalence; mauto.
+  - subst; repeat econstructor.
+  - subst.
+    eexists.
     per_univ_elem_econstructor...
-  - destruct_by_head per_univ.
-    specialize (H1 _ _ _ H2).
+  - subst.
+    destruct_by_head per_univ.
+    specialize (H3 _ _ _ H1).
     destruct_conjs.
     intro s.
-    specialize (H1 s) as [? []]...
+    specialize (H2 s) as [? []]...
   - idtac...
-  - idtac...
-  - eauto using per_nat_then_per_top.
-  - destruct IHper_univ_elem as [? []].
+  - apply_relation_equivalence...
+  - destruct IHHunivelem as [? []].
     intro s.
     assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
     destruct_rel_mod_eval.
     specialize (H10 (S s)) as [? []].
     specialize (H3 s) as [? []]...
-  - (on_all_hyp: fun H => rewrite H in *; clear H).
-    intros c0 c0' equiv_c0_c0'.
+  - intros c0 c0' equiv_c0_c0'.
     destruct_conjs.
     destruct_rel_mod_eval.
     econstructor; try solve [econstructor; eauto].
     enough ({{ Dom c ⇓ A c0 ≈ c' ⇓ A' c0' ∈ per_bot }}) by eauto.
     intro s.
-    specialize (H3 s) as [? []].
-    specialize (H5 _ _ equiv_c0_c0' s) as [? []]...
-  - (on_all_hyp: fun H => rewrite H in *; clear H).
-    destruct_conjs.
+    specialize (H4 s) as [? []].
+    specialize (H6 _ _ equiv_c0_c0' s) as [? []]...
+  - destruct_conjs.
     intro s.
     assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
     destruct_rel_mod_eval.
     destruct_rel_mod_app.
     assert {{ Dom ⇓ a fa ≈ ⇓ a' f'a' ∈ per_top }} by eauto.
-    specialize (H2 s) as [? []].
-    specialize (H16 (S s)) as [? []]...
+    specialize (H3 s) as [? []].
+    specialize (H17 (S s)) as [? []]...
   - intro s.
     (on_all_hyp: fun H => destruct (H s) as [? []])...
   - idtac...
   - intro s.
-    (on_all_hyp: fun H => specialize (H s) as [? []]).
-    (on_all_hyp: fun H => inversion_clear H; let n := numgoals in guard n <= 1).
+    inversion_clear_by_head per_ne.
     (on_all_hyp: fun H => specialize (H s) as [? []])...
 Qed.
 
