@@ -1,6 +1,7 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
-From Mcltt Require Import Base Evaluation LibTactics PER.Definitions Readback.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import Evaluation PER.Definitions Readback.
 Import Domain_Notations.
 
 Ltac destruct_rel_by_assumption in_rel H :=
