@@ -7,6 +7,7 @@
 ./Core/Completeness/LogicalRelation/Definitions.v
 ./Core/Completeness/LogicalRelation/Lemmas.v
 ./Core/Completeness/LogicalRelation.v
+./Core/Completeness/FunctionCases.v
 ./Core/Completeness/TermStructureCases.v
 ./Core/Completeness/UniverseCases.v
 ./Core/Completeness/VariableCases.v
