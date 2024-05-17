@@ -1,3 +1,4 @@
+From Coq Require Import Morphisms_Relations.
 From Mcltt Require Import Base LibTactics LogicalRelation.
 Import Domain_Notations.
 
@@ -11,7 +12,8 @@ Proof.
   eexists.
   intros.
   exists (per_univ (S i)).
-  unshelve (split; repeat econstructor); mauto.
+  split; [> econstructor; only 1-2: (econstructor; eauto) ..]; [| exists (per_univ i)];
+    per_univ_elem_econstructor; mauto; reflexivity.
 Qed.
 
 Lemma rel_exp_typ_sub : forall {i Γ σ Δ},
@@ -26,13 +28,16 @@ Proof.
   intros.
   exists (per_univ (S i)).
   (on_all_hyp: fun H => destruct_rel_by_assumption env_rel H).
-  unshelve (split; repeat econstructor); only 4: eauto; mauto.
+  split; [> econstructor; only 1-2: (repeat econstructor; eauto) ..]; [| exists (per_univ i)];
+    per_univ_elem_econstructor; mauto; reflexivity.
 Qed.
 
 Lemma rel_exp_cumu : forall {i Γ A A'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ ⊨ A ≈ A' : Type@(S i) }}.
 Proof.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
   intros * [env_rel].
   destruct_conjs.
   econstructor.
@@ -45,8 +50,10 @@ Proof.
   inversion_by_head rel_exp.
   inversion_by_head (eval_exp {{{ Type@i }}}); subst.
   match_by_head per_univ_elem ltac:(fun H => invert_per_univ_elem H); subst.
+  handle_per_univ_elem_irrel.
   destruct_conjs.
-  per_univ_elem_irrel_rewrite.
   match_by_head per_univ_elem ltac:(fun H => apply per_univ_elem_cumu in H).
-  split; econstructor; try eassumption; repeat econstructor; mauto.
+  split; [> econstructor; only 1-2: (repeat econstructor; eauto) ..]; [| eexists; eauto].
+  per_univ_elem_econstructor; mauto.
+  reflexivity.
 Qed.
