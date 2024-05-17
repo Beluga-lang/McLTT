@@ -225,7 +225,7 @@ Ltac clear_relation_equivalence :=
         (unify R1 R2; clear H) + (is_var R1; clear R1 H) + (is_var R2; clear R2 H)
     end.
 
-Ltac apply_relation_equivalence := rewrite_relation_equivalence_right; rewrite_relation_equivalence_left; clear_relation_equivalence.
+Ltac apply_relation_equivalence := rewrite_relation_equivalence_right; clear_relation_equivalence; rewrite_relation_equivalence_left; clear_relation_equivalence.
 
 Lemma per_univ_elem_right_irrel : forall i i' R a b R' b',
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->

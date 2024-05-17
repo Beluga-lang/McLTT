@@ -12,7 +12,7 @@ Proof.
   eexists.
   intros.
   exists (per_univ (S i)).
-  split; [> econstructor; only 1-2: (econstructor; eauto) ..]; [| exists (per_univ i)];
+  split; [> econstructor; only 1-2: econstructor; eauto ..]; [| exists (per_univ i)];
     per_univ_elem_econstructor; mauto; reflexivity.
 Qed.
 
@@ -28,7 +28,7 @@ Proof.
   intros.
   exists (per_univ (S i)).
   (on_all_hyp: fun H => destruct_rel_by_assumption env_rel H).
-  split; [> econstructor; only 1-2: (repeat econstructor; eauto) ..]; [| exists (per_univ i)];
+  split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| exists (per_univ i)];
     per_univ_elem_econstructor; mauto; reflexivity.
 Qed.
 
@@ -53,7 +53,7 @@ Proof.
   handle_per_univ_elem_irrel.
   destruct_conjs.
   match_by_head per_univ_elem ltac:(fun H => apply per_univ_elem_cumu in H).
-  split; [> econstructor; only 1-2: (repeat econstructor; eauto) ..]; [| eexists; eauto].
+  split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| eexists; eauto].
   per_univ_elem_econstructor; mauto.
   reflexivity.
 Qed.

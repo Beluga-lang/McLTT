@@ -21,14 +21,13 @@ Proof.
   assert (env_relΓ p p) by (etransitivity; eauto).
   (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
   handle_per_univ_elem_irrel.
-  rewrite_relation_equivalence_right.
   assert (env_relΔ o o0) by (etransitivity; [|symmetry; intuition]; intuition).
   (on_all_hyp: fun H => destruct_rel_by_assumption env_relΔ H).
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   eexists.
-  split; [> econstructor; only 1-2: (econstructor; eauto) ..]; eauto.
+  split; [> econstructor; only 1-2: econstructor; eauto ..].
 Qed.
 
 Lemma rel_exp_sub_id : forall {Γ M A},
@@ -70,17 +69,15 @@ Proof.
   assert (env_relΓ p p) by (eapply per_env_trans; eauto).
   (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
   handle_per_univ_elem_irrel.
-  rewrite_relation_equivalence_right.
   (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ' H).
   handle_per_univ_elem_irrel.
-  rewrite_relation_equivalence_right.
   (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ'' H).
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; mauto ..].
+  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
 Qed.
 
 Lemma rel_exp_conv : forall {Γ M M' A A' i},
@@ -94,7 +91,6 @@ Proof.
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
-  rewrite_relation_equivalence_right.
   eexists.
   eexists; try eassumption.
   eexists.
@@ -151,7 +147,6 @@ Proof.
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
-  rewrite_relation_equivalence_right.
   econstructor.
   eexists; try eassumption.
   eexists.
