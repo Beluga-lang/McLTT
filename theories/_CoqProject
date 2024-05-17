@@ -32,4 +32,5 @@
 ./Frontend/ParserExtraction.v
 ./Extraction/Evaluation.v
 ./Extraction/Readback.v
+./Extraction/NbE.v
 ./LibTactics.v

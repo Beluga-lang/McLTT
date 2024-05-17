@@ -1,4 +1,4 @@
-From Mcltt Require Import Base.
+From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Evaluation Readback.
 Import Domain_Notations.
 
@@ -14,7 +14,6 @@ Inductive initial_env : ctx -> env -> Prop :=
 #[export]
  Hint Constructors initial_env : mcltt.
 
-
 Lemma functional_initial_env : forall Γ p,
     initial_env Γ p ->
     forall p',
@@ -26,6 +25,18 @@ Proof.
     functional_eval_rewrite_clear;
     eauto.
 Qed.
+
+#[export]
+ Hint Resolve functional_initial_env : mcltt.
+
+Ltac functional_initial_env_rewrite_clear1 :=
+  let tactic_error o1 o2 := fail 3 "functional_initial_env equality between" o1 "and" o2 "cannot be solved by mauto" in
+  match goal with
+  | H1 : initial_env ?G ?p, H2 : initial_env ?G ?p' |- _ =>
+      clean replace p' with p by first [solve [mauto] | tactic_error p' p]; clear H2
+  end.
+Ltac functional_initial_env_rewrite_clear := repeat functional_initial_env_rewrite_clear1.
+
 
 Inductive nbe : ctx -> exp -> typ -> nf -> Prop :=
 | nbe_run :
@@ -40,9 +51,10 @@ Lemma functional_nbe : forall Γ M A w w',
     nbe Γ M A w' ->
     w = w'.
 Proof.
-  intros. inversion_clear H; inversion_clear H0.
-  rewrite (functional_initial_env _ _ H1 _ H) in *.
-  functional_eval_rewrite_clear.
-  functional_read_rewrite_clear.
+  intros.
+  inversion_clear H; inversion_clear H0;
+    functional_initial_env_rewrite_clear;
+  functional_eval_rewrite_clear;
+  functional_read_rewrite_clear;
   reflexivity.
 Qed.
