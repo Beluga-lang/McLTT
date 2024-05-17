@@ -94,7 +94,7 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; mauto).
   - clear read_typ_order_sound; induction 1...
 Qed.
 
-#[local]
+#[export]
   Hint Resolve read_nf_order_sound read_ne_order_sound read_typ_order_sound : mcltt.
 
 Derive Signature for read_nf_order read_ne_order read_typ_order.
