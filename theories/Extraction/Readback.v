@@ -197,7 +197,7 @@ with read_typ_impl_complete' : forall s d m,
 Proof with (pose_other_lemmas;  (* so that complete_tac uses these lemmas *)
             intros;
             simp read_nf_impl;
-            do 8 try complete_tac;
+            repeat complete_tac;
             eauto).
   - clear read_nf_impl_complete'; induction 1...
   - clear read_ne_impl_complete'; induction 1...

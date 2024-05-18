@@ -231,7 +231,7 @@ with eval_sub_impl_complete' : forall σ p p',
     exists H', eval_sub_impl σ p H = exist _ p' H'.
 Proof with (intros;
       simp eval_exp_impl;
-      do 3 try complete_tac;
+      repeat complete_tac;
       eauto).
   - clear eval_exp_impl_complete'; induction 1...
   - clear eval_natrec_impl_complete'; induction 1...
