@@ -26,6 +26,9 @@ jobs:
     name: Continuous Intergration
     runs-on: ubuntu-latest
     steps:
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
       - name: repo checkout
         uses: actions/checkout@v3
       - name: setup OCaml
@@ -52,7 +55,7 @@ jobs:
         run: |
           eval $(opam env)
           cd theories/
-          make
+          make -j ${{ steps.cpu-cores.outputs.count }}
       - name: test parser
         run: |
           eval $(opam env)
