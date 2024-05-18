@@ -161,3 +161,44 @@ Proof.
   split; econstructor; eauto.
   etransitivity; eauto.
 Qed.
+
+#[export]
+Instance rel_exp_PER {Γ A} : PER (rel_exp_under_ctx Γ A).
+Proof.
+  split.
+  - auto using rel_exp_sym.
+  - eauto using rel_exp_trans.
+Qed.
+
+Lemma presup_rel_exp : forall {Γ M M' A},
+    {{ Γ ⊨ M ≈ M' : A }} ->
+    {{ ⊨ Γ }} /\ {{ Γ ⊨ M : A }} /\ {{ Γ ⊨ M' : A }} /\ exists i, {{ Γ ⊨ A : Type@i }}.
+Proof.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros *.
+  assert (Hpart : {{ Γ ⊨ M ≈ M' : A }} -> {{ Γ ⊨ M : A }} /\ {{ Γ ⊨ M' : A }}) by
+    (split; unfold valid_exp_under_ctx; etransitivity; [|symmetry|symmetry|]; eassumption).
+  intros Hrel; repeat split;
+    try solve [intuition]; clear Hpart;
+    destruct Hrel as [env_relΓ];
+    destruct_conjs.
+  - eexists; eauto.
+  - destruct_by_head valid_exp_under_ctx.
+    destruct_conjs.
+    eexists.
+    eexists.
+    eexists; [eassumption |].
+    eexists.
+    intros.
+    (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+    evar (j : nat).
+    eexists (per_univ j).
+    subst j.
+    split.
+    + econstructor; only 1-2: repeat econstructor; eauto.
+      per_univ_elem_econstructor; eauto.
+      unfold per_univ.
+      reflexivity.
+    + eapply rel_typ_implies_rel_exp; eassumption.
+Qed.
