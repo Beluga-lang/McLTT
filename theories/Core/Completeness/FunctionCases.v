@@ -13,9 +13,9 @@ Ltac extract_output_info_with p c p' c' env_rel :=
    destruct_by_head rel_exp).
 
 Lemma rel_exp_pi_cong : forall {i Γ A A' B B'},
-  {{ Γ ⊨ A ≈ A' : Type@i }} ->
-  {{ Γ , A ⊨ B ≈ B' : Type@i }} ->
-  {{ Γ ⊨ Π A B ≈ Π A' B' : Type@i }}.
+    {{ Γ ⊨ A ≈ A' : Type@i }} ->
+    {{ Γ , A ⊨ B ≈ B' : Type@i }} ->
+    {{ Γ ⊨ Π A B ≈ Π A' B' : Type@i }}.
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
@@ -134,9 +134,9 @@ Proof.
 Qed.
 
 Lemma rel_exp_fn_cong : forall {i Γ A A' B M M'},
-  {{ Γ ⊨ A ≈ A' : Type@i }} ->
-  {{ Γ , A ⊨ M ≈ M' : B }} ->
-  {{ Γ ⊨ λ A M ≈ λ A' M' : Π A B }}.
+    {{ Γ ⊨ A ≈ A' : Type@i }} ->
+    {{ Γ , A ⊨ M ≈ M' : B }} ->
+    {{ Γ ⊨ λ A M ≈ λ A' M' : Π A B }}.
 Proof with intuition.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
@@ -187,9 +187,9 @@ Proof with intuition.
 Qed.
 
 Lemma rel_exp_fn_sub : forall {Γ σ Δ A M B},
-  {{ Γ ⊨s σ : Δ }} ->
-  {{ Δ , A ⊨ M : B }} ->
-  {{ Γ ⊨ (λ A M)[σ] ≈ λ A[σ] M[q σ] : (Π A B)[σ] }}.
+    {{ Γ ⊨s σ : Δ }} ->
+    {{ Δ , A ⊨ M : B }} ->
+    {{ Γ ⊨ (λ A M)[σ] ≈ λ A[σ] M[q σ] : (Π A B)[σ] }}.
 Proof with intuition.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
@@ -228,4 +228,76 @@ Proof with intuition.
     econstructor; only 1-2: repeat econstructor; simpl; mauto.
     intros.
     handle_per_univ_elem_irrel...
+Qed.
+
+Lemma rel_exp_app_cong : forall {Γ M M' A B N N'},
+    {{ Γ ⊨ M ≈ M' : Π A B }} ->
+    {{ Γ ⊨ N ≈ N' : A }} ->
+    {{ Γ ⊨ M N ≈ M' N' : B[Id,,N] }}.
+Proof with intuition.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓ] [env_relΓ'].
+  destruct_conjs.
+  pose (env_relΓ0 := env_relΓ).
+  handle_per_ctx_env_irrel.
+  eexists.
+  eexists; [eassumption |].
+  eexists.
+  intros.
+  assert (equiv_p'_p' : env_relΓ p' p') by (etransitivity; [symmetry |]; eauto).
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  destruct_by_head rel_typ.
+  inversion_by_head (eval_exp {{{ Π A B }}}); subst.
+  match goal with
+  | H : per_univ_elem _ _ d{{{ Π ~?a ~?p B }}} d{{{ Π ~?a' ~?p' B }}} |- _ =>
+      invert_per_univ_elem H
+  end.
+  handle_per_univ_elem_irrel.
+  destruct_by_head rel_exp.
+  functional_eval_rewrite_clear.
+  assert (in_rel m1 m2) by (etransitivity; [| symmetry]; eauto).
+  (on_all_hyp: fun H => destruct_rel_by_assumption in_rel H).
+  (on_all_hyp_rev: fun H => destruct_rel_by_assumption in_rel H).
+  handle_per_univ_elem_irrel.
+  eexists ?[elem_rel].
+  split; [> econstructor; only 1-2: econstructor ..].
+  1,3: repeat econstructor; eauto.
+  all: eauto.
+Qed.
+
+Lemma rel_exp_app_sub : forall {Γ σ Δ M A B N},
+    {{ Γ ⊨s σ : Δ }} ->
+    {{ Δ ⊨ M : Π A B }} ->
+    {{ Δ ⊨ N : A }} ->
+    {{ Γ ⊨ (M N)[σ] ≈ M[σ] N[σ] : B[σ,,N[σ]] }}.
+Proof with intuition.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓ] [env_relΔ] [env_relΔ'].
+  destruct_conjs.
+  pose (env_relΓ0 := env_relΓ).
+  pose (env_relΔ0 := env_relΔ).
+  handle_per_ctx_env_irrel.
+  eexists.
+  eexists; [eassumption |].
+  eexists.
+  intros.
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΔ H).
+  destruct_by_head rel_typ.
+  inversion_by_head (eval_exp {{{ Π A B }}}); subst.
+  match goal with
+  | H : per_univ_elem _ _ d{{{ Π ~?a ~?p B }}} d{{{ Π ~?a' ~?p' B }}} |- _ =>
+      invert_per_univ_elem H
+  end.
+  handle_per_univ_elem_irrel.
+  destruct_by_head rel_exp.
+  functional_eval_rewrite_clear.
+  (on_all_hyp_rev: fun H => destruct_rel_by_assumption in_rel H).
+  eexists ?[elem_rel].
+  split; [> econstructor; only 1-2: econstructor ..].
+  1,3,8,9: repeat econstructor; eauto.
+  5: econstructor.
+  all: eauto.
 Qed.
