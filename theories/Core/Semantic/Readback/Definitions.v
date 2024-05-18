@@ -1,4 +1,4 @@
-From Mcltt Require Import Base Evaluation.
+From Mcltt.Core Require Import Base Evaluation.
 From Mcltt Require Export Domain.
 Import Domain_Notations.
 

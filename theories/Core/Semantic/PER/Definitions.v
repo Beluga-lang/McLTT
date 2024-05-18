@@ -1,6 +1,7 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
-From Mcltt Require Import Base Evaluation LibTactics Readback.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import Evaluation Readback.
 From Mcltt Require Export Domain.
 Import Domain_Notations.
 
