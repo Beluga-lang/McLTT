@@ -308,3 +308,61 @@ Proof with intuition.
   5: econstructor.
   all: eauto.
 Qed.
+
+Lemma rel_exp_pi_beta : forall {Γ A M B N},
+  {{ Γ , A ⊨ M : B }} ->
+  {{ Γ ⊨ N : A }} ->
+  {{ Γ ⊨ (λ A M) N ≈ M[Id,,N] : B[Id,,N] }}.
+Proof with intuition.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓA] [env_relΓ].
+  destruct_conjs.
+  pose (env_relΓ0 := env_relΓ).
+  pose (env_relΓA0 := env_relΓA).
+  inversion_by_head (per_ctx_env env_relΓA); subst.
+  handle_per_ctx_env_irrel.
+  eexists.
+  eexists; [eassumption |].
+  eexists.
+  intros.
+  (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
+  destruct_by_head rel_typ.
+  handle_per_univ_elem_irrel.
+  destruct_by_head rel_exp.
+  rename m into n; rename m' into n'.
+  extract_output_info_with p n p' n' env_relΓA.
+  eexists.
+  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+Qed.
+
+Lemma rel_exp_pi_eta : forall {Γ M A B},
+  {{ Γ ⊨ M : Π A B }} ->
+  {{ Γ ⊨ M ≈ λ A (M[Wk] #0) : Π A B }}.
+Proof with intuition.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓ].
+  destruct_conjs.
+  pose (env_relΓ0 := env_relΓ).
+  eexists.
+  eexists; [eassumption |].
+  eexists.
+  intros.
+  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  destruct_by_head rel_typ.
+  inversion_by_head (eval_exp {{{ Π A B }}}); subst.
+  match goal with
+  | H : per_univ_elem _ _ d{{{ Π ~?a ~?p B }}} d{{{ Π ~?a' ~?p' B }}} |- _ =>
+      invert_per_univ_elem H
+  end.
+  apply_relation_equivalence.
+  destruct_by_head rel_exp.
+  eexists.
+  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  intros.
+  (on_all_hyp: fun H => destruct_rel_by_assumption in_rel H).
+  econstructor; eauto.
+  do 2 econstructor; eauto; econstructor; eauto.
+  econstructor.
+Qed.
