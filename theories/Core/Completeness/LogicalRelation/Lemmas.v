@@ -18,3 +18,23 @@ Proof.
   split; intros []; econstructor; eauto;
     apply HRR'; eassumption.
 Qed.
+
+Lemma rel_exp_implies_rel_typ : forall {i A p A' p'},
+    rel_exp A p A' p' (per_univ i) ->
+    exists R, rel_typ i A p A' p' R.
+Proof.
+  intros.
+  destruct_by_head rel_exp.
+  destruct_by_head per_univ.
+  eexists.
+  econstructor; eauto.
+Qed.
+
+Lemma rel_typ_implies_rel_exp : forall {i A p A' p' R},
+    rel_typ i A p A' p' R ->
+    rel_exp A p A' p' (per_univ i).
+Proof.
+  intros.
+  destruct_by_head rel_typ.
+  econstructor; [| | eexists]; eauto.
+Qed.

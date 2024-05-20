@@ -25,15 +25,6 @@ Ltac mark_all :=
   end.
 Ltac unmark_all := unfold __mark__ in *.
 
-Ltac on_all_marked_hyp tac :=
-  match goal with
-  | [ H : __mark__ _ ?A |- _ ] => unmark H; tac H; on_all_marked_hyp tac; try mark H
-  | _ => idtac
-  end.
-Tactic Notation "on_all_marked_hyp:" tactic4(tac) := on_all_marked_hyp tac.
-Tactic Notation "on_all_hyp:" tactic4(tac) :=
-  mark_all; (on_all_marked_hyp: tac); unmark_all.
-
 Ltac mark_with H n :=
   let t := type of H in
   fold (__mark__ n t) in H.
@@ -43,8 +34,23 @@ Ltac mark_all_with n :=
   end.
 Ltac unmark_all_with n :=
   repeat match goal with [H: ?P |- _] =>
-    match P with __mark__ ?n' _ => tryif unify n n' then unmark H else fail 2 end
+    match P with __mark__ ?n' _ => tryif unify n n' then unmark H else fail 1 end
   end.
+
+Ltac on_all_marked_hyp tac :=
+  repeat match goal with
+    | [ H : __mark__ _ ?A |- _ ] => unmark H; tac H
+    end.
+Ltac on_all_marked_hyp_rev tac :=
+  repeat match reverse goal with
+    | [ H : __mark__ _ ?A |- _ ] => unmark H; tac H
+    end.
+Tactic Notation "on_all_marked_hyp:" tactic4(tac) := on_all_marked_hyp tac; unmark_all_with 0.
+Tactic Notation "on_all_marked_hyp_rev:" tactic4(tac) := on_all_marked_hyp_rev tac; unmark_all_with 0.
+Tactic Notation "on_all_hyp:" tactic4(tac) :=
+  mark_all_with 0; (on_all_marked_hyp: tac).
+Tactic Notation "on_all_hyp_rev:" tactic4(tac) :=
+  mark_all_with 0; (on_all_marked_hyp_rev: tac).
 
 (** Simple helper *)
 

@@ -504,6 +504,30 @@ Proof with solve [eauto].
   - per_univ_elem_econstructor...
 Qed.
 
+Lemma per_univ_elem_cumu_ge : forall i i' a0 a1 R,
+    i <= i' ->
+    {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
+    {{ DF a0 ≈ a1 ∈ per_univ_elem i' ↘ R }}.
+Proof with solve [eauto using per_univ_elem_cumu].
+  induction 1...
+Qed.
+
+Lemma per_univ_elem_cumu_max_left : forall i j a0 a1 R,
+    {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
+    {{ DF a0 ≈ a1 ∈ per_univ_elem (max i j) ↘ R }}.
+Proof with solve [eauto using per_univ_elem_cumu_ge].
+  intros.
+  assert (i <= max i j) by lia...
+Qed.
+
+Lemma per_univ_elem_cumu_max_right : forall i j a0 a1 R,
+    {{ DF a0 ≈ a1 ∈ per_univ_elem j ↘ R }} ->
+    {{ DF a0 ≈ a1 ∈ per_univ_elem (max i j) ↘ R }}.
+Proof with solve [eauto using per_univ_elem_cumu_ge].
+  intros.
+  assert (j <= max i j) by lia...
+Qed.
+
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> eq ==> eq ==> iff as per_ctx_env_morphism_iff.
 Proof with mautosolve.
