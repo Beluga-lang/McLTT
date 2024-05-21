@@ -733,3 +733,37 @@ Proof.
   - auto using (per_env_sym _ _ _ _ _ H).
   - eauto using (per_env_trans _ _ _ _ _ _ H).
 Qed.
+
+Lemma per_ctx_env_cons_clear_inversion : forall {Γ Γ' env_relΓ A A' env_relΓA},
+    {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ env_relΓ }} ->
+    {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_relΓA }} -> 
+    exists i (head_rel : forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}), relation domain),
+      (forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
+          rel_typ i A p A' p' (head_rel equiv_p_p')) /\
+        (env_relΓA <~> fun p p' =>
+             exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ env_relΓ }}),
+               {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}).
+Proof with intuition.
+  intros * HΓ HΓA.
+  inversion HΓA; subst.
+  handle_per_ctx_env_irrel.
+  eexists.
+  eexists.
+  split; intros.
+  - instantiate (1 := fun p p' (equiv_p_p' : env_relΓ p p') m m' =>
+                        forall a a' R,
+                          {{ ⟦ A ⟧ p ↘ a }} ->
+                          {{ ⟦ A' ⟧ p' ↘ a' }} ->
+                          {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+                          {{ Dom m ≈ m' ∈ R }}).
+    assert (tail_rel p p') by intuition.
+    (on_all_hyp: destruct_rel_by_assumption tail_rel).
+    econstructor; eauto.
+    apply -> per_univ_elem_morphism_iff; eauto.
+    split; intros; handle_per_univ_elem_irrel...
+  - intros o o'.
+    split; intros; destruct_conjs;
+      assert {{ Dom o ↯ ≈ o' ↯ ∈ tail_rel }} by intuition;
+      (on_all_hyp: destruct_rel_by_assumption tail_rel);
+      eexists; intros; handle_per_univ_elem_irrel; intuition.
+Qed.

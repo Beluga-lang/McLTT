@@ -82,7 +82,7 @@ Lemma rel_exp_conv : forall {Γ M M' A A' i},
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [env_relΓ'].
+  intros * [env_relΓ] [].
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
@@ -127,7 +127,7 @@ Lemma rel_exp_trans : forall {Γ M1 M2 M3 A},
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [env_relΓ'].
+  intros * [env_relΓ] [].
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.

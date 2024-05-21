@@ -57,11 +57,13 @@ Proof with intuition.
   pose (env_relΔA0 := env_relΔA).
   handle_per_ctx_env_irrel.
   eexists_rel_subst.
-  inversion_by_head (per_ctx_env env_relΔA); subst.
+  match_by_head (per_ctx_env env_relΔA)
+    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  destruct_conjs.
   handle_per_ctx_env_irrel.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
   handle_per_univ_elem_irrel.
@@ -132,12 +134,14 @@ Proof with intuition.
   pose (env_relΓ''A0 := env_relΓ''A).
   handle_per_ctx_env_irrel.
   eexists_rel_subst.
-  inversion_by_head (per_ctx_env env_relΓ''A); subst.
+  match_by_head (per_ctx_env env_relΓ''A)
+    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  destruct_conjs.
   handle_per_ctx_env_irrel.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ'').
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
   handle_per_univ_elem_irrel.

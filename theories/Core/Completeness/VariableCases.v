@@ -102,8 +102,10 @@ Proof.
   destruct_conjs.
   eexists_rel_exp.
   apply_relation_equivalence.
-  intros ? ? [].
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  intros.
+  destruct_conjs.
+  rename tail_rel into env_relΓ.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
   dir_inversion_by_head eval_exp; subst.

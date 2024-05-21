@@ -48,13 +48,13 @@ Proof with intuition.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΓA].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
   pose (env_relΓA0 := env_relΓA).
-  inversion_by_head (per_ctx_env env_relΓA); subst.
-  handle_per_ctx_env_irrel.
+  match_by_head (per_ctx_env env_relΓA)
+    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  destruct_conjs.
   eexists_rel_exp.
   intros.
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   invert_rel_typ_body.
   destruct_by_head rel_exp.
@@ -85,16 +85,18 @@ Lemma rel_exp_pi_sub : forall {i Γ σ Δ A B},
 Proof with intuition.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [] [env_relΔA].
+  intros * [env_relΓ] [env_relΔ] [env_relΔA].
   destruct_conjs.
   pose (env_relΔA0 := env_relΔA).
-  inversion_by_head (per_ctx_env env_relΔA); subst.
+  match_by_head (per_ctx_env env_relΔA)
+    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  destruct_conjs.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  assert {{ Dom o' ≈ o' ∈ tail_rel }} by (etransitivity; [symmetry|]; eassumption).
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  assert {{ Dom o' ≈ o' ∈ env_relΔ }} by (etransitivity; [symmetry|]; eassumption).
+  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
   invert_rel_typ_body.
   destruct_by_head rel_exp.
@@ -128,13 +130,14 @@ Proof with intuition.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΓA].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
   pose (env_relΓA0 := env_relΓA).
-  inversion_by_head (per_ctx_env env_relΓA); subst.
+  match_by_head (per_ctx_env env_relΓA)
+    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  destruct_conjs.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   invert_rel_typ_body.
   destruct_by_head rel_exp.
@@ -169,16 +172,17 @@ Lemma rel_exp_fn_sub : forall {Γ σ Δ A M B},
 Proof with intuition.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [env_relΔA].
+  intros * [env_relΓ [? [env_relΔ]]] [env_relΔA].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
   pose (env_relΔA0 := env_relΔA).
-  inversion_by_head (per_ctx_env env_relΔA); subst.
+  match_by_head (per_ctx_env env_relΔA)
+    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  destruct_conjs.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
   - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | |];
@@ -209,7 +213,7 @@ Lemma rel_exp_app_cong : forall {Γ M M' A B N N'},
 Proof with intuition.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [env_relΓ'].
+  intros * [env_relΓ] [].
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
@@ -244,7 +248,7 @@ Lemma rel_exp_app_sub : forall {Γ σ Δ M A B N},
 Proof with intuition.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [env_relΔ] [env_relΔ'].
+  intros * [env_relΓ] [env_relΔ] [].
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   pose (env_relΔ0 := env_relΔ).
@@ -275,13 +279,14 @@ Proof with intuition.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓA] [env_relΓ].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
   pose (env_relΓA0 := env_relΓA).
-  inversion_by_head (per_ctx_env env_relΓA); subst.
+  match_by_head (per_ctx_env env_relΓA)
+    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  destruct_conjs.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  (on_all_hyp: destruct_rel_by_assumption tail_rel).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
