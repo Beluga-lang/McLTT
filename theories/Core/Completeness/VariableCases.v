@@ -1,5 +1,5 @@
 From Coq Require Import Morphisms_Relations Relations.
-From Mcltt Require Import Base LibTactics LogicalRelation System.
+From Mcltt Require Import Base LibTactics Completeness.LogicalRelation System.
 Import Domain_Notations.
 
 Lemma valid_lookup : forall {Γ x A env_rel}

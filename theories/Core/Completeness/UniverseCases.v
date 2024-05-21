@@ -1,5 +1,5 @@
 From Coq Require Import Morphisms_Relations.
-From Mcltt Require Import Base LibTactics LogicalRelation.
+From Mcltt Require Import Base LibTactics Completeness.LogicalRelation.
 Import Domain_Notations.
 
 Lemma valid_typ : forall {i Γ},
