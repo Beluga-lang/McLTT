@@ -31,6 +31,7 @@
 ./Core/Syntactic/System.v
 ./Core/Syntactic/System/Definitions.v
 ./Core/Syntactic/System/Lemmas.v
+./Core/Soundness/LogicalRelation.v
 ./Frontend/Elaborator.v
 ./Frontend/Parser.v
 ./Frontend/ParserExtraction.v
