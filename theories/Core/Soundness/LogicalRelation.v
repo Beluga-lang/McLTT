@@ -57,3 +57,5 @@ Section Gluing.
   (*         (elem_rel <~> per_ne) -> *)
   (*         {{ DF ⇑ a b ≈ ⇑ a' b' ∈ per_univ_elem_core ↘ elem_rel }} } *)
   (* . *)
+
+End Gluing.
