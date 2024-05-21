@@ -13,6 +13,19 @@ Notation "'glu_pred'" := (predicate (Tcons exp (Tcons typ (Tcons domain Tnil))))
 
 Definition univ_typ_pred Γ j i : typ_pred := fun T => {{ Γ ⊢ T ≈ Type@j :  Type@i }}.
 
+Inductive glu_nat : ctx -> exp -> domain -> Prop :=
+| glu_nat_zero :
+  `( {{ Γ ⊢ m ≈ zero : ℕ }} ->
+     glu_nat Γ m d{{{ zero }}} )
+| glu_nat_succ :
+  `( {{ Γ ⊢ m ≈ succ m' : ℕ }} ->
+     glu_nat Γ m' a ->
+     glu_nat Γ m d{{{ succ a }}} )
+| glu_nat_neut :
+  `( per_bot c c ->
+     (* need to define weakenings *)
+     glu_nat Γ m d{{{ ⇑ ℕ c }}} ).
+
 Section Gluing.
   Variable
     (i : nat)
