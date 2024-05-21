@@ -2,6 +2,7 @@ From Coq Require Import Relation_Definitions RelationClasses.
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import System.Definitions Evaluation Readback PER.Definitions.
 From Mcltt Require Export Domain.
+From Mcltt.Core.Soundness Require Export Weakening.
 
 Import Domain_Notations.
 Global Open Scope predicate_scope.
@@ -23,8 +24,13 @@ Inductive glu_nat : ctx -> exp -> domain -> Prop :=
      glu_nat Γ m d{{{ succ a }}} )
 | glu_nat_neut :
   `( per_bot c c ->
+     (forall {Δ σ v}, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ m }} -> {{ Δ ⊢ t [ σ ] ≈ v : ℕ }}) ->
      (* need to define weakenings *)
      glu_nat Γ m d{{{ ⇑ ℕ c }}} ).
+
+Definition nat_typ_pred Γ i : typ_pred := fun M => {{ Γ ⊢ M ≈ ℕ :  Type@i }}.
+
+Definition nat_glu_pred Γ i : glu_pred := fun m M A => nat_typ_pred Γ i M /\ glu_nat Γ m A.
 
 Section Gluing.
   Variable
@@ -48,12 +54,16 @@ Section Gluing.
           (elem_rel <~> glu_univ_rec lt_j_i) ->
           typ_rel <∙> univ_typ_pred Γ j i ->
           el_rel <∙> univ_glu_pred Γ lt_j_i ->
-          glu_univ_elem_core Γ elem_rel typ_rel el_rel d{{{ 𝕌@j }}} d{{{ 𝕌@j' }}} }.
+          glu_univ_elem_core Γ elem_rel typ_rel el_rel d{{{ 𝕌@j }}} d{{{ 𝕌@j' }}} }
 
-  (* | per_univ_elem_core_nat : *)
-  (*   forall (elem_rel : relation domain), *)
-  (*     (elem_rel <~> per_nat) -> *)
-  (*     {{ DF ℕ ≈ ℕ ∈ per_univ_elem_core ↘ elem_rel }} *)
+  | per_univ_elem_core_nat :
+    `{ forall (elem_rel : relation domain)
+         typ_rel el_rel,
+          (elem_rel <~> per_nat) ->
+          typ_rel <∙> nat_typ_pred Γ i ->
+          el_rel <∙> nat_glu_pred Γ i ->
+          glu_univ_elem_core Γ elem_rel nat_rel el_rel d{{{ ℕ }}} d{{{ ℕ }}} }.
+
   (* | per_univ_elem_core_pi : *)
   (*   `{ forall (in_rel : relation domain) *)
   (*        (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain) *)
