@@ -71,12 +71,7 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ ℕ }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ ℕ }}} d{{{ ℕ }}} |- _ =>
-      invert_per_univ_elem H;
-      apply_relation_equivalence
-  end.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eauto.
@@ -94,12 +89,7 @@ Proof.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ ℕ }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ ℕ }}} d{{{ ℕ }}} |- _ =>
-      invert_per_univ_elem H;
-      apply_relation_equivalence
-  end.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eauto.

@@ -32,13 +32,7 @@ Proof with intuition.
     intros.
     (on_all_hyp: destruct_rel_by_assumption env_relΓ).
     destruct_by_head rel_typ.
-    inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-    match goal with
-    | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-        invert_per_univ_elem H;
-        apply_relation_equivalence;
-        clear_refl_eqs
-    end.
+    invert_rel_typ_body.
     destruct_by_head rel_exp.
     destruct_conjs.
     econstructor; eauto.

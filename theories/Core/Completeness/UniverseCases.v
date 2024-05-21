@@ -43,8 +43,7 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption env_rel).
   inversion_by_head rel_typ.
   inversion_by_head rel_exp.
-  inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-  match_by_head per_univ_elem invert_per_univ_elem; subst.
+  invert_rel_typ_body.
   handle_per_univ_elem_irrel.
   destruct_conjs.
   match_by_head per_univ_elem ltac:(fun H => apply per_univ_elem_cumu in H).

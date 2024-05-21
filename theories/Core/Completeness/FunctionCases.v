@@ -31,7 +31,7 @@ Proof with intuition.
   pose proof (@relation_equivalence_pointwise env).
   intros.
   subst.
-  (on_all_hyp: fun H => pose proof (H _ _ equiv_c_c')).
+  (on_all_hyp: destruct_rel_by_assumption (head_rel p p' equiv_p_p')).
   destruct_by_head rel_exp.
   econstructor; mauto.
   destruct_by_head per_univ.
@@ -56,17 +56,11 @@ Proof with intuition.
   intros.
   (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-      invert_per_univ_elem H;
-      apply_relation_equivalence;
-      clear_refl_eqs
-  end.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   destruct_conjs.
   handle_per_univ_elem_irrel.
-  exists (per_univ i).
+  eexists (per_univ _).
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
   eexists.
   per_univ_elem_econstructor; eauto with typeclass_instances.
@@ -76,16 +70,10 @@ Proof with intuition.
       clear dependent c'.
       intros.
       extract_output_info_with p c p' c' env_relΓA.
-      inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-      match goal with
-      | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-          invert_per_univ_elem H;
-          apply_relation_equivalence;
-          clear_refl_eqs
-      end.
+      invert_rel_typ_body.
       econstructor...
     + reflexivity.
-  - (* `reflexivity` does not work as it uses a "wrong" instance. *)
+  - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
     apply Equivalence_Reflexive.
 Qed.
 
@@ -108,18 +96,12 @@ Proof with intuition.
   assert {{ Dom o' ≈ o' ∈ tail_rel }} by (etransitivity; [symmetry|]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-      invert_per_univ_elem H;
-      apply_relation_equivalence;
-      clear_refl_eqs
-  end.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   destruct_conjs.
   handle_per_univ_elem_irrel.
-  eexists; split;
-    [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  eexists.
+  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
   eexists.
   per_univ_elem_econstructor; eauto with typeclass_instances.
   - intros.
@@ -128,17 +110,12 @@ Proof with intuition.
       clear dependent c'.
       intros.
       extract_output_info_with o c o' c' env_relΔA.
-      inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-      match goal with
-      | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-          invert_per_univ_elem H;
-          apply_relation_equivalence;
-          clear_refl_eqs
-      end.
+      invert_rel_typ_body.
+      destruct_conjs.
       econstructor; eauto.
       repeat econstructor...
     + reflexivity.
-  - (* `reflexivity` does not work as it uses a "wrong" instance. *)
+  - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
     apply Equivalence_Reflexive.
 Qed.
 
@@ -159,18 +136,13 @@ Proof with intuition.
   intros.
   (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-      invert_per_univ_elem H;
-      apply_relation_equivalence;
-      clear_refl_eqs
-  end.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   functional_eval_rewrite_clear.
-  eexists ?[elem_rel].
+  eexists.
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
-  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | |]; eauto with typeclass_instances.
+  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | |];
+      eauto with typeclass_instances.
     + intros.
       eapply rel_exp_pi_core; eauto.
       * clear dependent c.
@@ -207,9 +179,10 @@ Proof with intuition.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   (on_all_hyp: destruct_rel_by_assumption tail_rel).
-  eexists ?[elem_rel].
+  eexists.
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
-  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | |]; eauto with typeclass_instances.
+  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | |];
+      eauto with typeclass_instances.
     + intros.
       eapply rel_exp_pi_core; eauto.
       * clear dependent c.
@@ -245,22 +218,22 @@ Proof with intuition.
   assert (equiv_p'_p' : env_relΓ p' p') by (etransitivity; [symmetry |]; eauto).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Π A B }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ Π ~?a ~?p B }}} d{{{ Π ~?a' ~?p' B }}} |- _ =>
-      invert_per_univ_elem H
-  end.
+  functional_eval_rewrite_clear.
+  invert_rel_typ_body.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
   functional_eval_rewrite_clear.
-  assert (in_rel m1 m2) by (etransitivity; [| symmetry]; eauto).
+  assert (in_rel0 m1 m2) by (etransitivity; [| symmetry]; eauto).
+  assert (in_rel m1 m'2) by intuition.
+  assert (in_rel m1 m2) by intuition.
   (on_all_hyp: destruct_rel_by_assumption in_rel).
-  (on_all_hyp_rev: destruct_rel_by_assumption in_rel).
+  (on_all_hyp: destruct_rel_by_assumption in_rel0).
+  (on_all_hyp_rev: destruct_rel_by_assumption in_rel0).
   handle_per_univ_elem_irrel.
-  eexists ?[elem_rel].
+  eexists.
   split; [> econstructor; only 1-2: econstructor ..].
   1,3: repeat econstructor.
-  all: eauto.
+  all: intuition.
 Qed.
 
 Lemma rel_exp_app_sub : forall {Γ σ Δ M A B N},
@@ -281,16 +254,12 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Π A B }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ Π ~?a ~?p B }}} d{{{ Π ~?a' ~?p' B }}} |- _ =>
-      invert_per_univ_elem H
-  end.
+  invert_rel_typ_body.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
   functional_eval_rewrite_clear.
   (on_all_hyp_rev: destruct_rel_by_assumption in_rel).
-  eexists ?[elem_rel].
+  eexists.
   split; [> econstructor; only 1-2: econstructor ..].
   1,3,8,9: repeat econstructor.
   15: econstructor.
@@ -335,12 +304,7 @@ Proof with intuition.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Π A B }}}); subst.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ Π ~?a ~?p B }}} d{{{ Π ~?a' ~?p' B }}} |- _ =>
-      invert_per_univ_elem H
-  end.
-  apply_relation_equivalence.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].

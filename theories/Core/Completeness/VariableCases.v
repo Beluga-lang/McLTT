@@ -27,7 +27,7 @@ Proof with solve [repeat econstructor; mauto].
   - split; econstructor...
   - destruct_by_head rel_typ.
     destruct_by_head rel_exp.
-    inversion_by_head (eval_exp {{{ #n }}}); subst.
+    dir_inversion_by_head eval_exp; subst.
     split; econstructor; simpl...
 Qed.
 
@@ -57,7 +57,7 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
-  inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
+  dir_inversion_by_head eval_exp; subst.
   functional_eval_rewrite_clear.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
@@ -83,8 +83,7 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
-  inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
-  inversion_by_head (eval_exp {{{ # x }}}); subst.
+  dir_inversion_by_head eval_exp; subst.
   functional_eval_rewrite_clear.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
@@ -107,7 +106,7 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
-  inversion_by_head (eval_exp {{{ #x }}}); subst.
+  dir_inversion_by_head eval_exp; subst.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
 Qed.

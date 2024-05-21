@@ -92,14 +92,7 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-  handle_per_univ_elem_irrel.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-      invert_per_univ_elem H;
-      apply_relation_equivalence;
-      clear_refl_eqs
-  end.
+  invert_rel_typ_body.
   destruct_conjs.
   handle_per_univ_elem_irrel.
   eexists.
@@ -179,9 +172,7 @@ Proof.
     eexists_rel_exp.
     intros.
     (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-    evar (j : nat).
-    eexists (per_univ j).
-    subst j.
+    eexists (per_univ _).
     split.
     + econstructor; only 1-2: repeat econstructor; try eassumption.
       per_univ_elem_econstructor; eauto.
