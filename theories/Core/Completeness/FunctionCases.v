@@ -1,4 +1,4 @@
-From Coq Require Import Morphisms_Relations RelationClasses SetoidTactics.
+From Coq Require Import Morphisms_Relations Relation_Definitions RelationClasses.
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.TermStructureCases System.
 Import Domain_Notations.
@@ -52,11 +52,9 @@ Proof with intuition.
   pose (env_relΓA0 := env_relΓA).
   inversion_by_head (per_ctx_env env_relΓA); subst.
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
+  (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ Type@i }}}); subst.
   match goal with
@@ -104,13 +102,11 @@ Proof with intuition.
   pose (env_relΔA0 := env_relΔA).
   inversion_by_head (per_ctx_env env_relΔA); subst.
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   assert {{ Dom o' ≈ o' ∈ tail_rel }} by (etransitivity; [symmetry|]; eassumption).
-  (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
+  (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ Type@i }}}); subst.
   match goal with
@@ -159,11 +155,9 @@ Proof with intuition.
   pose (env_relΓA0 := env_relΓA).
   inversion_by_head (per_ctx_env env_relΓA); subst.
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
+  (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ Type@i }}}); subst.
   match goal with
@@ -209,12 +203,10 @@ Proof with intuition.
   pose (env_relΔA0 := env_relΔA).
   inversion_by_head (per_ctx_env env_relΔA); subst.
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
-  (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  (on_all_hyp: destruct_rel_by_assumption tail_rel).
   eexists ?[elem_rel].
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
   - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | |]; eauto with typeclass_instances.
@@ -248,12 +240,10 @@ Proof with intuition.
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
   assert (equiv_p'_p' : env_relΓ p' p') by (etransitivity; [symmetry |]; eauto).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ Π A B }}}); subst.
   match goal with
@@ -264,12 +254,12 @@ Proof with intuition.
   destruct_by_head rel_exp.
   functional_eval_rewrite_clear.
   assert (in_rel m1 m2) by (etransitivity; [| symmetry]; eauto).
-  (on_all_hyp: fun H => destruct_rel_by_assumption in_rel H).
-  (on_all_hyp_rev: fun H => destruct_rel_by_assumption in_rel H).
+  (on_all_hyp: destruct_rel_by_assumption in_rel).
+  (on_all_hyp_rev: destruct_rel_by_assumption in_rel).
   handle_per_univ_elem_irrel.
   eexists ?[elem_rel].
   split; [> econstructor; only 1-2: econstructor ..].
-  1,3: repeat econstructor; eauto.
+  1,3: repeat econstructor.
   all: eauto.
 Qed.
 
@@ -286,12 +276,10 @@ Proof with intuition.
   pose (env_relΓ0 := env_relΓ).
   pose (env_relΔ0 := env_relΔ).
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΔ H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ Π A B }}}); subst.
   match goal with
@@ -301,11 +289,11 @@ Proof with intuition.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
   functional_eval_rewrite_clear.
-  (on_all_hyp_rev: fun H => destruct_rel_by_assumption in_rel H).
+  (on_all_hyp_rev: destruct_rel_by_assumption in_rel).
   eexists ?[elem_rel].
   split; [> econstructor; only 1-2: econstructor ..].
-  1,3,8,9: repeat econstructor; eauto.
-  5: econstructor.
+  1,3,8,9: repeat econstructor.
+  15: econstructor.
   all: eauto.
 Qed.
 
@@ -322,11 +310,9 @@ Proof with intuition.
   pose (env_relΓA0 := env_relΓA).
   inversion_by_head (per_ctx_env env_relΓA); subst.
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
+  (on_all_hyp: destruct_rel_by_assumption tail_rel).
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
@@ -345,11 +331,9 @@ Proof with intuition.
   intros * [env_relΓ].
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
-  eexists.
-  eexists; [eassumption |].
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ Π A B }}}); subst.
   match goal with
@@ -361,7 +345,7 @@ Proof with intuition.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption in_rel H).
+  (on_all_hyp: destruct_rel_by_assumption in_rel).
   econstructor; eauto.
   do 2 econstructor; eauto; econstructor; eauto.
   econstructor.

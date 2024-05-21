@@ -1,5 +1,6 @@
-From Coq Require Import Morphisms_Relations.
-From Mcltt Require Import Base LibTactics LogicalRelation.
+From Coq Require Import Morphisms_Relations RelationClasses.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import Completeness.LogicalRelation.
 Import Domain_Notations.
 
 Lemma valid_typ : forall {i Γ},
@@ -7,13 +8,11 @@ Lemma valid_typ : forall {i Γ},
     {{ Γ ⊨ Type@i : Type@(S i) }}.
 Proof.
   intros * [].
-  econstructor.
-  eexists; try eassumption.
-  eexists.
+  eexists_rel_exp.
   intros.
-  exists (per_univ (S i)).
-  split; [> econstructor; only 1-2: econstructor; eauto ..]; [| exists (per_univ i)];
-    per_univ_elem_econstructor; mauto; reflexivity.
+  eexists (per_univ _).
+  split; [> econstructor; only 1-2: econstructor; eauto ..]; [| eexists (per_univ _)];
+    per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
 
 Lemma rel_exp_typ_sub : forall {i Γ σ Δ},
@@ -22,14 +21,12 @@ Lemma rel_exp_typ_sub : forall {i Γ σ Δ},
 Proof.
   intros * [env_rel].
   destruct_conjs.
-  econstructor.
-  eexists; try eassumption.
-  eexists.
+  eexists_rel_exp.
   intros.
-  exists (per_univ (S i)).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_rel H).
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| exists (per_univ i)];
-    per_univ_elem_econstructor; mauto; reflexivity.
+  eexists (per_univ _).
+  (on_all_hyp: destruct_rel_by_assumption env_rel).
+  split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| eexists (per_univ _)];
+    per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
 
 Lemma rel_exp_cumu : forall {i Γ A A'},
@@ -40,20 +37,18 @@ Proof.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_rel].
   destruct_conjs.
-  econstructor.
-  eexists; try eassumption.
-  exists (S (S i)).
+  eexists_rel_exp.
   intros.
-  exists (per_univ (S i)).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_rel H).
+  eexists (per_univ _).
+  (on_all_hyp: destruct_rel_by_assumption env_rel).
   inversion_by_head rel_typ.
   inversion_by_head rel_exp.
   inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-  match_by_head per_univ_elem ltac:(fun H => invert_per_univ_elem H); subst.
+  match_by_head per_univ_elem invert_per_univ_elem; subst.
   handle_per_univ_elem_irrel.
   destruct_conjs.
   match_by_head per_univ_elem ltac:(fun H => apply per_univ_elem_cumu in H).
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| eexists; eauto].
-  per_univ_elem_econstructor; mauto.
+  per_univ_elem_econstructor; eauto.
   reflexivity.
 Qed.
