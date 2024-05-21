@@ -220,7 +220,7 @@ Ltac rewrite_relation_equivalence_left :=
 Ltac rewrite_relation_equivalence_right :=
   repeat match goal with
     | H : ?R1 <~> ?R2 |- _ =>
-        try setoid_rewrite H;
+        try setoid_rewrite <- H;
         (on_all_hyp: fun H' => assert_fails (unify H H'); unmark H; setoid_rewrite <- H in H');
         let T := type of H in
         fold (id T) in H
