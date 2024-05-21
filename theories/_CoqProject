@@ -10,6 +10,7 @@
 ./Core/Completeness/LogicalRelation/Lemmas.v
 ./Core/Completeness/LogicalRelation/Tactics.v
 ./Core/Completeness/LogicalRelation.v
+./Core/Completeness/NatCases.v
 ./Core/Completeness/SubstitutionCases.v
 ./Core/Completeness/TermStructureCases.v
 ./Core/Completeness/UniverseCases.v
