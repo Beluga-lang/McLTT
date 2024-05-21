@@ -93,14 +93,14 @@ Qed.
 Section Gluing.
   Variable
     (i : nat)
-      (glu_univ_rec : forall {j}, j < i -> relation domain)
-      (glu_univ_typ_rec : forall {j}, j < i -> typ_pred).
+      (glu_univ_typ_rec : forall {j}, j < i -> domain -> typ_pred)
+      (glu_univ_rec : forall {j}, j < i -> relation domain).
 
   Definition univ_glu_pred {j} (lt_j_i : j < i) : glu_pred :=
     fun Γ m M A =>
       {{ Γ ⊢ m : M }} /\ {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
         glu_univ_rec lt_j_i A A /\
-        glu_univ_typ_rec lt_j_i Γ m.
+        glu_univ_typ_rec lt_j_i A Γ m.
 
   #[global]
     Arguments univ_glu_pred {j} lt_j_i Γ m M A/.
@@ -229,3 +229,12 @@ Section Gluing.
       case_neut R P El H HR HP HEl.
 
 End Gluing.
+
+#[export]
+Hint Constructors glu_univ_elem_core : mcltt.
+
+
+Equations glu_univ_elem (i : nat) : typ_pred -> glu_pred -> relation domain -> domain -> domain -> Prop by wf i :=
+| i => glu_univ_elem_core i
+        (fun j lt_j_i A Γ M => exists P El R, glu_univ_elem j P El R A A /\ P Γ M)
+        (fun j lt_j_i a a' => exists P El R, glu_univ_elem j P El R a a').
