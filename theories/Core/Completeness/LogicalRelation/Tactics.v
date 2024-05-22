@@ -16,6 +16,7 @@ Ltac eexists_rel_subst :=
 
 Ltac invert_rel_typ_body :=
   dir_inversion_by_head eval_exp; subst;
+  functional_eval_rewrite_clear;
   match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H); subst;
   clear_refl_eqs;
   handle_per_univ_elem_irrel;

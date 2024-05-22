@@ -22,12 +22,10 @@ Proof with intuition.
   destruct_conjs.
   handle_per_ctx_env_irrel.
   eexists.
-  econstructor; eauto with typeclass_instances.
+  per_ctx_env_econstructor; eauto.
   - instantiate (1 := fun p p' (equiv_p_p' : env_relΓ p p') m m' =>
-                        forall i a a' R,
-                          {{ ⟦ A ⟧ p ↘ a }} ->
-                          {{ ⟦ A' ⟧ p' ↘ a' }} ->
-                          per_univ_elem i R a a' ->
+                        forall i R,
+                          rel_typ i A p A' p' R ->
                           R m m').
     intros.
     (on_all_hyp: destruct_rel_by_assumption env_relΓ).
@@ -37,6 +35,8 @@ Proof with intuition.
     destruct_conjs.
     econstructor; eauto.
     apply -> per_univ_elem_morphism_iff; eauto.
-    split; intros; handle_per_univ_elem_irrel...
+    split; intros; destruct_by_head rel_typ; handle_per_univ_elem_irrel...
+    eapply H12.
+    econstructor...
   - apply Equivalence_Reflexive.
 Qed.

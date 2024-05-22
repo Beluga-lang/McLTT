@@ -57,8 +57,7 @@ Proof with intuition.
   pose (env_relΔA0 := env_relΔA).
   handle_per_ctx_env_irrel.
   eexists_rel_subst.
-  match_by_head (per_ctx_env env_relΔA)
-    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  match_by_head (per_ctx_env env_relΔA) invert_per_ctx_env.
   destruct_conjs.
   handle_per_ctx_env_irrel.
   intros.
@@ -134,8 +133,7 @@ Proof with intuition.
   pose (env_relΓ''A0 := env_relΓ''A).
   handle_per_ctx_env_irrel.
   eexists_rel_subst.
-  match_by_head (per_ctx_env env_relΓ''A)
-    ltac:(fun H => eapply per_ctx_env_cons_clear_inversion in H; [| eassumption]).
+  match_by_head (per_ctx_env env_relΓ''A) invert_per_ctx_env.
   destruct_conjs.
   handle_per_ctx_env_irrel.
   intros.

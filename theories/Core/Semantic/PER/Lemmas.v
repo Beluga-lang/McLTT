@@ -1,4 +1,4 @@
-From Coq Require Import Lia Morphisms Morphisms_Prop Morphisms_Relations PeanoNat Relation_Definitions RelationClasses.
+From Coq Require Import Equivalence Lia Morphisms Morphisms_Prop Morphisms_Relations PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
 From Mcltt Require Import Axioms Base LibTactics.
 From Mcltt.Core Require Import Evaluation PER.Definitions PER.CoreTactics Readback.
@@ -184,7 +184,7 @@ Proof with mautosolve.
   simpl.
   intros R R' HRR'.
   split; intros Horig; [gen R' | gen R];
-    induction Horig using per_univ_elem_ind; per_univ_elem_econstructor; eauto;
+    induction Horig using per_univ_elem_ind; basic_per_univ_elem_econstructor; eauto;
     try (etransitivity; [symmetry + idtac|]; eassumption);
     intros;
     destruct_rel_mod_eval;
@@ -244,7 +244,7 @@ Proof with (destruct_rel_mod_eval; destruct_rel_mod_app; functional_eval_rewrite
   remember a as a' in |- *.
   gen a' b' R'.
   induction Horig using per_univ_elem_ind; intros * Heq Hright;
-    subst; invert_per_univ_elem Hright; unfold per_univ;
+    subst; basic_invert_per_univ_elem Hright; unfold per_univ;
     intros;
     apply_relation_equivalence;
     try reflexivity.
@@ -288,16 +288,16 @@ Proof with mautosolve.
       destruct_by_head per_univ.
       eexists.
       eapply proj1...
-  - split; [per_univ_elem_econstructor | intros; apply_relation_equivalence]...
+  - split; [basic_per_univ_elem_econstructor | intros; apply_relation_equivalence]...
   - destruct_conjs.
     split.
-    + per_univ_elem_econstructor; eauto.
+    + basic_per_univ_elem_econstructor; eauto.
       intros.
       assert (in_rel c' c) by eauto.
       assert (in_rel c c) by (etransitivity; eassumption).
       destruct_rel_mod_eval.
       functional_eval_rewrite_clear.
-      econstructor; mauto.
+      econstructor; eauto.
       per_univ_elem_right_irrel_assert.
       apply_relation_equivalence.
       eassumption.
@@ -308,7 +308,7 @@ Proof with mautosolve.
       destruct_rel_mod_eval.
       destruct_rel_mod_app.
       functional_eval_rewrite_clear.
-      econstructor; mauto.
+      econstructor; eauto.
       per_univ_elem_right_irrel_assert.
       intuition.
   - split; [econstructor | intros; apply_relation_equivalence]...
@@ -397,11 +397,11 @@ Lemma per_univ_elem_trans : forall i R A1 A2,
           R a1 a2 ->
           R a2 a3 ->
           R a1 a3).
-Proof with (per_univ_elem_econstructor; mautosolve).
+Proof with (basic_per_univ_elem_econstructor; mautosolve).
   pose proof (@relation_equivalence_pointwise domain).
   induction 1 using per_univ_elem_ind;
     [> split;
-     [ intros * HT2; invert_per_univ_elem HT2; clear HT2
+     [ intros * HT2; basic_invert_per_univ_elem HT2; clear HT2
      | intros * HTR1 HTR2; apply_relation_equivalence ] ..]; mauto.
   - (* univ case *)
     subst.
@@ -415,7 +415,7 @@ Proof with (per_univ_elem_econstructor; mautosolve).
     idtac...
   - (* pi case *)
     destruct_conjs.
-    per_univ_elem_econstructor; eauto.
+    basic_per_univ_elem_econstructor; eauto.
     + handle_per_univ_elem_irrel.
       intuition.
     + intros.
@@ -474,48 +474,97 @@ Proof.
 Qed.
 
 (* This lemma gets rid of the unnecessary PER premise. *)
-Lemma per_univ_elem_core_pi' :
-  forall i A p B A' p' B' elem_rel
+Lemma per_univ_elem_pi' :
+  forall i a a' p B p' B'
     (in_rel : relation domain)
     (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain)
-    (equiv_a_a' : {{ DF A ≈ A' ∈ per_univ_elem i ↘ in_rel}}),
+    elem_rel,
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ in_rel}} ->
     (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
         rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
     (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app f c f' c' (out_rel equiv_c_c')) ->
-    {{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }}.
+    {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem i ↘ elem_rel }}.
 Proof.
   intros.
-  per_univ_elem_econstructor; eauto.
+  basic_per_univ_elem_econstructor; eauto.
   typeclasses eauto.
 Qed.
+
+Ltac per_univ_elem_econstructor :=
+  (repeat intro; hnf; eapply per_univ_elem_pi') + basic_per_univ_elem_econstructor.
+
+#[export]
+Hint Resolve per_univ_elem_pi' : mcltt.
+
+Lemma per_univ_elem_pi_clean_inversion : forall {i j a a' in_rel p p' B B' elem_rel},
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ in_rel }} ->
+    {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem j ↘ elem_rel }} ->
+    exists (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
+      (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
+          rel_mod_eval (per_univ_elem j) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) /\
+        (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app f c f' c' (out_rel equiv_c_c')).
+Proof.
+  intros * Ha HΠ.
+  basic_invert_per_univ_elem HΠ.
+  handle_per_univ_elem_irrel.
+  eexists.
+  split.
+  - instantiate (1 := fun c c' (equiv_c_c' : in_rel c c') m m' =>
+                        forall R,
+                          rel_typ j B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} R ->
+                          R m m').
+    intros.
+    assert (in_rel0 c c') by intuition.
+    (on_all_hyp: destruct_rel_by_assumption in_rel0).
+    econstructor; eauto.
+    apply -> per_univ_elem_morphism_iff; eauto.
+    split; intuition.
+    destruct_by_head rel_typ.
+    handle_per_univ_elem_irrel.
+    intuition.
+  - split; intros;
+      [assert (in_rel0 c c') by intuition; (on_all_hyp: destruct_rel_by_assumption in_rel0)
+      | assert (in_rel c c') by intuition; (on_all_hyp: destruct_rel_by_assumption in_rel)];
+      econstructor; intuition.
+    destruct_by_head rel_typ.
+    handle_per_univ_elem_irrel.
+    intuition.
+Qed.
+
+Ltac invert_per_univ_elem H :=
+  (unshelve eapply (per_univ_elem_pi_clean_inversion _) in H; [| eassumption | |]; destruct H as [? []])
+  + basic_invert_per_univ_elem H.
 
 Lemma per_univ_elem_cumu : forall i a0 a1 R,
     {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
     {{ DF a0 ≈ a1 ∈ per_univ_elem (S i) ↘ R }}.
 Proof with solve [eauto].
   simpl.
-  induction 1 using per_univ_elem_ind; subst.
-  - eapply per_univ_elem_core_univ'...
-  - per_univ_elem_econstructor...
-  - per_univ_elem_econstructor; mauto.
-    intros.
-    destruct_rel_mod_eval.
-    econstructor...
-  - per_univ_elem_econstructor...
+  induction 1 using per_univ_elem_ind; subst;
+    per_univ_elem_econstructor; eauto.
+  intros.
+  destruct_rel_mod_eval.
+  econstructor...
 Qed.
+
+#[export]
+Hint Resolve per_univ_elem_cumu : mcltt.
 
 Lemma per_univ_elem_cumu_ge : forall i i' a0 a1 R,
     i <= i' ->
     {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
     {{ DF a0 ≈ a1 ∈ per_univ_elem i' ↘ R }}.
-Proof with solve [eauto using per_univ_elem_cumu].
+Proof with mautosolve.
   induction 1...
 Qed.
+
+#[export]
+Hint Resolve per_univ_elem_cumu_ge : mcltt.
 
 Lemma per_univ_elem_cumu_max_left : forall i j a0 a1 R,
     {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
     {{ DF a0 ≈ a1 ∈ per_univ_elem (max i j) ↘ R }}.
-Proof with solve [eauto using per_univ_elem_cumu_ge].
+Proof with mautosolve.
   intros.
   assert (i <= max i j) by lia...
 Qed.
@@ -523,7 +572,7 @@ Qed.
 Lemma per_univ_elem_cumu_max_right : forall i j a0 a1 R,
     {{ DF a0 ≈ a1 ∈ per_univ_elem j ↘ R }} ->
     {{ DF a0 ≈ a1 ∈ per_univ_elem (max i j) ↘ R }}.
-Proof with solve [eauto using per_univ_elem_cumu_ge].
+Proof with mautosolve.
   intros.
   assert (j <= max i j) by lia...
 Qed.
@@ -539,7 +588,7 @@ Qed.
 
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> (@relation_equivalence ctx) as per_ctx_env_morphism_relation_equivalence.
-Proof with mautosolve.
+Proof.
   intros * HRR' Γ Γ'.
   simpl.
   rewrite HRR'.
@@ -624,7 +673,7 @@ Proof.
 Qed.
 
 Ltac do_per_ctx_env_irrel_assert1 :=
-  let tactic_error o1 o2 := fail 3 "per_ctx_env_irrel equality between" o1 "and" o2 "cannot be solved by mauto" in
+  let tactic_error o1 o2 := fail 3 "per_ctx_env_irrel equality between" o1 "and" o2 "cannot be solved" in
   match goal with
     | H1 : {{ DF ~?Γ ≈ ~_ ∈ per_ctx_env ↘ ?R1 }},
         H2 : {{ DF ~?Γ ≈ ~_ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
@@ -734,11 +783,31 @@ Proof.
   - eauto using (per_env_trans _ _ _ _ _ _ H).
 Qed.
 
-Lemma per_ctx_env_cons_clear_inversion : forall {Γ Γ' env_relΓ A A' env_relΓA},
+(* This lemma removes the PER argument *)
+Lemma per_ctx_env_cons' : forall {Γ Γ' i A A' tail_rel}
+                             (head_rel : forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}), relation domain)
+                             env_rel,
+    {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ tail_rel }} ->
+    (forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}),
+        rel_typ i A p A' p' (head_rel equiv_p_p')) ->
+    (env_rel <~> fun p p' =>
+         exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel }}),
+           {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}) ->
+    {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_rel }}.
+Proof.
+  intros.
+  econstructor; eauto.
+  typeclasses eauto.
+Qed.
+
+Ltac per_ctx_env_econstructor :=
+  (repeat intro; hnf; eapply per_ctx_env_cons') + econstructor.
+
+Lemma per_ctx_env_cons_clean_inversion : forall {Γ Γ' env_relΓ A A' env_relΓA},
     {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ env_relΓ }} ->
     {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_relΓA }} -> 
     exists i (head_rel : forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}), relation domain),
-      (forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
+      (forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
           rel_typ i A p A' p' (head_rel equiv_p_p')) /\
         (env_relΓA <~> fun p p' =>
              exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ env_relΓ }}),
@@ -751,19 +820,25 @@ Proof with intuition.
   eexists.
   split; intros.
   - instantiate (1 := fun p p' (equiv_p_p' : env_relΓ p p') m m' =>
-                        forall a a' R,
-                          {{ ⟦ A ⟧ p ↘ a }} ->
-                          {{ ⟦ A' ⟧ p' ↘ a' }} ->
-                          {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+                        forall R,
+                          rel_typ i A p A' p' R ->
                           {{ Dom m ≈ m' ∈ R }}).
     assert (tail_rel p p') by intuition.
     (on_all_hyp: destruct_rel_by_assumption tail_rel).
     econstructor; eauto.
     apply -> per_univ_elem_morphism_iff; eauto.
-    split; intros; handle_per_univ_elem_irrel...
+    split; intros...
+    destruct_by_head rel_typ.
+    handle_per_univ_elem_irrel...
   - intros o o'.
     split; intros; destruct_conjs;
       assert {{ Dom o ↯ ≈ o' ↯ ∈ tail_rel }} by intuition;
       (on_all_hyp: destruct_rel_by_assumption tail_rel);
-      eexists; intros; handle_per_univ_elem_irrel; intuition.
+      unshelve eexists; intros...
+    destruct_by_head rel_typ.
+    handle_per_univ_elem_irrel...
 Qed.
+
+Ltac invert_per_ctx_env H :=
+  (unshelve eapply (per_ctx_env_cons_clean_inversion _) in H; [eassumption | |]; destruct H as [? [? []]])
+  + (inversion H; subst).
