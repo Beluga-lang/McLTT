@@ -1,6 +1,6 @@
 From Coq Require Import Lia Morphisms Morphisms_Prop Morphisms_Relations PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
-From Mcltt Require Import Axioms Base LibTactics.
+From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Evaluation PER.Definitions PER.CoreTactics Readback.
 Import Domain_Notations.
 
