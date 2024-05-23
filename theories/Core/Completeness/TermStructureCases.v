@@ -1,5 +1,6 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
-From Mcltt Require Import Base LibTactics LogicalRelation System.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import Completeness.LogicalRelation System.
 Import Domain_Notations.
 
 Lemma rel_exp_sub_cong : forall {Δ M M' A σ σ' Γ},
@@ -13,21 +14,19 @@ Proof.
   destruct_conjs.
   pose (env_relΔ0 := env_relΔ).
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; try eassumption.
-  eexists.
+  eexists_rel_exp.
   intros.
-  assert (env_relΓ p' p) by (symmetry; eauto).
-  assert (env_relΓ p p) by (etransitivity; eauto).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  assert (env_relΓ p' p) by (symmetry; eassumption).
+  assert (env_relΓ p p) by (etransitivity; eassumption).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   handle_per_univ_elem_irrel.
-  assert (env_relΔ o o0) by (etransitivity; [|symmetry; intuition]; intuition).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΔ H).
+  assert (env_relΔ o o0) by (etransitivity; [|symmetry; eassumption]; eassumption).
+  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   eexists.
-  split; [> econstructor; only 1-2: econstructor; eauto ..].
+  split; [> econstructor; only 1-2: econstructor; eassumption ..].
 Qed.
 
 Lemma rel_exp_sub_id : forall {Γ M A},
@@ -36,16 +35,14 @@ Lemma rel_exp_sub_id : forall {Γ M A},
 Proof.
   intros * [env_relΓ].
   destruct_conjs.
-  eexists.
-  eexists; try eassumption.
-  eexists.
+  eexists_rel_exp.
   intros.
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
   eexists.
-  split; econstructor; eauto.
-  repeat econstructor; mauto.
+  split; econstructor; try eassumption.
+  repeat econstructor; eassumption.
 Qed.
 
 Lemma rel_exp_sub_compose : forall {Γ τ Γ' σ Γ'' M A},
@@ -61,23 +58,21 @@ Proof.
   pose (env_relΓ'0 := env_relΓ').
   pose (env_relΓ''0 := env_relΓ'').
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; try eassumption.
-  eexists.
+  eexists_rel_exp.
   intros.
   assert (env_relΓ p' p) by (eapply per_env_sym; eauto).
   assert (env_relΓ p p) by (eapply per_env_trans; eauto).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   handle_per_univ_elem_irrel.
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ' H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ').
   handle_per_univ_elem_irrel.
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ'' H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ'').
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  split; [> econstructor; only 1-2: repeat econstructor; eassumption ..].
 Qed.
 
 Lemma rel_exp_conv : forall {Γ M M' A A' i},
@@ -87,31 +82,22 @@ Lemma rel_exp_conv : forall {Γ M M' A A' i},
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [env_relΓ'].
+  intros * [env_relΓ] [].
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
-  eexists.
-  eexists; try eassumption.
-  eexists.
+  eexists_rel_exp.
   intros.
   assert (env_relΓ p p) by (eapply per_env_trans; eauto; eapply per_env_sym; eauto).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ Type@i }}}); subst.
-  handle_per_univ_elem_irrel.
-  match goal with
-  | H : per_univ_elem _ _ d{{{ 𝕌@?i }}} d{{{ 𝕌@?i }}} |- _ =>
-      invert_per_univ_elem H;
-      apply_relation_equivalence;
-      clear_refl_eqs
-  end.
+  invert_rel_typ_body.
   destruct_conjs.
   handle_per_univ_elem_irrel.
   eexists.
-  split; econstructor; eauto.
-  etransitivity; [symmetry |]; eauto.
+  split; econstructor; try eassumption.
+  etransitivity; [symmetry |]; eassumption.
 Qed.
 
 Lemma rel_exp_sym : forall {Γ M M' A},
@@ -122,18 +108,16 @@ Proof.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ].
   destruct_conjs.
-  econstructor.
-  eexists; try eassumption.
-  eexists.
-  intros ? ? equiv_p_p'.
+  eexists_rel_exp.
+  intros.
   assert (env_relΓ p' p) by (eapply per_env_sym; eauto).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H); destruct_conjs.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ); destruct_conjs.
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   eexists.
-  split; econstructor; eauto.
-  eapply per_elem_sym; eauto.
+  split; econstructor; try eassumption.
+  symmetry; eassumption.
 Qed.
 
 Lemma rel_exp_trans : forall {Γ M1 M2 M3 A},
@@ -143,23 +127,21 @@ Lemma rel_exp_trans : forall {Γ M1 M2 M3 A},
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [env_relΓ'].
+  intros * [env_relΓ] [].
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
-  econstructor.
-  eexists; try eassumption.
-  eexists.
-  intros ? ? equiv_p_p'.
+  eexists_rel_exp.
+  intros.
   assert (env_relΓ p' p) by (symmetry; eauto).
   assert (env_relΓ p' p') by (etransitivity; eauto).
-  (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H); destruct_conjs.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ); destruct_conjs.
   destruct_by_head rel_exp.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   eexists.
-  split; econstructor; eauto.
-  etransitivity; eauto.
+  split; econstructor; try eassumption.
+  etransitivity; eassumption.
 Qed.
 
 #[export]
@@ -183,22 +165,17 @@ Proof.
     try solve [intuition]; clear Hpart;
     destruct Hrel as [env_relΓ];
     destruct_conjs.
-  - eexists; eauto.
+  - eexists; eassumption.
   - destruct_by_head valid_exp_under_ctx.
     destruct_conjs.
     eexists.
-    eexists.
-    eexists; [eassumption |].
-    eexists.
+    eexists_rel_exp.
     intros.
-    (on_all_hyp: fun H => destruct_rel_by_assumption env_relΓ H).
-    evar (j : nat).
-    eexists (per_univ j).
-    subst j.
+    (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+    eexists (per_univ _).
     split.
-    + econstructor; only 1-2: repeat econstructor; eauto.
+    + econstructor; only 1-2: repeat econstructor; try eassumption.
       per_univ_elem_econstructor; eauto.
-      unfold per_univ.
-      reflexivity.
+      apply Equivalence_Reflexive.
     + eapply rel_typ_implies_rel_exp; eassumption.
 Qed.
