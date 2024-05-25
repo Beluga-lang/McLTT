@@ -36,7 +36,7 @@ Proof with intuition.
     econstructor; eauto.
     apply -> per_univ_elem_morphism_iff; eauto.
     split; intros; destruct_by_head rel_typ; handle_per_univ_elem_irrel...
-    eapply H12.
+    eapply H10.
     econstructor...
   - apply Equivalence_Reflexive.
 Qed.
