@@ -338,3 +338,28 @@ Proof.
   handle_per_univ_elem_irrel.
   econstructor; eauto.
 Qed.
+
+
+Lemma rel_exp_natrec_sub : forall {Γ σ Δ MZ MS A M},
+    {{ Γ ⊨s σ : Δ }} ->
+    {{ Δ ⊨ MZ : A[Id,,zero] }} ->
+    {{ Δ, ℕ, A ⊨ MS : A[Wk∘Wk,,succ(#1)] }} ->
+    {{ Δ ⊨ M : ℕ }} ->
+    {{ Δ ⊨ rec M return A | zero -> MZ | succ -> MS end[σ] ≈ rec M[σ] return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M[σ]] }}.
+Proof.
+Admitted.
+
+Lemma rel_exp_nat_beta_zero : forall {Γ MZ MS A},
+    {{ Γ ⊨ MZ : A[Id,,zero] }} ->
+    {{ Γ, ℕ, A ⊨ MS : A[Wk∘Wk,,succ(#1)] }} ->
+    {{ Γ ⊨ rec zero return A | zero -> MZ | succ -> MS end ≈ MZ : A[Id,,zero] }}.
+Proof.
+Admitted.
+
+Lemma rel_exp_nat_beta_succ : forall {Γ MZ MS A M},
+    {{ Γ ⊨ MZ : A[Id,,zero] }} ->
+    {{ Γ, ℕ, A ⊨ MS : A[Wk∘Wk,,succ(#1)] }} ->
+    {{ Γ ⊨ M : ℕ }} ->
+    {{ Γ ⊨ rec succ M return A | zero -> MZ | succ -> MS end ≈ MS[Id,,M,,rec M return A | zero -> MZ | succ -> MS end] : A[Id,,succ M] }}.
+Proof.
+Admitted.
