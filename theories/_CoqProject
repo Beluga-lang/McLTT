@@ -4,10 +4,14 @@
 
 ./Core/Axioms.v
 ./Core/Base.v
+./Core/Completeness/ContextCases.v
+./Core/Completeness/FunctionCases.v
 ./Core/Completeness/LogicalRelation/Definitions.v
 ./Core/Completeness/LogicalRelation/Lemmas.v
+./Core/Completeness/LogicalRelation/Tactics.v
 ./Core/Completeness/LogicalRelation.v
-./Core/Completeness/FunctionCases.v
+./Core/Completeness/NatCases.v
+./Core/Completeness/SubstitutionCases.v
 ./Core/Completeness/TermStructureCases.v
 ./Core/Completeness/UniverseCases.v
 ./Core/Completeness/VariableCases.v

@@ -98,12 +98,17 @@ Ltac clear_dups :=
   repeat find_dup_hyp ltac:(fun H H' _ => clear H || clear H')
                              ltac:(idtac).
 
-Ltac progressive_invert H :=
+Ltac directed tac :=
   let ng := numgoals in
-  (* dependent destruction is more general than inversion *)
-  dependent destruction H;
+  tac;
   let ng' := numgoals in
-  guard ng = ng'.
+  guard ng' <= ng.
+
+Tactic Notation "directed" tactic2(tac) := directed tac.
+
+Ltac progressive_invert H :=
+  (* dependent destruction is more general than inversion *)
+  directed dependent destruction H.
 
 Ltac clean_replace_by exp0 exp1 tac :=
   tryif unify exp0 exp1
@@ -133,8 +138,11 @@ Ltac match_by_head1 head tac :=
 Ltac match_by_head head tac := repeat (match_by_head1 head ltac:(fun H => tac H; try mark H)); unmark_all.
 
 Ltac inversion_by_head head := match_by_head head ltac:(fun H => inversion H).
+Ltac dir_inversion_by_head head := match_by_head head ltac:(fun H => directed inversion H).
 Ltac inversion_clear_by_head head := match_by_head head ltac:(fun H => inversion_clear H).
+Ltac dir_inversion_clear_by_head head := match_by_head head ltac:(fun H => directed inversion_clear H).
 Ltac destruct_by_head head := match_by_head head ltac:(fun H => destruct H).
+Ltac dir_destruct_by_head head := match_by_head head ltac:(fun H => directed destruct H).
 
 (** McLTT automation *)
 

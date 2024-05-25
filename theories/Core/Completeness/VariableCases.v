@@ -1,5 +1,6 @@
-From Coq Require Import Morphisms_Relations Relations.
-From Mcltt Require Import Base LibTactics Completeness.LogicalRelation System.
+From Coq Require Import Morphisms_Relations RelationClasses.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import Completeness.LogicalRelation System.
 Import Domain_Notations.
 
 Lemma valid_lookup : forall {Γ x A env_rel}
@@ -21,12 +22,12 @@ Proof with solve [repeat econstructor; mauto].
     [|specialize (IHHxinΓ _ _ _ equiv_Γ_Γ' H2) as [j ?]; destruct_conjs];
     apply_relation_equivalence;
     eexists; intros ? ? [];
-    (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H); destruct_conjs;
+    (on_all_hyp: destruct_rel_by_assumption tail_rel); destruct_conjs;
     eexists.
   - split; econstructor...
   - destruct_by_head rel_typ.
     destruct_by_head rel_exp.
-    inversion_by_head (eval_exp {{{ #n }}}); subst.
+    dir_inversion_by_head eval_exp; subst.
     split; econstructor; simpl...
 Qed.
 
@@ -36,8 +37,56 @@ Lemma valid_var : forall {Γ x A},
     {{ Γ ⊨ #x : A }}.
 Proof.
   intros * [? equiv_Γ_Γ] ?.
-  econstructor.
-  unshelve epose proof (valid_lookup equiv_Γ_Γ _); mauto.
+  unshelve epose proof (valid_lookup equiv_Γ_Γ _) as []; try eassumption.
+  eexists_rel_exp; eassumption.
+Qed.
+
+Lemma rel_exp_var_0_sub : forall {Γ M σ Δ A},
+  {{ Γ ⊨s σ : Δ }} ->
+  {{ Γ ⊨ M : A[σ] }} ->
+  {{ Γ ⊨ #0[σ ,, M] ≈ M : A[σ] }}.
+Proof.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓ [? [env_relΔ]]] [].
+  destruct_conjs.
+  pose (env_relΓ0 := env_relΓ).
+  handle_per_ctx_env_irrel.
+  eexists_rel_exp.
+  intros.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
+  dir_inversion_by_head eval_exp; subst.
+  functional_eval_rewrite_clear.
+  eexists.
+  split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
+Qed.
+
+Lemma rel_exp_var_S_sub : forall {Γ M σ Δ A x B},
+  {{ Γ ⊨s σ : Δ }} ->
+  {{ Γ ⊨ M : A[σ] }} ->
+  {{ #x : B ∈ Δ }} ->
+  {{ Γ ⊨ #(S x)[σ ,, M] ≈ #x[σ] : B[σ] }}.
+Proof.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓ [? [env_relΔ]]] [] HxinΓ.
+  destruct_conjs.
+  pose (env_relΓ0 := env_relΓ).
+  handle_per_ctx_env_irrel.
+  unshelve epose proof (valid_lookup _ HxinΓ); revgoals; try eassumption.
+  destruct_conjs.
+  eexists_rel_exp.
+  intros.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
+  destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
+  dir_inversion_by_head eval_exp; subst.
+  functional_eval_rewrite_clear.
+  eexists.
+  split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
 Qed.
 
 Lemma rel_exp_var_weaken : forall {Γ B x A},
@@ -47,19 +96,19 @@ Lemma rel_exp_var_weaken : forall {Γ B x A},
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [] HxinΓ.
-  match_by_head1 per_ctx_env ltac:(fun H => inversion H); subst.
-  unshelve epose proof (valid_lookup _ HxinΓ); revgoals; mauto.
+  intros * [env_relΓB] HxinΓ.
+  inversion_by_head (per_ctx_env env_relΓB); subst.
+  unshelve epose proof (valid_lookup _ HxinΓ); revgoals; try eassumption.
   destruct_conjs.
-  eexists.
-  eexists; try eassumption.
-  eexists.
+  eexists_rel_exp.
   apply_relation_equivalence.
-  intros ? ? [].
-  (on_all_hyp: fun H => destruct_rel_by_assumption tail_rel H).
+  intros.
+  destruct_conjs.
+  rename tail_rel into env_relΓ.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
-  inversion_by_head (eval_exp {{{ #x }}}); subst.
+  dir_inversion_by_head eval_exp; subst.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; mauto ..].
+  split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
 Qed.
