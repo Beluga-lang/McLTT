@@ -339,7 +339,6 @@ Proof.
   econstructor; eauto.
 Qed.
 
-
 Lemma rel_exp_natrec_sub : forall {Γ σ Δ MZ MS A M},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ ⊨ MZ : A[Id,,zero] }} ->
@@ -347,6 +346,8 @@ Lemma rel_exp_natrec_sub : forall {Γ σ Δ MZ MS A M},
     {{ Δ ⊨ M : ℕ }} ->
     {{ Δ ⊨ rec M return A | zero -> MZ | succ -> MS end[σ] ≈ rec M[σ] return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M[σ]] }}.
 Proof.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
 Admitted.
 
 Lemma rel_exp_nat_beta_zero : forall {Γ MZ MS A},
@@ -354,7 +355,32 @@ Lemma rel_exp_nat_beta_zero : forall {Γ MZ MS A},
     {{ Γ, ℕ, A ⊨ MS : A[Wk∘Wk,,succ(#1)] }} ->
     {{ Γ ⊨ rec zero return A | zero -> MZ | succ -> MS end ≈ MZ : A[Id,,zero] }}.
 Proof.
-Admitted.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓ] [env_relΓℕA].
+  destruct_conjs.
+  assert {{ ⊨ Γ, ℕ }} as [env_relΓℕ] by (match_by_head (per_ctx_env env_relΓℕA) invert_per_ctx_env; eexists; eauto).
+  destruct_conjs.
+  pose (env_relΓℕ0 := env_relΓℕ).
+  pose (env_relΓℕA0 := env_relΓℕA).
+  match_by_head (per_ctx_env env_relΓℕA) invert_per_ctx_env.
+  handle_per_ctx_env_irrel.
+  match_by_head (per_ctx_env env_relΓℕ) invert_per_ctx_env.
+  eexists_rel_exp.
+  intros.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  destruct_by_head rel_typ.
+  invert_rel_typ_body.
+  rename p'2 into p.
+  rename p'1 into p'.
+  destruct_by_head rel_exp.
+  assert {{ Dom zero ≈ zero ∈ per_nat }} by econstructor.
+  assert {{ Dom p ↦ zero ≈ p' ↦ zero ∈ env_relΓℕ }} by (apply_relation_equivalence; eauto).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓℕ).
+  handle_per_univ_elem_irrel.
+  eexists.
+  split; [> econstructor; only 1-2: repeat econstructor ..]; eauto.
+Qed.
 
 Lemma rel_exp_nat_beta_succ : forall {Γ MZ MS A M},
     {{ Γ ⊨ MZ : A[Id,,zero] }} ->
@@ -362,4 +388,6 @@ Lemma rel_exp_nat_beta_succ : forall {Γ MZ MS A M},
     {{ Γ ⊨ M : ℕ }} ->
     {{ Γ ⊨ rec succ M return A | zero -> MZ | succ -> MS end ≈ MS[Id,,M,,rec M return A | zero -> MZ | succ -> MS end] : A[Id,,succ M] }}.
 Proof.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
 Admitted.
