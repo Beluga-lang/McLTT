@@ -341,3 +341,30 @@ Section GluingInduction.
   Qed.
 
 End GluingInduction.
+
+
+Inductive glu_neut i Γ m M c A B : Prop :=
+| glu_neut_make : forall P El R,
+    {{ Γ ⊢ m : M }} ->
+    glu_univ_elem i P El R A B ->
+    per_bot c c ->
+    (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ a }} -> {{ Δ ⊢ m [ σ ] ≈  a : M [ σ ] }}) ->
+    glu_neut i Γ m M c A B.
+
+
+Inductive glu_normal i Γ m M a A B : Prop :=
+| glu_normal_make : forall P El R,
+    {{ Γ ⊢ m : M }} ->
+    glu_univ_elem i P El R A B ->
+    per_top d{{{ ⇓ A a }}} d{{{ ⇓ B a }}} ->
+    (forall Δ σ b, {{ Δ ⊢w σ : Γ }} -> {{ Rnf ⇓ A a in length Δ ↘ b }} -> {{ Δ ⊢ m [ σ ] ≈  b : M [ σ ] }}) ->
+    glu_normal i Γ m M a A B.
+
+
+Inductive glu_typ i Γ M A B : Prop :=
+| glu_typ_make : forall P El R,
+    {{ Γ ⊢ M : Type@i }} ->
+    glu_univ_elem i P El R A B ->
+    per_top_typ A B ->
+    (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rtyp A in length Δ ↘ a }} -> {{ Δ ⊢ M [ σ ] ≈  a : Type@i }}) ->
+    glu_typ i Γ M A B.
