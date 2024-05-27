@@ -221,6 +221,14 @@ Proof with intuition.
   econstructor; only 1-2: repeat econstructor; try etransitivity...
 Qed.
 
+#[export]
+Instance rel_subst_PER {Γ A} : PER (rel_subst_under_ctx Γ A).
+Proof.
+  split.
+  - auto using rel_subst_sym.
+  - eauto using rel_subst_trans.
+Qed.
+
 Lemma rel_subst_conv : forall {Γ σ σ' Δ Δ'},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ ⊨ Δ ≈ Δ' }} ->
@@ -237,4 +245,16 @@ Proof with intuition.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   econstructor; only 1-2: repeat econstructor...
+Qed.
+
+Lemma presup_rel_subst : forall {Γ σ σ' Δ},
+    {{ Γ ⊨s σ ≈ σ' : Δ }} ->
+    {{ ⊨ Γ }} /\ {{ Γ ⊨s σ : Δ }} /\ {{ Γ ⊨s σ' : Δ }} /\ {{ ⊨ Δ }}.
+Proof.
+  intros * [env_relΓ [? [env_relΔ]]].
+  destruct_conjs.
+  repeat split; try solve [econstructor; eauto];
+    unfold valid_subst_under_ctx;
+    etransitivity; only 2,3: symmetry;
+    econstructor; eexists; eauto.
 Qed.

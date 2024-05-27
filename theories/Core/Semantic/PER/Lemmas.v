@@ -58,6 +58,14 @@ Qed.
 #[export]
 Hint Resolve per_bot_trans : mcltt.
 
+#[export]
+Instance per_bot_PER : PER per_bot.
+Proof.
+  split.
+  - eauto using per_bot_sym.
+  - eauto using per_bot_trans.
+Qed.
+
 Lemma var_per_bot : forall {n},
     {{ Dom !n ≈ !n ∈ per_bot }}.
 Proof.
@@ -92,6 +100,14 @@ Qed.
 
 #[export]
 Hint Resolve per_top_trans : mcltt.
+
+#[export]
+Instance per_top_PER : PER per_top.
+Proof.
+  split.
+  - eauto using per_top_sym.
+  - eauto using per_top_trans.
+Qed.
 
 Lemma per_bot_then_per_top : forall m m' a a' b b' c c',
     {{ Dom m ≈ m' ∈ per_bot }} ->
@@ -132,6 +148,14 @@ Qed.
 #[export]
 Hint Resolve per_top_typ_trans : mcltt.
 
+#[export]
+Instance per_top_typ_PER : PER per_top_typ.
+Proof.
+  split.
+  - eauto using per_top_typ_sym.
+  - eauto using per_top_typ_trans.
+Qed.
+
 Lemma per_nat_sym : forall m n,
     {{ Dom m ≈ n ∈ per_nat }} ->
     {{ Dom n ≈ m ∈ per_nat }}.
@@ -153,6 +177,14 @@ Qed.
 
 #[export]
 Hint Resolve per_nat_trans : mcltt.
+
+#[export]
+Instance per_nat_PER : PER per_nat.
+Proof.
+  split.
+  - eauto using per_nat_sym.
+  - eauto using per_nat_trans.
+Qed.
 
 Lemma per_ne_sym : forall m n,
     {{ Dom m ≈ n ∈ per_ne }} ->
@@ -177,6 +209,14 @@ Qed.
 
 #[export]
 Hint Resolve per_ne_trans : mcltt.
+
+#[export]
+Instance per_ne_PER : PER per_ne.
+Proof.
+  split.
+  - eauto using per_ne_sym.
+  - eauto using per_ne_trans.
+Qed.
 
 Add Parametric Morphism i : (per_univ_elem i)
     with signature (@relation_equivalence domain) ==> eq ==> eq ==> iff as per_univ_elem_morphism_iff.
