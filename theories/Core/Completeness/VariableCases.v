@@ -31,7 +31,7 @@ Proof with solve [repeat econstructor; mauto].
     split; econstructor; simpl...
 Qed.
 
-Lemma valid_var : forall {Γ x A},
+Lemma valid_exp_var : forall {Γ x A},
     {{ ⊨ Γ }} ->
     {{ #x : A ∈ Γ }} ->
     {{ Γ ⊨ #x : A }}.

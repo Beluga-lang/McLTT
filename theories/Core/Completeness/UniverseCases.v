@@ -3,7 +3,7 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Completeness.LogicalRelation.
 Import Domain_Notations.
 
-Lemma valid_typ : forall {i Γ},
+Lemma valid_exp_typ : forall {i Γ},
     {{ ⊨ Γ }} ->
     {{ Γ ⊨ Type@i : Type@(S i) }}.
 Proof.
