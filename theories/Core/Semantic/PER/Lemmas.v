@@ -885,3 +885,11 @@ Qed.
 Ltac invert_per_ctx_env H :=
   (unshelve eapply (per_ctx_env_cons_clean_inversion _) in H; [eassumption | |]; destruct H as [? [? []]])
   + (inversion H; subst).
+
+Lemma per_ctx_respects_length : forall {Γ Γ'},
+    {{ Exp Γ ≈ Γ' ∈ per_ctx }} ->
+    length Γ = length Γ'.
+Proof.
+  intros * [? H].
+  induction H; simpl; congruence.
+Qed.

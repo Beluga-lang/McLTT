@@ -1,7 +1,7 @@
 From Coq Require Import Lia Morphisms_Relations PeanoNat Relation_Definitions.
 From Equations Require Import Equations.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export PER Evaluation Readback.
+From Mcltt.Core Require Export Evaluation NbE PER Readback.
 Import Domain_Notations.
 
 Lemma per_nat_then_per_top : forall {n m},
@@ -95,3 +95,20 @@ Qed.
 
 #[export]
 Hint Resolve per_elem_then_per_top : mcltt.
+
+Lemma per_ctx_then_per_env_initial_env : forall {Γ Γ' env_rel},
+    {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ env_rel }} ->
+    exists p p', initial_env Γ p /\ initial_env Γ' p' /\ {{ Dom p ≈ p' ∈ env_rel }}.
+Proof.
+  pose proof (@relation_equivalence_pointwise env).
+  induction 1.
+  - do 2 eexists; intuition.
+  - destruct_conjs.
+    (on_all_hyp: destruct_rel_by_assumption tail_rel).
+    do 2 eexists; repeat split; only 1-2: econstructor; eauto.
+    apply_relation_equivalence.
+    eexists.
+    eapply per_bot_then_per_elem; eauto.
+    erewrite per_ctx_respects_length; mauto.
+    eexists; eauto.
+Qed.
