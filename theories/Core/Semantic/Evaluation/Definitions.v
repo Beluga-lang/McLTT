@@ -81,3 +81,6 @@ Scheme eval_exp_mut_ind := Induction for eval_exp Sort Prop
 with eval_natrec_mut_ind := Induction for eval_natrec Sort Prop
 with eval_app_mut_ind := Induction for eval_app Sort Prop
 with eval_sub_mut_ind := Induction for eval_sub Sort Prop.
+
+#[export]
+Hint Constructors eval_exp eval_natrec eval_app eval_sub : mcltt.

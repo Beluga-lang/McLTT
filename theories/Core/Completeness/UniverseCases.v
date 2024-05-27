@@ -15,6 +15,9 @@ Proof.
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
 
+#[export]
+Hint Resolve valid_exp_typ : mcltt.
+
 Lemma rel_exp_typ_sub : forall {i Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Γ ⊨ Type@i[σ] ≈ Type@i : Type@(S i) }}.
@@ -28,6 +31,9 @@ Proof.
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| eexists (per_univ _)];
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_typ_sub : mcltt.
 
 Lemma rel_exp_cumu : forall {i Γ A A'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -50,3 +56,6 @@ Proof.
   per_univ_elem_econstructor; eauto.
   reflexivity.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_cumu : mcltt.

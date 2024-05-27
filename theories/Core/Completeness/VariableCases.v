@@ -41,6 +41,9 @@ Proof.
   eexists_rel_exp; eassumption.
 Qed.
 
+#[export]
+Hint Resolve valid_exp_var : mcltt.
+
 Lemma rel_exp_var_0_sub : forall {Γ M σ Δ A},
   {{ Γ ⊨s σ : Δ }} ->
   {{ Γ ⊨ M : A[σ] }} ->
@@ -62,6 +65,9 @@ Proof.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_var_0_sub : mcltt.
 
 Lemma rel_exp_var_S_sub : forall {Γ M σ Δ A x B},
   {{ Γ ⊨s σ : Δ }} ->
@@ -89,6 +95,9 @@ Proof.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_var_S_sub : mcltt.
+
 Lemma rel_exp_var_weaken : forall {Γ B x A},
     {{ ⊨ Γ , B }} ->
     {{ #x : A ∈ Γ }} ->
@@ -112,3 +121,6 @@ Proof.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_var_weaken : mcltt.

@@ -29,6 +29,9 @@ Proof.
   split; [> econstructor; only 1-2: econstructor; eassumption ..].
 Qed.
 
+#[export]
+Hint Resolve rel_exp_sub_cong : mcltt.
+
 Lemma rel_exp_sub_id : forall {Γ M A},
     {{ Γ ⊨ M : A }} ->
     {{ Γ ⊨ M[Id] ≈ M : A }}.
@@ -44,6 +47,9 @@ Proof.
   split; econstructor; try eassumption.
   repeat econstructor; eassumption.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_sub_id : mcltt.
 
 Lemma rel_exp_sub_compose : forall {Γ τ Γ' σ Γ'' M A},
     {{ Γ ⊨s τ : Γ' }} ->
@@ -75,6 +81,9 @@ Proof.
   split; [> econstructor; only 1-2: repeat econstructor; eassumption ..].
 Qed.
 
+#[export]
+Hint Resolve rel_exp_sub_compose : mcltt.
+
 Lemma rel_exp_conv : forall {Γ M M' A A' i},
     {{ Γ ⊨ M ≈ M' : A }} ->
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -100,6 +109,9 @@ Proof.
   etransitivity; [symmetry |]; eassumption.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_conv : mcltt.
+
 Lemma rel_exp_sym : forall {Γ M M' A},
     {{ Γ ⊨ M ≈ M' : A }} ->
     {{ Γ ⊨ M' ≈ M : A }}.
@@ -119,6 +131,9 @@ Proof.
   split; econstructor; try eassumption.
   symmetry; eassumption.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_sym : mcltt.
 
 Lemma rel_exp_trans : forall {Γ M1 M2 M3 A},
     {{ Γ ⊨ M1 ≈ M2 : A }} ->
@@ -145,11 +160,12 @@ Proof.
 Qed.
 
 #[export]
+Hint Resolve rel_exp_trans : mcltt.
+
+#[export]
 Instance rel_exp_PER {Γ A} : PER (rel_exp_under_ctx Γ A).
 Proof.
-  split.
-  - auto using rel_exp_sym.
-  - eauto using rel_exp_trans.
+  split; mauto.
 Qed.
 
 Lemma presup_rel_exp : forall {Γ M M' A},

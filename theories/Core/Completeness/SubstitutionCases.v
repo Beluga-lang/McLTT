@@ -12,6 +12,9 @@ Proof with intuition.
   econstructor; only 1-2: repeat econstructor...
 Qed.
 
+#[export]
+Hint Resolve rel_subst_id : mcltt.
+
 Lemma rel_subst_weaken : forall {Γ A},
     {{ ⊨ Γ, A }} ->
     {{ Γ, A ⊨s Wk ≈ Wk : Γ }}.
@@ -21,6 +24,9 @@ Proof with intuition.
   eexists_rel_subst.
   econstructor; only 1-2: repeat econstructor...
 Qed.
+
+#[export]
+Hint Resolve rel_subst_weaken : mcltt.
 
 Lemma rel_subst_compose_cong : forall {Γ τ τ' Γ' σ σ' Γ''},
     {{ Γ ⊨s τ ≈ τ' : Γ' }} ->
@@ -39,6 +45,9 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
   econstructor; only 1-2: repeat econstructor...
 Qed.
+
+#[export]
+Hint Resolve rel_subst_compose_cong : mcltt.
 
 Lemma rel_subst_extend_cong : forall {i Γ M M' σ σ' Δ A},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
@@ -70,6 +79,9 @@ Proof with intuition.
   econstructor; only 1-2: repeat econstructor; eauto.
 Qed.
 
+#[export]
+Hint Resolve rel_subst_extend_cong : mcltt.
+
 Lemma rel_subst_id_compose_right : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Γ ⊨s Id ∘ σ ≈ σ : Δ }}.
@@ -82,6 +94,9 @@ Proof with intuition.
   econstructor; only 1-2: repeat econstructor...
 Qed.
 
+#[export]
+Hint Resolve rel_subst_id_compose_right : mcltt.
+
 Lemma rel_subst_id_compose_left : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Γ ⊨s σ ∘ Id ≈ σ : Δ }}.
@@ -93,6 +108,9 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   econstructor; only 1-2: repeat econstructor...
 Qed.
+
+#[export]
+Hint Resolve rel_subst_id_compose_left : mcltt.
 
 Lemma rel_subst_compose_assoc : forall {Γ σ Γ' σ' Γ'' σ'' Γ'''},
     {{ Γ' ⊨s σ : Γ }} ->
@@ -114,6 +132,9 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
   econstructor; only 1-2: repeat econstructor...
 Qed.
+
+#[export]
+Hint Resolve rel_subst_compose_assoc : mcltt.
 
 Lemma rel_subst_extend_compose : forall {Γ τ Γ' M σ Γ'' A i},
     {{ Γ' ⊨s σ : Γ'' }} ->
@@ -147,6 +168,9 @@ Proof with intuition.
   econstructor; only 1-2: repeat econstructor; try eexists...
 Qed.
 
+#[export]
+Hint Resolve rel_subst_extend_compose : mcltt.
+
 Lemma rel_subst_p_extend : forall {Γ' M σ Γ A},
     {{ Γ' ⊨s σ : Γ }} ->
     {{ Γ' ⊨ M : A[σ] }} ->
@@ -169,6 +193,9 @@ Proof with intuition.
   econstructor; only 1-2: repeat econstructor...
 Qed.
 
+#[export]
+Hint Resolve rel_subst_p_extend : mcltt.
+
 Lemma rel_subst_extend : forall {Γ' σ Γ A},
     {{ Γ' ⊨s σ : Γ, A }} ->
     {{ Γ' ⊨s σ ≈ (Wk ∘ σ) ,, #0[σ] : Γ, A }}.
@@ -189,6 +216,9 @@ Proof with intuition.
   econstructor; only 1-2: repeat econstructor; try eexists...
 Qed.
 
+#[export]
+Hint Resolve rel_subst_extend : mcltt.
+
 Lemma rel_subst_sym : forall {Γ σ σ' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ Γ ⊨s σ' ≈ σ : Δ }}.
@@ -201,6 +231,9 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   econstructor; only 1-2: repeat econstructor; try symmetry...
 Qed.
+
+#[export]
+Hint Resolve rel_subst_sym : mcltt.
 
 Lemma rel_subst_trans : forall {Γ σ σ' σ'' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
@@ -222,11 +255,12 @@ Proof with intuition.
 Qed.
 
 #[export]
+Hint Resolve rel_subst_trans : mcltt.
+
+#[export]
 Instance rel_subst_PER {Γ A} : PER (rel_subst_under_ctx Γ A).
 Proof.
-  split.
-  - auto using rel_subst_sym.
-  - eauto using rel_subst_trans.
+  split; mauto.
 Qed.
 
 Lemma rel_subst_conv : forall {Γ σ σ' Δ Δ'},
@@ -246,6 +280,9 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   econstructor; only 1-2: repeat econstructor...
 Qed.
+
+#[export]
+Hint Resolve rel_subst_conv : mcltt.
 
 Lemma presup_rel_subst : forall {Γ σ σ' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->

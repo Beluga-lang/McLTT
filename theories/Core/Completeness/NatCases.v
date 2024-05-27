@@ -15,6 +15,9 @@ Proof.
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
 
+#[export]
+Hint Resolve valid_exp_nat : mcltt.
+
 Lemma rel_exp_nat_sub : forall {Γ σ i Δ},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Γ ⊨ ℕ[σ] ≈ ℕ : Type@i }}.
@@ -29,6 +32,9 @@ Proof.
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_nat_sub : mcltt.
+
 Lemma valid_exp_zero : forall {Γ},
     {{ ⊨ Γ }} ->
     {{ Γ ⊨ zero : ℕ }}.
@@ -41,6 +47,9 @@ Proof.
   - per_univ_elem_econstructor; reflexivity.
   - econstructor.
 Qed.
+
+#[export]
+Hint Resolve valid_exp_zero : mcltt.
 
 Lemma rel_exp_zero_sub : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
@@ -56,6 +65,9 @@ Proof.
   - per_univ_elem_econstructor; reflexivity.
   - econstructor.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_zero_sub : mcltt.
 
 Lemma rel_exp_succ_sub : forall {Γ σ Δ M},
     {{ Γ ⊨s σ : Δ }} ->
@@ -79,6 +91,9 @@ Proof.
   - econstructor; eassumption.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_succ_sub : mcltt.
+
 Lemma rel_exp_succ_cong : forall {Γ M M'},
     {{ Γ ⊨ M ≈ M' : ℕ }} ->
     {{ Γ ⊨ succ M ≈ succ M' : ℕ }}.
@@ -96,6 +111,9 @@ Proof.
   - per_univ_elem_econstructor; reflexivity.
   - econstructor; eassumption.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_succ_cong : mcltt.
 
 Lemma eval_natrec_sub_neut : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' A A' i m m'},
     {{ DF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }} ->
@@ -369,6 +387,9 @@ Proof.
   econstructor; eauto.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_natrec_cong : mcltt.
+
 Lemma eval_natrec_sub_rel : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' A A' i m m'},
     {{ DF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }} ->
     {{ DF Δ ≈ Δ ∈ per_ctx_env ↘ env_relΔ }} ->
@@ -537,6 +558,9 @@ Proof.
   econstructor; eauto.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_natrec_sub : mcltt.
+
 Lemma rel_exp_nat_beta_zero : forall {Γ MZ MS A},
     {{ Γ ⊨ MZ : A[Id,,zero] }} ->
     {{ Γ, ℕ, A ⊨ MS : A[Wk∘Wk,,succ(#1)] }} ->
@@ -568,6 +592,9 @@ Proof.
   eexists.
   split; [> econstructor; only 1-2: repeat econstructor ..]; eauto.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_nat_beta_zero : mcltt.
 
 Lemma rel_exp_nat_beta_succ_rel_typ : forall {Γ env_relΓ A i M},
     {{ DF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }} ->
@@ -634,3 +661,6 @@ Proof.
     econstructor; [econstructor; econstructor |]; [econstructor | | | |]; eauto.
   - eassumption.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_nat_beta_succ : mcltt.

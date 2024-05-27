@@ -7,6 +7,8 @@ Inductive rel_exp M p M' p' (R : relation domain) : Prop :=
 | mk_rel_exp : forall m m', {{ ⟦ M ⟧ p ↘ m }} -> {{ ⟦ M' ⟧ p' ↘ m' }} -> {{ Dom m ≈ m' ∈ R }} -> rel_exp M p M' p' R.
 #[global]
 Arguments mk_rel_exp {_ _ _ _ _}.
+#[export]
+Hint Constructors rel_exp : mcltt.
 
 Definition rel_exp_under_ctx Γ A M M' :=
   exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
@@ -17,11 +19,17 @@ Definition rel_exp_under_ctx Γ A M M' :=
 Definition valid_exp_under_ctx Γ A M := rel_exp_under_ctx Γ A M M.
 #[global]
 Arguments valid_exp_under_ctx _ _ _ /.
+#[export]
+Hint Transparent valid_exp_under_ctx : mcltt.
+#[export]
+Hint Unfold valid_exp_under_ctx : mcltt.
 
 Inductive rel_subst σ p σ' p' (R : relation env) : Prop :=
 | mk_rel_subst : forall o o', {{ ⟦ σ ⟧s p ↘ o }} -> {{ ⟦ σ' ⟧s p' ↘ o' }} -> {{ Dom o ≈ o' ∈ R }} -> rel_subst σ p σ' p' R.
 #[global]
 Arguments mk_rel_subst {_ _ _ _ _ _}.
+#[export]
+Hint Constructors rel_subst : mcltt.
 
 Definition rel_subst_under_ctx Γ Δ σ σ' :=
   exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }})
@@ -32,6 +40,10 @@ Definition rel_subst_under_ctx Γ Δ σ σ' :=
 Definition valid_subst_under_ctx Γ Δ σ := rel_subst_under_ctx Γ Δ σ σ.
 #[global]
 Arguments valid_subst_under_ctx _ _ _ /.
+#[export]
+Hint Transparent valid_subst_under_ctx : mcltt.
+#[export]
+Hint Unfold valid_subst_under_ctx : mcltt.
 
 Notation "⊨ Γ ≈ Γ'" := (per_ctx Γ Γ')  (in custom judg at level 80, Γ custom exp, Γ' custom exp).
 Notation "⊨ Γ" := (valid_ctx Γ) (in custom judg at level 80, Γ custom exp).

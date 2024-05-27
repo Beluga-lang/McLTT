@@ -72,6 +72,9 @@ Proof with intuition.
     apply Equivalence_Reflexive.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_pi_cong : mcltt.
+
 Lemma rel_exp_pi_sub : forall {i Γ σ Δ A B},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ ⊨ A : Type@i }} ->
@@ -115,6 +118,9 @@ Proof with intuition.
     apply Equivalence_Reflexive.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_pi_sub : mcltt.
+
 Lemma rel_exp_fn_cong : forall {i Γ A A' B M M'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ , A ⊨ M ≈ M' : B }} ->
@@ -157,6 +163,9 @@ Proof with intuition.
     handle_per_univ_elem_irrel...
 Qed.
 
+#[export]
+Hint Resolve rel_exp_fn_cong : mcltt.
+
 Lemma rel_exp_fn_sub : forall {Γ σ Δ A M B},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ , A ⊨ M : B }} ->
@@ -196,6 +205,9 @@ Proof with intuition.
     handle_per_univ_elem_irrel...
 Qed.
 
+#[export]
+Hint Resolve rel_exp_fn_sub : mcltt.
+
 Lemma rel_exp_app_cong : forall {Γ M M' A B N N'},
     {{ Γ ⊨ M ≈ M' : Π A B }} ->
     {{ Γ ⊨ N ≈ N' : A }} ->
@@ -227,6 +239,9 @@ Proof with intuition.
   all: intuition.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_app_cong : mcltt.
+
 Lemma rel_exp_app_sub : forall {Γ σ Δ M A B N},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ ⊨ M : Π A B }} ->
@@ -256,6 +271,9 @@ Proof with intuition.
   all: eauto.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_app_sub : mcltt.
+
 Lemma rel_exp_pi_beta : forall {Γ A M B N},
   {{ Γ , A ⊨ M : B }} ->
   {{ Γ ⊨ N : A }} ->
@@ -280,6 +298,9 @@ Proof with intuition.
   split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
 Qed.
 
+#[export]
+Hint Resolve rel_exp_pi_beta : mcltt.
+
 Lemma rel_exp_pi_eta : forall {Γ M A B},
   {{ Γ ⊨ M : Π A B }} ->
   {{ Γ ⊨ M ≈ λ A (M[Wk] #0) : Π A B }}.
@@ -303,3 +324,6 @@ Proof with intuition.
   do 2 econstructor; eauto; econstructor; eauto.
   econstructor.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_pi_eta : mcltt.

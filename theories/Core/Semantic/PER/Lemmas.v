@@ -840,6 +840,9 @@ Proof.
   typeclasses eauto.
 Qed.
 
+#[export]
+Hint Resolve per_ctx_env_cons' : mcltt.
+
 Ltac per_ctx_env_econstructor :=
   (repeat intro; hnf; eapply per_ctx_env_cons') + econstructor.
 
