@@ -6,6 +6,7 @@
 ./Core/Base.v
 ./Core/Completeness/ContextCases.v
 ./Core/Completeness/FunctionCases.v
+./Core/Completeness/FundamentalTheorem.v
 ./Core/Completeness/LogicalRelation/Definitions.v
 ./Core/Completeness/LogicalRelation/Lemmas.v
 ./Core/Completeness/LogicalRelation/Tactics.v
