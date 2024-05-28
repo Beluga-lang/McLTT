@@ -27,6 +27,9 @@ Proof.
   mauto.
 Qed.
 
+#[export]
+Hint Resolve rel_exp_implies_rel_typ : mcltt.
+
 Lemma rel_typ_implies_rel_exp : forall {i A p A' p' R},
     rel_typ i A p A' p' R ->
     rel_exp A p A' p' (per_univ i).
@@ -35,3 +38,6 @@ Proof.
   destruct_by_head rel_typ.
   mauto.
 Qed.
+
+#[export]
+Hint Resolve rel_typ_implies_rel_exp : mcltt.

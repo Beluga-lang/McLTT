@@ -11,7 +11,7 @@ Proof.
   eexists_rel_exp.
   intros.
   eexists (per_univ _).
-  split; [> econstructor; only 1-2: econstructor; eauto ..]; [| eexists (per_univ _)];
+  split; econstructor; mauto; [| eexists (per_univ _)];
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
 
@@ -28,7 +28,7 @@ Proof.
   intros.
   eexists (per_univ _).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| eexists (per_univ _)];
+  split; econstructor; mauto; [| eexists (per_univ _)];
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
 
@@ -52,7 +52,7 @@ Proof.
   invert_rel_typ_body.
   destruct_conjs.
   match_by_head per_univ_elem ltac:(fun H => apply per_univ_elem_cumu in H).
-  split; [> econstructor; only 1-2: repeat econstructor ..]; eauto; [| eexists; eauto].
+  split; econstructor; mauto.
   per_univ_elem_econstructor; eauto.
   reflexivity.
 Qed.

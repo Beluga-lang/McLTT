@@ -6,10 +6,9 @@ Import Domain_Notations.
 Lemma rel_subst_id : forall {Γ},
     {{ ⊨ Γ }} ->
     {{ Γ ⊨s Id ≈ Id : Γ }}.
-Proof with intuition.
+Proof with mautosolve.
   intros * [].
-  eexists_rel_subst.
-  econstructor; only 1-2: repeat econstructor...
+  eexists_rel_subst...
 Qed.
 
 #[export]
@@ -32,7 +31,7 @@ Lemma rel_subst_compose_cong : forall {Γ τ τ' Γ' σ σ' Γ''},
     {{ Γ ⊨s τ ≈ τ' : Γ' }} ->
     {{ Γ' ⊨s σ ≈ σ' : Γ'' }} ->
     {{ Γ ⊨s σ ∘ τ ≈ σ' ∘ τ' : Γ'' }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΓ']]] [].
@@ -42,8 +41,7 @@ Proof with intuition.
   eexists_rel_subst.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  (on_all_hyp: destruct_rel_by_assumption env_relΓ').
-  econstructor; only 1-2: repeat econstructor...
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ')...
 Qed.
 
 #[export]
@@ -54,7 +52,7 @@ Lemma rel_subst_extend_cong : forall {i Γ M M' σ σ' Δ A},
     {{ Δ ⊨ A : Type@i }} ->
     {{ Γ ⊨ M ≈ M' : A[σ] }} ->
     {{ Γ ⊨s σ ,, M ≈ σ' ,, M' : Δ, A }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] HA [].
@@ -75,8 +73,7 @@ Proof with intuition.
   destruct_by_head rel_typ.
   inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
   handle_per_univ_elem_irrel.
-  destruct_by_head rel_exp.
-  econstructor; only 1-2: repeat econstructor; eauto.
+  destruct_by_head rel_exp...
 Qed.
 
 #[export]
@@ -85,13 +82,12 @@ Hint Resolve rel_subst_extend_cong : mcltt.
 Lemma rel_subst_id_compose_right : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Γ ⊨s Id ∘ σ ≈ σ : Δ }}.
-Proof with intuition.
+Proof with mautosolve.
   intros * [env_relΓ].
   destruct_conjs.
   eexists_rel_subst.
   intros.
-  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  econstructor; only 1-2: repeat econstructor...
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ)...
 Qed.
 
 #[export]
@@ -100,13 +96,12 @@ Hint Resolve rel_subst_id_compose_right : mcltt.
 Lemma rel_subst_id_compose_left : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Γ ⊨s σ ∘ Id ≈ σ : Δ }}.
-Proof with intuition.
+Proof with mautosolve.
   intros * [env_relΓ].
   destruct_conjs.
   eexists_rel_subst.
   intros.
-  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  econstructor; only 1-2: repeat econstructor...
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ)...
 Qed.
 
 #[export]
@@ -117,7 +112,7 @@ Lemma rel_subst_compose_assoc : forall {Γ σ Γ' σ' Γ'' σ'' Γ'''},
     {{ Γ'' ⊨s σ' : Γ' }} ->
     {{ Γ''' ⊨s σ'' : Γ'' }} ->
     {{ Γ''' ⊨s (σ ∘ σ') ∘ σ'' ≈ σ ∘ (σ' ∘ σ'') : Γ }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓ]]] [env_relΓ'' [? []]] [env_relΓ'''].
@@ -130,7 +125,7 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ''').
   (on_all_hyp: destruct_rel_by_assumption env_relΓ'').
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
-  econstructor; only 1-2: repeat econstructor...
+  econstructor...
 Qed.
 
 #[export]
@@ -142,7 +137,7 @@ Lemma rel_subst_extend_compose : forall {Γ τ Γ' M σ Γ'' A i},
     {{ Γ' ⊨ M : A[σ] }} ->
     {{ Γ ⊨s τ : Γ' }} ->
     {{ Γ ⊨s (σ ,, M) ∘ τ ≈ (σ ∘ τ) ,, M[τ] : Γ'', A }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓ'']]] HA [] [env_relΓ].
@@ -165,7 +160,7 @@ Proof with intuition.
   inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
-  econstructor; only 1-2: repeat econstructor; try eexists...
+  econstructor...
 Qed.
 
 #[export]
@@ -175,7 +170,7 @@ Lemma rel_subst_p_extend : forall {Γ' M σ Γ A},
     {{ Γ' ⊨s σ : Γ }} ->
     {{ Γ' ⊨ M : A[σ] }} ->
     {{ Γ' ⊨s Wk ∘ (σ ,, M) ≈ σ : Γ }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓ]]] [].
@@ -190,7 +185,7 @@ Proof with intuition.
   inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
-  econstructor; only 1-2: repeat econstructor...
+  econstructor...
 Qed.
 
 #[export]
@@ -199,7 +194,7 @@ Hint Resolve rel_subst_p_extend : mcltt.
 Lemma rel_subst_extend : forall {Γ' σ Γ A},
     {{ Γ' ⊨s σ : Γ, A }} ->
     {{ Γ' ⊨s σ ≈ (Wk ∘ σ) ,, #0[σ] : Γ, A }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓA]]].
@@ -213,7 +208,7 @@ Proof with intuition.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  econstructor; only 1-2: repeat econstructor; try eexists...
+  econstructor...
 Qed.
 
 #[export]
@@ -222,14 +217,14 @@ Hint Resolve rel_subst_extend : mcltt.
 Lemma rel_subst_sym : forall {Γ σ σ' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ Γ ⊨s σ' ≈ σ : Δ }}.
-Proof with intuition.
+Proof with mautosolve.
   intros * [env_relΓ].
   destruct_conjs.
   eexists_rel_subst.
   intros.
   assert (env_relΓ p' p) by (symmetry; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  econstructor; only 1-2: repeat econstructor; try symmetry...
+  econstructor; mauto; symmetry...
 Qed.
 
 #[export]
@@ -239,7 +234,7 @@ Lemma rel_subst_trans : forall {Γ σ σ' σ'' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ Γ ⊨s σ' ≈ σ'' : Δ }} ->
     {{ Γ ⊨s σ ≈ σ'' : Δ }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [].
@@ -251,7 +246,7 @@ Proof with intuition.
   assert (env_relΓ p' p') by (etransitivity; [symmetry |]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   functional_eval_rewrite_clear.
-  econstructor; only 1-2: repeat econstructor; try etransitivity...
+  econstructor; mauto; etransitivity...
 Qed.
 
 #[export]
@@ -267,7 +262,7 @@ Lemma rel_subst_conv : forall {Γ σ σ' Δ Δ'},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ ⊨ Δ ≈ Δ' }} ->
     {{ Γ ⊨s σ ≈ σ' : Δ' }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [].
@@ -277,8 +272,7 @@ Proof with intuition.
   assert {{ EF Δ' ≈ Δ' ∈ per_ctx_env ↘ env_relΔ }} by (etransitivity; [symmetry |]; eassumption).
   eexists_rel_subst.
   intros.
-  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  econstructor; only 1-2: repeat econstructor...
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ)...
 Qed.
 
 #[export]
@@ -287,11 +281,11 @@ Hint Resolve rel_subst_conv : mcltt.
 Lemma presup_rel_subst : forall {Γ σ σ' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ ⊨ Γ }} /\ {{ Γ ⊨s σ : Δ }} /\ {{ Γ ⊨s σ' : Δ }} /\ {{ ⊨ Δ }}.
-Proof.
+Proof with mautosolve.
   intros * [env_relΓ [? [env_relΔ]]].
   destruct_conjs.
-  repeat split; try solve [econstructor; eauto];
+  repeat split; try solve [eexists; eauto];
     unfold valid_subst_under_ctx;
     etransitivity; only 2,3: symmetry;
-    econstructor; eexists; eauto.
+    econstructor...
 Qed.
