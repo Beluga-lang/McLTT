@@ -1,4 +1,4 @@
-From Coq Require Export Program.Equality Program.Tactics Lia.
+From Coq Require Export Program.Equality Program.Tactics Lia RelationClasses.
 
 Create HintDb mcltt discriminated.
 
@@ -180,6 +180,20 @@ Ltac mautosolve := unshelve solve [mauto]; solve [constructor].
 
 #[export]
   Hint Extern 1 => eassumption : typeclass_instances.
+
+Ltac predicate_resolve :=
+  lazymatch goal with
+  | |- @Reflexive _ (@predicate_equivalence _) =>
+      simple apply @Equivalence_Reflexive
+  | |- @Symmetric _ (@predicate_equivalence _) =>
+      simple apply @Equivalence_Symmetric
+  | |- @Transitive _ (@predicate_equivalence _) =>
+      simple apply @Equivalence_Transitive
+  end.
+
+#[export]
+ Hint Extern 1 => predicate_resolve : typeclass_instances.
+
 
 (* intuition tactic default setting *)
 Ltac Tauto.intuition_solver ::= auto with mcltt core solve_subterm.
