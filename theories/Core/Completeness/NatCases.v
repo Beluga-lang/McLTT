@@ -213,7 +213,7 @@ Corollary eval_natrec_neut : forall {Γ env_relΓ MZ MZ' MS MS' A A' i m m'},
         {{ Dom rec m under p return A | zero -> mz | succ -> MS end ≈ rec m' under p' return A' | zero -> mz' | succ -> MS' end ∈ per_bot }}).
 Proof.
   intros.
-  assert {{ Dom rec m under p return A | zero -> mz | succ -> MS end ≈ rec m' under p' return ~ (a_sub A' {{{ q Id }}}) | zero -> mz' | succ -> ~ (a_sub MS' {{{ q (q Id) }}}) end ∈ per_bot }} by (eapply eval_natrec_sub_neut; mauto).
+  assert {{ Dom rec m under p return A | zero -> mz | succ -> MS end ≈ rec m' under p' return A'[q Id] | zero -> mz' | succ -> MS'[q (q Id)] end ∈ per_bot }} by (eapply eval_natrec_sub_neut; mauto).
   etransitivity; [eassumption |].
   intros s.
   match_by_head per_bot ltac:(fun H => specialize (H s) as [? []]).
@@ -308,15 +308,15 @@ Lemma rel_exp_natrec_cong_rel_typ: forall {Γ A A' i M M' env_relΓ},
     {{ Γ, ℕ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ ⊨ M ≈ M' : ℕ }} ->
     forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
-    exists elem_rel, rel_typ i (a_sub A {{{ Id,, M }}}) p (a_sub A {{{ Id,, M }}}) p' elem_rel.
+    exists elem_rel, rel_typ i {{{ A[Id,,M] }}} p {{{ A[Id,,M] }}} p' elem_rel.
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
   assert {{ Γ ⊨ M ≈ M' : ℕ[Id] }} by (unshelve mauto; constructor).
-  assert {{ Γ ⊨s Id,, M ≈ Id,, M' : Γ, ℕ }} by (unshelve mauto; constructor).
-  assert {{ Γ ⊨s Id,, M : Γ, ℕ }} by mauto.
+  assert {{ Γ ⊨s Id,,M ≈ Id,,M' : Γ, ℕ }} by (unshelve mauto; constructor).
+  assert {{ Γ ⊨s Id,,M : Γ, ℕ }} by mauto.
   assert {{ Γ ⊨ A[Id,,M] ≈ A'[Id,,M'] : Type@i[Id,,M] }} by mauto.
   assert {{ Γ ⊨ A[Id,,M] ≈ A'[Id,,M'] : Type@i }} as [] by mauto.
   destruct_conjs.
@@ -347,7 +347,7 @@ Proof.
   destruct_conjs.
   eexists_rel_exp.
   intros.
-  assert (exists elem_rel, rel_typ i (a_sub A {{{ Id,, M }}}) p (a_sub A {{{ Id,, M }}}) p' elem_rel) as [elem_rel] by (eapply rel_exp_natrec_cong_rel_typ; eauto; econstructor; eauto).
+  assert (exists elem_rel, rel_typ i {{{ A[Id,,M] }}} p {{{ A[Id,,M] }}} p' elem_rel) as [elem_rel] by (eapply rel_exp_natrec_cong_rel_typ; eauto; econstructor; eauto).
   eexists.
   split; [eassumption |].
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
@@ -476,7 +476,7 @@ Lemma rel_exp_natrec_sub_rel_typ: forall {Γ σ Δ A i M env_relΓ},
     {{ Δ, ℕ ⊨ A : Type@i }} ->
     {{ Δ ⊨ M : ℕ }} ->
     forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
-    exists elem_rel, rel_typ i (a_sub A {{{ σ,, M[σ] }}}) p (a_sub A {{{ σ,, M[σ] }}}) p' elem_rel.
+    exists elem_rel, rel_typ i {{{ A[σ,,M[σ]] }}} p {{{ A[σ,,M[σ]] }}} p' elem_rel.
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
@@ -484,7 +484,7 @@ Proof.
   assert {{ ⊨ Γ }} by (eexists; eauto).
   assert {{ ⊨ Δ }} by (eapply presup_rel_sub; eauto).
   assert {{ Γ ⊨ M[σ] : ℕ[σ] }} by mauto.
-  assert {{ Γ ⊨s σ,, M[σ] : Δ, ℕ }} by (unshelve mauto; constructor).
+  assert {{ Γ ⊨s σ,,M[σ] : Δ, ℕ }} by (unshelve mauto; constructor).
   assert {{ Γ ⊨ A[σ,,M[σ]] : Type@i[σ,,M[σ]] }} by mauto.
   assert {{ Γ ⊨ A[σ,,M[σ]] : Type@i }} as [] by mauto.
   destruct_conjs.
@@ -516,7 +516,7 @@ Proof.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  assert (exists elem_rel, rel_typ i (a_sub A {{{ σ,, M[σ] }}}) p (a_sub A {{{ σ,, M[σ] }}}) p' elem_rel) as [elem_rel]
+  assert (exists elem_rel, rel_typ i {{{ A[σ,,M[σ]] }}} p {{{ A[σ,,M[σ]] }}} p' elem_rel) as [elem_rel]
       by (eapply rel_exp_natrec_sub_rel_typ; only 5: eassumption; eauto; eexists; mauto).
   eexists.
   split; [eassumption |].
@@ -579,7 +579,7 @@ Lemma rel_exp_nat_beta_succ_rel_typ : forall {Γ env_relΓ A i M},
     {{ Γ ⊨ M : ℕ }} ->
     forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
     exists elem_rel : relation domain,
-      rel_typ i (a_sub A {{{ Id,, succ M }}}) p (a_sub A {{{ Id,, succ M }}}) p' elem_rel.
+      rel_typ i {{{ A[Id,,succ M] }}} p {{{ A[Id,,succ M] }}} p' elem_rel.
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
@@ -616,7 +616,7 @@ Proof.
   invert_rel_typ_body.
   destruct_by_head rel_exp.
   assert (exists elem_rel : relation domain,
-             rel_typ i (a_sub A {{{ Id,, succ M }}}) p (a_sub A {{{ Id,, succ M }}}) p' elem_rel) as [elem_rel]
+             rel_typ i {{{ A[Id,,succ M] }}} p {{{ A[Id,,succ M] }}} p' elem_rel) as [elem_rel]
       by (eapply rel_exp_nat_beta_succ_rel_typ; eauto; eexists; mauto).
   eexists; split; [eassumption |].
   destruct_by_head rel_typ.
