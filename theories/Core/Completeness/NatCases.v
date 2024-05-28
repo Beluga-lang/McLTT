@@ -482,7 +482,7 @@ Proof.
   pose proof (@relation_equivalence_pointwise env).
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
-  assert {{ ⊨ Δ }} by (eapply presup_rel_subst; eauto).
+  assert {{ ⊨ Δ }} by (eapply presup_rel_sub; eauto).
   assert {{ Γ ⊨ M[σ] : ℕ[σ] }} by mauto.
   assert {{ Γ ⊨s σ,, M[σ] : Δ, ℕ }} by (unshelve mauto; constructor).
   assert {{ Γ ⊨ A[σ,,M[σ]] : Type@i[σ,,M[σ]] }} by mauto.

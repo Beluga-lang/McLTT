@@ -8,7 +8,7 @@ Ltac eexists_rel_exp :=
   eexists; [eassumption |];
   eexists.
 
-Ltac eexists_rel_subst :=
+Ltac eexists_rel_sub :=
   eexists;
   eexists; [eassumption |];
   eexists;

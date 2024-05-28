@@ -10,8 +10,8 @@ Proof.
   split; intros []; econstructor; intuition.
 Qed.
 
-Add Parametric Morphism σ p σ' p' : (rel_subst σ p σ' p')
-    with signature (@relation_equivalence env) ==> iff as rel_subst_morphism.
+Add Parametric Morphism σ p σ' p' : (rel_sub σ p σ' p')
+    with signature (@relation_equivalence env) ==> iff as rel_sub_morphism.
 Proof.
   intros R R' HRR'.
   split; intros []; econstructor; intuition.
