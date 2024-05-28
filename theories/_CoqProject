@@ -17,8 +17,6 @@
 ./Core/Completeness/UniverseCases.v
 ./Core/Completeness/VariableCases.v
 ./Core/Completeness.v
-./Core/Semantic/Domain/Definitions.v
-./Core/Semantic/Domain/Lemmas.v
 ./Core/Semantic/Domain.v
 ./Core/Semantic/Evaluation.v
 ./Core/Semantic/Evaluation/Definitions.v
