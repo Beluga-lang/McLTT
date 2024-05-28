@@ -12,7 +12,7 @@ Inductive initial_env : ctx -> env -> Prop :=
      initial_env (A :: Γ) d{{{ p ↦ ⇑! a (length Γ) }}}).
 
 #[export]
- Hint Constructors initial_env : mcltt.
+Hint Constructors initial_env : mcltt.
 
 Lemma functional_initial_env : forall Γ p,
     initial_env Γ p ->
@@ -27,7 +27,7 @@ Proof.
 Qed.
 
 #[export]
- Hint Resolve functional_initial_env : mcltt.
+Hint Resolve functional_initial_env : mcltt.
 
 Ltac functional_initial_env_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_initial_env equality between" o1 "and" o2 "cannot be solved by mauto" in
@@ -37,7 +37,6 @@ Ltac functional_initial_env_rewrite_clear1 :=
   end.
 Ltac functional_initial_env_rewrite_clear := repeat functional_initial_env_rewrite_clear1.
 
-
 Inductive nbe : ctx -> exp -> typ -> nf -> Prop :=
 | nbe_run :
   `( initial_env Γ p ->
@@ -45,6 +44,9 @@ Inductive nbe : ctx -> exp -> typ -> nf -> Prop :=
      {{ ⟦ M ⟧ p ↘ m }} ->
      {{ Rnf ⇓ a m in (length Γ) ↘ w }} ->
      nbe Γ M A w ).
+
+#[export]
+Hint Constructors nbe : mcltt.
 
 Lemma functional_nbe : forall Γ M A w w',
     nbe Γ M A w ->

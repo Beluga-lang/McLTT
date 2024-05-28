@@ -10,7 +10,7 @@ Lemma valid_lookup : forall {Γ x A env_rel}
     forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
     exists elem_rel,
       rel_typ i A p A p' elem_rel /\ rel_exp {{{ #x }}} p {{{ #x }}} p' elem_rel.
-Proof with solve [repeat econstructor; mauto].
+Proof with solve [split; mauto].
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * ? HxinΓ.
@@ -19,33 +19,35 @@ Proof with solve [repeat econstructor; mauto].
   remember A as A' eqn:HAA' in HxinΓ' |- * at 2. clear HAA'.
   gen Δ A' env_rel.
   induction HxinΓ; intros * equiv_Γ_Δ HxinΓ0; inversion HxinΓ0; subst; clear HxinΓ0; inversion_clear equiv_Γ_Δ; subst;
-    [|specialize (IHHxinΓ _ _ _ equiv_Γ_Γ' H2) as [j ?]; destruct_conjs];
+    [| specialize (IHHxinΓ _ _ _ equiv_Γ_Γ' H2) as [j ?]; destruct_conjs];
     apply_relation_equivalence;
     eexists; intros ? ? [];
     (on_all_hyp: destruct_rel_by_assumption tail_rel); destruct_conjs;
     eexists.
-  - split; econstructor...
+  - idtac...
   - destruct_by_head rel_typ.
     destruct_by_head rel_exp.
-    dir_inversion_by_head eval_exp; subst.
-    split; econstructor; simpl...
+    dir_inversion_by_head eval_exp; subst...
 Qed.
 
-Lemma valid_var : forall {Γ x A},
+Lemma valid_exp_var : forall {Γ x A},
     {{ ⊨ Γ }} ->
     {{ #x : A ∈ Γ }} ->
     {{ Γ ⊨ #x : A }}.
 Proof.
   intros * [? equiv_Γ_Γ] ?.
-  unshelve epose proof (valid_lookup equiv_Γ_Γ _) as []; try eassumption.
+  unshelve epose proof (valid_lookup equiv_Γ_Γ _) as []; shelve_unifiable; [eassumption |].
   eexists_rel_exp; eassumption.
 Qed.
+
+#[export]
+Hint Resolve valid_exp_var : mcltt.
 
 Lemma rel_exp_var_0_sub : forall {Γ M σ Δ A},
   {{ Γ ⊨s σ : Δ }} ->
   {{ Γ ⊨ M : A[σ] }} ->
   {{ Γ ⊨ #0[σ ,, M] ≈ M : A[σ] }}.
-Proof.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [].
@@ -60,22 +62,25 @@ Proof.
   dir_inversion_by_head eval_exp; subst.
   functional_eval_rewrite_clear.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
+  split...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_var_0_sub : mcltt.
 
 Lemma rel_exp_var_S_sub : forall {Γ M σ Δ A x B},
   {{ Γ ⊨s σ : Δ }} ->
   {{ Γ ⊨ M : A[σ] }} ->
   {{ #x : B ∈ Δ }} ->
   {{ Γ ⊨ #(S x)[σ ,, M] ≈ #x[σ] : B[σ] }}.
-Proof.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [] HxinΓ.
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   handle_per_ctx_env_irrel.
-  unshelve epose proof (valid_lookup _ HxinΓ); revgoals; try eassumption.
+  unshelve epose proof (valid_lookup _ HxinΓ); shelve_unifiable; [eassumption |].
   destruct_conjs.
   eexists_rel_exp.
   intros.
@@ -86,19 +91,22 @@ Proof.
   dir_inversion_by_head eval_exp; subst.
   functional_eval_rewrite_clear.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
+  split...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_var_S_sub : mcltt.
 
 Lemma rel_exp_var_weaken : forall {Γ B x A},
     {{ ⊨ Γ , B }} ->
     {{ #x : A ∈ Γ }} ->
     {{ Γ , B ⊨ #x[Wk] ≈ #(S x) : A[Wk] }}.
-Proof.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓB] HxinΓ.
   inversion_by_head (per_ctx_env env_relΓB); subst.
-  unshelve epose proof (valid_lookup _ HxinΓ); revgoals; try eassumption.
+  unshelve epose proof (valid_lookup _ HxinΓ); shelve_unifiable; [eassumption |].
   destruct_conjs.
   eexists_rel_exp.
   apply_relation_equivalence.
@@ -110,5 +118,8 @@ Proof.
   destruct_by_head rel_exp.
   dir_inversion_by_head eval_exp; subst.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor ..]; eassumption.
+  split...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_var_weaken : mcltt.

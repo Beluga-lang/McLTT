@@ -22,25 +22,41 @@ Generalizable All Variables.
 Inductive rel_mod_eval (R : relation domain -> domain -> domain -> Prop) A p A' p' R' : Prop := mk_rel_mod_eval : forall a a', {{ ⟦ A ⟧ p ↘ a }} -> {{ ⟦ A' ⟧ p' ↘ a' }} -> {{ DF a ≈ a' ∈ R ↘ R' }} -> rel_mod_eval R A p A' p' R'.
 #[global]
 Arguments mk_rel_mod_eval {_ _ _ _ _ _}.
+#[export]
+Hint Constructors rel_mod_eval : mcltt.
 
 (* Related modulo application *)
 Inductive rel_mod_app f a f' a' (R : relation domain) : Prop := mk_rel_mod_app : forall fa f'a', {{ $| f & a |↘ fa }} -> {{ $| f' & a' |↘ f'a' }} -> {{ Dom fa ≈ f'a' ∈ R }} -> rel_mod_app f a f' a' R.
 #[global]
 Arguments mk_rel_mod_app {_ _ _ _ _}.
+#[export]
+Hint Constructors rel_mod_app : mcltt.
 
 (** (Some Elements of) PER Lattice *)
 
 Definition per_bot : relation domain_ne := fun m n => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne n in s ↘ L }}).
 #[global]
 Arguments per_bot /.
+#[export]
+Hint Transparent per_bot : mcltt.
+#[export]
+Hint Unfold per_bot : mcltt.
 
 Definition per_top : relation domain_nf := fun m n => (forall s, exists L, {{ Rnf m in s ↘ L }} /\ {{ Rnf n in s ↘ L }}).
 #[global]
 Arguments per_top /.
+#[export]
+Hint Transparent per_top : mcltt.
+#[export]
+Hint Unfold per_top : mcltt.
 
 Definition per_top_typ : relation domain := fun a b => (forall s, exists C, {{ Rtyp a in s ↘ C }} /\ {{ Rtyp b in s ↘ C }}).
 #[global]
 Arguments per_top_typ /.
+#[export]
+Hint Transparent per_top_typ : mcltt.
+#[export]
+Hint Unfold per_top_typ : mcltt.
 
 Inductive per_nat : relation domain :=
 | per_nat_zero : {{ Dom zero ≈ zero ∈ per_nat }}
@@ -51,12 +67,16 @@ Inductive per_nat : relation domain :=
   `{ {{ Dom m ≈ n ∈ per_bot }} ->
      {{ Dom ⇑ ℕ m ≈ ⇑ ℕ n ∈ per_nat }} }
 .
+#[export]
+Hint Constructors per_nat : mcltt.
 
 Inductive per_ne : relation domain :=
 | per_ne_neut :
   `{ {{ Dom m ≈ m' ∈ per_bot }} ->
      {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_ne }} }
 .
+#[export]
+Hint Constructors per_ne : mcltt.
 
 (** Universe/Element PER Definition *)
 
@@ -142,6 +162,10 @@ Equations per_univ_elem (i : nat) : relation domain -> domain -> domain -> Prop 
 Definition per_univ (i : nat) : relation domain := fun a a' => exists R', {{ DF a ≈ a' ∈ per_univ_elem i ↘ R' }}.
 #[global]
 Arguments per_univ _ _ _ /.
+#[export]
+Hint Transparent per_univ : mcltt.
+#[export]
+Hint Unfold per_univ : mcltt.
 
 Lemma per_univ_elem_core_univ' : forall j i elem_rel,
     j < i ->
@@ -208,6 +232,10 @@ End Per_univ_elem_ind_def.
 
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
 Arguments rel_typ _ _ _ _ _ _ /.
+#[export]
+Hint Transparent rel_typ : mcltt.
+#[export]
+Hint Unfold rel_typ : mcltt.
 
 Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
 | per_ctx_env_nil :
@@ -227,6 +255,12 @@ Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
                {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}) ->
         {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_rel }} }
 .
+#[export]
+Hint Constructors per_ctx_env : mcltt.
 
 Definition per_ctx : relation ctx := fun Γ Γ' => exists R', per_ctx_env R' Γ Γ'.
 Definition valid_ctx : ctx -> Prop := fun Γ => per_ctx Γ Γ.
+#[export]
+Hint Transparent valid_ctx : mcltt.
+#[export]
+Hint Unfold valid_ctx : mcltt.

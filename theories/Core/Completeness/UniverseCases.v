@@ -3,7 +3,7 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Completeness.LogicalRelation.
 Import Domain_Notations.
 
-Lemma valid_typ : forall {i Γ},
+Lemma valid_exp_typ : forall {i Γ},
     {{ ⊨ Γ }} ->
     {{ Γ ⊨ Type@i : Type@(S i) }}.
 Proof.
@@ -11,9 +11,12 @@ Proof.
   eexists_rel_exp.
   intros.
   eexists (per_univ _).
-  split; [> econstructor; only 1-2: econstructor; eauto ..]; [| eexists (per_univ _)];
+  split; econstructor; mauto; [| eexists (per_univ _)];
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
+
+#[export]
+Hint Resolve valid_exp_typ : mcltt.
 
 Lemma rel_exp_typ_sub : forall {i Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
@@ -25,9 +28,12 @@ Proof.
   intros.
   eexists (per_univ _).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..]; [| eexists (per_univ _)];
+  split; econstructor; mauto; [| eexists (per_univ _)];
     per_univ_elem_econstructor; eauto; apply Equivalence_Reflexive.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_typ_sub : mcltt.
 
 Lemma rel_exp_cumu : forall {i Γ A A'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -46,7 +52,10 @@ Proof.
   invert_rel_typ_body.
   destruct_conjs.
   match_by_head per_univ_elem ltac:(fun H => apply per_univ_elem_cumu in H).
-  split; [> econstructor; only 1-2: repeat econstructor ..]; eauto; [| eexists; eauto].
+  split; econstructor; mauto.
   per_univ_elem_econstructor; eauto.
   reflexivity.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_cumu : mcltt.

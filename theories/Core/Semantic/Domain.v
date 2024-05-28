@@ -35,9 +35,11 @@ Definition extend_env (p : env) (d : domain) : env :=
     | S n' => p n'
     end.
 Arguments extend_env _ _ _ /.
+Transparent extend_env.
 
 Definition drop_env (p : env) : env := fun n => p (S n).
 Arguments drop_env _ _ /.
+Transparent drop_env.
 
 #[global] Declare Custom Entry domain.
 #[global] Bind Scope mcltt_scope with domain.
@@ -65,3 +67,11 @@ Module Domain_Notations.
   Notation "p ↦ m" := (extend_env p m) (in custom domain at level 20, left associativity) : mcltt_scope.
   Notation "p '↯'" := (drop_env p) (in custom domain at level 10, p custom domain) : mcltt_scope.
 End Domain_Notations.
+
+Import Domain_Notations.
+
+Proposition drop_env_extend_env_cancel : forall p a,
+    d{{{ (p ↦ a) ↯ }}} = p.
+Proof.
+  reflexivity.
+Qed.

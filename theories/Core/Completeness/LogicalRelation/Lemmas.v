@@ -7,16 +7,14 @@ Add Parametric Morphism M p M' p' : (rel_exp M p M' p')
     with signature (@relation_equivalence domain) ==> iff as rel_exp_morphism.
 Proof.
   intros R R' HRR'.
-  split; intros []; econstructor; eauto;
-    apply HRR'; eassumption.
+  split; intros []; econstructor; intuition.
 Qed.
 
-Add Parametric Morphism σ p σ' p' : (rel_subst σ p σ' p')
-    with signature (@relation_equivalence env) ==> iff as rel_subst_morphism.
+Add Parametric Morphism σ p σ' p' : (rel_sub σ p σ' p')
+    with signature (@relation_equivalence env) ==> iff as rel_sub_morphism.
 Proof.
   intros R R' HRR'.
-  split; intros []; econstructor; eauto;
-    apply HRR'; eassumption.
+  split; intros []; econstructor; intuition.
 Qed.
 
 Lemma rel_exp_implies_rel_typ : forall {i A p A' p'},
@@ -26,9 +24,11 @@ Proof.
   intros.
   destruct_by_head rel_exp.
   destruct_by_head per_univ.
-  eexists.
-  econstructor; eauto.
+  mauto.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_implies_rel_typ : mcltt.
 
 Lemma rel_typ_implies_rel_exp : forall {i A p A' p' R},
     rel_typ i A p A' p' R ->
@@ -36,5 +36,8 @@ Lemma rel_typ_implies_rel_exp : forall {i A p A' p' R},
 Proof.
   intros.
   destruct_by_head rel_typ.
-  econstructor; [| | eexists]; eauto.
+  mauto.
 Qed.
+
+#[export]
+Hint Resolve rel_typ_implies_rel_exp : mcltt.

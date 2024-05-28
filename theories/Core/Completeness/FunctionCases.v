@@ -33,14 +33,14 @@ Proof with intuition.
   apply -> per_univ_elem_morphism_iff; eauto.
   split; intros; destruct_by_head rel_typ; handle_per_univ_elem_irrel...
   eapply H5.
-  econstructor...
+  mauto.
 Qed.
 
 Lemma rel_exp_pi_cong : forall {i Γ A A' B B'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ , A ⊨ B ≈ B' : Type@i }} ->
     {{ Γ ⊨ Π A B ≈ Π A' B' : Type@i }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΓA].
@@ -56,28 +56,29 @@ Proof with intuition.
   destruct_conjs.
   handle_per_univ_elem_irrel.
   eexists (per_univ _).
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  split; econstructor; mauto.
   eexists.
   per_univ_elem_econstructor; eauto.
   - intros.
-    eapply rel_exp_pi_core; eauto.
-    + clear dependent c.
-      clear dependent c'.
-      intros.
-      extract_output_info_with p c p' c' env_relΓA.
-      invert_rel_typ_body.
-      econstructor...
-    + reflexivity.
+    eapply rel_exp_pi_core; eauto; try reflexivity.
+    clear dependent c.
+    clear dependent c'.
+    intros.
+    extract_output_info_with p c p' c' env_relΓA.
+    invert_rel_typ_body...
   - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
     apply Equivalence_Reflexive.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_pi_cong : mcltt.
 
 Lemma rel_exp_pi_sub : forall {i Γ σ Δ A B},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ ⊨ A : Type@i }} ->
     {{ Δ , A ⊨ B : Type@i }} ->
     {{ Γ ⊨ (Π A B)[σ] ≈ Π (A[σ]) (B[q σ]) : Type@i }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΔ] [env_relΔA].
@@ -97,29 +98,30 @@ Proof with intuition.
   destruct_conjs.
   handle_per_univ_elem_irrel.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  split; econstructor; mauto.
   eexists.
   per_univ_elem_econstructor; eauto.
   - intros.
-    eapply rel_exp_pi_core; eauto.
-    + clear dependent c.
-      clear dependent c'.
-      intros.
-      extract_output_info_with o c o' c' env_relΔA.
-      invert_rel_typ_body.
-      destruct_conjs.
-      econstructor; eauto.
-      repeat econstructor...
-    + reflexivity.
+    eapply rel_exp_pi_core; eauto; try reflexivity.
+    clear dependent c.
+    clear dependent c'.
+    intros.
+    extract_output_info_with o c o' c' env_relΔA.
+    invert_rel_typ_body.
+    destruct_conjs.
+    econstructor...
   - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
     apply Equivalence_Reflexive.
 Qed.
+
+#[export]
+Hint Resolve rel_exp_pi_sub : mcltt.
 
 Lemma rel_exp_fn_cong : forall {i Γ A A' B M M'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ , A ⊨ M ≈ M' : B }} ->
     {{ Γ ⊨ λ A M ≈ λ A' M' : Π A B }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΓA].
@@ -135,33 +137,35 @@ Proof with intuition.
   destruct_by_head rel_exp.
   functional_eval_rewrite_clear.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  split; econstructor; mauto.
   - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | |]; eauto.
     + intros.
-      eapply rel_exp_pi_core; eauto.
-      * clear dependent c.
-        clear dependent c'.
-        intros.
-        extract_output_info_with p c p' c' env_relΓA.
-        econstructor; eauto.
-        eexists.
-        eapply per_univ_elem_cumu_max_right...
-      * reflexivity.
+      eapply rel_exp_pi_core; eauto; try reflexivity.
+      clear dependent c.
+      clear dependent c'.
+      intros.
+      extract_output_info_with p c p' c' env_relΓA.
+      econstructor; eauto.
+      eexists.
+      eapply per_univ_elem_cumu_max_right...
     + (* `reflexivity` does not work as it uses a "wrong" instance. *)
       apply Equivalence_Reflexive.
   - intros ? **.
     extract_output_info_with p c p' c' env_relΓA.
-    econstructor; only 1-2: repeat econstructor; eauto.
+    econstructor; mauto.
     intros.
     destruct_by_head rel_typ.
     handle_per_univ_elem_irrel...
 Qed.
 
+#[export]
+Hint Resolve rel_exp_fn_cong : mcltt.
+
 Lemma rel_exp_fn_sub : forall {Γ σ Δ A M B},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ , A ⊨ M : B }} ->
     {{ Γ ⊨ (λ A M)[σ] ≈ λ A[σ] M[q σ] : (Π A B)[σ] }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [env_relΔA].
@@ -174,27 +178,29 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  split; econstructor; mauto.
   - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | |]; eauto.
     + intros.
-      eapply rel_exp_pi_core; eauto.
-      * clear dependent c.
-        clear dependent c'.
-        intros.
-        extract_output_info_with o c o' c' env_relΔA.
-        econstructor; eauto.
-        eexists.
-        eapply per_univ_elem_cumu_max_right...
-      * reflexivity.
+      eapply rel_exp_pi_core; eauto; try reflexivity.
+      clear dependent c.
+      clear dependent c'.
+      intros.
+      extract_output_info_with o c o' c' env_relΔA.
+      econstructor; eauto.
+      eexists.
+      eapply per_univ_elem_cumu_max_right...
     + (* `reflexivity` does not work as it uses a "wrong" instance. *)
       apply Equivalence_Reflexive.
   - intros ? **.
     extract_output_info_with o c o' c' env_relΔA.
-    econstructor; only 1-2: repeat econstructor; mauto.
+    econstructor; mauto.
     intros.
     destruct_by_head rel_typ.
     handle_per_univ_elem_irrel...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_fn_sub : mcltt.
 
 Lemma rel_exp_app_cong : forall {Γ M M' A B N N'},
     {{ Γ ⊨ M ≈ M' : Π A B }} ->
@@ -222,17 +228,18 @@ Proof with intuition.
   (on_all_hyp: destruct_rel_by_assumption in_rel).
   handle_per_univ_elem_irrel.
   eexists.
-  split; [> econstructor; only 1-2: econstructor ..].
-  1,3: repeat econstructor.
-  all: intuition.
+  split; econstructor; mauto...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_app_cong : mcltt.
 
 Lemma rel_exp_app_sub : forall {Γ σ Δ M A B N},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ ⊨ M : Π A B }} ->
     {{ Δ ⊨ N : A }} ->
     {{ Γ ⊨ (M N)[σ] ≈ M[σ] N[σ] : B[σ,,N[σ]] }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΔ] [].
@@ -250,17 +257,17 @@ Proof with intuition.
   rename x into in_rel.
   (on_all_hyp_rev: destruct_rel_by_assumption in_rel).
   eexists.
-  split; [> econstructor; only 1-2: econstructor ..].
-  1,3,8,9: repeat econstructor.
-  15: econstructor.
-  all: eauto.
+  split; econstructor...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_app_sub : mcltt.
 
 Lemma rel_exp_pi_beta : forall {Γ A M B N},
   {{ Γ , A ⊨ M : B }} ->
   {{ Γ ⊨ N : A }} ->
   {{ Γ ⊨ (λ A M) N ≈ M[Id,,N] : B[Id,,N] }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓA] [env_relΓ].
@@ -274,16 +281,20 @@ Proof with intuition.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   destruct_by_head rel_exp.
-  rename m into n; rename m' into n'.
+  rename m into n.
+  rename m' into n'.
   extract_output_info_with p n p' n' env_relΓA.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
+  split; econstructor...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_pi_beta : mcltt.
 
 Lemma rel_exp_pi_eta : forall {Γ M A B},
   {{ Γ ⊨ M : Π A B }} ->
   {{ Γ ⊨ M ≈ λ A (M[Wk] #0) : Π A B }}.
-Proof with intuition.
+Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ].
@@ -296,10 +307,10 @@ Proof with intuition.
   invert_rel_typ_body.
   destruct_by_head rel_exp.
   eexists.
-  split; [> econstructor; only 1-2: repeat econstructor; eauto ..].
-  intros.
-  (on_all_hyp: destruct_rel_by_assumption in_rel).
-  econstructor; eauto.
-  do 2 econstructor; eauto; econstructor; eauto.
-  econstructor.
+  split; econstructor; mauto.
+  intros ? **.
+  (on_all_hyp: destruct_rel_by_assumption in_rel)...
 Qed.
+
+#[export]
+Hint Resolve rel_exp_pi_eta : mcltt.

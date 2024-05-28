@@ -291,5 +291,12 @@ with wf_sub_eq : ctx -> sub -> sub -> ctx -> Prop :=
      {{ Γ ⊢s σ ≈ σ' : Δ' }} )
 where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ S1 S2 Δ) (in custom judg) : type_scope.
 
+Scheme wf_ctx_mut_ind := Induction for wf_ctx Sort Prop
+with wf_ctx_eq_mut_ind := Induction for wf_ctx_eq Sort Prop
+with wf_exp_mut_ind := Induction for wf_exp Sort Prop
+with wf_exp_eq_mut_ind := Induction for wf_exp_eq Sort Prop
+with wf_sub_mut_ind := Induction for wf_sub Sort Prop
+with wf_sub_eq_mut_ind := Induction for wf_sub_eq Sort Prop.
+
 #[export]
 Hint Constructors wf_ctx wf_ctx_eq wf_exp wf_sub wf_exp_eq wf_sub_eq ctx_lookup: mcltt.

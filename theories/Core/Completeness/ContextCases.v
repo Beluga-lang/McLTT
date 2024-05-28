@@ -10,6 +10,9 @@ Proof.
   apply Equivalence_Reflexive.
 Qed.
 
+#[export]
+Hint Resolve valid_ctx_empty : mcltt.
+
 Lemma rel_ctx_extend : forall {Γ Γ' A A' i},
     {{ ⊨ Γ ≈ Γ' }} ->
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -36,7 +39,10 @@ Proof with intuition.
     econstructor; eauto.
     apply -> per_univ_elem_morphism_iff; eauto.
     split; intros; destruct_by_head rel_typ; handle_per_univ_elem_irrel...
-    eapply H12.
-    econstructor...
+    eapply H10.
+    mauto.
   - apply Equivalence_Reflexive.
 Qed.
+
+#[export]
+Hint Resolve rel_ctx_extend : mcltt.

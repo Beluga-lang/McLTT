@@ -83,3 +83,6 @@ where "'Rtyp' m 'in' s ↘ M" := (read_typ s m M) (in custom judg) : type_scope
 Scheme read_nf_mut_ind := Induction for read_nf Sort Prop
 with read_ne_mut_ind := Induction for read_ne Sort Prop
 with read_typ_mut_ind := Induction for read_typ Sort Prop.
+
+#[export]
+Hint Constructors read_nf read_ne read_typ : mcltt.
