@@ -4,7 +4,7 @@ Import Domain_Notations.
 
 Theorem completeness : forall {Γ M M' A},
   {{ Γ ⊢ M ≈ M' : A }} ->
-  exists m, nbe Γ M A m /\ nbe Γ M' A m.
+  exists W, nbe Γ M A W /\ nbe Γ M' A W.
 Proof with mautosolve.
   intros * [env_relΓ]%completeness_fundamental_exp_eq.
   destruct_conjs.
