@@ -99,6 +99,15 @@ with ne_to_exp (M : ne) : exp :=
 Coercion nf_to_exp : nf >-> exp.
 Coercion ne_to_exp : ne >-> exp.
 
+Fact nf_eq_dec : forall (M M' : nf),
+    ({M = M'} + {M <> M'})%type
+with ne_eq_dec : forall (M M' : ne),
+    ({M = M'} + {M <> M'})%type.
+Proof.
+  all: intros; decide equality;
+    apply PeanoNat.Nat.eq_dec.
+Defined.
+
 #[global] Declare Custom Entry exp.
 #[global] Declare Custom Entry nf.
 
