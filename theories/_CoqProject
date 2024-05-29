@@ -45,6 +45,7 @@
 ./Frontend/Parser.v
 ./Frontend/ParserExtraction.v
 ./Extraction/Evaluation.v
-./Extraction/Readback.v
 ./Extraction/NbE.v
+./Extraction/Readback.v
+./Extraction/TypeCheck.v
 ./LibTactics.v

@@ -1,5 +1,6 @@
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Evaluation Readback.
+From Mcltt.Core Require Export Domain.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -60,3 +61,14 @@ Proof.
   functional_read_rewrite_clear;
   reflexivity.
 Qed.
+
+#[export]
+Hint Resolve functional_nbe : mcltt.
+
+Ltac functional_nbe_rewrite_clear1 :=
+  let tactic_error o1 o2 := fail 3 "functional_nbe equality between" o1 "and" o2 "cannot be solved by mauto" in
+  match goal with
+  | H1 : nbe ?G ?M ?A ?W, H2 : nbe ?G ?M ?A ?W' |- _ =>
+      clean replace W' with W by first [solve [mauto] | tactic_error W' W]; clear H2
+  end.
+Ltac functional_nbe_rewrite_clear := repeat functional_nbe_rewrite_clear1.
