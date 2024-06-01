@@ -15,9 +15,9 @@ Section completeness_fundamental.
   Let ctx_prop Γ (_ : {{ ⊢ Γ }}) : Prop := {{ ⊨ Γ }}.
   Let ctx_eq_prop Γ Γ' (_ : {{ ⊢ Γ ≈ Γ' }}) : Prop := {{ ⊨ Γ ≈ Γ' }}.
   Let exp_prop Γ M A (_ : {{ Γ ⊢ M : A }}) : Prop := {{ Γ ⊨ M : A }}.
-  Let exp_eq_prop Γ M M' A (_ : {{ Γ ⊢ M ≈ M' : A }}) : Prop := {{ Γ ⊨ M ≈ M' : A }}.
+  Let exp_eq_prop Γ A M M' (_ : {{ Γ ⊢ M ≈ M' : A }}) : Prop := {{ Γ ⊨ M ≈ M' : A }}.
   Let sub_prop Γ σ Δ (_ : {{ Γ ⊢s σ : Δ }}) : Prop := {{ Γ ⊨s σ : Δ }}.
-  Let sub_eq_prop Γ σ σ' Δ (_ : {{ Γ ⊢s σ ≈ σ' : Δ }}) : Prop := {{ Γ ⊨s σ ≈ σ' : Δ }}.
+  Let sub_eq_prop Γ Δ σ σ' (_ : {{ Γ ⊢s σ ≈ σ' : Δ }}) : Prop := {{ Γ ⊨s σ ≈ σ' : Δ }}.
 
   #[local]
   Ltac unfold_prop :=
@@ -61,7 +61,7 @@ Section completeness_fundamental.
       (P4 := sub_eq_prop)...
   Qed.
 
-  Theorem completeness_fundamental_exp_eq : forall Γ M M' A (HMM' : {{ Γ ⊢ M ≈ M' : A }}), exp_eq_prop Γ M M' A HMM'.
+  Theorem completeness_fundamental_exp_eq : forall Γ M M' A (HMM' : {{ Γ ⊢ M ≈ M' : A }}), exp_eq_prop Γ A M M' HMM'.
   Proof with solve_completeness_fundamental using.
     induction 1 using wf_exp_eq_mut_ind
       with
@@ -83,7 +83,7 @@ Section completeness_fundamental.
       (P4 := sub_eq_prop)...
   Qed.
 
-  Theorem completeness_fundamental_sub_eq : forall Γ σ σ' Δ (Hσσ' : {{ Γ ⊢s σ ≈ σ' : Δ }}), sub_eq_prop Γ σ σ' Δ Hσσ'.
+  Theorem completeness_fundamental_sub_eq : forall Γ σ σ' Δ (Hσσ' : {{ Γ ⊢s σ ≈ σ' : Δ }}), sub_eq_prop Γ Δ σ σ' Hσσ'.
   Proof with solve_completeness_fundamental using.
     induction 1 using wf_sub_eq_mut_ind
       with
