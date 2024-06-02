@@ -1,4 +1,4 @@
-From Coq Require Import List.
+From Coq Require Import List Classes.RelationClasses.
 From Mcltt Require Import Base LibTactics.
 From Mcltt Require Export Syntax.
 Import Syntax_Notations.
@@ -105,7 +105,7 @@ with wf_sub : ctx -> sub -> ctx -> Prop :=
      {{ ⊢ Δ ≈ Δ' }} ->
      {{ Γ ⊢s σ : Δ' }} )
 where "Γ ⊢s σ : Δ" := (wf_sub Γ σ Δ) (in custom judg) : type_scope
-with wf_exp_eq : ctx -> exp -> exp -> typ -> Prop :=
+with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
 | wf_exp_eq_typ_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ Γ ⊢ Type@i[σ] ≈ Type@i : Type@(S i) }} )
@@ -236,8 +236,9 @@ with wf_exp_eq : ctx -> exp -> exp -> typ -> Prop :=
   `( {{ Γ ⊢ M ≈ M' : A }} ->
      {{ Γ ⊢ M' ≈ M'' : A }} ->
      {{ Γ ⊢ M ≈ M'' : A }} )
-where "Γ ⊢ M ≈ M' : A" := (wf_exp_eq Γ M M' A) (in custom judg) : type_scope
-with wf_sub_eq : ctx -> sub -> sub -> ctx -> Prop :=
+where "Γ ⊢ M ≈ M' : A" := (wf_exp_eq Γ A M M') (in custom judg) : type_scope
+
+with wf_sub_eq : ctx -> ctx -> sub -> sub -> Prop :=
 | wf_sub_eq_id :
   `( {{ ⊢ Γ }} ->
      {{ Γ ⊢s Id ≈ Id : Γ }} )
@@ -289,7 +290,7 @@ with wf_sub_eq : ctx -> sub -> sub -> ctx -> Prop :=
   `( {{ Γ ⊢s σ ≈ σ' : Δ }} ->
      {{ ⊢ Δ ≈ Δ' }} ->
      {{ Γ ⊢s σ ≈ σ' : Δ' }} )
-where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ S1 S2 Δ) (in custom judg) : type_scope.
+where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ Δ S1 S2) (in custom judg) : type_scope.
 
 Scheme wf_ctx_mut_ind := Induction for wf_ctx Sort Prop
 with wf_ctx_eq_mut_ind := Induction for wf_ctx_eq Sort Prop
@@ -300,3 +301,19 @@ with wf_sub_eq_mut_ind := Induction for wf_sub_eq Sort Prop.
 
 #[export]
 Hint Constructors wf_ctx wf_ctx_eq wf_exp wf_sub wf_exp_eq wf_sub_eq ctx_lookup: mcltt.
+
+#[export]
+  Instance WfExpPER Γ A : PER (wf_exp_eq Γ A).
+Proof.
+  split.
+  - eauto using wf_exp_eq_sym.
+  - eauto using wf_exp_eq_trans.
+Qed.
+
+#[export]
+  Instance WfSubPER Γ Δ : PER (wf_sub_eq Γ Δ).
+Proof.
+  split.
+  - eauto using wf_sub_eq_sym.
+  - eauto using wf_sub_eq_trans.
+Qed.

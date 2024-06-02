@@ -199,4 +199,4 @@ Qed.
 #[export]
 Hint Resolve presup_exp presup_exp_eq presup_sub_eq : mcltt.
 
-Ltac gen_presup H := gen_presup_IH presup_exp presup_exp_eq presup_sub_eq H; gen_presup_ctx H.
+Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq H.
