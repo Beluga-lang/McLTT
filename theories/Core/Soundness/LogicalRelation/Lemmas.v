@@ -94,7 +94,7 @@ Lemma glu_nat_readback : forall Γ m a,
 Proof.
   induction 1; intros; progressive_inversion; gen_presups.
   - transitivity {{{ zero [ σ ] }}}; mauto.
-  - specialize (IHglu_nat _ _ _ H1 H2).
+  - specialize (IHglu_nat _ _ _ H1 H5).
     transitivity {{{ (succ m') [ σ ]}}}; [mauto |].
     transitivity {{{ succ m' [ σ ] }}}; mauto 6.
   - mauto.
