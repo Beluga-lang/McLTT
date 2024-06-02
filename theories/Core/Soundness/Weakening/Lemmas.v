@@ -1,3 +1,5 @@
+Require Import Coq.Program.Equality.
+
 From Mcltt Require Import Base System.Definitions System.Lemmas Weakening.Definition Presup CtxEq LibTactics.
 Import Syntax_Notations.
 
@@ -59,16 +61,7 @@ Lemma invert_id : forall Γ Δ,
     {{ Γ ⊢s Id : Δ }} ->
     {{ ⊢ Γ ≈ Δ }}.
 Proof.
-  intros. remember {{{ Id }}} as σ. revert Heqσ.
-  induction H; intros; try congruence; mauto.
-Qed.
-
-#[export]
-  Instance WfSubPER Γ Δ : PER (wf_sub_eq Γ Δ).
-Proof.
-  split.
-  - eauto using wf_sub_eq_sym.
-  - eauto using wf_sub_eq_trans.
+  intros. dependent induction H; intros; try congruence; mauto.
 Qed.
 
 
