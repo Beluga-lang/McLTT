@@ -200,8 +200,10 @@ Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) 
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) "," uconstr(use4) :=
   eauto pow using use1, use2, use3, use4 with mcltt core.
 
-Ltac mautosolve := unshelve solve [mauto]; solve [constructor].
+Ltac mautosolve_impl pow := unshelve solve [mauto pow]; solve [constructor].
 
+Tactic Notation "mautosolve" := mautosolve_impl integer:(5).
+Tactic Notation "mautosolve" int_or_var(pow) := mautosolve_impl pow.
 
 (* Improve type class resolution *)
 

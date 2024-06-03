@@ -40,24 +40,26 @@ Module ctxeq_judg.
     all: inversion_clear 1;
       (on_all_hyp: gen_ctxeq_helper_IH ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper);
       clear ctxeq_exp_helper ctxeq_exp_eq_helper ctxeq_sub_helper ctxeq_sub_eq_helper;
-      intros * HΓΔ; destruct (presup_ctx_eq HΓΔ); mauto;
+      intros * HΓΔ; destruct (presup_ctx_eq HΓΔ); mauto 4;
       try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
     (* ctxeq_exp_helper & ctxeq_exp_eq_helper recursion cases *)
     1,6-8: assert {{ ⊢ Γ, ℕ ≈ Δ, ℕ }} by (econstructor; mautosolve);
       assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
     (* ctxeq_exp_helper & ctxeq_exp_eq_helper function cases *)
     1-3,5-9: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Γ, B ≈ Δ, B }} by mauto;
-      try econstructor; mautosolve.
+      try econstructor...
     (* ctxeq_exp_helper & ctxeq_exp_eq_helper variable cases *)
-    1-2: assert (exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}); destruct_conjs...
+    1-2: assert (exists B i, {{ #x : B ∈ Δ }} /\ {{ Γ ⊢ A ≈ B : Type@i }} /\ {{ Δ ⊢ A ≈ B : Type@i }}); destruct_conjs; mautosolve 4.
     (* ctxeq_sub_helper & ctxeq_sub_eq_helper weakening cases *)
-    2-3: inversion_clear HΓΔ; econstructor...
+    2-3: inversion_clear HΓΔ; econstructor; mautosolve 4.
 
     (* ctxeq_exp_eq_helper variable case *)
     inversion_clear HΓΔ as [|? Δ0 ? ? C'].
     assert (exists D i', {{ #x : D ∈ Δ0 }} /\ {{ Γ0 ⊢ B ≈ D : Type@i' }} /\ {{ Δ0 ⊢ B ≈ D : Type@i' }}) as [D [i0 ?]] by mauto.
     destruct_conjs.
-    assert {{ Δ0, C' ⊢ B[Wk] ≈ D[Wk] : Type @ i0 }}...
+    assert {{ ⊢ Δ0, C' }} by mauto.
+    assert {{ Δ0 ⊢ D ≈ B : Type@i0 }} by mauto.
+    assert {{ Δ0, C' ⊢ D[Wk] ≈ B[Wk] : Type@i0 }}...
   Qed.
 
   Corollary ctxeq_exp : forall {Γ Δ M A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M : A }} -> {{ Δ ⊢ M : A }}.
@@ -98,6 +100,8 @@ Proof with mautosolve.
   assert {{ Γ2 ⊢ T2 : Type@i }} by mauto using lift_exp_max_right.
   assert {{ Γ0 ⊢ T0 ≈ T1 : Type@i }} by mauto using lift_exp_eq_max_left.
   assert {{ Γ2 ⊢ T1 ≈ T2 : Type@i }} by mauto using lift_exp_eq_max_right.
+  assert {{ ⊢ Γ0 ≈ Γ2 }} by mauto.
+  assert {{ Γ0 ⊢ T0 ≈ T2 : Type@i }} by mauto.
   econstructor...
 Qed.
 
