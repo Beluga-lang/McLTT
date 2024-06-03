@@ -55,7 +55,7 @@ jobs:
         run: |
           eval $(opam env)
           cd theories/
-          make -j ${{ steps.cpu-cores.outputs.count }}
+          make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed
       - name: test parser
         run: |
           eval $(opam env)
