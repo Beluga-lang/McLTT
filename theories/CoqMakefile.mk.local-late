@@ -1,0 +1,17 @@
+empty :=
+space := $(empty) $(empty)
+
+MENHIR := menhir
+
+COQMAKEFILE := CoqMakefile.mk
+COQPROJECTFILE := _CoqProject
+PARSERBASE := parser.ml
+PARSERFILE := ../driver/$(PARSERBASE)
+PARSEREXTRACTIONDIR := Frontend
+PARSEREXTRACTIONCOQFILE := $(PARSEREXTRACTIONDIR)/ParserExtraction.v
+PARSEREXTRACTIONRESULTFILE := $(PARSEREXTRACTIONDIR)/$(PARSERBASE)
+COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
+COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
+
+$(COQPARSERFILE): %.v : %.vy
+	$(MENHIR) --coq "$?"

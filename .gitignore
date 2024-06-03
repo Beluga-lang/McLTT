@@ -15,4 +15,10 @@ theories/**/Parser.v
 *.vos
 .lia.cache
 CoqMakefile.mk*
+!CoqMakefile.mk.local
+!CoqMakefile.mk.local-late
+*.log
+
+# Editor related
+## Emacs
 *.~undo-tree~

@@ -38,9 +38,6 @@ force: ;
 $(COQMAKEFILE): $(COQPROJECTFILE)
 	$(COQBIN)coq_makefile -f "$?" -o "$@"
 
-$(COQPARSERFILE): %.v : %.vy
-	$(MENHIR) --coq "$?"
-
 $(COQPROJECTFILE): ;
 
 $(PARSERBASE): $(PARSEREXTRACTIONCOQFILE)
