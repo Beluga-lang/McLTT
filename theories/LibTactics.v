@@ -110,6 +110,33 @@ Ltac progressive_invert H :=
   (* dependent destruction is more general than inversion *)
   directed dependent destruction H.
 
+#[local]
+  Ltac progressive_invert_once H n :=
+  let T := type of H in
+  lazymatch T with
+  | __mark__ _ _ => fail
+  | forall _, _ => fail
+  | _ => idtac
+  end;
+  lazymatch type of T with
+  | Prop => idtac
+  | Type => idtac
+  end;
+  directed inversion H;
+  simplify_eqs;
+  clear_refl_eqs;
+  clear_dups;
+  try mark_with H n.
+
+#[global]
+  Ltac progressive_inversion :=
+  clear_dups;
+  repeat match goal with
+    | H : _ |- _ =>
+        progressive_invert_once H 100
+    end;
+  unmark_all_with 100.
+
 Ltac clean_replace_by exp0 exp1 tac :=
   tryif unify exp0 exp1
   then fail

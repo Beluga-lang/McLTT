@@ -39,6 +39,8 @@
 ./Core/Syntactic/System/Lemmas.v
 ./Core/Soundness.v
 ./Core/Soundness/LogicalRelation.v
+./Core/Soundness/LogicalRelation/Definitions.v
+./Core/Soundness/LogicalRelation/Lemmas.v
 ./Core/Soundness/Weakening.v
 ./Core/Soundness/Weakening/Definition.v
 ./Core/Soundness/Weakening/Lemmas.v
