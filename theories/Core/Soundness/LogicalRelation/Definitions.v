@@ -12,7 +12,9 @@ Global Open Scope predicate_scope.
 Generalizable All Variables.
 
 Notation "'typ_pred'" := (predicate (Tcons ctx (Tcons typ Tnil))).
+Notation "'typ_pred_equivalence'" := (@predicate_equivalence (Tcons ctx (Tcons typ Tnil))).
 Notation "'glu_pred'" := (predicate (Tcons ctx (Tcons exp (Tcons typ (Tcons domain Tnil))))).
+Notation "'glu_pred_equivalence'" := (@predicate_equivalence (Tcons ctx (Tcons exp (Tcons typ (Tcons domain Tnil))))).
 
 Definition univ_typ_pred j i : typ_pred := fun Γ T => {{ Γ ⊢ T ≈ Type@j :  Type@i }}.
 Arguments univ_typ_pred j i Γ T/.

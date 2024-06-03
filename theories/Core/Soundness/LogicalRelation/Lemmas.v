@@ -1,4 +1,4 @@
-From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses SetoidTactics.
+From Coq Require Import Morphisms Morphisms_Relations.
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Presup Syntactic.Corollaries Evaluation Readback PER.
 
@@ -24,7 +24,7 @@ Proof.
     end.
   assert {{ Γ ⊢w Id : Γ }} by mauto.
   specialize (H (length Γ)).
-  destruct_all.
+  destruct_conjs.
   specialize (H0 _ _ _ H2 H3).
   gen_presups.
   mauto.
@@ -73,16 +73,6 @@ Proof.
   - mauto.
 Qed.
 
-#[global]
-Instance predicate_equivalence_pointwise1 :
-  Proper (@predicate_equivalence (Tcons ctx (Tcons typ Tnil)) ==> pointwise_relation ctx (pointwise_relation typ iff)) id.
-Proof. intro. apply (@predicate_equivalence_pointwise (Tcons ctx (Tcons typ Tnil))). Qed.
-
-#[global]
-Instance predicate_equivalence_pointwise2 :
-  Proper (@predicate_equivalence (Tcons ctx (Tcons exp (Tcons typ Tnil))) ==> pointwise_relation ctx (pointwise_relation exp (pointwise_relation typ iff))) id.
-Proof. intro. apply (@predicate_equivalence_pointwise (Tcons ctx (Tcons exp (Tcons typ Tnil)))). Qed.
-
 Lemma glu_univ_elem_univ_lvl : forall i P El A B,
     glu_univ_elem i P El A B ->
     forall Γ T,
@@ -90,7 +80,8 @@ Lemma glu_univ_elem_univ_lvl : forall i P El A B,
       {{ Γ ⊢ T : Type@i }}.
 Proof with (simpl in *; destruct_all; gen_presups; trivial).
   pose proof iff_impl_subrelation.
-  pose proof predicate_equivalence_pointwise1.
+  assert (Proper (typ_pred_equivalence ==> pointwise_relation ctx (pointwise_relation typ iff)) id)
+    by apply predicate_equivalence_pointwise.
   induction 1 using glu_univ_elem_ind; intros.
   (* Use [apply_relation_equivalence]-like tactic later *)
   - rewrite H3 in H5...
