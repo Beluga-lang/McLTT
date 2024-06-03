@@ -14,9 +14,8 @@ COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
 COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
 
 .PHONY: all
-all: $(COQMAKEFILE) $(COQPARSERFILE)
+all: $(COQMAKEFILE)
 	@+$(MAKE) -f "$(COQMAKEFILE)" all
-	@+$(MAKE) "$(PARSERFILE)"
 
 .PHONY: clean
 clean: $(COQMAKEFILE)
@@ -28,7 +27,7 @@ clean: $(COQMAKEFILE)
 update_CoqProject: clean
 	(echo "-R . Mcltt"; \
         echo ""; \
-        echo "-arg -w -arg -notation-overridden"; \
+        echo "-arg -w -arg -cast-in-pattern,-notation-overridden"; \
         echo ""; \
         echo -e "$(subst $(space),\n,$(COQFILES))") > "$(COQPROJECTFILE)"
 
@@ -38,19 +37,7 @@ force: ;
 $(COQMAKEFILE): $(COQPROJECTFILE)
 	$(COQBIN)coq_makefile -f "$?" -o "$@"
 
-$(COQPARSERFILE): %.v : %.vy
-	$(MENHIR) --coq "$?"
-
 $(COQPROJECTFILE): ;
-
-$(PARSERBASE): $(PARSEREXTRACTIONCOQFILE)
-	@+$(MAKE) -f "$(COQMAKEFILE)" -B "$(patsubst %.v,%.vo,$?)"
-
-$(PARSERFILE): $(PARSEREXTRACTIONCOQFILE)
-	@+$(MAKE) "$(PARSERBASE)"
-	@echo "MOVE $(PARSERBASE) => $@"
-	@mv "$(PARSERBASE)" "$@"
-	@mv "$(patsubst %.ml,%.mli,$(PARSERBASE))" "$(patsubst %.ml,%.mli,$@)"
 
 %: $(COQMAKEFILE) force
 	@+$(MAKE) -f "$(COQMAKEFILE)" "$@"

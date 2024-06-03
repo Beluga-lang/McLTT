@@ -36,7 +36,7 @@ jobs:
         with:
           ocaml-compiler: ${{ env.OCAML_VER }}
           dune-cache: true
-          cache-prefix: "v2"
+          cache-prefix: "v2.1"
       - name: install Menhir and Coq
         run: |
           opam update
@@ -55,7 +55,7 @@ jobs:
         run: |
           eval $(opam env)
           cd theories/
-          make -j ${{ steps.cpu-cores.outputs.count }}
+          make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed
       - name: test parser
         run: |
           eval $(opam env)
