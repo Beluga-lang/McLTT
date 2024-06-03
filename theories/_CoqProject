@@ -37,7 +37,6 @@
 ./Core/Syntactic/System.v
 ./Core/Syntactic/System/Definitions.v
 ./Core/Syntactic/System/Lemmas.v
-./Core/Soundness.v
 ./Core/Soundness/LogicalRelation.v
 ./Core/Soundness/Weakening.v
 ./Core/Soundness/Weakening/Definition.v
@@ -46,7 +45,6 @@
 ./Frontend/Parser.v
 ./Frontend/ParserExtraction.v
 ./Extraction/Evaluation.v
-./Extraction/NbE.v
 ./Extraction/Readback.v
-./Extraction/TypeCheck.v
+./Extraction/NbE.v
 ./LibTactics.v
