@@ -55,7 +55,8 @@ jobs:
         run: |
           eval $(opam env)
           cd theories/
-          make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed
+          make -j ${{ steps.cpu-cores.outputs.count }} vos
+          make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed TGTS=vok
       - name: test parser
         run: |
           eval $(opam env)
