@@ -13,5 +13,17 @@ PARSEREXTRACTIONRESULTFILE := $(PARSEREXTRACTIONDIR)/$(PARSERBASE)
 COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
 COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
 
+post-all:: $(COQPARSERFILE)
+	@+$(MAKE) "$(PARSERFILE)"
+
 $(COQPARSERFILE): %.v : %.vy
 	$(MENHIR) --coq "$?"
+
+$(PARSERBASE): $(PARSEREXTRACTIONCOQFILE)
+	@+$(MAKE) -f "$(COQMAKEFILE)" -B "$(patsubst %.v,%.vo,$?)"
+
+$(PARSERFILE): $(PARSEREXTRACTIONCOQFILE)
+	@+$(MAKE) "$(PARSERBASE)"
+	@echo "MOVE $(PARSERBASE) => $@"
+	@mv "$(PARSERBASE)" "$@"
+	@mv "$(patsubst %.ml,%.mli,$(PARSERBASE))" "$(patsubst %.ml,%.mli,$@)"
