@@ -70,6 +70,9 @@ Proof with mautosolve.
     eapply wf_sub_eq_compose_assoc; revgoals...
 Qed.
 
+#[export]
+Hint Resolve weakening_compose : mcltt.
+
 Lemma weakening_id : forall Γ,
     {{ ⊢ Γ }} ->
     {{ Γ ⊢w Id : Γ }}.

@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms Morphisms_Relations.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation PER Presup Readback Syntactic.Corollaries.
+From Mcltt.Core Require Import Evaluation PER Presup CtxEq Readback Syntactic.Corollaries System.Lemmas.
 
 From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions.
 From Mcltt.Core.Soundness Require Export Weakening.Lemmas.
@@ -111,34 +111,46 @@ Proof.
 Qed.
 
 
-#[local]
-  Ltac invert_wf_ctx1 H :=
-  match type of H with
-  | {{ ⊢ ~_ , ~_ }} =>
-      let H' := fresh "H" in
-      pose proof H as H';
-      progressive_invert H'
-  end.
-
-Ltac invert_wf_ctx :=
-  (on_all_hyp: fun H => invert_wf_ctx1 H);
-  clear_dups.
-
 Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A B,
     glu_univ_elem i P El A B ->
     forall Γ T Δ,
       P Γ T ->
       {{ ⊢ Γ ≈ Δ }} ->
       P Δ T.
-Proof with (simpl in *; mauto).
+Proof.
   induction 1 using glu_univ_elem_ind; intros;
-    simpl_glu_rel; mauto.
+    simpl_glu_rel; mauto 2.
 
-(*   - invert_wf_ctx. *)
-(*     assert {{ ⊢ Γ, IT ≈ Δ, IT }}. *)
-(*     econstructor; eauto. *)
-(*     mauto. *)
+  - econstructor; mauto.
 
-(*     econstructor; mauto. *)
-(* Qed. *)
-Admitted.
+  - mauto 6.
+Qed.
+
+
+Lemma glu_nat_resp_wk' : forall Γ m a,
+    glu_nat Γ m a ->
+    forall Δ σ,
+      {{ Γ ⊢ m : ℕ }} ->
+      {{ Δ ⊢w σ : Γ }} ->
+      glu_nat Δ {{{ m [ σ ]}}} a.
+Proof.
+  induction 1; intros; gen_presups.
+  - econstructor.
+    transitivity {{{ zero [ σ ]}}}; mauto.
+  - econstructor; [ |mauto].
+    transitivity {{{ (succ m') [σ]}}}; mauto 4.
+  - econstructor; trivial.
+    intros. gen_presups.
+    assert {{ Δ0 ⊢w σ ∘ σ0 : Γ }} by mauto.
+    specialize (H0 _ _ _ H5 H4).
+    transitivity {{{ m [ σ ∘ σ0 ]}}}; mauto 4.
+Qed.
+
+Lemma glu_nat_resp_wk : forall Γ m a,
+    glu_nat Γ m a ->
+    forall Δ σ,
+      {{ Δ ⊢w σ : Γ }} ->
+      glu_nat Δ {{{ m [ σ ]}}} a.
+Proof.
+  mauto using glu_nat_resp_wk'.
+Qed.
