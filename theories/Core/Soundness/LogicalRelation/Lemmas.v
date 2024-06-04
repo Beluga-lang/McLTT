@@ -45,18 +45,6 @@ Proof.
   transitivity {{{ m[σ] }}}; mauto.
 Qed.
 
-Lemma glu_nat_per_top : forall Γ m a,
-    glu_nat Γ m a ->
-    per_top d{{{ ⇓ ℕ a }}} d{{{ ⇓ ℕ a }}}.
-Proof.
-  induction 1; intros s; mauto.
-  - specialize (IHglu_nat s).
-    destruct_conjs.
-    mauto.
-  - specialize (H s).
-    destruct_conjs.
-    mauto.
-Qed.
 
 Lemma glu_nat_readback : forall Γ m a,
     glu_nat Γ m a ->
@@ -73,19 +61,84 @@ Proof.
   - mauto.
 Qed.
 
+#[global]
+  Ltac simpl_glu_rel :=
+  repeat simpl_glu_rel1;
+  repeat invert_glu_rel1;
+  destruct_all;
+  gen_presups.
+
+
 Lemma glu_univ_elem_univ_lvl : forall i P El A B,
     glu_univ_elem i P El A B ->
     forall Γ T,
       P Γ T ->
       {{ Γ ⊢ T : Type@i }}.
-Proof with (simpl in *; destruct_all; gen_presups; trivial).
-  pose proof iff_impl_subrelation.
-  assert (Proper (typ_pred_equivalence ==> pointwise_relation ctx (pointwise_relation typ iff)) id)
-    by apply predicate_equivalence_pointwise.
-  induction 1 using glu_univ_elem_ind; intros.
-  (* Use [apply_relation_equivalence]-like tactic later *)
-  - rewrite H3 in H5...
-  - rewrite H1 in H3...
-  - rewrite H6 in H8. dir_inversion_by_head pi_typ_pred...
-  - rewrite H2 in H4...
+Proof.
+  induction 1 using glu_univ_elem_ind; intros;
+    simpl_glu_rel; trivial.
 Qed.
+
+
+Lemma glu_univ_elem_typ_resp_equiv : forall i P El A B,
+    glu_univ_elem i P El A B ->
+    forall Γ T T',
+      P Γ T ->
+      {{ Γ ⊢ T ≈ T' : Type@i }} ->
+      P Γ T'.
+Proof.
+  induction 1 using glu_univ_elem_ind; intros;
+    simpl_glu_rel; mauto.
+
+  split; [trivial |].
+  intros.
+  specialize (H4 _ _ _ H5 H6); mauto.
+Qed.
+
+
+Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A B,
+    glu_univ_elem i P El A B ->
+    forall Γ t T a T',
+      El Γ t T a ->
+      {{ Γ ⊢ T ≈ T' : Type@i }} ->
+      El Γ t T' a.
+Proof.
+  induction 1 using glu_univ_elem_ind; intros;
+    simpl_glu_rel; repeat split; mauto.
+  
+  intros.
+  specialize (H3 _ _ _ H7 H8); mauto.
+Qed.
+
+
+#[local]
+  Ltac invert_wf_ctx1 H :=
+  match type of H with
+  | {{ ⊢ ~_ , ~_ }} =>
+      let H' := fresh "H" in
+      pose proof H as H';
+      progressive_invert H'
+  end.
+
+Ltac invert_wf_ctx :=
+  (on_all_hyp: fun H => invert_wf_ctx1 H);
+  clear_dups.
+
+Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A B,
+    glu_univ_elem i P El A B ->
+    forall Γ T Δ,
+      P Γ T ->
+      {{ ⊢ Γ ≈ Δ }} ->
+      P Δ T.
+Proof with (simpl in *; mauto).
+  induction 1 using glu_univ_elem_ind; intros;
+    simpl_glu_rel; mauto.
+
+(*   - invert_wf_ctx. *)
+(*     assert {{ ⊢ Γ, IT ≈ Δ, IT }}. *)
+(*     econstructor; eauto. *)
+(*     mauto. *)
+
+(*     econstructor; mauto. *)
+(* Qed. *)
+Admitted.

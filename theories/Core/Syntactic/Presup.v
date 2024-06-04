@@ -235,5 +235,19 @@ Qed.
 #[export]
 Hint Resolve presup_exp presup_exp_eq presup_sub_eq : mcltt.
 
-Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq H.
-Ltac gen_presups := on_all_hyp: fun H => gen_presup H.
+#[local]
+  Ltac invert_wf_ctx1 H :=
+  match type of H with
+  | {{ ⊢ ~_ , ~_ }} =>
+      let H' := fresh "H" in
+      pose proof H as H';
+      progressive_invert H'
+  end.
+
+Ltac invert_wf_ctx :=
+  (on_all_hyp: fun H => invert_wf_ctx1 H);
+  clear_dups.
+
+Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq H; try invert_wf_ctx1 H.
+
+Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); clear_dups.

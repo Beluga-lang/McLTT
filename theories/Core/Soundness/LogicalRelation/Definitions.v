@@ -84,6 +84,8 @@ Inductive pi_glu_pred i
                    exists ab, {{ $| a & b |↘ ab }} /\ OEl _ _ Ha Δ {{{ m [ σ ] m' }}} {{{ OT [ σ ,, m' ] }}} ab) ->
     pi_glu_pred i IR IP IEl elem_rel OEl Γ m M a.
 
+#[export]
+ Hint Constructors neut_glu_pred pi_typ_pred pi_glu_pred : mcltt.
 
 Lemma pi_glu_pred_pi_typ_pred : forall i IR IP IEl (OP : forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ IR }}),  typ_pred) elem_rel OEl Γ m M a,
     pi_glu_pred i IR IP IEl elem_rel OEl Γ m M a ->
@@ -168,6 +170,7 @@ Definition univ_glu_pred j i : glu_pred :=
       {{ Γ ⊢ m : M }} /\ {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
         per_univ j A A /\
         glu_univ j A Γ m.
+Arguments univ_glu_pred j i Γ t T a/.
 
 Section GluingInduction.
 
@@ -272,3 +275,24 @@ Inductive glu_typ i Γ M A B : Prop :=
     per_top_typ A B ->
     (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rtyp A in length Δ ↘ a }} -> {{ Δ ⊢ M [ σ ] ≈  a : Type@i }}) ->
     glu_typ i Γ M A B.
+
+
+Ltac simpl_glu_rel1 :=
+  match goal with
+  | H : ?R <∙> _, H1 : ?R _ _ |- _ => apply H in H1; simpl in H1
+  | H : ?R <∙> _, H1 : ?R _ _ _ _ |- _ => apply H in H1; simpl in H1
+  | H : ?R <∙> _ |- ?R _ _ => apply H; simpl
+  | H : ?R <∙> _ |- ?R _ _ _ _ => apply H; simpl
+  end.
+
+Ltac invert_glu_rel1 :=
+  match goal with
+  | H : pi_typ_pred _ _ _ _ _ _ _ |- _ =>
+      progressive_invert H
+  | H : pi_glu_pred _ _ _ _ _ _ _ _ _ _ |- _ =>
+      progressive_invert H
+  | H : neut_typ_pred _ _ _ _ |- _ =>
+      progressive_invert H
+  | H : neut_glu_pred _ _ _ _ _ _ |- _ =>
+      progressive_invert H
+  end.
