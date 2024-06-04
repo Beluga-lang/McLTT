@@ -125,7 +125,7 @@ Qed.
 Hint Resolve presup_sub_eq_ctx presup_sub_eq_ctx_left presup_sub_eq_ctx_right : mcltt.
 
 Lemma presup_exp_eq_ctx : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }}.
-Proof with mautosolve.
+Proof with (mautosolve 2).
   induction 1...
 Qed.
 
@@ -188,10 +188,10 @@ Proof with mautosolve.
 Qed.
 
 Lemma vlookup_1_typ : forall {Γ i A j}, {{ ⊢ Γ }} -> {{ Γ, Type@i ⊢ A : Type@j }} -> {{ Γ, Type@i, A ⊢ # 1 : Type@i }}.
-Proof with mautosolve.
+Proof with mautosolve 4.
   intros.
-  assert {{ ⊢ Γ, Type@i }} by mauto.
-  assert {{ ⊢ Γ, Type@i, A }} by mautosolve.
+  assert {{ ⊢ Γ, Type@i }} by mauto 4.
+  assert {{ ⊢ Γ, Type@i, A }} by mauto 4.
   eapply wf_conv...
 Qed.
 
@@ -199,15 +199,15 @@ Qed.
 Hint Resolve vlookup_0_typ vlookup_1_typ : mcltt.
 
 Lemma exp_eq_var_0_sub_typ : forall {Γ σ Δ M i}, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : Type@i }} -> {{ Γ ⊢ #0[σ ,, M] ≈ M : Type@i }}.
-Proof with mautosolve.
+Proof with mautosolve 4.
   intros.
-  assert {{ ⊢ Δ }} by mautosolve.
-  assert {{ Γ ⊢ M : Type@i[σ] }} by mautosolve.
+  assert {{ ⊢ Δ }} by mauto 4.
+  assert {{ Γ ⊢ M : Type@i[σ] }} by mauto 4.
   eapply wf_exp_eq_conv...
 Qed.
 
 Lemma exp_eq_var_1_sub_typ : forall {Γ σ Δ A i M j}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A[σ] }} -> {{ #0 : Type@j[Wk] ∈ Δ }} -> {{ Γ ⊢ #1[σ ,, M] ≈ #0[σ] : Type@j }}.
-Proof with mautosolve.
+Proof with mautosolve 4.
   inversion 4 as [? Δ'|]; subst.
   assert {{ ⊢ Δ' }} by mauto.
   eapply wf_exp_eq_conv...
@@ -316,17 +316,19 @@ Qed.
 Hint Resolve exp_eq_nat_sub_sub_to_nat_sub : mcltt.
 
 Lemma vlookup_0_nat : forall {Γ}, {{ ⊢ Γ }} -> {{ Γ, ℕ ⊢ # 0 : ℕ }}.
-Proof with mautosolve.
+Proof with mautosolve 4.
   intros.
+  assert {{ ⊢ Γ, ℕ }} by mautosolve 3.
   assert {{ Γ, ℕ ⊢ # 0 : ℕ[Wk] }}...
 Qed.
 
 Lemma vlookup_1_nat : forall {Γ A i}, {{ ⊢ Γ }} -> {{ Γ, ℕ ⊢ A : Type@i }} -> {{ Γ, ℕ, A ⊢ # 1 : ℕ }}.
-Proof with mautosolve.
+Proof with mautosolve 4.
   intros.
   assert {{ ⊢ Γ, ℕ }} by mautosolve.
   assert {{ ⊢ Γ, ℕ, A }} by mautosolve.
-  assert {{ Γ, ℕ, A ⊢ #1 : ℕ[Wk][Wk] }}...
+  assert {{ Γ, ℕ, A ⊢ #1 : ℕ[Wk][Wk] }} by mauto.
+  assert {{ Γ, ℕ, A ⊢ ℕ[Wk][Wk] ≈ ℕ : Type@0 }}...
 Qed.
 
 #[export]
@@ -337,14 +339,16 @@ Proof with mautosolve.
   intros.
   assert {{ ⊢ Δ }} by mauto.
   assert {{ Γ ⊢ M : ℕ[σ] }} by mautosolve.
-  assert {{ Γ ⊢ #0[σ,, M] ≈ M : ℕ[σ] }}...
+  assert {{ Γ ⊢ #0[σ,, M] ≈ M : ℕ[σ] }} by mautosolve.
+  assert {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@0 }}...
 Qed.
 
 Lemma exp_eq_var_1_sub_nat : forall {Γ σ Δ A i M}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A[σ] }} -> {{ #0 : ℕ[Wk] ∈ Δ }} -> {{ Γ ⊢ #1[σ ,, M] ≈ #0[σ] : ℕ }}.
 Proof with mautosolve.
   inversion 4 as [? Δ'|]; subst.
   assert {{ ⊢ Δ' }} by mauto.
-  assert {{ Γ ⊢ #1[σ,, M] ≈ #0[σ] : ℕ[Wk][σ] }}...
+  assert {{ Γ ⊢ #1[σ,, M] ≈ #0[σ] : ℕ[Wk][σ] }} by mauto.
+  assert {{ Γ ⊢ ℕ[Wk][σ] ≈ ℕ : Type@0 }}...
 Qed.
 
 #[export]
@@ -355,7 +359,8 @@ Proof with mautosolve.
   inversion 1; subst.
   inversion 1 as [? Γ'|]; subst.
   assert {{ ⊢ Γ' }} by mauto.
-  assert {{ Γ', ℕ, A ⊢ #0[Wk] ≈ # 1 : ℕ[Wk][Wk] }}...
+  assert {{ Γ', ℕ, A ⊢ #0[Wk] ≈ # 1 : ℕ[Wk][Wk] }} by mauto.
+  assert {{ Γ', ℕ, A ⊢ ℕ[Wk][Wk] ≈ ℕ : Type@0 }}...
 Qed.
 
 #[export]
@@ -388,7 +393,7 @@ Lemma sub_eq_p_extend_nat : forall {Γ σ Γ' M}, {{ Γ' ⊢s σ : Γ }} -> {{ �
 Proof with mautosolve.
   intros.
   assert {{ ⊢ Γ }} by mauto.
-  econstructor; only 3: mautosolve...
+  econstructor; revgoals...
 Qed.
 
 #[export]
@@ -420,7 +425,9 @@ Hint Resolve exp_eq_sub_sub_compose_cong : mcltt.
 Lemma ctx_lookup_wf : forall {Γ A x}, {{ ⊢ Γ }} -> {{ #x : A ∈ Γ }} -> exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with mautosolve.
   intros * HΓ.
-  induction 1; inversion_clear HΓ; [|assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by eauto]...
+  induction 1; inversion_clear HΓ;
+    [assert {{ Γ, A ⊢ Type@i[Wk] ≈ Type@i : Type@(S i) }} by mauto 4
+    | assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by eauto]; econstructor...
 Qed.
 
 #[export]
@@ -457,8 +464,10 @@ Hint Resolve sub_eq_p_id_extend : mcltt.
 Lemma sub_q : forall {Γ A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ , A[σ] ⊢s q σ : Δ , A }}.
 Proof with mautosolve.
   intros.
-  assert {{ Γ, A[σ] ⊢ # 0 : A[σ][Wk] }} by mauto.
-  econstructor...
+  assert {{ Γ ⊢ A[σ] : Type@i }} by mauto.
+  assert {{ ⊢ Γ, A[σ] }} by mauto 3.
+  assert {{ Γ, A[σ] ⊢s Wk : Γ }} by mauto.
+  assert {{ Γ, A[σ] ⊢ # 0 : A[σ][Wk] }} by mauto...
 Qed.
 
 Lemma sub_q_typ : forall {Γ σ Δ i}, {{ Γ ⊢s σ : Δ }} -> {{ Γ , Type@i ⊢s q σ : Δ , Type@i }}.
@@ -491,6 +500,8 @@ Proof with mautosolve.
   assert {{ ⊢ Γ, ℕ }} by mauto.
   assert {{ Γ, ℕ ⊢s q σ : Δ, ℕ }} by mauto.
   assert {{ ⊢ Γ, ℕ, A[q σ] }} by mauto.
+  assert {{ Γ, ℕ, A[q σ] ⊢ #0 : A[q σ][Wk] }} by mauto.
+  assert {{ Γ, ℕ, A[q σ] ⊢ #0 : A[q σ∘Wk] }} by mauto 4.
   assert {{ Γ, ℕ, A[q σ] ⊢ #1[q (q σ)] ≈ #0[q σ∘Wk] : ℕ }} by (eapply exp_eq_var_1_sub_nat; mauto).
   assert {{ Γ, ℕ, A[q σ] ⊢ #0[q σ∘Wk] ≈ #0[q σ][Wk] : ℕ }} by mauto.
   assert {{ Γ, ℕ ⊢ #0[q σ] ≈ #0 : ℕ }} by mauto.
@@ -549,8 +560,9 @@ Lemma sub_eq_q_sigma_id_extend : forall {Γ M A i σ Δ}, {{ Δ ⊢ A : Type@i }
 Proof with mautosolve.
   intros.
   assert {{ Γ ⊢s Id ,, M : Γ, A[σ] }} by mauto.
+  assert {{ Γ, A[σ] ⊢s Wk : Γ }} by mauto.
   assert {{ Γ, A[σ] ⊢ #0 : A[σ][Wk] }} by mauto.
-  assert {{ Γ, A[σ] ⊢ #0 : A[σ∘Wk] }} by mauto.
+  assert {{ Γ, A[σ] ⊢ #0 : A[σ∘Wk] }} by mauto 3.
   assert {{ Γ ⊢s q σ∘(Id ,, M) ≈ (σ∘Wk)∘(Id ,, M) ,, #0[Id ,, M] : Δ, A }} by mauto.
   assert {{ Γ ⊢s (σ∘Wk)∘(Id ,, M) ≈ σ : Δ }} by mauto.
   assert {{ Γ ⊢ M : A[σ][Id] }} by mauto.
@@ -563,9 +575,10 @@ Qed.
 Hint Resolve sub_eq_q_sigma_id_extend : mcltt.
 
 Lemma sub_eq_p_q_sigma : forall {Γ A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, A[σ] ⊢s Wk∘q σ ≈ σ∘Wk : Δ }}.
-Proof with mautosolve.
+Proof with mautosolve 3.
   intros.
   assert {{ ⊢ Γ }} by mauto.
+  assert {{ Γ, A[σ] ⊢s Wk : Γ }} by mauto.
   assert {{ Γ, A[σ] ⊢ #0 : A[σ][Wk] }} by mauto.
   assert {{ Γ, A[σ] ⊢ #0 : A[σ∘Wk] }}...
 Qed.
@@ -608,8 +621,11 @@ Proof with mautosolve.
   set (WkWksucc := {{{ Wk∘Wk ,, succ #1 }}}).
   assert {{ Γ' ⊢s Wk ∘ Wk : Γ }} by mauto.
   assert {{ Γ' ⊢s WkWksucc : Γ, ℕ }} by mauto.
+  assert {{ Γ, ℕ ⊢ #0 : ℕ }} by mauto.
   assert {{ Γ' ⊢s q σ∘WkWksucc ≈ (σ∘Wk)∘WkWksucc ,, #0[WkWksucc] : Δ, ℕ }} by mautosolve.
-  assert {{ Γ' ⊢ #1 : ℕ }} by mauto.
+  assert {{ Γ' ⊢ #1 : ℕ[Wk][Wk] }} by mauto.
+  assert {{ Γ' ⊢ ℕ[Wk][Wk] ≈ ℕ : Type@0 }} by mauto.
+  assert {{ Γ' ⊢ #1 : ℕ }} by mauto 3.
   assert {{ Γ' ⊢ succ #1 : ℕ }} by mauto.
   assert {{ Γ' ⊢s Wk∘WkWksucc ≈ Wk∘Wk : Γ }} by mauto.
   assert {{ Γ' ⊢s (σ∘Wk)∘WkWksucc ≈ σ∘(Wk∘Wk) : Δ }} by mauto.
@@ -625,7 +641,11 @@ Proof with mautosolve.
   assert {{ Γ' ⊢ #0[WkWksucc] ≈ (succ #1)[q (q σ)] : ℕ }} by mauto.
   assert {{ Γ' ⊢s (σ∘Wk)∘WkWksucc ,, #0[WkWksucc] ≈ (Wk∘Wk)∘q (q σ) ,, (succ #1)[q (q σ)] : Δ, ℕ }} by mauto.
   assert {{ Δ, ℕ, A ⊢s Wk∘Wk : Δ }} by mauto.
-  assert {{ Δ, ℕ, A ⊢ #1 : ℕ }} by mauto.
+  assert {{ Δ, ℕ, A ⊢ #1 : ℕ[Wk][Wk] }} by mauto 4.
+  assert {{ ⊢ Δ, ℕ }} by mauto 2.
+  assert {{ ⊢ Δ, ℕ, A }} by mauto 2.
+  assert {{ Δ, ℕ, A ⊢ ℕ[Wk][Wk] ≈ ℕ : Type@0 }} by mauto 3.
+  assert {{ Δ, ℕ, A ⊢ #1 : ℕ }} by mauto 3.
   assert {{ Δ, ℕ, A ⊢ succ #1 : ℕ }} by mauto.
   assert {{ Γ' ⊢s (Wk∘Wk)∘q (q σ) ,, (succ #1)[q (q σ)] ≈ WkWksucc∘q (q σ) : Δ, ℕ }}...
 Qed.

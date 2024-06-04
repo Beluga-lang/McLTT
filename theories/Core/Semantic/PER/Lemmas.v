@@ -4,13 +4,6 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Evaluation PER.Definitions PER.CoreTactics Readback.
 Import Domain_Notations.
 
-Add Parametric Morphism A : (@all A)
-    with signature forall_relation (fun (x : A) => iff) ==> iff as all_iff_moprhism'.
-Proof.
-  unfold forall_relation.
-  split; intros ** ?; intuition.
-Qed.
-
 Add Parametric Morphism A : PER
     with signature (@relation_equivalence A) ==> iff as PER_morphism.
 Proof.

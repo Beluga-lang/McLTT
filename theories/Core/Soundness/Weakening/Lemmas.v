@@ -1,8 +1,8 @@
-Require Import Coq.Program.Equality.
+From Coq Require Import Program.Equality.
 
-From Mcltt Require Import Base System.Definitions System.Lemmas Weakening.Definition Presup CtxEq LibTactics.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import CtxEq Presup Syntactic.Corollaries System Weakening.Definition.
 Import Syntax_Notations.
-
 
 Lemma weakening_escape : forall Γ σ Δ,
     {{ Γ ⊢w σ : Δ }} ->
@@ -16,8 +16,7 @@ Proof.
 Qed.
 
 #[export]
-  Hint Resolve weakening_escape : mcltt.
-
+Hint Resolve weakening_escape : mcltt.
 
 Lemma weakening_resp_equiv : forall Γ σ σ' Δ,
     {{ Γ ⊢w σ : Δ }} ->
@@ -27,7 +26,6 @@ Proof.
   induction 1; mauto.
 Qed.
 
-
 Lemma ctxeq_weakening : forall Γ σ Δ,
     {{ Γ ⊢w σ : Δ }} ->
     forall Γ',
@@ -36,7 +34,6 @@ Lemma ctxeq_weakening : forall Γ σ Δ,
 Proof.
   induction 1; mauto.
 Qed.
-
 
 Lemma weakening_conv : forall Γ σ Δ,
     {{ Γ ⊢w σ : Δ }} ->
@@ -55,32 +52,23 @@ Proof.
 Qed.
 
 #[export]
- Hint Resolve weakening_conv : mcltt.
-
-Lemma invert_id : forall Γ Δ,
-    {{ Γ ⊢s Id : Δ }} ->
-    {{ ⊢ Γ ≈ Δ }}.
-Proof.
-  intros. dependent induction H; intros; try congruence; mauto.
-Qed.
-
+Hint Resolve weakening_conv : mcltt.
 
 Lemma weakening_compose : forall Γ' σ' Γ'',
     {{ Γ' ⊢w σ' : Γ'' }} ->
     forall Γ σ,
       {{ Γ ⊢w σ : Γ' }} ->
       {{ Γ ⊢w σ' ∘ σ : Γ'' }}.
-Proof.
+Proof with mautosolve.
   induction 1; intros.
   - gen_presup H.
-    apply invert_id in Hτ.
-    eapply weakening_resp_equiv; [ mauto | ].
-    transitivity {{{ Id ∘ σ0 }}}; mauto.
+    assert {{ ⊢ Γ ≈ Δ }} by mauto.
+    eapply weakening_resp_equiv; [mauto 2 |].
+    transitivity {{{ Id ∘ σ0 }}}...
   - eapply wk_p; [eauto |].
-    apply weakening_escape in H.
-    transitivity {{{ Wk ∘ τ ∘ σ0 }}}; mauto.
+    transitivity {{{ Wk ∘ τ ∘ σ0 }}}; mauto 4.
+    eapply wf_sub_eq_compose_assoc; revgoals...
 Qed.
-
 
 Lemma weakening_id : forall Γ,
     {{ ⊢ Γ }} ->
@@ -93,8 +81,9 @@ Lemma weakening_wk : forall Γ T,
     {{ ⊢ Γ , T }} ->
     {{ Γ , T ⊢w Wk : Γ }}.
 Proof.
-  intros. eapply wk_p; mauto.
+  intros.
+  econstructor; mautosolve.
 Qed.
 
 #[export]
- Hint Resolve weakening_id weakening_wk : mcltt.
+Hint Resolve weakening_id weakening_wk : mcltt.
