@@ -1,4 +1,4 @@
-Require Import Coq.Program.Equality.
+From Coq Require Import Program.Equality.
 
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import CtxEq Presup Syntactic.Corollaries System Weakening.Definition.
@@ -59,15 +59,15 @@ Lemma weakening_compose : forall Γ' σ' Γ'',
     forall Γ σ,
       {{ Γ ⊢w σ : Γ' }} ->
       {{ Γ ⊢w σ' ∘ σ : Γ'' }}.
-Proof.
+Proof with mautosolve.
   induction 1; intros.
   - gen_presup H.
     assert {{ ⊢ Γ ≈ Δ }} by mauto.
     eapply weakening_resp_equiv; [mauto 2 |].
-    transitivity {{{ Id ∘ σ0 }}}; mauto.
+    transitivity {{{ Id ∘ σ0 }}}...
   - eapply wk_p; [eauto |].
     transitivity {{{ Wk ∘ τ ∘ σ0 }}}; mauto 4.
-    eapply wf_sub_eq_compose_assoc; only 2: mautosolve; mautosolve.
+    eapply wf_sub_eq_compose_assoc; revgoals...
 Qed.
 
 Lemma weakening_id : forall Γ,
