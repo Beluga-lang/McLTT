@@ -92,7 +92,7 @@ Proof.
 
   split; [trivial |].
   intros.
-  specialize (H4 _ _ _ H5 H6); mauto.
+  specialize (H4 _ _ _ H2 H5); mauto.
 Qed.
 
 
@@ -107,7 +107,7 @@ Proof.
     simpl_glu_rel; repeat split; mauto.
   
   intros.
-  specialize (H3 _ _ _ H7 H8); mauto.
+  specialize (H3 _ _ _ H2 H7); mauto.
 Qed.
 
 
