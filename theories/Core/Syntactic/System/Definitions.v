@@ -1,4 +1,5 @@
 From Coq Require Import List Classes.RelationClasses.
+Require Export Setoid.
 From Mcltt Require Import Base LibTactics.
 From Mcltt Require Export Syntax.
 Import Syntax_Notations.
@@ -317,3 +318,19 @@ Proof.
   - eauto using wf_sub_eq_sym.
   - eauto using wf_sub_eq_trans.
 Qed.
+
+
+Add Parametric Morphism i Γ : (wf_exp Γ)
+    with signature eq ==> wf_exp_eq Γ {{{ Type@i }}} ==> iff as wf_exp_morph.
+Proof.
+  intros; split; mauto.
+Qed.
+
+Add Parametric Morphism i Γ : (wf_exp_eq Γ)
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> eq ==> iff as wf_exp_eq_morph.
+Proof.
+  intros; split; mauto.
+Qed.
+
+#[export]
+  Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub wf_exp_eq_pi_sub : mcltt.
