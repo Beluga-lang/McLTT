@@ -164,6 +164,7 @@ Equations glu_univ_elem (i : nat) : typ_pred -> glu_pred -> domain -> domain -> 
 
 Definition glu_univ (i : nat) (A : domain) : typ_pred :=
   fun Γ M => exists P El, glu_univ_elem i P El A A /\ P Γ M.
+Arguments glu_univ i A Γ M/.
 
 Definition univ_glu_pred j i : glu_pred :=
     fun Γ m M A =>
