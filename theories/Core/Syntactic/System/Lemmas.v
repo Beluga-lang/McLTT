@@ -171,7 +171,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-  Hint Resolve exp_eq_sub_compose_typ : mcltt.
+  Hint Resolve exp_sub_typ exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mcltt.
 
 
 Lemma exp_eq_typ_sub_sub : forall Γ Δ Ψ σ τ i, {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢ Type@i[σ][τ] ≈ Type@i : Type@(S i) }}.
@@ -183,7 +183,6 @@ Qed.
 Hint Resolve exp_eq_typ_sub_sub : mcltt.
 #[export]
  Hint Rewrite -> exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ exp_eq_typ_sub_sub : mcltt.
-
 
 
 Lemma vlookup_0_typ : forall {Γ i}, {{ ⊢ Γ }} -> {{ Γ, Type@i ⊢ # 0 : Type@i }}.
