@@ -13,6 +13,9 @@ Proof.
   induction 1; mauto.
 Qed.
 
+#[local]
+ Hint Resolve glu_nat_per_nat : mcltt.
+
 Lemma glu_nat_escape : forall Γ m a,
     glu_nat Γ m a ->
     {{ ⊢ Γ }} ->
@@ -63,7 +66,7 @@ Qed.
 
 #[global]
   Ltac simpl_glu_rel :=
-  repeat simpl_glu_rel1;
+  apply_equiv_left;
   repeat invert_glu_rel1;
   destruct_all;
   gen_presups.
@@ -153,4 +156,63 @@ Lemma glu_nat_resp_wk : forall Γ m a,
       glu_nat Δ {{{ m [ σ ]}}} a.
 Proof.
   mauto using glu_nat_resp_wk'.
+Qed.
+#[export]
+ Hint Resolve glu_nat_resp_wk : mcltt.
+
+Lemma glu_univ_elem_trm_escape : forall i P El A B,
+    glu_univ_elem i P El A B ->
+    forall Γ t T a,
+      El Γ t T a ->
+      {{ Γ ⊢ t : T }}.
+Proof.
+  induction 1 using glu_univ_elem_ind; intros;
+    simpl_glu_rel; mauto 4.
+
+  specialize (H4 (length Γ)).
+  specialize (H (length Γ)).
+  assert {{ Γ ⊢w Id : Γ }} by mauto.
+  destruct_all.
+  specialize (H5 _ _ _ _ H6 H9 H7).
+  gen_presup H5.
+  mauto.
+Qed.
+
+Lemma glu_univ_elem_per : forall i P El A B,
+    glu_univ_elem i P El A B ->
+    exists R, per_univ_elem i R A B.
+Proof.
+  induction 1 using glu_univ_elem_ind; intros; eexists;
+    try solve [per_univ_elem_econstructor; try reflexivity; trivial].
+
+  - subst. eapply per_univ_elem_core_univ'; trivial.
+    reflexivity.
+  - invert_per_univ_elem H3. mauto.
+Qed.
+
+Lemma glu_univ_elem_trm_per : forall i P El A B,
+    glu_univ_elem i P El A B ->
+    forall Γ t T a R,
+      El Γ t T a ->
+      per_univ_elem i R A B ->
+      R a a.
+Proof.
+  induction 1 using glu_univ_elem_ind; intros;
+    match goal with
+    | H : per_univ_elem _ _ _ _ |- _ => invert_per_univ_elem H
+    end;
+    simpl_glu_rel;
+    mauto 4.
+
+  invert_per_univ_elem H3.
+  specialize (H16 a0 a0) as [? _].
+  specialize (H16 H7).
+  intros.
+  destruct_rel_mod_app.
+  destruct_rel_mod_eval.
+  functional_eval_rewrite_clear.
+  do_per_univ_elem_irrel_assert.
+
+  econstructor; eauto.
+  apply H23. trivial.
 Qed.

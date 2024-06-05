@@ -1,5 +1,7 @@
 From Coq Require Export Program.Equality Program.Tactics Lia RelationClasses.
 
+Open Scope predicate_scope.
+
 Create HintDb mcltt discriminated.
 
 (** Generalization of Variables *)
@@ -226,3 +228,40 @@ Ltac predicate_resolve :=
 
 (* intuition tactic default setting *)
 Ltac Tauto.intuition_solver ::= auto with mcltt core solve_subterm.
+
+#[global]
+  Ltac find_head t :=
+  lazymatch t with
+  | ?t' _ => find_head t'
+  | _ => t
+  end.
+
+#[global]
+  Ltac apply_equiv_left1 :=
+  let tac1 := fun H R H1 T => (let h := find_head T in unify R h; apply H in H1; simpl in H1) in
+  let tac2 := fun H R G => (let h := find_head G in unify R h; apply H; simpl) in
+  match goal with
+  | H : ?R <∙> _, H1 : ?T |- _ => tac1 H R H1 T
+  | H : relation_equivalence ?R _, H1 : ?T |- _ => tac1 H R H1 T
+  | H : ?R <∙> _ |- ?G => tac2 H R G
+  | H : relation_equivalence ?R _ |- ?G => tac2 H R G
+  end.
+
+
+#[global]
+  Ltac apply_equiv_left := repeat apply_equiv_left1.
+
+
+#[global]
+  Ltac apply_equiv_right1 :=
+  let tac1 := fun H R H1 T => (let h := find_head T in unify R h; apply H in H1; simpl in H1) in
+  let tac2 := fun H R G => (let h := find_head G in unify R h; apply H; simpl) in
+  match goal with
+  | H : _ <∙> ?R, H1 : ?T |- _ => tac1 H R H1 T
+  | H : relation_equivalence _ ?R, H1 : ?T |- _ => tac1 H R H1 T
+  | H : _ <∙> ?R |- ?G => tac2 H R G
+  | H : relation_equivalence _ ?R |- ?G => tac2 H R G
+  end.
+
+#[global]
+  Ltac apply_equiv_right := repeat apply_equiv_right1.

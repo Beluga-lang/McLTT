@@ -277,14 +277,6 @@ Inductive glu_typ i Γ M A B : Prop :=
     glu_typ i Γ M A B.
 
 
-Ltac simpl_glu_rel1 :=
-  match goal with
-  | H : ?R <∙> _, H1 : ?R _ _ |- _ => apply H in H1; simpl in H1
-  | H : ?R <∙> _, H1 : ?R _ _ _ _ |- _ => apply H in H1; simpl in H1
-  | H : ?R <∙> _ |- ?R _ _ => apply H; simpl
-  | H : ?R <∙> _ |- ?R _ _ _ _ => apply H; simpl
-  end.
-
 Ltac invert_glu_rel1 :=
   match goal with
   | H : pi_typ_pred _ _ _ _ _ _ _ |- _ =>
