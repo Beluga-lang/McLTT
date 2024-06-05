@@ -42,6 +42,19 @@ Proof with mautosolve.
   assert (m <= max n m) by lia...
 Qed.
 
+#[global]
+  Ltac pi_univ_level_tac :=
+  match goal with
+  | |- {{ ~_ ⊢s ~_ : ~_ }} => mauto 4
+  | H : {{ ~?Δ ⊢ ~?A : ~(a_typ ?j) }} |- {{ ~?Δ , ~?A ⊢ ~?B : ~(a_typ ?i) }} =>
+      eapply lift_exp_max_right; mauto 4
+  | |- {{ ~?Δ ⊢ ~?A : ~(a_typ ?j) }} =>
+      eapply lift_exp_max_left; mauto 4
+  end.
+
+#[export]
+  Hint Rewrite -> wf_exp_eq_pi_sub using pi_univ_level_tac : mcltt.
+
 Lemma lift_exp_eq_ge : forall {Γ A A' n m}, n <= m -> {{ Γ ⊢ A ≈ A': Type@n }} -> {{ Γ ⊢ A ≈ A' : Type@m }}.
 Proof with mautosolve.
   induction 1; subst...
@@ -182,7 +195,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_typ_sub_sub : mcltt.
 #[export]
- Hint Rewrite -> exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ exp_eq_typ_sub_sub : mcltt.
+ Hint Rewrite -> exp_eq_sub_compose_typ exp_eq_typ_sub_sub using mauto 4 : mcltt.
 
 
 Lemma vlookup_0_typ : forall {Γ i}, {{ ⊢ Γ }} -> {{ Γ, Type@i ⊢ # 0 : Type@i }}.
@@ -562,7 +575,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_sigma_compose_weak_id_extend : mcltt.
 
-Lemma sub_eq_q_sigma_id_extend : forall {Γ M A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A[σ] }} -> {{ Γ ⊢s q σ∘(Id,,M) ≈ σ,,M : Δ, A }}.
+Lemma sub_eq_q_sigma_id_extend : forall Γ M A i σ Δ, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A[σ] }} -> {{ Γ ⊢s q σ∘(Id,,M) ≈ σ,,M : Δ, A }}.
 Proof with mautosolve.
   intros.
   assert {{ Γ ⊢s Id ,, M : Γ, A[σ] }} by mauto.

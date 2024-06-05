@@ -333,14 +333,13 @@ Proof.
 Qed.
 
 #[export]
-  Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub wf_exp_eq_pi_sub : mcltt.
-
+  Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using eassumption : mcltt.
 
 #[export]
   Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left
                    wf_sub_eq_compose_assoc (* prefer right association *)
                    wf_sub_eq_extend_compose
-                   wf_sub_eq_p_extend : mcltt.
+                   wf_sub_eq_p_extend using mauto 4 : mcltt.
 
 
 Definition a_extend_eq_cong_rel i Γ Δ A : relation (sub -> exp -> sub) :=
