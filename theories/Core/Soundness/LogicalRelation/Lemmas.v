@@ -264,12 +264,14 @@ Proof.
     edestruct H11 as [? []]; eauto.
     eexists; split; eauto.
     eapply H2; eauto.
-    assert {{ Γ ⊢ m ≈ t' : Π IT OT }} by mauto.
-    assert {{ Δ ⊢ m [ σ ] ≈ t' [ σ ] : (Π IT OT) [ σ ] }} by mauto 4.
-
-    admit.                      (* this is annoying. a simple way? *)
-
+    assert {{ Γ ⊢ m ≈ t' : Π IT OT }} as Hty by mauto.
+    assert {{ Δ ⊢ IT [ σ ] : Type @ i4 }} by mauto 3.
+    eapply wf_exp_eq_sub_cong with (Γ := Δ) in Hty; [|mauto 4].
+    autorewrite with mcltt in Hty.
+    eapply wf_exp_eq_app_cong with (N := m') (N' := m') in Hty; try pi_univ_level_tac; [|mauto 2].
+    autorewrite with mcltt in Hty.
+    eassumption.
   - intros.
     assert {{ Δ ⊢ m [ σ ] ≈ t' [ σ ] : M [ σ ] }} by mauto 4.
     mauto.
-Admitted.
+Qed.

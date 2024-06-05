@@ -42,3 +42,10 @@ Add Parametric Morphism i Γ Δ : a_sub
 Proof.
   intros. gen_presups. mauto 4.
 Qed.
+
+
+Add Parametric Morphism i Γ Δ t (H : {{ Δ ⊢ t : Type@i }}) : (a_sub t)
+    with signature wf_sub_eq Γ Δ ==> wf_exp_eq Γ {{{ Type@i }}} as sub_typ_cong1.
+Proof.
+  intros. gen_presups. mauto 4.
+Qed.

@@ -592,6 +592,8 @@ Qed.
 
 #[export]
 Hint Resolve sub_eq_q_sigma_id_extend : mcltt.
+#[export]
+ Hint Rewrite -> sub_eq_q_sigma_id_extend using mauto 4 : mcltt.
 
 Lemma sub_eq_p_q_sigma : forall {Γ A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, A[σ] ⊢s Wk∘q σ ≈ σ∘Wk : Δ }}.
 Proof with mautosolve 3.

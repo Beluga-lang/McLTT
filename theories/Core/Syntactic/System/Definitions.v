@@ -338,7 +338,6 @@ Qed.
 #[export]
   Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left
                    wf_sub_eq_compose_assoc (* prefer right association *)
-                   wf_sub_eq_extend_compose
                    wf_sub_eq_p_extend using mauto 4 : mcltt.
 
 
