@@ -1,3 +1,4 @@
+From Coq Require Import Setoid.
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import CtxEq Presup.
 Import Syntax_Notations.
@@ -35,3 +36,9 @@ Qed.
 
 #[export]
 Hint Resolve invert_sub_id : mcltt.
+
+Add Parametric Morphism i Γ Δ : a_sub
+    with signature wf_exp_eq Δ {{{ Type@i }}} ==> wf_sub_eq Γ Δ ==> wf_exp_eq Γ {{{ Type@i }}} as sub_typ_cong.
+Proof.
+  intros. gen_presups. mauto 4.
+Qed.

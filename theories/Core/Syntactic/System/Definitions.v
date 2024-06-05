@@ -1,5 +1,5 @@
 From Coq Require Import List Classes.RelationClasses.
-Require Import Setoid.
+Require Import Setoid Morphisms.
 From Mcltt Require Import Base LibTactics.
 From Mcltt Require Export Syntax.
 Import Syntax_Notations.
@@ -334,3 +334,29 @@ Qed.
 
 #[export]
   Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub wf_exp_eq_pi_sub : mcltt.
+
+
+#[export]
+  Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left
+                   wf_sub_eq_compose_assoc (* prefer right association *)
+                   wf_sub_eq_extend_compose
+                   wf_sub_eq_p_extend : mcltt.
+
+
+Definition a_extend_eq_cong_rel i Γ Δ A : relation (sub -> exp -> sub) :=
+  fun e1 e2 =>
+    forall (σ σ' : sub) (M M' : typ),
+      {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+      {{ Δ ⊢ A : Type @ i }} ->
+      {{ Γ ⊢ M ≈ M' : ~ A [ σ ] }} ->
+      {{ Γ ⊢s ~(e1 σ M) ≈ ~ (e2 σ' M') : Δ, A }}.
+Arguments a_extend_eq_cong_rel i Γ Δ A/.
+#[export]
+  Typeclasses Transparent a_extend_eq_cong_rel.
+
+(* this morphism is added this way because the intended ==> syntax does not allow to add the well-formedness of A *)
+#[export]
+  Instance a_extend_eq_cong_morph i Γ Δ A : Proper (a_extend_eq_cong_rel i Γ Δ A) a_extend.
+Proof.
+  econstructor; eauto.
+Qed.
