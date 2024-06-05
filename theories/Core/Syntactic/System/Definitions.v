@@ -1,5 +1,5 @@
 From Coq Require Import List Classes.RelationClasses.
-Require Export Setoid.
+Require Import Setoid.
 From Mcltt Require Import Base LibTactics.
 From Mcltt Require Export Syntax.
 Import Syntax_Notations.
