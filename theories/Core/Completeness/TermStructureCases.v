@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation System.
+From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.UniverseCases System.
 Import Domain_Notations.
 
 Lemma rel_exp_sub_cong : forall {Δ M M' A σ σ' Γ},
@@ -12,7 +12,7 @@ Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΔ] [env_relΓ].
   destruct_conjs.
-  pose (env_relΔ0 := env_relΔ).
+  pose env_relΔ.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
@@ -22,8 +22,8 @@ Proof with mautosolve.
   handle_per_univ_elem_irrel.
   assert (env_relΔ o o0) by (etransitivity; [|symmetry; eassumption]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
-  destruct_by_head rel_exp.
   destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
   eexists.
   split...
@@ -41,8 +41,8 @@ Proof with mautosolve.
   eexists_rel_exp.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  destruct_by_head rel_exp.
   destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
   eexists.
   split...
 Qed.
@@ -60,8 +60,8 @@ Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΓ']]] [? [? [env_relΓ'']]] [].
   destruct_conjs.
-  pose (env_relΓ'0 := env_relΓ').
-  pose (env_relΓ''0 := env_relΓ'').
+  pose env_relΓ'.
+  pose env_relΓ''.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
@@ -72,9 +72,8 @@ Proof with mautosolve.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
   handle_per_univ_elem_irrel.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ'').
-  handle_per_univ_elem_irrel.
-  destruct_by_head rel_exp.
   destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
   eexists.
   split; econstructor...
@@ -90,18 +89,17 @@ Lemma rel_exp_conv : forall {Γ M M' A A' i},
 Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ] [].
+  intros * [env_relΓ] []%rel_exp_of_typ_inversion.
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
+  pose env_relΓ.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
   assert (env_relΓ p p) by (etransitivity; [| symmetry]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  destruct_by_head rel_exp.
+  destruct_by_head per_univ.
   destruct_by_head rel_typ.
-  invert_rel_typ_body.
-  destruct_conjs.
+  destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
   eexists.
   split; econstructor; mauto.
@@ -123,8 +121,8 @@ Proof with mautosolve.
   intros.
   assert (env_relΓ p' p) by (symmetry; eauto).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ); destruct_conjs.
-  destruct_by_head rel_exp.
   destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
   eexists.
   split; econstructor; mauto.
@@ -143,15 +141,15 @@ Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
+  pose env_relΓ.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
   assert (env_relΓ p' p) by (symmetry; eauto).
   assert (env_relΓ p' p') by (etransitivity; eauto).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ); destruct_conjs.
-  destruct_by_head rel_exp.
   destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
   eexists.
   split; econstructor; mauto.
@@ -184,12 +182,8 @@ Proof.
   - destruct_by_head valid_exp_under_ctx.
     destruct_conjs.
     eexists.
-    eexists_rel_exp.
+    eexists_rel_exp_of_typ.
     intros.
     (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-    eexists (per_univ _).
-    split; mauto.
-    econstructor; mauto.
-    per_univ_elem_econstructor; eauto.
-    apply Equivalence_Reflexive.
+    eapply rel_typ_implies_rel_exp; eauto.
 Qed.
