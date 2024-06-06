@@ -113,7 +113,7 @@ Proof.
     simpl_glu_rel; repeat split; mauto.
   
   intros.
-  specialize (H3 _ _ _ H2 H7); mauto.
+  specialize (H4 _ _ _ H2 H7); mauto.
 Qed.
 
 
@@ -198,21 +198,17 @@ Lemma glu_univ_elem_trm_per : forall i P El A B,
       R a a.
 Proof.
   induction 1 using glu_univ_elem_ind; intros;
-    try do 2 match goal with
-      | H : per_univ_elem _ _ _ _ |- _ => invert_per_univ_elem H
-      end;
+    try do 2 match_by_head1 per_univ_elem ltac:(fun H => invert_per_univ_elem H);
     simpl_glu_rel;
     mauto 4.
-  specialize (H14 a0 a0) as [? _].
-  specialize (H14 H6).
+
   intros.
   destruct_rel_mod_app.
   destruct_rel_mod_eval.
   functional_eval_rewrite_clear.
   do_per_univ_elem_irrel_assert.
 
-  econstructor; eauto.
-  apply H23. trivial.
+  econstructor; firstorder eauto.
 Qed.
 
 Lemma glu_univ_elem_trm_typ : forall i P El A B,
@@ -261,7 +257,7 @@ Proof.
     intros.
     destruct_rel_mod_eval.
     assert {{ Δ ⊢ m' : IT [ σ ]}} by eauto using glu_univ_elem_trm_escape.
-    edestruct H11 as [? []]; eauto.
+    edestruct H12 as [? []]; eauto.
     eexists; split; eauto.
     eapply H2; eauto.
     assert {{ Γ ⊢ m ≈ t' : Π IT OT }} as Hty by mauto.
