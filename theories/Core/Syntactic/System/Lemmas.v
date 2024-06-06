@@ -42,6 +42,19 @@ Proof with mautosolve.
   assert (m <= max n m) by lia...
 Qed.
 
+#[global]
+  Ltac pi_univ_level_tac :=
+  match goal with
+  | |- {{ ~_ ⊢s ~_ : ~_ }} => mauto 4
+  | H : {{ ~?Δ ⊢ ~?A : ~(a_typ ?j) }} |- {{ ~?Δ , ~?A ⊢ ~?B : ~(a_typ ?i) }} =>
+      eapply lift_exp_max_right; mauto 4
+  | |- {{ ~?Δ ⊢ ~?A : ~(a_typ ?j) }} =>
+      eapply lift_exp_max_left; mauto 4
+  end.
+
+#[export]
+  Hint Rewrite -> wf_exp_eq_pi_sub using pi_univ_level_tac : mcltt.
+
 Lemma lift_exp_eq_ge : forall {Γ A A' n m}, n <= m -> {{ Γ ⊢ A ≈ A': Type@n }} -> {{ Γ ⊢ A ≈ A' : Type@m }}.
 Proof with mautosolve.
   induction 1; subst...
@@ -153,33 +166,37 @@ Proof.
   mauto.
 Qed.
 
-Lemma exp_eq_sub_cong_typ1 : forall {Δ Γ A A' σ i}, {{ Δ ⊢ A ≈ A' : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ A[σ] ≈ A'[σ] : Type@i }}.
+Lemma exp_eq_sub_cong_typ1 : forall Δ Γ A A' σ i, {{ Δ ⊢ A ≈ A' : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ A[σ] ≈ A'[σ] : Type@i }}.
 Proof.
   mauto.
 Qed.
 
-Lemma exp_eq_sub_cong_typ2' : forall {Δ Γ A σ τ i}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢s σ ≈ τ : Δ }} -> {{ Γ ⊢ A[σ] ≈ A[τ] : Type@i }}.
+Lemma exp_eq_sub_cong_typ2' : forall Δ Γ A σ τ i, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢s σ ≈ τ : Δ }} -> {{ Γ ⊢ A[σ] ≈ A[τ] : Type@i }}.
 Proof with mautosolve.
   intros.
   eapply wf_exp_eq_conv...
 Qed.
 
-Lemma exp_eq_sub_compose_typ : forall {Ψ Δ Γ A σ τ i}, {{ Ψ ⊢ A : Type@i }} -> {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢ A[σ][τ] ≈ A[σ∘τ] : Type@i }}.
+Lemma exp_eq_sub_compose_typ : forall Ψ Δ Γ A σ τ i, {{ Ψ ⊢ A : Type@i }} -> {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢ A[σ][τ] ≈ A[σ∘τ] : Type@i }}.
 Proof with mautosolve.
   intros.
   eapply wf_exp_eq_conv...
 Qed.
 
 #[export]
-Hint Resolve exp_sub_typ exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mcltt.
+  Hint Resolve exp_sub_typ exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mcltt.
 
-Lemma exp_eq_typ_sub_sub : forall {Γ Δ Ψ σ τ i}, {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢ Type@i[σ][τ] ≈ Type@i : Type@(S i) }}.
+
+Lemma exp_eq_typ_sub_sub : forall Γ Δ Ψ σ τ i, {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢ Type@i[σ][τ] ≈ Type@i : Type@(S i) }}.
 Proof.
   mauto.
 Qed.
 
 #[export]
 Hint Resolve exp_eq_typ_sub_sub : mcltt.
+#[export]
+ Hint Rewrite -> exp_eq_sub_compose_typ exp_eq_typ_sub_sub using mauto 4 : mcltt.
+
 
 Lemma vlookup_0_typ : forall {Γ i}, {{ ⊢ Γ }} -> {{ Γ, Type@i ⊢ # 0 : Type@i }}.
 Proof with mautosolve.
@@ -198,7 +215,7 @@ Qed.
 #[export]
 Hint Resolve vlookup_0_typ vlookup_1_typ : mcltt.
 
-Lemma exp_eq_var_0_sub_typ : forall {Γ σ Δ M i}, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : Type@i }} -> {{ Γ ⊢ #0[σ ,, M] ≈ M : Type@i }}.
+Lemma exp_eq_var_0_sub_typ : forall Γ σ Δ M i, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : Type@i }} -> {{ Γ ⊢ #0[σ ,, M] ≈ M : Type@i }}.
 Proof with mautosolve 4.
   intros.
   assert {{ ⊢ Δ }} by mauto 4.
@@ -206,7 +223,7 @@ Proof with mautosolve 4.
   eapply wf_exp_eq_conv...
 Qed.
 
-Lemma exp_eq_var_1_sub_typ : forall {Γ σ Δ A i M j}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A[σ] }} -> {{ #0 : Type@j[Wk] ∈ Δ }} -> {{ Γ ⊢ #1[σ ,, M] ≈ #0[σ] : Type@j }}.
+Lemma exp_eq_var_1_sub_typ : forall Γ σ Δ A i M j, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢ M : A[σ] }} -> {{ #0 : Type@j[Wk] ∈ Δ }} -> {{ Γ ⊢ #1[σ ,, M] ≈ #0[σ] : Type@j }}.
 Proof with mautosolve 4.
   inversion 4 as [? Δ'|]; subst.
   assert {{ ⊢ Δ' }} by mauto.
@@ -215,6 +232,8 @@ Qed.
 
 #[export]
 Hint Resolve exp_eq_var_0_sub_typ exp_eq_var_1_sub_typ : mcltt.
+#[export]
+  Hint Rewrite -> exp_eq_var_0_sub_typ exp_eq_var_1_sub_typ : mcltt.
 
 Lemma exp_eq_var_0_weaken_typ : forall {Γ A i}, {{ ⊢ Γ , A }} -> {{ #0 : Type@i[Wk] ∈ Γ }} -> {{ Γ , A ⊢ #0[Wk] ≈ #1 : Type@i }}.
 Proof with mautosolve.
@@ -556,7 +575,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_sigma_compose_weak_id_extend : mcltt.
 
-Lemma sub_eq_q_sigma_id_extend : forall {Γ M A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A[σ] }} -> {{ Γ ⊢s q σ∘(Id,,M) ≈ σ,,M : Δ, A }}.
+Lemma sub_eq_q_sigma_id_extend : forall Γ M A i σ Δ, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ M : A[σ] }} -> {{ Γ ⊢s q σ∘(Id,,M) ≈ σ,,M : Δ, A }}.
 Proof with mautosolve.
   intros.
   assert {{ Γ ⊢s Id ,, M : Γ, A[σ] }} by mauto.
@@ -573,6 +592,8 @@ Qed.
 
 #[export]
 Hint Resolve sub_eq_q_sigma_id_extend : mcltt.
+#[export]
+ Hint Rewrite -> sub_eq_q_sigma_id_extend using mauto 4 : mcltt.
 
 Lemma sub_eq_p_q_sigma : forall {Γ A i σ Δ}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ, A[σ] ⊢s Wk∘q σ ≈ σ∘Wk : Δ }}.
 Proof with mautosolve 3.
