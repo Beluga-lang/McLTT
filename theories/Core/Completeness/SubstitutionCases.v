@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.ContextCases Completeness.LogicalRelation System.
+From Mcltt.Core Require Import Completeness.ContextCases Completeness.LogicalRelation Completeness.UniverseCases System.
 Import Domain_Notations.
 
 Lemma rel_sub_id : forall {Γ},
@@ -17,11 +17,15 @@ Hint Resolve rel_sub_id : mcltt.
 Lemma rel_sub_weaken : forall {Γ A},
     {{ ⊨ Γ, A }} ->
     {{ Γ, A ⊨s Wk ≈ Wk : Γ }}.
-Proof with intuition.
+Proof with mautosolve.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓA].
   inversion_by_head (per_ctx_env env_relΓA); subst.
   eexists_rel_sub.
-  econstructor; only 1-2: repeat econstructor...
+  intros.
+  apply_relation_equivalence.
+  destruct_conjs...
 Qed.
 
 #[export]
@@ -59,7 +63,7 @@ Proof with mautosolve.
   destruct_conjs.
   pose (env_relΓ0 := env_relΓ).
   pose (env_relΔ0 := env_relΔ).
-  assert {{ ⊨ Δ, A }} as [env_relΔA] by (eapply rel_ctx_extend; eauto; eexists; eassumption).
+  assert {{ ⊨ Δ, A }} as [env_relΔA] by (eapply rel_ctx_extend; eauto; eexists; mauto).
   destruct_conjs.
   pose (env_relΔA0 := env_relΔA).
   handle_per_ctx_env_irrel.
@@ -71,8 +75,7 @@ Proof with mautosolve.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
-  handle_per_univ_elem_irrel.
+  invert_rel_typ_body.
   destruct_by_head rel_exp...
 Qed.
 
@@ -157,8 +160,7 @@ Proof with mautosolve.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
   (on_all_hyp: destruct_rel_by_assumption env_relΓ'').
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
-  handle_per_univ_elem_irrel.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   econstructor...
 Qed.
@@ -182,8 +184,7 @@ Proof with mautosolve.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
   destruct_by_head rel_typ.
-  inversion_by_head (eval_exp {{{ A[σ] }}}); subst.
-  handle_per_univ_elem_irrel.
+  invert_rel_typ_body.
   destruct_by_head rel_exp.
   econstructor...
 Qed.

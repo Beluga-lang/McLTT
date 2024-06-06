@@ -52,7 +52,7 @@ Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
+  pose env_relΓ.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
@@ -78,7 +78,7 @@ Proof with mautosolve.
   pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [] HxinΓ.
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
+  pose env_relΓ.
   handle_per_ctx_env_irrel.
   unshelve epose proof (valid_lookup _ HxinΓ); shelve_unifiable; [eassumption |].
   destruct_conjs.
