@@ -23,6 +23,33 @@ Proof.
   do 2 eexists; repeat split; mauto.
 Qed.
 
+Lemma rel_exp_of_pi : forall {Γ M M' A B},
+    (exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
+      forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
+      exists in_rel out_rel,
+        rel_typ i A p A p' in_rel /\
+          (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_typ i B d{{{ p ↦ c }}} B d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) /\
+          rel_exp M p M' p'
+            (fun f f' : domain => forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app f c f' c' (out_rel c c' equiv_c_c'))) ->
+    {{ Γ ⊨ M ≈ M' : Π A B }}.
+Proof.
+  intros * [env_relΓ].
+  destruct_conjs.
+  eexists_rel_exp.
+  intros.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
+  eexists; split; econstructor; mauto.
+  - per_univ_elem_econstructor; try eassumption.
+    apply Equivalence_Reflexive.
+  - mauto.
+Qed.
+
+Ltac eexists_rel_exp_of_pi :=
+  apply rel_exp_of_pi;
+  eexists_rel_exp.
+
 #[local]
 Ltac extract_output_info_with p c p' c' env_rel :=
   let Hequiv := fresh "equiv" in
@@ -135,26 +162,20 @@ Proof with mautosolve.
   pose env_relΓA.
   match_by_head (per_ctx_env env_relΓA) invert_per_ctx_env.
   handle_per_ctx_env_irrel.
-  eexists_rel_exp.
+  eexists_rel_exp_of_pi.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head per_univ.
   functional_eval_rewrite_clear.
-  eexists.
-  split; econstructor; mauto.
-  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | |]; eauto.
-    + intros.
-      eapply rel_exp_pi_core; eauto; try reflexivity.
-      clear dependent c.
-      clear dependent c'.
-      intros.
-      extract_output_info_with p c p' c' env_relΓA.
-      econstructor; eauto.
-      eexists.
-      eapply per_univ_elem_cumu_max_right...
-    + (* `reflexivity` does not work as it uses a "wrong" instance. *)
-      apply Equivalence_Reflexive.
-  - intros ? **.
+  do 2 eexists.
+  repeat split; only 1,3: econstructor; only 3: eapply per_univ_elem_cumu_max_left; mauto; revgoals.
+  - eapply rel_exp_pi_core; eauto; try reflexivity.
+    intros.
+    extract_output_info_with p c p' c' env_relΓA.
+    econstructor; eauto.
+    eexists.
+    eapply per_univ_elem_cumu_max_right...
+  - intros.
     extract_output_info_with p c p' c' env_relΓA.
     econstructor; mauto.
     intros.
@@ -302,18 +323,16 @@ Proof with mautosolve.
   intros * [env_relΓ]%rel_exp_of_pi_inversion.
   destruct_conjs.
   pose env_relΓ.
-  eexists_rel_exp.
+  eexists_rel_exp_of_pi.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   rename x into in_rel.
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
-  eexists.
-  split; econstructor; mauto.
-  - per_univ_elem_econstructor; mauto.
-    apply Equivalence_Reflexive.
-  - intros ? **.
-    (on_all_hyp: destruct_rel_by_assumption in_rel)...
+  do 2 eexists.
+  repeat split; only 1,3: econstructor; mauto.
+  intros.
+  (on_all_hyp: destruct_rel_by_assumption in_rel)...
 Qed.
 
 #[export]
