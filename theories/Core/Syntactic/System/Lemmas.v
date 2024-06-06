@@ -673,3 +673,35 @@ Qed.
 
 #[export]
 Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
+
+Lemma typ_subsumption_ge : forall {Γ i j},
+    {{ ⊢ Γ }} ->
+    i <= j ->
+    {{ Γ ⊢ Type@i ⊆ Type@j }}.
+Proof.
+  induction 2; mauto.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_ge : mcltt.
+
+Lemma nf_subsumption_ge : forall {i j},
+    i <= j ->
+    nf_subsumption n{{{ Type@i }}} n{{{ Type@j }}}.
+Proof.
+  induction 1; mauto.
+Qed.
+
+#[export]
+Hint Resolve nf_subsumption_ge : mcltt.
+
+Lemma wf_exp_respects_typ_subsumption : forall {Γ M A A'},
+    {{ Γ ⊢ M : A }} ->
+    {{ Γ ⊢ A ⊆ A' }} ->
+    {{ Γ ⊢ M : A' }}.
+Proof.
+  induction 2; mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_exp_respects_typ_subsumption : mcltt.
