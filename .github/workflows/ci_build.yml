@@ -58,6 +58,7 @@ jobs:
               dune build
               dune runtest
             endGroup
+          export: "OPAMJOBS OPAMYES"
         env:
           OPAMJOBS: ${{ steps.cpu-cores.outputs.count }}
           OPAMYES: "true"
