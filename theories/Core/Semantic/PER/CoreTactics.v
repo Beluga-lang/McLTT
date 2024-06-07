@@ -8,9 +8,10 @@ Ltac destruct_rel_by_assumption in_rel H :=
   repeat
     match goal with
     | H' : {{ Dom ~?c ≈ ~?c' ∈ ?in_rel0 }} |- _ =>
-        tryif (unify in_rel0 in_rel)
-        then (destruct (H _ _ H') as []; destruct_all; mark_with H' 1)
-        else fail
+        unify in_rel0 in_rel;
+        destruct (H _ _ H') as [];
+        destruct_all;
+        mark_with H' 1
     end;
   unmark_all_with 1.
 Ltac destruct_rel_mod_eval :=

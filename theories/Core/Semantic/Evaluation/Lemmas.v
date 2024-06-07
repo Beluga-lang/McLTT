@@ -65,12 +65,12 @@ Ltac functional_eval_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_eval equality between" o1 "and" o2 "cannot be solved by mauto" in
   match goal with
   | H1 : {{ ⟦ ~?M ⟧ ~?p ↘ ~?m1 }}, H2 : {{ ⟦ ~?M ⟧ ~?p ↘ ~?m2 }} |- _ =>
-      clean replace m2 with m1 by first [solve [mauto] | tactic_error m2 m1]; clear H2
+      clean replace m2 with m1 by first [solve [mauto 2] | tactic_error m2 m1]; clear H2
   | H1 : {{ $| ~?m & ~?n |↘ ~?r1 }}, H2 : {{ $| ~?m & ~?n |↘ ~?r2 }} |- _ =>
-      clean replace r2 with r1 by first [solve [mauto] | tactic_error r2 r1]; clear H2
+      clean replace r2 with r1 by first [solve [mauto 2] | tactic_error r2 r1]; clear H2
   | H1 : {{ rec ~?m ⟦return ~?A | zero -> ~?MZ | succ -> ~?MS end⟧ ~?p ↘ ~?r1 }}, H2 : {{ rec ~?m ⟦return ~?A | zero -> ~?MZ | succ -> ~?MS end⟧ ~?p ↘ ~?r2 }} |- _ =>
-      clean replace r2 with r1 by first [solve [mauto] | tactic_error r2 r1]; clear H2
+      clean replace r2 with r1 by first [solve [mauto 2] | tactic_error r2 r1]; clear H2
   | H1 : {{ ⟦ ~?σ ⟧s ~?p ↘ ~?p1 }}, H2 : {{ ⟦ ~?σ ⟧s ~?p ↘ ~?p2 }} |- _ =>
-      clean replace p2 with p1 by first [solve [mauto] | tactic_error p2 p1]; clear H2
+      clean replace p2 with p1 by first [solve [mauto 2] | tactic_error p2 p1]; clear H2
   end.
 Ltac functional_eval_rewrite_clear := repeat functional_eval_rewrite_clear1.

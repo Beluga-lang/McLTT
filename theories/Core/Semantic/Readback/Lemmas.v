@@ -52,10 +52,10 @@ Ltac functional_read_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_read equality between" o1 "and" o2 "cannot be solved by mauto" in
   match goal with
   | H1 : {{ Rnf ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rnf ~?m in ?s ↘ ~?M2 }} |- _ =>
-      clean replace M2 with M1 by first [solve [mauto] | tactic_error M2 M1]; clear H2
+      clean replace M2 with M1 by first [solve [mauto 2] | tactic_error M2 M1]; clear H2
   | H1 : {{ Rne ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rne ~?m in ?s ↘ ~?M2 }} |- _ =>
-      clean replace M2 with M1 by first [solve [mauto] | tactic_error M2 M1]; clear H2
+      clean replace M2 with M1 by first [solve [mauto 2] | tactic_error M2 M1]; clear H2
   | H1 : {{ Rtyp ~?m in ?s ↘ ~?M1 }}, H2 : {{ Rtyp ~?m in ?s ↘ ~?M2 }} |- _ =>
-      clean replace M2 with M1 by first [solve [mauto] | tactic_error M2 M1]; clear H2
+      clean replace M2 with M1 by first [solve [mauto 2] | tactic_error M2 M1]; clear H2
   end.
 Ltac functional_read_rewrite_clear := repeat functional_read_rewrite_clear1.

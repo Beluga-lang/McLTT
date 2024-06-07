@@ -80,8 +80,8 @@ Proof with intuition.
   destruct_by_head per_univ.
   apply -> per_univ_elem_morphism_iff; eauto.
   split; intros; destruct_by_head rel_typ; handle_per_univ_elem_irrel...
-  eapply H5.
-  mauto.
+  exvar (relation domain) ltac:(fun R => assert (rel_typ i B d{{{ o ↦ c }}} B' d{{{ o' ↦ c' }}} R) by mauto).
+  intuition.
 Qed.
 
 Lemma rel_exp_pi_cong : forall {i Γ A A' B B'},
@@ -137,10 +137,7 @@ Proof with mautosolve.
   econstructor; mauto.
   eexists.
   per_univ_elem_econstructor; eauto.
-  - intros.
-    eapply rel_exp_pi_core; eauto; try reflexivity.
-    clear dependent c.
-    clear dependent c'.
+  - eapply rel_exp_pi_core; eauto; try reflexivity.
     intros.
     extract_output_info_with o c o' c' env_relΔA...
   - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
@@ -168,7 +165,7 @@ Proof with mautosolve.
   destruct_by_head per_univ.
   functional_eval_rewrite_clear.
   do 2 eexists.
-  repeat split; only 1,3: econstructor; only 3: eapply per_univ_elem_cumu_max_left; mauto; revgoals.
+  repeat split; [econstructor; [| | eapply per_univ_elem_cumu_max_left] | | econstructor]; mauto.
   - eapply rel_exp_pi_core; eauto; try reflexivity.
     intros.
     extract_output_info_with p c p' c' env_relΓA.
@@ -204,18 +201,16 @@ Proof with mautosolve.
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   eexists.
   split; econstructor; mauto 4.
-  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | |]; eauto.
-    + intros.
-      eapply rel_exp_pi_core; eauto; try reflexivity.
-      clear dependent c.
-      clear dependent c'.
-      intros.
-      extract_output_info_with o c o' c' env_relΔA.
-      econstructor; eauto.
-      eexists.
-      eapply per_univ_elem_cumu_max_right...
-    + (* `reflexivity` does not work as it uses a "wrong" instance. *)
-      apply Equivalence_Reflexive.
+  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | apply Equivalence_Reflexive]; eauto.
+    intros.
+    eapply rel_exp_pi_core; eauto; try reflexivity.
+    clear dependent c.
+    clear dependent c'.
+    intros.
+    extract_output_info_with o c o' c' env_relΔA.
+    econstructor; eauto.
+    eexists.
+    eapply per_univ_elem_cumu_max_right...
   - intros ? **.
     extract_output_info_with o c o' c' env_relΔA.
     econstructor; mauto.

@@ -80,16 +80,19 @@ Proof with mautosolve 4.
     assert {{ Γ ⊢ B[q σ∘(Id,,N[σ])] ≈ B[σ,,N[σ]] : Type@i }} by mauto.
     assert {{ Γ ⊢ B[q σ][Id,,N[σ]] ≈ B[σ,,N[σ]] : Type@i }} by mauto.
     assert {{ Γ ⊢ NZ[σ] : B[Id ,, zero][σ] }} by mauto.
-    assert {{ Γ ⊢ zero : ℕ[σ] }} by mautosolve.
+    assert {{ Γ ⊢ ℕ ≈ ℕ[σ] : Type@0 }} by mauto.
+    assert {{ Γ ⊢ zero : ℕ[σ] }} by mauto.
     assert {{ Γ ⊢s q σ∘(Id ,, zero) ≈ σ ,, zero : Δ, ℕ }} by mauto.
     assert {{ Γ ⊢s σ ≈ Id∘σ : Δ }} by mauto.
     assert {{ Γ ⊢s σ ,, zero ≈ Id∘σ ,, zero[σ] : Δ, ℕ }} by mauto 4.
     assert {{ Γ ⊢s Id∘σ ,, zero[σ] ≈ (Id ,, zero)∘σ : Δ, ℕ }} by mauto.
+    assert {{ Γ ⊢s Id ,, zero : Γ, ℕ }} by mauto.
     assert {{ Γ ⊢s q σ∘(Id ,, zero) ≈ (Id ,, zero)∘σ : Δ, ℕ }} by mauto.
-    assert {{ Γ ⊢ B[q σ][Id ,, zero] ≈ B[Id ,, zero][σ] : Type@i }} by mauto 4.
+    assert {{ Γ ⊢ B[q σ∘(Id ,, zero)] ≈ B[(Id ,, zero)∘σ] : Type@i }} by mauto.
+    assert {{ Γ ⊢ B[q σ][Id ,, zero] ≈ B[Id ,, zero][σ] : Type@i }} by mauto.
     assert {{ Γ ⊢ NZ[σ] : B[q σ][Id ,, zero] }} by mauto.
     set (Γ' := {{{ Γ, ℕ, B[q σ] }}}).
-    assert {{ Γ' ⊢s q (q σ) : Δ, ℕ, B }} by mauto.
+    assert {{ Γ' ⊢s q (q σ) : Δ, ℕ, B }} by mauto 4.
     assert {{ Γ' ⊢s q σ∘WkWksucc ≈ WkWksucc∘q (q σ) : Δ, ℕ }} by mauto.
     assert {{ Γ' ⊢s WkWksucc : Γ, ℕ }} by mauto.
     assert {{ Γ' ⊢ B[q σ][WkWksucc] ≈ B[WkWksucc][q (q σ)] : Type@i }} by mauto.
@@ -101,19 +104,24 @@ Proof with mautosolve 4.
     set (IdNrecN := {{{ Id ,, N ,, recN }}}).
     assert {{ Γ ⊢ recN : B[Id ,, N] }} by mauto.
     assert {{ Γ ⊢s WkWksucc∘IdNrecN ≈ (Wk∘Wk)∘IdNrecN ,, (succ #1)[IdNrecN] : Γ, ℕ }}
-      by (eapply sub_eq_extend_compose_nat; mauto).
-    assert {{ Γ ⊢s Id ,, N ,, recN : Γ, ℕ, B }} by mauto.
-    assert {{ Γ ⊢s (Wk∘Wk)∘IdNrecN : Γ }} by mauto.
+      by (eapply sub_eq_extend_compose_nat; mauto 4).
+    assert {{ Γ ⊢s IdNrecN : Γ, ℕ, B }} by mauto.
+    assert {{ Γ, ℕ, B ⊢s Wk∘Wk : Γ }} by mauto 4.
+    assert {{ Γ ⊢s (Wk∘Wk)∘IdNrecN : Γ }} by mauto 4.
     assert {{ Γ ⊢s (Wk∘Wk)∘IdNrecN ≈ Wk∘(Wk∘IdNrecN) : Γ }} by mauto 4.
-    assert {{ Γ ⊢s Wk∘(Wk∘IdNrecN) ≈ Wk∘(Id ,, N) : Γ }} by mauto.
-    assert {{ Γ ⊢s (Wk∘Wk)∘IdNrecN ≈ Id : Γ }} by mauto.
-    assert {{ Γ ⊢ #1[Id ,, N ,, recN] ≈ #0[Id ,, N] : ℕ }} by mauto.
-    assert {{ Γ ⊢ succ #1[Id ,, N ,, recN] ≈ succ N : ℕ }} by mauto.
-    assert {{ Γ ⊢ (succ #1)[Id ,, N ,, recN] ≈ succ N : ℕ }} by mauto.
-    assert {{ Γ ⊢s (Wk∘Wk)∘IdNrecN ,, (succ #1)[Id ,, N ,, recN] ≈ Id ,, succ N : Γ , ℕ }} by mauto.
+    assert {{ Γ ⊢s Id,,N : Γ, ℕ }} by mauto 4.
+    assert {{ Γ ⊢s Wk∘(Wk∘IdNrecN) ≈ Wk∘(Id ,, N) : Γ }} by mauto 4.
+    assert {{ Γ ⊢s (Wk∘Wk)∘IdNrecN ≈ Id : Γ }} by mauto 4.
+    assert {{ Γ ⊢ #1[IdNrecN] ≈ #0[Id ,, N] : ℕ }} by mauto.
+    assert {{ Γ ⊢ #1[IdNrecN] ≈ N : ℕ }} by mauto 4.
+    assert {{ Γ ⊢ succ #1[IdNrecN] ≈ succ N : ℕ }} by mauto.
+    assert {{ Γ ⊢ (succ #1)[IdNrecN] ≈ succ N : ℕ }} by mauto 4.
+    assert {{ Γ ⊢s (Wk∘Wk)∘IdNrecN ,, (succ #1)[IdNrecN] ≈ Id ,, succ N : Γ , ℕ }} by mauto.
+    assert {{ Γ ⊢s WkWksucc∘IdNrecN : Γ, ℕ }} by mauto.
+    assert {{ Γ ⊢s Id,,succ N : Γ, ℕ }} by mauto.
     assert {{ Γ ⊢s WkWksucc∘IdNrecN ≈ Id ,, succ N : Γ , ℕ }} by mauto.
-    assert {{ Γ ⊢ B[WkWksucc∘IdNrecN] ≈ B[Id ,, succ N] : Type@i }} by mauto 4.
-    enough {{ Γ ⊢ B[WkWksucc][IdNrecN] ≈ B[Id ,, succ N] : Type@i }}...
+    assert {{ Γ ⊢ B[WkWksucc∘IdNrecN] ≈ B[Id,,succ N] : Type@i }} by mauto 4.
+    enough {{ Γ ⊢ B[WkWksucc][IdNrecN] ≈ B[Id,,succ N] : Type@i }}...
 
   - eexists...
 
@@ -124,7 +132,9 @@ Proof with mautosolve 4.
   - assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
     assert {{ Γ ⊢ B ≈ B' : Type@(max i i0) }} by mauto using lift_exp_eq_max_left.
     assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right.
-    enough {{ Γ ⊢ λ B' N' : Π B' C }}; mauto.
+    assert {{ Γ ⊢ Π B C ≈ Π B' C : Type@(max i i0) }} by mauto.
+    assert {{ Γ, B' ⊢ N' : C }} by mauto 4.
+    enough {{ Γ ⊢ λ B' N' : Π B' C }}...
 
   - assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
     assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
@@ -139,15 +149,21 @@ Proof with mautosolve 4.
     enough {{ Γ ⊢ λ B[σ] N[q σ] : Π B[σ] C[q σ] }}...
 
   - assert {{ Δ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
-    assert {{ Δ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
+    assert {{ Δ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right.
+    enough {{ Δ ⊢ Π B C : Type@(max i i0) }}...
 
-  - assert {{ Γ ⊢s Id ,, L ≈ Id ,, L' : Γ, B }} by (econstructor; mauto).
+  - assert {{ Γ ⊢s Id ≈ Id : Γ }} by mauto.
+    assert {{ Γ ⊢ B[Id] ≈ B : Type@i }} by mauto.
+    assert {{ Γ ⊢ L ≈ L' : B[Id] }} by mauto.
+    assert {{ Γ ⊢s Id ,, L ≈ Id ,, L' : Γ, B }} by mauto.
     enough {{ Γ ⊢ C[Id ,, L] ≈ C[Id ,, L'] : Type@i }}...
 
-  - assert {{ Γ ⊢ N[σ] : Π B[σ] C[q σ] }} by mauto.
-    assert {{ Γ ⊢ L[σ] : B[σ] }} by mauto.
-    assert {{ Γ ⊢s (Id ,, L)∘σ ≈ Id∘σ ,, L[σ] : Δ, B }} by (econstructor; mauto).
+  - assert {{ Γ ⊢ N[σ] : Π B[σ] C[q σ] }} by mauto 4.
+    assert {{ Δ ⊢ L : B[Id] }} by mauto 4.
+    assert {{ Γ ⊢s (Id ,, L)∘σ ≈ Id∘σ ,, L[σ] : Δ, B }} by mauto.
     assert {{ Γ ⊢s (Id ,, L)∘σ ≈ σ ,, L[σ] : Δ, B }} by mauto.
+    assert {{ Δ ⊢s Id ,, L : Δ, B }} by mauto.
+    assert {{ Γ ⊢s (Id ,, L)∘σ : Δ, B }} by mauto.
     assert {{ Γ ⊢ C[(Id ,, L)∘σ] ≈ C[σ ,, L[σ]] : Type@i }} by mauto.
     enough {{ Γ ⊢ C[Id ,, L][σ] ≈ C[σ ,, L[σ]] : Type@i }}...
 
@@ -157,6 +173,8 @@ Proof with mautosolve 4.
     assert {{ Γ ⊢ L[σ] : B[σ] }} by mauto.
     assert {{ Γ, B[σ] ⊢s q σ : Δ, B }} by mauto.
     assert {{ Γ ⊢s q σ∘(Id ,, L[σ]) ≈ σ ,, L[σ] : Δ, B }} by mauto.
+    assert {{ Γ ⊢s Id ,, L[σ] : Γ, B[σ] }} by mauto.
+    assert {{ Γ ⊢s q σ∘(Id ,, L[σ]) : Δ, B }} by mauto.
     assert {{ Γ ⊢ C[q σ∘(Id ,, L[σ])] ≈ C[σ ,, L[σ]] : Type@i }} by mauto 4.
     enough {{ Γ ⊢ C[q σ][(Id ,, L[σ])] ≈ C[σ ,, L[σ]] : Type@i }}...
 
@@ -170,16 +188,18 @@ Proof with mautosolve 4.
     assert {{ Γ, B ⊢ #0 : B[Wk] }} by mauto.
     assert {{ Γ, B ⊢s Id0 : Γ, B, B[Wk] }} by mauto.
     assert {{ Γ, B ⊢ M[Wk] #0 : C[q Wk][Id0] }} by mauto.
-    assert {{ Γ, B ⊢ M[Wk] #0 : C[q Wk ∘ Id0] }} by mauto.
-    assert {{ Γ, B ⊢ #0 : B[Wk][Id] }} by mauto 4.
+    assert {{ Γ, B, B[Wk] ⊢s q Wk : Γ, B }} by mauto 4.
+    assert {{ Γ, B ⊢ M[Wk] #0 : C[q Wk ∘ Id0] }} by mauto 4.
+    assert {{ Γ, B ⊢ B[Wk][Id] ≈ B[Wk] : Type@i }} by mauto.
+    assert {{ Γ, B ⊢ #0 : B[Wk][Id] }} by mauto 3.
     assert {{ Γ, B ⊢s Id0 : Γ, B, B[Wk] }} by mauto.
-    assert {{ Γ, B ⊢s Wk : Γ }} by mauto.
-    assert {{ Γ, B ⊢s Wk∘Id : Γ }} by mauto.
-    assert {{ Γ, B ⊢s (Wk∘Wk)∘Id0 : Γ }} by mauto.
+    assert {{ Γ, B ⊢s Wk : Γ }} by mauto 4.
+    assert {{ Γ, B, B[Wk] ⊢s Wk∘Wk : Γ }} by mauto 4.
+    assert {{ Γ, B ⊢s (Wk∘Wk)∘Id0 : Γ }} by mauto 4.
     assert {{ Γ, B, B[Wk] ⊢s Wk : Γ, B }} by mauto.
     assert {{ Γ, B ⊢s Id ≈ Wk∘Id0 : Γ, B }} by mauto.
     assert {{ Γ, B ⊢s Wk∘Id ≈ Wk∘(Wk∘Id0) : Γ }} by mauto.
-    assert {{ Γ, B ⊢s Wk∘Id ≈ (Wk∘Wk)∘Id0 : Γ }} by mauto.
+    assert {{ Γ, B ⊢s Wk∘Id ≈ (Wk∘Wk)∘Id0 : Γ }} by mauto 4.
     assert {{ Γ, B, B[Wk] ⊢ #0 : B[Wk][Wk] }} by mauto 4.
     assert {{ Γ, B, B[Wk] ⊢ #0 : B[Wk∘Wk] }} by mauto 3.
     assert {{ Γ, B ⊢s q Wk ∘ Id0 ≈ (Wk∘Wk)∘Id0 ,, #0[Id0] : Γ, B }} by mauto.
@@ -201,14 +221,16 @@ Proof with mautosolve 4.
     assert {{ Γ ⊢ B[Wk∘(σ ,, N')] ≈ B[σ] : Type@i }} by mauto.
     assert {{ ⊢ Δ, B }} by mauto.
     assert {{ Δ, B ⊢s Wk : Δ }} by mauto.
-    assert {{ Γ ⊢ B[Wk][σ ,, N'] ≈ B[σ] : Type@i }} by mauto 4.
+    assert {{ Γ ⊢s σ ,, N' : Δ, B }} by mauto.
+    assert {{ Γ ⊢ B[Wk][σ ,, N'] ≈ B[σ] : Type@i }} by mauto 3.
     enough {{ Γ ⊢ #0[σ ,, N'] : B[Wk][σ ,, N'] }}...
 
-  - assert (exists i, {{ Δ ⊢ C : Type@i }}) as [i'] by mauto 4.
+  - assert (exists i, {{ Δ ⊢ C : Type@i }}) as [i'] by mauto 3.
     assert {{ Γ ⊢s Wk∘(σ ,, N) ≈ σ : Δ }} by mauto.
     assert {{ Γ ⊢ C[Wk∘(σ ,, N)] ≈ C[σ] : Type@i' }} by mauto.
     assert {{ Δ, B ⊢s Wk : Δ }} by mauto.
-    assert {{ Γ ⊢ C[Wk][σ ,, N] ≈ C[σ] : Type@i' }} by mauto 4.
+    assert {{ Γ ⊢s σ ,, N : Δ, B }} by mauto.
+    assert {{ Γ ⊢ C[Wk][σ ,, N] ≈ C[σ] : Type@i' }} by mauto 3.
     assert {{ Δ, B ⊢ #(S x) : C[Wk] }} by mauto 4.
     enough {{ Γ ⊢ #(S x)[σ ,, N] : C[Wk][σ ,, N] }}...
 
@@ -233,11 +255,10 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-  Hint Resolve presup_exp presup_exp_eq presup_sub_eq : mcltt.
-
+Hint Resolve presup_exp presup_exp_eq presup_sub_eq : mcltt.
 
 #[local]
-  Ltac invert_wf_ctx1 H :=
+Ltac invert_wf_ctx1 H :=
   match type of H with
   | {{ ⊢ ~_ , ~_ }} =>
       let H' := fresh "H" in
@@ -253,7 +274,6 @@ Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq H.
 
 Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx;  clear_dups.
 
-
 Lemma wf_ctx_eq_extend' : forall (Γ Δ : ctx) (A : typ) (i : nat) (A' : typ),
     {{ ⊢ Γ ≈ Δ }} ->
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -264,6 +284,6 @@ Proof.
 Qed.
 
 #[export]
-  Hint Resolve wf_ctx_eq_extend' : mcltt.
+Hint Resolve wf_ctx_eq_extend' : mcltt.
 #[export]
-  Remove Hints wf_ctx_eq_extend : mcltt.
+Remove Hints wf_ctx_eq_extend : mcltt.
