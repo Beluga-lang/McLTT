@@ -8,8 +8,8 @@ on:
       - main
 
 env:
-  OCAML_VER: "4.14.1-flambda"
-  COQ_VER: "8.17.1"
+  REGISTRY: "ghcr.io"
+  IMAGE_TAG: "beluga-lang/mcltt:main"
       
 jobs:
   wf:
@@ -25,6 +25,8 @@ jobs:
   build:
     name: Continuous Intergration
     runs-on: ubuntu-latest
+    permissions:
+      packages: read
     steps:
       - name: get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
@@ -33,20 +35,21 @@ jobs:
       - name: repo checkout
         uses: actions/checkout@v3
 
+      - name: container registry log in
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: image pre-pulling
+        run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_TAG }}
+
       - name: coq processing
         uses: coq-community/docker-coq-action@v1
         with:
-          custom_image: ghcr.io/beluga-lang/mcltt:main
+          custom_image: ${{ env.REGISTRY }}/${{ env.IMAGE_TAG }}
           install: |
-            startGroup "Install Dependencies"
-              opam repo add coq-released https://coq.inria.fr/opam/released
-              opam update
-              opam install menhir
-              opam install coq-equations
-              opam install coq-menhirlib
-              opam install ppx_inline_test
-              eval $(opam env)
-            endGroup
           before_script: |
             startGroup "Fix the permission issue"
               sudo chown -R coq:coq .
