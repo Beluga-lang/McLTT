@@ -1,4 +1,4 @@
-FROM coqorg/coq:8.17.1
+FROM coqorg/coq:8.17.1-ocaml-4.14.1-flambda
 
 ENV NCPUS=4
 ENV OPAMYES="true"

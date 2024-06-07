@@ -47,7 +47,7 @@ implementation.
 
 ## Dependencies
 
-* OCaml 4.14.0
+* OCaml 4.14.1
 * Menhir
 * coq-menhirlib
 * Coq 8.17.1
@@ -56,7 +56,7 @@ implementation.
 We recommend to install dependencies in the following way:
 
 ```bash
-opam switch create coq-8.17.1 4.14.0
+opam switch create coq-8.17.1 4.14.1
 opam install menhir
 opam pin add coq 8.17.1
 opam repo add coq-released https://coq.inria.fr/opam/released
