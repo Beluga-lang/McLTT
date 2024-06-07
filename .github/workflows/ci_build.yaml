@@ -36,8 +36,7 @@ jobs:
       - name: coq processing
         uses: coq-community/docker-coq-action@v1
         with:
-          coq_version: ${{ env.COQ_VER }}
-          ocaml_version: ${{ env.OCAML_VER }}
+          custom_image: ghcr.io/beluga-lang/mcltt:main
           install: |
             startGroup "Install Dependencies"
               opam repo add coq-released https://coq.inria.fr/opam/released
@@ -47,6 +46,10 @@ jobs:
               opam install coq-menhirlib
               opam install ppx_inline_test
               eval $(opam env)
+            endGroup
+          before_script: |
+            startGroup "Fix the permission issue"
+              sudo chown -R coq:coq .
             endGroup
           script: |
             startGroup "Build Coq lib"
@@ -62,3 +65,8 @@ jobs:
         env:
           OPAMJOBS: ${{ steps.cpu-cores.outputs.count }}
           OPAMYES: "true"
+
+      - name: permissions revert
+        # to avoid a warning at cleanup time
+        if: ${{ always() }}
+        run: sudo chown -R 1001:116 .
