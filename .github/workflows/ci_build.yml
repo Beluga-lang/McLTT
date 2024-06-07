@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  OCAML_VER: "4.14.0"
+  OCAML_VER: "4.14.1-flambda"
   COQ_VER: "8.17.1"
       
 jobs:
@@ -21,38 +21,43 @@ jobs:
       - name: check
         run: |
           .github/scripts/check_projects.sh theories
-    
+
   build:
     name: Continuous Intergration
     runs-on: ubuntu-latest
-    container:
-      image: coqorg/coq:8.17.1
     steps:
-      - name: Get number of CPU cores
+      - name: get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
+
       - name: repo checkout
         uses: actions/checkout@v3
-      - name: install Menhir and Coq
-        run: |
-          opam update
-          opam install menhir
-      - name: install Coq dependencies
-        run: |
-          opam repo add coq-released https://coq.inria.fr/opam/released
-          opam update
-          opam install coq-equations
-          opam install coq-menhirlib
-          opam install ppx_inline_test
+
+      - name: coq processing
+        uses: coq-community/docker-coq-action@v1
+        with:
+          coq_version: ${{ env.COQ_VER }}
+          ocaml_version: ${{ env.OCAML_VER }}
+          install: |
+            startGroup "Install Dependencies"
+              opam repo add coq-released https://coq.inria.fr/opam/released
+              opam update
+              opam install menhir
+              opam install coq-equations
+              opam install coq-menhirlib
+              opam install ppx_inline_test
+              eval $(opam env)
+            endGroup
+          script: |
+            startGroup "Build Coq lib"
+              cd theories/
+              make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed
+            endGroup
+          after_script: |
+            startGroup "Test parser"
+              dune build
+              dune runtest
+            endGroup
         env:
+          OPAMJOBS: ${{ steps.cpu-cores.outputs.count }}
           OPAMYES: "true"
-      - name: build lib
-        run: |
-          eval $(opam env)
-          cd theories/
-          make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed
-      - name: test parser
-        run: |
-          eval $(opam env)
-          dune build
-          dune runtest
