@@ -25,23 +25,18 @@ jobs:
   build:
     name: Continuous Intergration
     runs-on: ubuntu-latest
+    container:
+      image: coqorg/coq:8.17.1
     steps:
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
       - name: repo checkout
         uses: actions/checkout@v3
-      - name: setup OCaml
-        uses: ocaml/setup-ocaml@v2
-        with:
-          ocaml-compiler: ${{ env.OCAML_VER }}
-          dune-cache: true
-          cache-prefix: "v2.2"
       - name: install Menhir and Coq
         run: |
           opam update
           opam install menhir
-          opam pin add coq "${{ env.COQ_VER }}"
       - name: install Coq dependencies
         run: |
           opam repo add coq-released https://coq.inria.fr/opam/released
