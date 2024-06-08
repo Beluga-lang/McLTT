@@ -14,14 +14,6 @@ Ltac eexists_rel_sub :=
   eexists;
   eexists; [eassumption |].
 
-Ltac simplify_evals :=
-  functional_eval_rewrite_clear;
-  clear_dups;
-  repeat (match_by_head eval_exp ltac:(fun H => directed inversion H; subst; clear H)
-          || match_by_head eval_sub ltac:(fun H => directed inversion H; subst; clear H));
-  functional_eval_rewrite_clear;
-  clear_dups.
-
 Ltac invert_rel_typ_body :=
   simplify_evals;
   match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H); subst;
