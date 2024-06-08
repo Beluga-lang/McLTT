@@ -65,9 +65,61 @@ Qed.
 #[export]
 Hint Resolve functional_nbe : mcltt.
 
+Lemma nbe_cumu : forall {Γ A i W},
+    nbe Γ A {{{ Type@i }}} W ->
+    nbe Γ A {{{ Type@(S i) }}} W.
+Proof.
+  inversion_clear 1.
+  simplify_evals.
+  inversion_clear_by_head read_nf.
+  mauto.
+Qed.
+
+Lemma lift_nbe_ge : forall {Γ A i j W},
+    i <= j ->
+    nbe Γ A {{{ Type@i }}} W ->
+    nbe Γ A {{{ Type@j }}} W.
+Proof.
+  induction 1; mauto using nbe_cumu.
+Qed.
+
+Lemma lift_nbe_max_left : forall {Γ A i i' W},
+    nbe Γ A {{{ Type@i }}} W ->
+    nbe Γ A {{{ Type@(max i i') }}} W.
+Proof.
+  intros.
+  assert (i <= max i i') by lia.
+  mauto using lift_nbe_ge.
+Qed.
+
+Lemma lift_nbe_max_right : forall {Γ A i i' W},
+    nbe Γ A {{{ Type@i' }}} W ->
+    nbe Γ A {{{ Type@(max i i') }}} W.
+Proof.
+  intros.
+  assert (i' <= max i i') by lia.
+  mauto using lift_nbe_ge.
+Qed.
+
+#[export]
+Hint Resolve lift_nbe_max_left lift_nbe_max_right : mcltt.
+
+Lemma functional_nbe_of_typ : forall Γ A i j W W',
+    nbe Γ A {{{ Type@i }}} W ->
+    nbe Γ A {{{ Type@j }}} W' ->
+    W = W'.
+Proof.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve functional_nbe_of_typ : mcltt.
+
 Ltac functional_nbe_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_nbe equality between" o1 "and" o2 "cannot be solved by mauto" in
   match goal with
+  | H1 : nbe ?G ?A {{{ Type@?i }}} ?W, H2 : nbe ?G ?A {{{ Type@?j }}} ?W' |- _ =>
+      clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]
   | H1 : nbe ?G ?M ?A ?W, H2 : nbe ?G ?M ?A ?W' |- _ =>
       clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]; clear H2
   end.
