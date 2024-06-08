@@ -725,25 +725,13 @@ Qed.
 #[export]
 Hint Resolve wf_exp_respects_typ_subsumption : mcltt.
 
-Lemma nf_subsumption_ge : forall {i j},
-    i <= j ->
-    nf_subsumption n{{{ Type@i }}} n{{{ Type@j }}}.
-Proof.
-  induction 1; mauto 4.
-Qed.
-
-#[export]
-Hint Resolve nf_subsumption_ge : mcltt.
-
 Lemma wf_exp_of_typ_respects_nf_subsumption : forall {Γ} {A A' : nf} {i},
     {{ Γ ⊢ A : Type@i }} ->
     nf_subsumption A A' ->
     exists j, {{ Γ ⊢ A' : Type@j }}.
-Proof with solve [eauto].
+Proof with mautosolve 3.
   intros * HA Hsub.
-  gen i.
-  induction Hsub; intros; subst; try solve [eexists; mauto 3].
-  assert (exists j', {{ Γ ⊢ A' : Type@j' }}) as []...
+  inversion Hsub; subst; eexists...
 Qed.
 
 #[export]
@@ -767,41 +755,8 @@ Lemma wf_exp_and_nf_subsumption_implies_typ_subsumption : forall {Γ} {A A' : nf
     {{ Γ ⊢ A ⊆ A' }}.
 Proof.
   intros * HA HA' Hsub.
-  gen j i.
-  induction Hsub; intros; subst; mauto 4.
-  assert (exists j', {{ Γ ⊢ A' : Type@j' }}) as [] by mauto 2.
-  etransitivity; mautosolve 4.
+  inversion Hsub; subst; mautosolve 3.
 Qed.
 
 #[export]
 Hint Resolve wf_exp_and_nf_subsumption_implies_typ_subsumption : mcltt.
-
-Lemma nf_subsumption_spec : forall {A A'},
-    nf_subsumption A A' <->
-      (A = A' \/ exists i j, A = n{{{ Type@i }}} /\ A' = n{{{ Type@j }}} /\ i <= j).
-Proof.
-  intros; split; intro H.
-  - induction H; mauto.
-    + right; do 2 eexists; firstorder.
-    + firstorder; subst; firstorder.
-      match_by_head @eq ltac:(fun H => inversion H; subst).
-      assert (x1 <= x0) by lia.
-      firstorder.
-  - firstorder; subst; mauto.
-Qed.
-
-Definition nf_subsumption_dec A A' :
-    {nf_subsumption A A'} + {~ nf_subsumption A A'}.
-Proof.
-  destruct A as [i| | | | | |] eqn:HA.
-  1: destruct A' as [j| | | | | |];
-  [destruct (Compare_dec.le_lt_dec i j)| | | | | |];
-  try (right;
-       intros ?%nf_subsumption_spec; firstorder;
-       match_by_head @eq ltac:(fun H => inversion H; subst);
-       lia);
-  left; mauto 2.
-  all: destruct (nf_eq_dec A A'); subst; mauto;
-    right;
-    intros ?%nf_subsumption_spec; firstorder; congruence.
-Defined.

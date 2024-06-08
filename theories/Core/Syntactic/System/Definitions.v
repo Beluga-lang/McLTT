@@ -367,16 +367,13 @@ Proof.
   eauto using typ_subsumption_trans.
 Qed.
 
-Inductive nf_subsumption : nf -> nf -> Prop :=
+Variant nf_subsumption : nf -> nf -> Prop :=
 | nf_subsumption_typ :
-  `{ nf_subsumption n{{{ Type@i }}} n{{{ Type@(S i) }}} }
+  `{ i <= j ->
+     nf_subsumption n{{{ Type@i }}} n{{{ Type@j }}} }
 | nf_subsumption_eq :
   `{ A = A' ->
      nf_subsumption A A' }
-| nf_subsumption_trans :
-  `{ nf_subsumption A A' ->
-     nf_subsumption A' A'' ->
-     nf_subsumption A A'' }
 .
 
 #[export]
@@ -385,5 +382,8 @@ Hint Constructors nf_subsumption : mcltt.
 #[export]
 Instance nf_subsumption_Transitive : Transitive nf_subsumption.
 Proof.
-  eauto using nf_subsumption_trans.
+  intros A A' A'' [];
+    inversion 1; subst; mauto.
+  econstructor.
+  lia.
 Qed.

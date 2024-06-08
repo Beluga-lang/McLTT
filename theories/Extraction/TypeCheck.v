@@ -4,6 +4,18 @@ From Mcltt.Extraction Require Import NbE.
 From Equations Require Import Equations.
 Import Domain_Notations.
 
+Definition nf_subsumption_dec A A' :
+    {nf_subsumption A A'} + {~ nf_subsumption A A'}.
+Proof.
+  destruct A as [i| | | | | |] eqn:HA.
+  1: destruct A' as [j| | | | | |];
+    [destruct (Compare_dec.le_lt_dec i j)| | | | | |];
+    try (right; intro H; dependent destruction H; subst; lia).
+  1: left; mauto 2.
+  all: destruct (nf_eq_dec A A'); subst; mauto;
+    right; intro H; dependent destruction H; congruence.
+Defined.
+
 #[local]
 Ltac impl_obl_tac :=
   match goal with
