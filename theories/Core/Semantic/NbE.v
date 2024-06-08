@@ -118,9 +118,9 @@ Hint Resolve functional_nbe_of_typ : mcltt.
 Ltac functional_nbe_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_nbe equality between" o1 "and" o2 "cannot be solved by mauto" in
   match goal with
-  | H1 : nbe ?G ?A {{{ Type@?i }}} ?W, H2 : nbe ?G ?A {{{ Type@?j }}} ?W' |- _ =>
-      clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]
   | H1 : nbe ?G ?M ?A ?W, H2 : nbe ?G ?M ?A ?W' |- _ =>
       clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]; clear H2
+  | H1 : nbe ?G ?A {{{ Type@?i }}} ?W, H2 : nbe ?G ?A {{{ Type@?j }}} ?W' |- _ =>
+      clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]
   end.
 Ltac functional_nbe_rewrite_clear := repeat functional_nbe_rewrite_clear1.
