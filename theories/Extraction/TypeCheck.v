@@ -54,7 +54,7 @@ Section conversion_dec.
     end.
 
   #[tactic="impl_obl_tac"]
-  Equations? conversion_dec G A M (HM : {{ G ⊢ M : A }}) M' (HM' : {{ G ⊢ M' : A }}) : { {{ G ⊢ M ≈ M' : A }} } + { ~ {{ G ⊢ M ≈ M' : A }} } :=
+  Equations conversion_dec G A M (HM : {{ G ⊢ M : A }}) M' (HM' : {{ G ⊢ M' : A }}) : { {{ G ⊢ M ≈ M' : A }} } + { ~ {{ G ⊢ M ≈ M' : A }} } :=
   | G, A, M, HM, M', HM' =>
       let (W, HW) := nbe_impl G M A _ in
       let (W', HW') := nbe_impl G M' A _ in
@@ -62,9 +62,7 @@ Section conversion_dec.
       | left _ => left _
       | right _ => right _
       end.
-  Proof.
-    intro. impl_obl_tac.
-  Qed.
+  Next Obligation. impl_obl_tac. Qed.
 End conversion_dec.
 
 Section typ_subsumption_dec.
