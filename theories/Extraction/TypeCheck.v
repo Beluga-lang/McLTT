@@ -1,5 +1,5 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness NbE Presup Soundness System.
+From Mcltt.Core Require Import Completeness NbE Soundness SystemOpt.
 From Mcltt.Extraction Require Import NbE.
 From Equations Require Import Equations.
 Import Domain_Notations.

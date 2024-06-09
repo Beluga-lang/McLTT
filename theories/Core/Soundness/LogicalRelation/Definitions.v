@@ -2,9 +2,8 @@ From Coq Require Import Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
 
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import System.Definitions Evaluation Readback PER.Definitions.
-From Mcltt Require Export Domain.
-From Mcltt.Core.Soundness Require Export Weakening.Definition.
+From Mcltt.Core Require Import System.Definitions.
+From Mcltt.Core Require Export Domain PER.Definitions Soundness.Weakening.Definition.
 
 Import Domain_Notations.
 Global Open Scope predicate_scope.

@@ -1,7 +1,7 @@
 From Coq Require Import Lia Morphisms_Relations PeanoNat Relation_Definitions.
 From Equations Require Import Equations.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export Evaluation NbE PER Readback.
+From Mcltt.Core Require Export NbE PER.
 Import Domain_Notations.
 
 Lemma per_nat_then_per_top : forall {n m},

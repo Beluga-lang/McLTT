@@ -1,6 +1,6 @@
 From Coq Require Import Setoid.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import SystemOpt.
+From Mcltt.Core Require Export SystemOpt.
 Import Syntax_Notations.
 
 Corollary invert_id : forall Γ Δ,

@@ -1,6 +1,6 @@
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Completeness.FundamentalTheorem Semantic.Realizability.
-From Mcltt.Core Require Export Completeness.LogicalRelation Semantic.NbE System.
+From Mcltt.Core Require Export Semantic.NbE SystemOpt.
 Import Domain_Notations.
 
 Theorem completeness : forall {Γ M M' A},
@@ -9,7 +9,7 @@ Theorem completeness : forall {Γ M M' A},
 Proof with mautosolve.
   intros * [env_relΓ]%completeness_fundamental_exp_eq.
   destruct_conjs.
-  assert (exists p p', initial_env Γ p /\ initial_env Γ p' /\ {{ Dom p ≈ p' ∈ env_relΓ }}) as [p] by (apply per_ctx_then_per_env_initial_env; eauto).
+  assert (exists p p', initial_env Γ p /\ initial_env Γ p' /\ {{ Dom p ≈ p' ∈ env_relΓ }}) as [p] by (eauto using per_ctx_then_per_env_initial_env).
   destruct_conjs.
   functional_initial_env_rewrite_clear.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).

@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.UniverseCases System.
+From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.UniverseCases.
 Import Domain_Notations.
 
 Lemma rel_exp_sub_cong : forall {Δ M M' A σ σ' Γ},

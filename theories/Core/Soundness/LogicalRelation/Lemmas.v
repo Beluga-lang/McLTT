@@ -1,7 +1,7 @@
 From Coq Require Import Morphisms Morphisms_Relations.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation PER Presup CtxEq Readback Syntactic.Corollaries SystemOpt.
 
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import PER Syntactic.Corollaries.
 From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions.
 From Mcltt.Core.Soundness Require Export Weakening.Lemmas.
 Import Domain_Notations.
