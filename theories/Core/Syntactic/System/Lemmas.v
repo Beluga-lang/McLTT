@@ -145,6 +145,14 @@ Qed.
 #[export]
 Hint Resolve presup_exp_eq_ctx : mcltt.
 
+Lemma wf_pi_syntactic_inversion : forall {Γ A B C},
+    {{ Γ ⊢ Π A B : C }} ->
+    exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}.
+Proof.
+  intros * H.
+  dependent induction H; mauto 4.
+Qed.
+
 Lemma exp_eq_refl : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ Γ ⊢ M ≈ M : A }}.
 Proof.
   mauto.

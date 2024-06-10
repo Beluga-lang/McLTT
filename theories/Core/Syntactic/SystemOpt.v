@@ -48,16 +48,14 @@ Hint Resolve wf_fn' : mcltt.
 #[export]
 Remove Hints wf_fn : mcltt.
 
-Corollary wf_app' : forall {Γ M N A B i},
-    {{ Γ , A ⊢ B : Type@i }} ->
+Corollary wf_app' : forall {Γ M N A B},
     {{ Γ ⊢ M : Π A B }} ->
     {{ Γ ⊢ N : A }} ->
     {{ Γ ⊢ M N : B[Id,,N] }}.
 Proof.
   intros.
   gen_presups.
-  exvar nat ltac:(fun i => assert {{ Γ ⊢ A : Type@i }} by (eapply lift_exp_max_left; mauto 3)).
-  exvar nat ltac:(fun i => assert {{ Γ, A ⊢ B : Type@i }} by (eapply lift_exp_max_right; mauto 3)).
+  assert (exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
   mautosolve 3.
 Qed.
 
@@ -162,16 +160,14 @@ Hint Resolve wf_exp_eq_fn_sub' : mcltt.
 #[export]
 Remove Hints wf_exp_eq_fn_sub : mcltt.
 
-Corollary wf_exp_eq_app_cong' : forall {Γ A B i M M' N N'},
-    {{ Γ , A ⊢ B : Type@i }} ->
+Corollary wf_exp_eq_app_cong' : forall {Γ A B M M' N N'},
     {{ Γ ⊢ M ≈ M' : Π A B }} ->
     {{ Γ ⊢ N ≈ N' : A }} ->
     {{ Γ ⊢ M N ≈ M' N' : B[Id,,N] }}.
 Proof.
   intros.
   gen_presups.
-  exvar nat ltac:(fun i => assert {{ Γ ⊢ A : Type@i }} by (eapply lift_exp_max_left; mauto 3)).
-  exvar nat ltac:(fun i => assert {{ Γ, A ⊢ B : Type@i }} by (eapply lift_exp_max_right; mauto 3)).
+  assert (exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
   mautosolve 3.
 Qed.
 
@@ -180,17 +176,15 @@ Hint Resolve wf_exp_eq_app_cong' : mcltt.
 #[export]
 Remove Hints wf_exp_eq_app_cong : mcltt.
 
-Corollary wf_exp_eq_app_sub' : forall {Γ σ Δ A B i M N},
+Corollary wf_exp_eq_app_sub' : forall {Γ σ Δ A B M N},
     {{ Γ ⊢s σ : Δ }} ->
-    {{ Δ , A ⊢ B : Type@i }} ->
     {{ Δ ⊢ M : Π A B }} ->
     {{ Δ ⊢ N : A }} ->
     {{ Γ ⊢ (M N)[σ] ≈ M[σ] N[σ] : B[σ,,N[σ]] }}.
 Proof.
   intros.
   gen_presups.
-  exvar nat ltac:(fun i => assert {{ Δ ⊢ A : Type@i }} by (eapply lift_exp_max_left; mauto 3)).
-  exvar nat ltac:(fun i => assert {{ Δ, A ⊢ B : Type@i }} by (eapply lift_exp_max_right; mauto 3)).
+  assert (exists i, {{ Δ ⊢ A : Type@i }} /\ {{ Δ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
   mautosolve 3.
 Qed.
 
@@ -216,15 +210,13 @@ Hint Resolve wf_exp_eq_pi_beta' : mcltt.
 #[export]
 Remove Hints wf_exp_eq_pi_beta : mcltt.
 
-Corollary wf_exp_eq_pi_eta' : forall {Γ A B i M},
-    {{ Γ , A ⊢ B : Type@i }} ->
+Corollary wf_exp_eq_pi_eta' : forall {Γ A B M},
     {{ Γ ⊢ M : Π A B }} ->
     {{ Γ ⊢ M ≈ λ A (M[Wk] #0) : Π A B }}.
 Proof.
   intros.
   gen_presups.
-  exvar nat ltac:(fun i => assert {{ Γ ⊢ A : Type@i }} by (eapply lift_exp_max_left; mauto 3)).
-  exvar nat ltac:(fun i => assert {{ Γ, A ⊢ B : Type@i }} by (eapply lift_exp_max_right; mauto 3)).
+  assert (exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
   mautosolve 3.
 Qed.
 
