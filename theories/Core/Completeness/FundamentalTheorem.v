@@ -1,14 +1,13 @@
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import
-  Completeness.LogicalRelation
   Completeness.ContextCases
   Completeness.FunctionCases
   Completeness.NatCases
   Completeness.SubstitutionCases
   Completeness.TermStructureCases
   Completeness.UniverseCases
-  Completeness.VariableCases
-  System.
+  Completeness.VariableCases.
+From Mcltt.Core Require Export Completeness.LogicalRelation SystemOpt.
 Import Domain_Notations.
 
 Section completeness_fundamental.

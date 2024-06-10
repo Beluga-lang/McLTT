@@ -1,7 +1,7 @@
 From Coq Require Import Program.Equality.
 
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import CtxEq Presup Syntactic.Corollaries System Weakening.Definition.
+From Mcltt.Core Require Import Syntactic.Corollaries Weakening.Definition.
 Import Syntax_Notations.
 
 Lemma weakening_escape : forall Γ σ Δ,

@@ -1,5 +1,5 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Readback Evaluation NbE.
+From Mcltt.Core Require Import NbE.
 From Mcltt.Extraction Require Import Evaluation Readback.
 From Equations Require Import Equations.
 Import Domain_Notations.

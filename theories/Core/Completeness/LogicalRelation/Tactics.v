@@ -1,6 +1,5 @@
-From Coq Require Import Morphisms_Relations RelationClasses.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation PER System.
+From Mcltt.Core Require Import PER.
 Import Domain_Notations.
 
 Ltac eexists_rel_exp :=

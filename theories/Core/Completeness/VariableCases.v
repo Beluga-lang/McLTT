@@ -1,6 +1,6 @@
-From Coq Require Import Morphisms_Relations RelationClasses.
+From Coq Require Import Morphisms_Relations.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation System.
+From Mcltt.Core Require Import Completeness.LogicalRelation SystemOpt.
 Import Domain_Notations.
 
 Lemma valid_lookup : forall {Γ x A env_rel}

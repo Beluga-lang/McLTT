@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.ContextCases Completeness.LogicalRelation Completeness.UniverseCases System.
+From Mcltt.Core Require Import Completeness.ContextCases Completeness.LogicalRelation Completeness.UniverseCases.
 Import Domain_Notations.
 
 Lemma rel_sub_id : forall {Γ},

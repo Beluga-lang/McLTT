@@ -1,7 +1,7 @@
 From Coq Require Import Morphisms Morphisms_Relations.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation PER Presup CtxEq Readback Syntactic.Corollaries System.Lemmas.
 
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Import PER Syntactic.Corollaries.
 From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions.
 From Mcltt.Core.Soundness Require Export Weakening.Lemmas.
 Import Domain_Notations.
@@ -262,7 +262,7 @@ Proof.
     eapply H2; eauto.
     assert {{ Γ ⊢ m ≈ t' : Π IT OT }} as Hty by mauto.
     assert {{ Δ ⊢ IT [ σ ] : Type @ i4 }} by mauto 3.
-    eapply wf_exp_eq_sub_cong with (Γ := Δ) in Hty; [|mauto 4].
+    eapply wf_exp_eq_sub_cong with (Γ := Δ) in Hty; [| eapply sub_eq_refl; mauto 3].
     autorewrite with mcltt in Hty.
     eapply wf_exp_eq_app_cong with (N := m') (N' := m') in Hty; try pi_univ_level_tac; [|mauto 2].
     autorewrite with mcltt in Hty.

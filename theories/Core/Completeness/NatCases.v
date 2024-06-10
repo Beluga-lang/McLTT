@@ -1,6 +1,6 @@
-From Coq Require Import Morphisms_Relations Relation_Definitions RelationClasses.
+From Coq Require Import Morphisms_Relations.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.SubstitutionCases Completeness.TermStructureCases Completeness.UniverseCases Semantic.Realizability System.
+From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.SubstitutionCases Completeness.TermStructureCases Completeness.UniverseCases Semantic.Realizability.
 Import Domain_Notations.
 
 Lemma rel_exp_of_nat_inversion : forall {Γ M M'},
@@ -335,7 +335,7 @@ Lemma eval_natrec_rel : forall {Γ env_relΓ MZ MZ' MS MS' A A' i m m'},
     {{ Γ, ℕ, A ⊨ MS ≈ MS' : A[Wk∘Wk,,succ(#1)] }} ->
     {{ Dom m ≈ m' ∈ per_nat }} ->
     (forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
-      forall (elem_rel : relation domain),
+      forall elem_rel,
         rel_typ i A d{{{ p ↦ m }}} A d{{{ p' ↦ m' }}} elem_rel ->
         exists r r',
           {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
@@ -423,7 +423,8 @@ Lemma rel_exp_natrec_cong_rel_typ: forall {Γ A A' i M M' env_relΓ},
     forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}) n n',
       {{ ⟦ M ⟧ p ↘ n }} ->
       {{ ⟦ M' ⟧ p' ↘ n' }} ->
-      exists elem_rel, rel_typ i A d{{{ p ↦ n }}} A d{{{ p' ↦ n' }}} elem_rel.
+      exists elem_rel,
+        rel_typ i A d{{{ p ↦ n }}} A d{{{ p' ↦ n' }}} elem_rel.
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
@@ -495,8 +496,7 @@ Lemma eval_natrec_sub_rel : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' A
     {{ Dom m ≈ m' ∈ per_nat }} ->
     (forall p p'
         (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }})
-        o o'
-        (elem_rel : relation domain),
+        o o' elem_rel,
         {{ ⟦ σ ⟧s p ↘ o }} ->
         {{ ⟦ σ ⟧s p' ↘ o' }} ->
         {{ Dom o ≈ o' ∈ env_relΔ }} ->
@@ -586,7 +586,8 @@ Lemma rel_exp_natrec_sub_rel_typ: forall {Γ σ Δ A i M env_relΓ},
     {{ Δ, ℕ ⊨ A : Type@i }} ->
     {{ Δ ⊨ M : ℕ }} ->
     forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
-    exists elem_rel, rel_typ i {{{ A[σ,,M[σ]] }}} p {{{ A[σ,,M[σ]] }}} p' elem_rel.
+    exists elem_rel,
+      rel_typ i {{{ A[σ,,M[σ]] }}} p {{{ A[σ,,M[σ]] }}} p' elem_rel.
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
   pose proof (@relation_equivalence_pointwise env).
@@ -675,7 +676,7 @@ Lemma rel_exp_nat_beta_succ_rel_typ : forall {Γ env_relΓ A i M},
     {{ Γ, ℕ ⊨ A : Type@i }} ->
     {{ Γ ⊨ M : ℕ }} ->
     forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
-    exists elem_rel : relation domain,
+    exists elem_rel,
       rel_typ i {{{ A[Id,,succ M] }}} p {{{ A[Id,,succ M] }}} p' elem_rel.
 Proof.
   pose proof (@relation_equivalence_pointwise domain).
@@ -708,7 +709,7 @@ Proof.
   eexists_rel_exp.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  assert (exists elem_rel : relation domain,
+  assert (exists elem_rel,
              rel_typ i {{{ A[Id,,succ M] }}} p {{{ A[Id,,succ M] }}} p' elem_rel) as [elem_rel]
       by (eapply rel_exp_nat_beta_succ_rel_typ; mauto).
   eexists; split; [eassumption |].

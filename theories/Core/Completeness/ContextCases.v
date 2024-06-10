@@ -1,6 +1,6 @@
-From Coq Require Import Morphisms_Relations RelationClasses.
+From Coq Require Import Morphisms_Relations.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.UniverseCases System.
+From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.UniverseCases.
 Import Domain_Notations.
 
 Proposition valid_ctx_empty :

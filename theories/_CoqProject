@@ -39,6 +39,8 @@
 ./Core/Syntactic/System.v
 ./Core/Syntactic/System/Definitions.v
 ./Core/Syntactic/System/Lemmas.v
+./Core/Syntactic/System/Tactics.v
+./Core/Syntactic/SystemOpt.v
 ./Core/Soundness.v
 ./Core/Soundness/LogicalRelation.v
 ./Core/Soundness/LogicalRelation/Definitions.v

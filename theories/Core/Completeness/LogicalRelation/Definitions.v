@@ -1,6 +1,6 @@
 From Coq Require Import Relations.
 From Mcltt Require Import Base.
-From Mcltt.Core Require Export Evaluation PER.
+From Mcltt.Core Require Export PER.
 Import Domain_Notations.
 
 Inductive rel_exp M p M' p' (R : relation domain) : Prop :=
