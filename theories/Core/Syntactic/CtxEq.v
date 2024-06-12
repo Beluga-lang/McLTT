@@ -107,3 +107,11 @@ Qed.
 
 #[export]
 Hint Resolve ctx_eq_trans : mcltt.
+
+#[export]
+Instance wf_ctx_PER : PER wf_ctx_eq.
+Proof.
+  split.
+  - eauto using ctx_eq_sym.
+  - eauto using ctx_eq_trans.
+Qed.
