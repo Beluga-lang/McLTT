@@ -36,6 +36,20 @@ Hint Resolve wf_natrec' : mcltt.
 #[export]
 Remove Hints wf_natrec : mcltt.
 
+Corollary wf_pi_max : forall {Γ A i B j},
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ , A ⊢ B : Type@j }} ->
+    {{ Γ ⊢ Π A B : Type@(max i j) }}.
+Proof.
+  intros.
+  assert {{ Γ ⊢ A : Type@(max i j) }} by eauto using lift_exp_max_left.
+  assert {{ Γ, A ⊢ B : Type@(max i j) }} by eauto using lift_exp_max_right.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_pi_max : mcltt.
+
 Corollary wf_fn' : forall {Γ A M B},
     {{ Γ , A ⊢ M : B }} ->
     {{ Γ ⊢ λ A M : Π A B }}.
@@ -121,6 +135,21 @@ Hint Resolve wf_exp_eq_nat_beta_succ' : mcltt.
 #[export]
 Remove Hints wf_exp_eq_nat_beta_succ : mcltt.
 
+Corollary wf_exp_eq_pi_sub_max : forall {Γ σ Δ A i B j},
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Δ ⊢ A : Type@i }} ->
+    {{ Δ , A ⊢ B : Type@j }} ->
+    {{ Γ ⊢ (Π A B)[σ] ≈ Π (A[σ]) (B[q σ]) : Type@(max i j) }}.
+Proof.
+  intros.
+  assert {{ Δ ⊢ A : Type@(max i j) }} by eauto using lift_exp_max_left.
+  assert {{ Δ , A ⊢ B : Type@(max i j) }} by eauto using lift_exp_max_right.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_exp_eq_pi_sub_max : mcltt.
+
 Corollary wf_exp_eq_pi_cong' : forall {Γ A A' B B' i},
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
     {{ Γ , A ⊢ B ≈ B' : Type@i }} ->
@@ -133,6 +162,20 @@ Qed.
 Hint Resolve wf_exp_eq_pi_cong' : mcltt.
 #[export]
 Remove Hints wf_exp_eq_pi_cong : mcltt.
+
+Corollary wf_exp_eq_pi_cong_max : forall {Γ A A' i B B' j},
+    {{ Γ ⊢ A ≈ A' : Type@i }} ->
+    {{ Γ , A ⊢ B ≈ B' : Type@j }} ->
+    {{ Γ ⊢ Π A B ≈ Π A' B' : Type@(max i j) }}.
+Proof.
+  intros.
+  assert {{ Γ ⊢ A ≈ A' : Type@(max i j) }} by eauto using lift_exp_eq_max_left.
+  assert {{ Γ , A ⊢ B ≈ B' : Type@(max i j) }} by eauto using lift_exp_eq_max_right.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_exp_eq_pi_cong_max : mcltt.
 
 Corollary wf_exp_eq_fn_cong' : forall {Γ A A' i B M M'},
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
