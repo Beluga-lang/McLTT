@@ -711,6 +711,16 @@ Qed.
 #[export]
 Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
 
+Fact typ_subsumption_refl : forall {Γ A i},
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ ⊢ A ⊆ A }}.
+Proof.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_refl : mcltt.
+
 Lemma typ_subsumption_ge : forall {Γ i j},
     {{ ⊢ Γ }} ->
     i <= j ->

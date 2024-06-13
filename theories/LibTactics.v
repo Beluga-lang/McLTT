@@ -206,6 +206,9 @@ Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use) :=
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) :=
   eauto pow using use1, use2 with mcltt core.
 
+Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) :=
+  eauto pow using use1, use2, use3 with mcltt core.
+
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) "," uconstr(use4) :=
   eauto pow using use1, use2, use3, use4 with mcltt core.
 

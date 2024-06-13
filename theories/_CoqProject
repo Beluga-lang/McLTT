@@ -4,6 +4,7 @@
 
 ./Core/Axioms.v
 ./Core/Base.v
+./Core/Completeness/Consequences/Inversions.v
 ./Core/Completeness/ContextCases.v
 ./Core/Completeness/FunctionCases.v
 ./Core/Completeness/FundamentalTheorem.v
@@ -31,6 +32,7 @@
 ./Core/Semantic/Readback/Lemmas.v
 ./Core/Semantic/Realizability.v
 ./Core/Semantic/NbE.v
+./Core/Syntactic/CoreInversions.v
 ./Core/Syntactic/Corollaries.v
 ./Core/Syntactic/CtxEq.v
 ./Core/Syntactic/Presup.v

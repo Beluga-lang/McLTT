@@ -20,7 +20,7 @@ Proof with mautosolve.
   unshelve epose proof (per_elem_then_per_top _ _ (length Γ)) as [? []]; shelve_unifiable...
 Qed.
 
-Lemma completeness_for_typ_subsumption : forall {Γ A A'},
+Theorem completeness_for_typ_subsumption : forall {Γ A A'},
   {{ Γ ⊢ A ⊆ A' }} ->
   exists i W W', nbe Γ A {{{ Type@i }}} W /\ nbe Γ A' {{{ Type@i }}} W' /\ nf_subsumption W W'.
 Proof.
