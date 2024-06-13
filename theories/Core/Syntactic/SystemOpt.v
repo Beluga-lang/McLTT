@@ -1,6 +1,6 @@
 From Coq Require Import Setoid.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export CtxEq Presup System.
+From Mcltt.Core Require Export CtxEq Presup System CoreTypeInversions.
 Import Syntax_Notations.
 
 #[local]

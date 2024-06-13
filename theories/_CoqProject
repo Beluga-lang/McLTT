@@ -33,6 +33,7 @@
 ./Core/Semantic/Realizability.v
 ./Core/Semantic/NbE.v
 ./Core/Syntactic/CoreInversions.v
+./Core/Syntactic/CoreTypeInversions.v
 ./Core/Syntactic/Corollaries.v
 ./Core/Syntactic/CtxEq.v
 ./Core/Syntactic/Presup.v
