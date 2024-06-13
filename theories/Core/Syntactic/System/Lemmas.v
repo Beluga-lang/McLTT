@@ -145,14 +145,6 @@ Qed.
 #[export]
 Hint Resolve presup_exp_eq_ctx : mcltt.
 
-Lemma wf_pi_syntactic_inversion : forall {Γ A B C},
-    {{ Γ ⊢ Π A B : C }} ->
-    exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}.
-Proof.
-  intros * H.
-  dependent induction H; mauto 4.
-Qed.
-
 Lemma exp_eq_refl : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ Γ ⊢ M ≈ M : A }}.
 Proof.
   mauto.
@@ -168,6 +160,19 @@ Qed.
 
 #[export]
 Hint Resolve sub_eq_refl : mcltt.
+
+Lemma exp_eq_trans_typ_max : forall {Γ i i' A A' A''},
+    {{ Γ ⊢ A ≈ A' : Type@i }} ->
+    {{ Γ ⊢ A' ≈ A'' : Type@i' }} ->
+    {{ Γ ⊢ A ≈ A'' : Type@(max i i') }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ ⊢ A ≈ A' : Type@(max i i') }} by eauto using lift_exp_eq_max_left.
+  assert {{ Γ ⊢ A' ≈ A'' : Type@(max i i') }} by eauto using lift_exp_eq_max_right...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_trans_typ_max : mcltt.
 
 Lemma exp_sub_typ : forall {Δ Γ A σ i}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ A[σ] : Type@i }}.
 Proof.
@@ -711,6 +716,17 @@ Qed.
 #[export]
 Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
 
+Lemma typ_subsumption_wf_ctx : forall {Γ A A'},
+    {{ Γ ⊢ A ⊆ A' }} ->
+    {{ ⊢ Γ }}.
+Proof.
+  intros * H.
+  dependent induction H; mauto.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_wf_ctx : mcltt.
+
 Fact typ_subsumption_refl : forall {Γ A i},
     {{ Γ ⊢ A : Type@i }} ->
     {{ Γ ⊢ A ⊆ A }}.
@@ -731,6 +747,22 @@ Qed.
 
 #[export]
 Hint Resolve typ_subsumption_ge : mcltt.
+
+Lemma typ_subsumption_sub : forall {Γ σ Δ A A'},
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Δ ⊢ A ⊆ A' }} ->
+    {{ Γ ⊢ A[σ] ⊆ A'[σ] }}.
+Proof.
+  intros * Hsub H.
+  dependent induction H.
+  - etransitivity; [do 2 econstructor; eassumption |].
+    etransitivity; mauto.
+  - mauto.
+  - mauto.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_sub : mcltt.
 
 Lemma wf_exp_respects_typ_subsumption : forall {Γ M A A'},
     {{ Γ ⊢ M : A }} ->

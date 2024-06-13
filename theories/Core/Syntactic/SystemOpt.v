@@ -1,6 +1,6 @@
 From Coq Require Import Setoid.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export CtxEq Presup System.
+From Mcltt.Core Require Export CtxEq Presup System CoreTypeInversions.
 Import Syntax_Notations.
 
 #[local]
@@ -55,7 +55,7 @@ Corollary wf_app' : forall {Γ M N A B},
 Proof.
   intros.
   gen_presups.
-  assert (exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
+  exvar nat ltac:(fun i => assert ({{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [] by eauto using wf_pi_inversion').
   mautosolve 3.
 Qed.
 
@@ -167,7 +167,7 @@ Corollary wf_exp_eq_app_cong' : forall {Γ A B M M' N N'},
 Proof.
   intros.
   gen_presups.
-  assert (exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
+  exvar nat ltac:(fun i => assert ({{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [] by eauto using wf_pi_inversion').
   mautosolve 3.
 Qed.
 
@@ -184,7 +184,7 @@ Corollary wf_exp_eq_app_sub' : forall {Γ σ Δ A B M N},
 Proof.
   intros.
   gen_presups.
-  assert (exists i, {{ Δ ⊢ A : Type@i }} /\ {{ Δ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
+  exvar nat ltac:(fun i => assert ({{ Δ ⊢ A : Type@i }} /\ {{ Δ, A ⊢ B : Type@i }}) as [] by eauto using wf_pi_inversion').
   mautosolve 3.
 Qed.
 
@@ -216,7 +216,7 @@ Corollary wf_exp_eq_pi_eta' : forall {Γ A B M},
 Proof.
   intros.
   gen_presups.
-  assert (exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [? []] by eauto using wf_pi_syntactic_inversion.
+  exvar nat ltac:(fun i => assert ({{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}) as [] by eauto using wf_pi_inversion').
   mautosolve 3.
 Qed.
 

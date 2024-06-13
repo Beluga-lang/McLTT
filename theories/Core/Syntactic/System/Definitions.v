@@ -39,7 +39,7 @@ with wf_ctx_eq : ctx -> ctx -> Prop :=
 where "⊢ Γ ≈ Γ'" := (wf_ctx_eq Γ Γ') (in custom judg) : type_scope
 
 with wf_exp : ctx -> exp -> typ -> Prop :=
-| wf_univ :
+| wf_typ :
   `( {{ ⊢ Γ }} ->
      {{ Γ ⊢ Type@i : Type@(S i) }} )
 | wf_nat :
