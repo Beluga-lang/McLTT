@@ -37,3 +37,18 @@ Qed.
 
 #[export]
 Hint Resolve wf_pi_inversion : mcltt.
+
+Corollary wf_pi_inversion' : forall {Γ A B i},
+    {{ Γ ⊢ Π A B : Type@i }} ->
+    {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}.
+Proof with mautosolve 4.
+  intros * [j [? []]]%wf_pi_inversion.
+  assert {{ Γ, A ⊢s Wk : Γ }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@j ⊆ Type@j[Wk] }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@j[Wk] ⊆ Type@i[Wk] }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@i[Wk] ⊆ Type@i }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@j ⊆ Type@i }}...
+Qed.
+
+#[export]
+Hint Resolve wf_pi_inversion' : mcltt.

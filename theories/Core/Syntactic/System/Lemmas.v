@@ -724,6 +724,22 @@ Qed.
 #[export]
 Hint Resolve typ_subsumption_ge : mcltt.
 
+Lemma typ_subsumption_sub : forall {Γ σ Δ A A'},
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Δ ⊢ A ⊆ A' }} ->
+    {{ Γ ⊢ A[σ] ⊆ A'[σ] }}.
+Proof.
+  intros * Hsub H.
+  dependent induction H.
+  - etransitivity; [do 2 econstructor; eassumption |].
+    etransitivity; mauto.
+  - mauto.
+  - mauto.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_sub : mcltt.
+
 Lemma wf_exp_respects_typ_subsumption : forall {Γ M A A'},
     {{ Γ ⊢ M : A }} ->
     {{ Γ ⊢ A ⊆ A' }} ->
