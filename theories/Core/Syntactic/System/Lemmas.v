@@ -161,6 +161,19 @@ Qed.
 #[export]
 Hint Resolve sub_eq_refl : mcltt.
 
+Lemma exp_eq_trans_typ_max : forall {Γ i i' A A' A''},
+    {{ Γ ⊢ A ≈ A' : Type@i }} ->
+    {{ Γ ⊢ A' ≈ A'' : Type@i' }} ->
+    {{ Γ ⊢ A ≈ A'' : Type@(max i i') }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ ⊢ A ≈ A' : Type@(max i i') }} by eauto using lift_exp_eq_max_left.
+  assert {{ Γ ⊢ A' ≈ A'' : Type@(max i i') }} by eauto using lift_exp_eq_max_right...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_trans_typ_max : mcltt.
+
 Lemma exp_sub_typ : forall {Δ Γ A σ i}, {{ Δ ⊢ A : Type@i }} -> {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊢ A[σ] : Type@i }}.
 Proof.
   mauto.
@@ -702,6 +715,17 @@ Qed.
 
 #[export]
 Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
+
+Lemma typ_subsumption_wf_ctx : forall {Γ A A'},
+    {{ Γ ⊢ A ⊆ A' }} ->
+    {{ ⊢ Γ }}.
+Proof.
+  intros * H.
+  dependent induction H; mauto.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_wf_ctx : mcltt.
 
 Fact typ_subsumption_refl : forall {Γ A i},
     {{ Γ ⊢ A : Type@i }} ->
