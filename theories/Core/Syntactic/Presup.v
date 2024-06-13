@@ -260,3 +260,15 @@ Hint Resolve presup_exp presup_exp_eq presup_sub_eq : mcltt.
 Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq H.
 
 Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; clear_dups.
+
+Corollary typ_subsumption_presup : forall {Γ A A'},
+    {{ Γ ⊢ A ⊆ A' }} ->
+    {{ ⊢ Γ }} /\ exists i i', {{ Γ ⊢ A : Type@i }} /\ {{ Γ ⊢ A' : Type@i' }}.
+Proof.
+  intros * H.
+  dependent induction H; gen_presups; destruct_conjs; split; mauto 4.
+  do 2 eexists; mauto 4.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_presup : mcltt.
