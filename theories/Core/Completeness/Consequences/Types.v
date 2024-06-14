@@ -26,11 +26,22 @@ Qed.
 #[export]
 Hint Resolve exp_eq_typ_implies_eq_level : mcltt.
 
-Theorem not_exp_eq_typ_nat : forall Γ i j,
-    ~ {{ Γ ⊢ ℕ ≈ Type@i : Type@j }}.
+Inductive is_typ_constr : typ -> Prop :=
+| typ_is_typ_constr : forall i, is_typ_constr {{{ Type@i }}}
+| nat_is_typ_constr : is_typ_constr {{{ ℕ }}}
+| pi_is_typ_constr : forall A B, is_typ_constr {{{ Π A B }}}
+.
+
+#[export]
+Hint Constructors is_typ_constr : mcltt.
+
+Theorem is_typ_constr_and_not_typ_implies_not_exp_eq_typ : forall Γ A j k,
+    is_typ_constr A ->
+    (forall i, A <> {{{ Type@i }}}) ->
+    ~ {{ Γ ⊢ A ≈ Type@j : Type@k }}.
 Proof.
-  intros ** ?.
-  assert {{ Γ ⊨ ℕ ≈ Type@i : Type@j }} as [env_relΓ] by mauto using completeness_fundamental_exp_eq.
+  intros * Histyp ? ?.
+  assert {{ Γ ⊨ A ≈ Type@j : Type@k }} as [env_relΓ] by mauto using completeness_fundamental_exp_eq.
   destruct_conjs.
   assert (exists p p', initial_env Γ p /\ initial_env Γ p' /\ {{ Dom p ≈ p' ∈ env_relΓ }}) by mauto using per_ctx_then_per_env_initial_env.
   destruct_conjs.
@@ -39,35 +50,18 @@ Proof.
   destruct_by_head rel_typ.
   invert_rel_typ_body.
   destruct_by_head rel_exp.
-  invert_rel_typ_body.
-  destruct_conjs.
-  match_by_head1 per_univ_elem invert_per_univ_elem.
+  destruct Histyp;
+    invert_rel_typ_body;
+    destruct_conjs;
+    match_by_head1 per_univ_elem invert_per_univ_elem.
+  congruence.
 Qed.
 
 #[export]
-Hint Resolve not_exp_eq_typ_nat : mcltt.
+Hint Resolve is_typ_constr_and_not_typ_implies_not_exp_eq_typ : mcltt.
 
-Theorem not_exp_eq_typ_pi : forall Γ i A B j,
-    ~ {{ Γ ⊢ Π A B ≈ Type@i : Type@j }}.
-Proof.
-  intros ** ?.
-  assert {{ Γ ⊨ Π A B ≈ Type@i : Type@j }} as [env_relΓ] by mauto using completeness_fundamental_exp_eq.
-  destruct_conjs.
-  assert (exists p p', initial_env Γ p /\ initial_env Γ p' /\ {{ Dom p ≈ p' ∈ env_relΓ }}) by mauto using per_ctx_then_per_env_initial_env.
-  destruct_conjs.
-  functional_initial_env_rewrite_clear.
-  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  destruct_by_head rel_typ.
-  invert_rel_typ_body.
-  destruct_by_head rel_exp.
-  invert_rel_typ_body.
-  destruct_conjs.
-  match_by_head1 per_univ_elem invert_per_univ_elem.
-Qed.
-
-#[export]
-Hint Resolve not_exp_eq_typ_pi : mcltt.
-
+(* We cannot use this spec as the definition of [typ_subsumption] as
+   then its transitivity requires [exp_eq_typ_implies_eq_level] or a similar semantic lemma *)
 Lemma typ_subsumption_spec : forall {Γ A A'},
     {{ Γ ⊢ A ⊆ A' }} ->
     {{ ⊢ Γ }} /\ exists j, {{ Γ ⊢ A ≈ A' : Type@j }} \/ exists i i', i < i' /\ {{ Γ ⊢ Type@i ≈ A : Type@j }} /\ {{ Γ ⊢ A' ≈ Type@i' : Type@j }}.
@@ -99,17 +93,64 @@ Qed.
 #[export]
 Hint Resolve typ_subsumption_spec : mcltt.
 
-Lemma typ_subsumption_typ_spec : forall {Γ i i'},
+Lemma not_typ_implies_typ_subsumption_left_typ_constr : forall {Γ A A'},
+    is_typ_constr A ->
+    (forall i, A <> {{{ Type@i }}}) ->
+    {{ Γ ⊢ A ⊆ A' }} ->
+    exists j, {{ Γ ⊢ A ≈ A' : Type@j }}.
+Proof.
+  intros * ? ? H%typ_subsumption_spec.
+  destruct_all; mauto.
+  exfalso.
+  eapply is_typ_constr_and_not_typ_implies_not_exp_eq_typ; mauto 4.
+Qed.
+
+#[export]
+Hint Resolve not_typ_implies_typ_subsumption_left_typ_constr : mcltt.
+
+Corollary typ_subsumption_left_nat : forall {Γ A'},
+    {{ Γ ⊢ ℕ ⊆ A' }} ->
+    exists j, {{ Γ ⊢ ℕ ≈ A' : Type@j }}.
+Proof.
+  intros * H%not_typ_implies_typ_subsumption_left_typ_constr; mauto.
+  congruence.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_left_nat : mcltt.
+
+Corollary typ_subsumption_left_pi : forall {Γ A B C'},
+    {{ Γ ⊢ Π A B ⊆ C' }} ->
+    exists j, {{ Γ ⊢ Π A B ≈ C' : Type@j }}.
+Proof.
+  intros * H%not_typ_implies_typ_subsumption_left_typ_constr; mauto.
+  congruence.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_left_pi : mcltt.
+
+Lemma typ_subsumption_left_typ : forall {Γ i A'},
+    {{ Γ ⊢ Type@i ⊆ A' }} ->
+    exists j i', i <= i' /\ {{ Γ ⊢ A' ≈ Type@i' : Type@j }}.
+Proof.
+  intros * H%typ_subsumption_spec.
+  destruct_all; mauto.
+  (on_all_hyp: fun H => apply exp_eq_typ_implies_eq_level in H); subst.
+  mauto using PeanoNat.Nat.lt_le_incl.
+Qed.
+
+#[export]
+Hint Resolve typ_subsumption_left_typ : mcltt.
+
+Corollary typ_subsumption_typ_spec : forall {Γ i i'},
     {{ Γ ⊢ Type@i ⊆ Type@i' }} ->
     {{ ⊢ Γ }} /\ i <= i'.
 Proof with mautosolve.
-  intros * [? [j [| [i0 [i0']]]]]%typ_subsumption_spec.
-  - (* when lhs is equivalent to rhs *)
-    replace i with i' in *...
-  - (* when lhs is (strictly) subsumed by rhs *)
-    destruct_conjs.
-    (on_all_hyp: fun H => apply exp_eq_typ_implies_eq_level in H); subst.
-    split; [| lia]...
+  intros * H.
+  pose proof (typ_subsumption_left_typ H).
+  destruct_conjs.
+  (on_all_hyp: fun H => apply exp_eq_typ_implies_eq_level in H); subst...
 Qed.
 
 #[export]

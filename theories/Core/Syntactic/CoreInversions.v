@@ -3,20 +3,61 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Export SystemOpt.
 Import Syntax_Notations.
 
+Corollary wf_zero_inversion : forall Γ A,
+    {{ Γ ⊢ zero : A }} ->
+    {{ Γ ⊢ ℕ ⊆ A }}.
+Proof with mautosolve 4.
+  intros * H.
+  dependent induction H;
+    try specialize (IHwf_exp eq_refl)...
+Qed.
+
+#[export]
+Hint Resolve wf_zero_inversion : mcltt.
+
+Corollary wf_succ_inversion : forall Γ A M,
+    {{ Γ ⊢ succ M : A }} ->
+    {{ Γ ⊢ M : ℕ }} /\ {{ Γ ⊢ ℕ ⊆ A }}.
+Proof with mautosolve.
+  intros * H.
+  dependent induction H;
+    try specialize (IHwf_exp _ eq_refl);
+    destruct_conjs...
+Qed.
+
+#[export]
+Hint Resolve wf_succ_inversion : mcltt.
+
 Lemma wf_natrec_inversion : forall Γ A M A' MZ MS,
     {{ Γ ⊢ rec M return A' | zero -> MZ | succ -> MS end : A }} ->
-    {{ Γ ⊢ M : ℕ }} /\ {{ Γ ⊢ MZ : A'[Id,,zero] }} /\ {{ Γ, ℕ, A' ⊢ MS : A'[Wk∘Wk,,succ(#1)] }} /\ {{ Γ ⊢ A'[Id,,M] ⊆ A }}.
+    {{ Γ ⊢ MZ : A'[Id,,zero] }} /\ {{ Γ, ℕ, A' ⊢ MS : A'[Wk∘Wk,,succ(#1)] }} /\ {{ Γ ⊢ M : ℕ }} /\ {{ Γ ⊢ A'[Id,,M] ⊆ A }}.
 Proof with mautosolve 4.
   intros * H.
   pose (A0 := A).
   dependent induction H;
-    try (specialize (IHwf_exp _ _ _ _ eq_refl); destruct_conjs; repeat split; mautosolve 4).
-  assert {{ Γ ⊢s Id : Γ }} by mauto 3.
-  repeat split...
+    try (specialize (IHwf_exp _ _ _ _ eq_refl));
+    destruct_conjs;
+    assert {{ Γ ⊢s Id : Γ }} by mauto 3;
+    repeat split...
 Qed.
 
 #[export]
 Hint Resolve wf_natrec_inversion : mcltt.
+
+Corollary wf_fn_inversion : forall {Γ A M C},
+    {{ Γ ⊢ λ A M : C }} ->
+    exists B, {{ Γ, A ⊢ M : B }} /\ {{ Γ ⊢ Π A B ⊆ C }}.
+Proof with mautosolve 4.
+  intros * H.
+  dependent induction H;
+    try specialize (IHwf_exp _ _ eq_refl);
+    destruct_conjs;
+    gen_presups;
+    eexists; split...
+Qed.
+
+#[export]
+Hint Resolve wf_fn_inversion : mcltt.
 
 Lemma wf_app_inversion : forall {Γ M N C},
     {{ Γ ⊢ M N : C }} ->
@@ -24,8 +65,9 @@ Lemma wf_app_inversion : forall {Γ M N C},
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
-    try solve [do 2 eexists; repeat split; mauto 4];
-    specialize (IHwf_exp _ _ eq_refl); destruct_conjs; do 2 eexists; repeat split...
+    try specialize (IHwf_exp _ _ eq_refl);
+    destruct_conjs;
+    do 2 eexists; repeat split...
 Qed.
 
 #[export]
@@ -37,8 +79,10 @@ Lemma wf_vlookup_inversion : forall {Γ x A},
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
-    try (specialize (IHwf_exp _ eq_refl); destruct_conjs; eexists; split; mautosolve 4).
-  assert (exists i, {{ Γ ⊢ A : Type@i }}) as []...
+    [assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by mauto 4 | |];
+    try (specialize (IHwf_exp _ eq_refl));
+    destruct_conjs;
+    eexists; split...
 Qed.
 
 #[export]
@@ -50,10 +94,10 @@ Lemma wf_exp_sub_inversion : forall {Γ M σ A},
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
-    try (specialize (IHwf_exp _ _ eq_refl); destruct_conjs; do 2 eexists; repeat split; mautosolve 4).
-  gen_presups.
-  do 2 eexists.
-  repeat split...
+    try (specialize (IHwf_exp _ _ eq_refl));
+    destruct_conjs;
+    gen_presups;
+    do 2 eexists; split...
 Qed.
 
 #[export]
@@ -66,7 +110,7 @@ Lemma wf_sub_id_inversion : forall Γ Δ,
     {{ ⊢ Γ ≈ Δ }}.
 Proof.
   intros * H.
-  dependent induction H; mauto.
+  dependent induction H; mautosolve.
 Qed.
 
 #[export]
@@ -80,8 +124,8 @@ Proof with mautosolve 4.
   dependent induction H; mauto.
   specialize (IHwf_sub eq_refl).
   destruct_conjs.
-  eexists.
   gen_presups.
+  eexists.
   etransitivity...
 Qed.
 
@@ -105,10 +149,13 @@ Hint Resolve wf_sub_compose_inversion : mcltt.
 
 Lemma wf_sub_extend_inversion : forall {Γ σ M Δ},
     {{ Γ ⊢s σ,,M : Δ }} ->
-    exists Δ' A', {{ Γ ⊢s σ : Δ' }} /\ {{ Γ ⊢ M : A' }}.
+    exists Δ' A', {{ ⊢ Δ ≈ Δ', A' }} /\ {{ Γ ⊢s σ : Δ' }} /\ {{ Γ ⊢ M : A'[σ] }}.
 Proof with mautosolve 4.
   intros * H.
-  dependent induction H...
+  dependent induction H;
+    try specialize (IHwf_sub _ _ eq_refl);
+    destruct_conjs;
+    do 2 eexists; split...
 Qed.
 
 #[export]
