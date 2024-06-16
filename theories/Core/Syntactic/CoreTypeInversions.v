@@ -3,7 +3,7 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Export System.
 Import Syntax_Notations.
 
-Lemma wf_univ_inversion : forall {Γ i A},
+Lemma wf_typ_inversion : forall {Γ i A},
     {{ Γ ⊢ Type@i : A }} ->
     {{ Γ ⊢ Type@(S i) ⊆ A }}.
 Proof with mautosolve.
@@ -12,7 +12,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve wf_univ_inversion : mcltt.
+Hint Resolve wf_typ_inversion : mcltt.
 
 Lemma wf_nat_inversion : forall Γ A,
     {{ Γ ⊢ ℕ : A }} ->

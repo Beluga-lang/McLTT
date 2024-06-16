@@ -263,11 +263,11 @@ Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; clear_du
 
 Corollary typ_subsumption_presup : forall {Γ A A'},
     {{ Γ ⊢ A ⊆ A' }} ->
-    {{ ⊢ Γ }} /\ exists i i', {{ Γ ⊢ A : Type@i }} /\ {{ Γ ⊢ A' : Type@i' }}.
+    {{ ⊢ Γ }} /\ (exists i, {{ Γ ⊢ A : Type@i }}) /\ (exists i', {{ Γ ⊢ A' : Type@i' }}).
 Proof.
   intros * H.
   dependent induction H; gen_presups; destruct_conjs; split; mauto 4.
-  do 2 eexists; mauto 4.
+  split; eexists; mauto 4.
 Qed.
 
 #[export]
