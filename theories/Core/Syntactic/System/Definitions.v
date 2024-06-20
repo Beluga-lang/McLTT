@@ -304,7 +304,8 @@ with wf_subtyping : ctx -> typ -> typ -> Prop :=
      {{ Γ ⊢ M' ⊆ M'' }} ->
      {{ Γ ⊢ M ⊆ M'' }} )
 | wf_subtyp_univ :
-  `( i < j ->
+  `( {{ ⊢ Γ }} ->
+     i < j ->
      {{ Γ ⊢ Type@i ⊆ Type@j }} )
 | wf_subtyp_pi :
   `( {{ Γ ⊢ A : Type@i }} ->
