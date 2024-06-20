@@ -10,6 +10,8 @@ Reserved Notation "Γ ⊢ M ≈ M' : A" (in custom judg at level 80, Γ custom e
 Reserved Notation "Γ ⊢ M : A" (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp).
 Reserved Notation "Γ ⊢s σ : Δ" (in custom judg at level 80, Γ custom exp, σ custom exp, Δ custom exp).
 Reserved Notation "Γ ⊢s σ ≈ σ' : Δ" (in custom judg at level 80, Γ custom exp, σ custom exp, σ' custom exp, Δ custom exp).
+Reserved Notation "⊢ Γ ⊆ Γ'" (in custom judg at level 80, Γ custom exp, Γ' custom exp).
+Reserved Notation "Γ ⊢ A ⊆ A'" (in custom judg at level 80, Γ custom exp, A custom exp, A' custom exp).
 Reserved Notation "'#' x : A ∈ Γ" (in custom judg at level 80, x constr at level 0, A custom exp, Γ custom exp at level 50).
 
 Generalizable All Variables.
@@ -27,16 +29,15 @@ Inductive wf_ctx : ctx -> Prop :=
      {{ ⊢ Γ , A }} )
 where "⊢ Γ" := (wf_ctx Γ) (in custom judg) : type_scope
 
-with wf_ctx_eq : ctx -> ctx -> Prop :=
-| wf_ctx_eq_empty : {{ ⊢ ⋅ ≈ ⋅ }}
-| wf_ctx_eq_extend :
-  `( {{ ⊢ Γ ≈ Δ }} ->
+with wf_ctx_sub : ctx -> ctx -> Prop :=
+| wf_ctx_sub_empty : {{ ⊢ ⋅ ⊆ ⋅ }}
+| wf_ctx_sub_extend :
+  `( {{ ⊢ Γ ⊆ Δ }} ->
      {{ Γ ⊢ A : Type@i }} ->
      {{ Δ ⊢ A' : Type@i }} ->
-     {{ Γ ⊢ A ≈ A' : Type@i }} ->
-     {{ Δ ⊢ A ≈ A' : Type@i }} ->
-     {{ ⊢ Γ , A ≈ Δ , A' }} )
-where "⊢ Γ ≈ Γ'" := (wf_ctx_eq Γ Γ') (in custom judg) : type_scope
+     {{ Γ ⊢ A ⊆ A' }} ->
+     {{ ⊢ Γ , A ⊆ Δ , A' }} )
+where "⊢ Γ ⊆ Γ'" := (wf_ctx_sub Γ Γ') (in custom judg) : type_scope
 
 with wf_exp : ctx -> exp -> typ -> Prop :=
 | wf_typ :
@@ -79,13 +80,10 @@ with wf_exp : ctx -> exp -> typ -> Prop :=
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ Δ ⊢ M : A }} ->
      {{ Γ ⊢ M[σ] : A[σ] }} )
-| wf_conv :
+| wf_subtyp :
   `( {{ Γ ⊢ M : A }} ->
-     {{ Γ ⊢ A ≈ A' : Type@i }} ->
+     {{ Γ ⊢ A ⊆ A' }} ->
      {{ Γ ⊢ M : A' }} )
-| wf_cumu :
-  `( {{ Γ ⊢ A : Type@i }} ->
-     {{ Γ ⊢ A : Type@(S i) }} )
 where "Γ ⊢ M : A" := (wf_exp Γ M A) (in custom judg) : type_scope
 
 with wf_sub : ctx -> sub -> ctx -> Prop :=
@@ -104,9 +102,9 @@ with wf_sub : ctx -> sub -> ctx -> Prop :=
      {{ Δ ⊢ A : Type@i }} ->
      {{ Γ ⊢ M : A[σ] }} ->
      {{ Γ ⊢s (σ ,, M) : Δ , A }} )
-| wf_sub_conv :
+| wf_sub_subtyp :
   `( {{ Γ ⊢s σ : Δ }} ->
-     {{ ⊢ Δ ≈ Δ' }} ->
+     {{ ⊢ Δ ⊆ Δ' }} ->
      {{ Γ ⊢s σ : Δ' }} )
 where "Γ ⊢s σ : Δ" := (wf_sub Γ σ Δ) (in custom judg) : type_scope
 
@@ -230,9 +228,9 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
 | wf_exp_eq_cumu :
   `( {{ Γ ⊢ A ≈ A' : Type@i }} ->
      {{ Γ ⊢ A ≈ A' : Type@(S i) }} )
-| wf_exp_eq_conv :
+| wf_exp_eq_subtyp :
   `( {{ Γ ⊢ M ≈ M' : A }} ->
-     {{ Γ ⊢ A ≈ A' : Type@i }} ->
+     {{ Γ ⊢ A ⊆ A' }} ->
      {{ Γ ⊢ M ≈ M' : A' }} )
 | wf_exp_eq_sym :
   `( {{ Γ ⊢ M ≈ M' : A }} ->
@@ -291,21 +289,56 @@ with wf_sub_eq : ctx -> ctx -> sub -> sub -> Prop :=
   `( {{ Γ ⊢s σ ≈ σ' : Δ }} ->
      {{ Γ ⊢s σ' ≈ σ'' : Δ }} ->
      {{ Γ ⊢s σ ≈ σ'' : Δ }} )
-| wf_sub_eq_conv :
+| wf_sub_eq_subtyp :
   `( {{ Γ ⊢s σ ≈ σ' : Δ }} ->
-     {{ ⊢ Δ ≈ Δ' }} ->
+     {{ ⊢ Δ ⊆ Δ' }} ->
      {{ Γ ⊢s σ ≈ σ' : Δ' }} )
-where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ Δ S1 S2) (in custom judg) : type_scope.
+where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ Δ S1 S2) (in custom judg) : type_scope
+
+with wf_subtyping : ctx -> typ -> typ -> Prop :=
+| wf_subtyp_refl :
+  `( {{ Γ ⊢ M ≈ M' : Type@i }} ->
+     {{ Γ ⊢ M ⊆ M' }} )
+| wf_subtyp_trans :
+  `( {{ Γ ⊢ M ⊆ M' }} ->
+     {{ Γ ⊢ M' ⊆ M'' }} ->
+     {{ Γ ⊢ M ⊆ M'' }} )
+| wf_subtyp_univ :
+  `( i < j ->
+     {{ Γ ⊢ Type@i ⊆ Type@j }} )
+| wf_subtyp_pi :
+  `( {{ Γ ⊢ A : Type@i }} ->
+     {{ Γ , A ⊢ B : Type@i }} ->
+     {{ Γ ⊢ A' : Type@i }} ->
+     {{ Γ , A' ⊢ B' : Type@i }} ->
+     {{ Γ ⊢ A' ⊆ A }} ->
+     {{ Γ , A' ⊢ B ⊆ B' }} ->
+     {{ Γ ⊢ Π A B ⊆ Π A' B' }} )
+where "Γ ⊢ A ⊆ A'" := (wf_subtyping Γ A A') (in custom judg) : type_scope.
 
 Scheme wf_ctx_mut_ind := Induction for wf_ctx Sort Prop
-with wf_ctx_eq_mut_ind := Induction for wf_ctx_eq Sort Prop
+with wf_ctx_eq_mut_ind := Induction for wf_ctx_sub Sort Prop
 with wf_exp_mut_ind := Induction for wf_exp Sort Prop
 with wf_exp_eq_mut_ind := Induction for wf_exp_eq Sort Prop
 with wf_sub_mut_ind := Induction for wf_sub Sort Prop
-with wf_sub_eq_mut_ind := Induction for wf_sub_eq Sort Prop.
+with wf_sub_eq_mut_ind := Induction for wf_sub_eq Sort Prop
+with wf_subtyping_mut_ind := Induction for wf_subtyping Sort Prop.
+
+
+Inductive wf_ctx_eq : ctx -> ctx -> Prop :=
+| wf_ctx_eq_empty : {{ ⊢ ⋅ ≈ ⋅ }}
+| wf_ctx_eq_extend :
+  `( {{ ⊢ Γ ≈ Δ }} ->
+     {{ Γ ⊢ A : Type@i }} ->
+     {{ Δ ⊢ A' : Type@i }} ->
+     {{ Γ ⊢ A ≈ A' : Type@i }} ->
+     {{ Δ ⊢ A ≈ A' : Type@i }} ->
+     {{ ⊢ Γ , A ≈ Δ , A' }} )
+where "⊢ Γ ≈ Γ'" := (wf_ctx_eq Γ Γ') (in custom judg) : type_scope.
+
 
 #[export]
-Hint Constructors wf_ctx wf_ctx_eq wf_exp wf_sub wf_exp_eq wf_sub_eq ctx_lookup : mcltt.
+Hint Constructors wf_ctx wf_ctx_eq wf_ctx_sub wf_exp wf_sub wf_exp_eq wf_sub_eq wf_subtyping ctx_lookup : mcltt.
 
 #[export]
 Instance wf_exp_PER Γ A : PER (wf_exp_eq Γ A).
@@ -322,6 +355,13 @@ Proof.
   - eauto using wf_sub_eq_sym.
   - eauto using wf_sub_eq_trans.
 Qed.
+
+#[export]
+  Instance wf_subtyping_trans Γ : Transitive (wf_subtyping Γ).
+Proof.
+  hnf; mauto.
+Qed.
+
 
 Add Parametric Morphism i Γ : (wf_exp Γ)
     with signature eq ==> wf_exp_eq Γ {{{ Type@i }}} ==> iff as wf_exp_morph.
@@ -342,48 +382,3 @@ Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using eassumption : mcltt.
 Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left
                   wf_sub_eq_compose_assoc (* prefer right association *)
                   wf_sub_eq_p_extend using mauto 4 : mcltt.
-
-Reserved Notation "Γ ⊢ A ⊆ A'" (in custom judg at level 80, Γ custom exp, A custom exp, A' custom exp).
-
-Inductive typ_subsumption : ctx -> typ -> typ -> Prop :=
-| typ_subsumption_typ :
-  `{ {{ ⊢ Γ }} ->
-     {{ Γ ⊢ Type@i ⊆ Type@(S i) }} }
-| typ_subsumption_exp_eq :
-  `{ {{ Γ ⊢ A ≈ A' : Type@i }} ->
-     {{ Γ ⊢ A ⊆ A' }} }
-| typ_subsumption_trans :
-  `{ {{ Γ ⊢ A ⊆ A' }} ->
-     {{ Γ ⊢ A' ⊆ A'' }} ->
-     {{ Γ ⊢ A ⊆ A'' }} }
-where "Γ ⊢ A ⊆ A'" := (typ_subsumption Γ A A') (in custom judg) : type_scope.
-
-#[export]
-Hint Constructors typ_subsumption : mcltt.
-
-#[export]
-Instance typ_subsumption_Transitive Γ : Transitive (typ_subsumption Γ).
-Proof.
-  eauto using typ_subsumption_trans.
-Qed.
-
-Variant nf_subsumption : nf -> nf -> Prop :=
-| nf_subsumption_typ :
-  `{ i <= j ->
-     nf_subsumption n{{{ Type@i }}} n{{{ Type@j }}} }
-| nf_subsumption_eq :
-  `{ A = A' ->
-     nf_subsumption A A' }
-.
-
-#[export]
-Hint Constructors nf_subsumption : mcltt.
-
-#[export]
-Instance nf_subsumption_Transitive : Transitive nf_subsumption.
-Proof.
-  intros A A' A'' [];
-    inversion 1; subst; mauto.
-  econstructor.
-  lia.
-Qed.
