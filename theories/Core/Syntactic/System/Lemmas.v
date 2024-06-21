@@ -831,3 +831,16 @@ Qed.
 
 #[export]
 Hint Resolve typ_subsumption_sub : mcltt.
+
+
+Lemma ctx_sub_ctx_lookup : forall Γ Δ, {{ ⊢ Δ ⊆ Γ }} -> forall A x, {{ #x : A ∈ Γ }} -> exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢ B ⊆ A }}.
+Proof.
+  induction 1; intros; progressive_inversion.
+  dependent destruction H3.
+  - eexists; split; mauto.
+  - edestruct IHwf_ctx_sub as [? [? ?]]; try eassumption.
+    eexists; split; mauto.
+Qed.
+
+#[export]
+Hint Resolve ctx_sub_ctx_lookup : mcltt.

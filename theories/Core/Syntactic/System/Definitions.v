@@ -318,7 +318,7 @@ with wf_subtyping : ctx -> typ -> typ -> Prop :=
 where "Γ ⊢ A ⊆ A'" := (wf_subtyping Γ A A') (in custom judg) : type_scope.
 
 Scheme wf_ctx_mut_ind := Induction for wf_ctx Sort Prop
-with wf_ctx_eq_mut_ind := Induction for wf_ctx_sub Sort Prop
+with wf_ctx_sub_mut_ind := Induction for wf_ctx_sub Sort Prop
 with wf_exp_mut_ind := Induction for wf_exp Sort Prop
 with wf_exp_eq_mut_ind := Induction for wf_exp_eq Sort Prop
 with wf_sub_mut_ind := Induction for wf_sub Sort Prop
