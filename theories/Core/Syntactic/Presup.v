@@ -9,6 +9,10 @@ Ltac gen_presup_ctx H :=
       let HΓ := fresh "HΓ" in
       let HΔ := fresh "HΔ" in
       pose proof presup_ctx_eq H as [HΓ HΔ]
+  | {{ ⊢ ~?Γ ⊆ ~?Δ }} =>
+      let HΓ := fresh "HΓ" in
+      let HΔ := fresh "HΔ" in
+      pose proof presup_ctx_sub H as [HΓ HΔ]
   | {{ ~?Γ ⊢s ~?σ : ~?Δ }} =>
       let HΓ := fresh "HΓ" in
       let HΔ := fresh "HΔ" in

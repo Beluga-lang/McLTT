@@ -1,5 +1,5 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import Base LibTactics CtxSub.
 From Mcltt.Core Require Export SystemOpt.
 Import Syntax_Notations.
 
@@ -79,7 +79,7 @@ Lemma wf_vlookup_inversion : forall {Γ x A},
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
-    [assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by mauto 4 | |];
+    [assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by mauto 4 |];
     try (specialize (IHwf_exp _ eq_refl));
     destruct_conjs;
     eexists; split...
@@ -107,7 +107,7 @@ Hint Resolve wf_exp_sub_inversion : mcltt.
 
 Lemma wf_sub_id_inversion : forall Γ Δ,
     {{ Γ ⊢s Id : Δ }} ->
-    {{ ⊢ Γ ≈ Δ }}.
+    {{ ⊢ Γ ⊆ Δ }}.
 Proof.
   intros * H.
   dependent induction H; mautosolve.
@@ -118,15 +118,13 @@ Hint Resolve wf_sub_id_inversion : mcltt.
 
 Lemma wf_sub_weaken_inversion : forall {Γ Δ},
     {{ Γ ⊢s Wk : Δ }} ->
-    exists A, {{ ⊢ Γ ≈ Δ, A }}.
-Proof with mautosolve 4.
+    exists Γ' A, {{ ⊢ Γ ≈ Γ', A }} /\ {{ ⊢ Γ' ⊆ Δ }}.
+Proof.
   intros * H.
-  dependent induction H; mauto.
-  specialize (IHwf_sub eq_refl).
-  destruct_conjs.
-  gen_presups.
-  eexists.
-  etransitivity...
+  dependent induction H;
+    firstorder;
+    progressive_inversion;
+    repeat eexists; mauto.
 Qed.
 
 #[export]
@@ -149,13 +147,13 @@ Hint Resolve wf_sub_compose_inversion : mcltt.
 
 Lemma wf_sub_extend_inversion : forall {Γ σ M Δ},
     {{ Γ ⊢s σ,,M : Δ }} ->
-    exists Δ' A', {{ ⊢ Δ ≈ Δ', A' }} /\ {{ Γ ⊢s σ : Δ' }} /\ {{ Γ ⊢ M : A'[σ] }}.
+    exists Δ' A', {{ ⊢ Δ', A' ⊆ Δ }} /\ {{ Γ ⊢s σ : Δ' }} /\ {{ Γ ⊢ M : A'[σ] }}.
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
     try specialize (IHwf_sub _ _ eq_refl);
     destruct_conjs;
-    do 2 eexists; split...
+    repeat eexists...
 Qed.
 
 #[export]

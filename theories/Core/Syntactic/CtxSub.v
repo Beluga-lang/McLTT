@@ -100,5 +100,8 @@ Proof.
 Qed.
 
 #[export]
+ Hint Resolve wf_ctx_sub_trans : mcltt.
+
+#[export]
   Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.
 Proof. eauto using wf_ctx_sub_trans. Qed.
