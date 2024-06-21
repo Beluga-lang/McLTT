@@ -392,7 +392,7 @@ Qed.
 #[export]
 Hint Resolve exp_sub_nat exp_eq_sub_cong_nat1 exp_eq_sub_cong_nat2' exp_eq_sub_compose_nat : mcltt.
 
-Lemma exp_eq_nat_sub_sub : forall {Γ Δ Ψ σ τ i}, {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢ ℕ[σ][τ] ≈ ℕ : Type@i }}.
+Lemma exp_eq_nat_sub_sub : forall {Γ Δ Ψ σ τ}, {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢ ℕ[σ][τ] ≈ ℕ : Type@0 }}.
 Proof.
   mauto.
 Qed.
@@ -400,7 +400,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_nat_sub_sub : mcltt.
 
-Lemma exp_eq_nat_sub_sub_to_nat_sub : forall {Γ Δ Ψ Ψ' σ τ σ' i}, {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢s σ' : Ψ' }} -> {{ Γ ⊢ ℕ[σ][τ] ≈ ℕ[σ'] : Type@i }}.
+Lemma exp_eq_nat_sub_sub_to_nat_sub : forall {Γ Δ Ψ Ψ' σ τ σ'}, {{ Δ ⊢s σ : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢s σ' : Ψ' }} -> {{ Γ ⊢ ℕ[σ][τ] ≈ ℕ[σ'] : Type@0 }}.
 Proof.
   mauto.
 Qed.
@@ -788,7 +788,7 @@ Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
 (* #[export] *)
 (* Hint Resolve typ_subsumption_wf_ctx : mcltt. *)
 
-Fact typ_subsumption_refl : forall {Γ A i},
+Fact wf_subtyping_refl : forall {Γ A i},
     {{ Γ ⊢ A : Type@i }} ->
     {{ Γ ⊢ A ⊆ A }}.
 Proof.
@@ -796,9 +796,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve typ_subsumption_refl : mcltt.
+Hint Resolve wf_subtyping_refl : mcltt.
 
-Lemma typ_subsumption_ge : forall {Γ i j},
+Lemma wf_subtyping_ge : forall {Γ i j},
     {{ ⊢ Γ }} ->
     i <= j ->
     {{ Γ ⊢ Type@i ⊆ Type@j }}.
@@ -807,9 +807,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve typ_subsumption_ge : mcltt.
+Hint Resolve wf_subtyping_ge : mcltt.
 
-Lemma typ_subsumption_sub : forall Δ A A',
+Lemma wf_subtyping_sub : forall Δ A A',
     {{ Δ ⊢ A ⊆ A' }} ->
     forall Γ σ,
     {{ Γ ⊢s σ : Δ }} ->
@@ -825,7 +825,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve typ_subsumption_sub : mcltt.
+Hint Resolve wf_subtyping_sub : mcltt.
 
 
 Lemma ctx_sub_ctx_lookup : forall Γ Δ, {{ ⊢ Δ ⊆ Γ }} -> forall A x, {{ #x : A ∈ Γ }} -> exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢ B ⊆ A }}.

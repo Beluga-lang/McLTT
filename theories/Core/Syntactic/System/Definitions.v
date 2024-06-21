@@ -114,7 +114,7 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
      {{ Γ ⊢ Type@i[σ] ≈ Type@i : Type@(S i) }} )
 | wf_exp_eq_nat_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
-     {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }} )
+     {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@0 }} )
 | wf_exp_eq_zero_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ Γ ⊢ zero[σ] ≈ zero : ℕ }} )
