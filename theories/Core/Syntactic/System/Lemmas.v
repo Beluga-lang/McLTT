@@ -464,7 +464,6 @@ Proof with mautosolve.
   intros.
   assert {{ ⊢ Δ }} by mauto.
   econstructor...
-  Unshelve. constructor.
 Qed.
 
 #[export]
@@ -475,14 +474,12 @@ Proof with mautosolve.
   intros.
   assert {{ ⊢ Δ }} by mauto.
   econstructor...
-  Unshelve. constructor.
 Qed.
 
 Lemma sub_eq_extend_compose_nat : forall {Γ τ Γ' σ Γ'' A i M}, {{ Γ' ⊢s σ : Γ'' }} -> {{ Γ'' ⊢ A : Type@i }} -> {{ Γ' ⊢ M : ℕ }} -> {{ Γ ⊢s τ : Γ' }} -> {{ Γ ⊢s (σ ,, M) ∘ τ ≈ ((σ ∘ τ) ,, M[τ]) : Γ'' , ℕ }}.
 Proof with mautosolve.
   intros.
   econstructor...
-  Unshelve. constructor.
 Qed.
 
 Lemma sub_eq_p_extend_nat : forall {Γ σ Γ' M}, {{ Γ' ⊢s σ : Γ }} -> {{ Γ' ⊢ M : ℕ }} -> {{ Γ' ⊢s Wk ∘ (σ ,, M) ≈ σ : Γ }}.
@@ -490,7 +487,6 @@ Proof with mautosolve.
   intros.
   assert {{ ⊢ Γ }} by mauto.
   econstructor; revgoals...
-  Unshelve. constructor.
 Qed.
 
 #[export]
@@ -637,7 +633,6 @@ Proof with mautosolve.
   intros.
   assert {{ Γ ⊢s (Id ,, M)∘σ ≈ Id∘σ ,, M[σ] : Δ, ℕ }} by (eapply sub_eq_extend_compose_nat; mautosolve).
   assert {{ Γ ⊢s Id∘σ ,, M[σ] ≈ σ ,, M[σ] : Δ, ℕ }} by (eapply sub_eq_extend_cong_nat'; mauto)...
-  Unshelve. constructor.
 Qed.
 
 Lemma sub_eq_id_extend_compose_sigma : forall {Γ M A σ Δ i}, {{ Γ ⊢s σ : Δ }} -> {{ Δ ⊢ A : Type@i }} -> {{ Δ ⊢ M : A }} -> {{ Γ ⊢s (Id,,M)∘σ ≈ σ,,M[σ] : Δ, A }}.

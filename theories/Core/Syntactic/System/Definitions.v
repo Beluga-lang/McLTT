@@ -45,7 +45,7 @@ with wf_exp : ctx -> exp -> typ -> Prop :=
      {{ Γ ⊢ Type@i : Type@(S i) }} )
 | wf_nat :
   `( {{ ⊢ Γ }} ->
-     {{ Γ ⊢ ℕ : Type@i }} )
+     {{ Γ ⊢ ℕ : Type@0 }} )
 | wf_zero :
   `( {{ ⊢ Γ }} ->
      {{ Γ ⊢ zero : ℕ }} )

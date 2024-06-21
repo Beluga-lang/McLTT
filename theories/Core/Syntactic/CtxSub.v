@@ -39,7 +39,7 @@ Module ctxsub_judg.
       try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
     (* ctxsub_exp_helper & ctxsub_exp_eq_helper recursion cases *)
     1,6-8: assert {{ ⊢ Δ, ℕ ⊆ Γ, ℕ }} by (econstructor; mautosolve);
-      assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
+    assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
     (* ctxsub_exp_helper & ctxsub_exp_eq_helper function cases *)
     1-3,5-9: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
       try econstructor...
@@ -54,8 +54,6 @@ Module ctxsub_judg.
       destruct_conjs.
       assert {{ ⊢ Δ0, C' }} by mauto.
       assert {{ Δ0, C' ⊢ D[Wk] ⊆ B[Wk] }}...
-      Unshelve.
-      all:constructor.
     - eapply wf_subtyp_pi with (i := i); firstorder mauto 4.
   Qed.
 
@@ -79,8 +77,28 @@ Module ctxsub_judg.
     eauto using ctxsub_sub_eq_helper.
   Qed.
 
+  Corollary ctxsub_subtyping : forall {Γ Δ A B}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢ A ⊆ B }} -> {{ Δ ⊢ A ⊆ B }}.
+  Proof.
+    eauto using ctxsub_subtyping_helper.
+  Qed.
+
   #[export]
-  Hint Resolve ctxsub_exp ctxsub_exp_eq ctxsub_sub ctxsub_sub_eq : mcltt.
+  Hint Resolve ctxsub_exp ctxsub_exp_eq ctxsub_sub ctxsub_sub_eq ctxsub_subtyping : mcltt.
 End ctxsub_judg.
 
 Export ctxsub_judg.
+
+Lemma wf_ctx_sub_trans : forall Γ0 Γ1,
+    {{ ⊢ Γ0 ⊆ Γ1 }} ->
+    forall  Γ2,
+    {{ ⊢ Γ1 ⊆ Γ2 }} ->
+    {{ ⊢ Γ0 ⊆ Γ2 }}.
+Proof.
+  induction 1; intros; progressive_inversion; [constructor |].
+  eapply wf_ctx_sub_extend with (i := max i i0);
+    mauto 3 using lift_exp_max_left, lift_exp_max_right.
+Qed.
+
+#[export]
+  Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.
+Proof. eauto using wf_ctx_sub_trans. Qed.
