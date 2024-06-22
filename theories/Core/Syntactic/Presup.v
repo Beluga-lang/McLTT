@@ -270,9 +270,6 @@ Proof with mautosolve 4.
   - mauto.
 Qed.
 
-#[export]
-Hint Resolve presup_exp presup_exp_eq presup_sub_eq presup_subtyping : mcltt.
-
 Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq @presup_subtyping H.
 
 Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; clear_dups.
