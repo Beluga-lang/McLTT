@@ -2,6 +2,8 @@
 
 -arg -w -arg -cast-in-pattern,-notation-overridden
 
+./Algorithmic/Subtyping/Definitions.v
+./Algorithmic/Subtyping/Lemmas.v
 ./Core/Axioms.v
 ./Core/Base.v
 ./Core/Completeness/Consequences/Types.v
