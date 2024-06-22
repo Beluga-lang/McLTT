@@ -18,16 +18,6 @@ Qed.
 #[export]
 Hint Resolve ctx_eq_sym : mcltt.
 
-Lemma ctx_eq_subtyping : forall Γ Δ,
-    {{ ⊢ Γ ≈ Δ }} ->
-    {{ ⊢ Γ ⊆ Δ }}.
-Proof.
-  induction 1; mauto 4.
-Qed.
-
-#[export]
-Hint Resolve ctx_eq_subtyping : mcltt.
-
 Lemma ctxeq_exp : forall {Γ Δ M A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M : A }} -> {{ Δ ⊢ M : A }}.
 Proof. mauto. Qed.
 
