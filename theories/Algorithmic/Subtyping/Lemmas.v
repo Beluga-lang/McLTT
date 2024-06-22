@@ -1,5 +1,6 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import System NbE CoreTypeInversions Presup CtxSub.
+From Mcltt.Core Require Import System Evaluation Readback NbE CoreTypeInversions Presup CtxSub.
+From Mcltt Require Import Completeness Soundness.
 From Mcltt.Algorithmic Require Import Subtyping.Definitions.
 Import Syntax_Notations.
 
@@ -20,10 +21,8 @@ Lemma alg_subtyping_nf_sound : forall M N,
 Proof.
   induction 1; intros; subst; simpl in *.
   - econstructor. mauto.
-  - assert (i < j \/ i = j) by lia.
-    destruct H2.
-    + apply wf_subtyp_univ; mauto.
-    + subst. mauto.
+  - assert (i < j \/ i = j) as H2 by lia.
+    destruct H2; mauto 3.
   - on_all_hyp: fun H => (apply wf_pi_inversion in H; destruct H as [? ?]).
     destruct_all.
     gen_presups.
@@ -34,9 +33,7 @@ Proof.
            end.
     apply_subtyping.
     deepexec IHalg_subtyping_nf1 ltac:(fun H => pose proof H).
-    eapply wf_subtyp_pi with (i := i); mauto 2.
-    eapply IHalg_subtyping_nf2; try eassumption.
-    mauto.
+    eapply wf_subtyp_pi with (i := i); mauto.
 Qed.
 
 Lemma alg_subtyping_nf_trans : forall M1 M0 M2,
@@ -52,3 +49,56 @@ Proof.
     mauto.
   apply asnf_univ. lia.
 Qed.
+
+Lemma alg_subtyping_nf_refl : forall M,
+    {{ ⊢anf M ⊆ M }}.
+Proof.
+  intro M; induction M;
+    solve [constructor; simpl; trivial].
+Qed.
+
+#[local]
+ Hint Resolve alg_subtyping_nf_trans alg_subtyping_nf_refl : mcltt.
+
+Lemma alg_subtyping_trans : forall Γ M0 M1 M2,
+    {{ Γ ⊢a M0 ⊆ M1 }} ->
+    {{ Γ ⊢a M1 ⊆ M2 }} ->
+    {{ Γ ⊢a M0 ⊆ M2 }}.
+Proof.
+  intros. progressive_inversion.
+  functional_nbe_rewrite_clear.
+  mauto.
+Qed.
+
+#[local]
+ Hint Resolve alg_subtyping_trans : mcltt.
+
+
+(* Lemma alg_subtyping_complete : forall Γ M N, *)
+(*     {{ Γ ⊢ M ⊆ N }} -> *)
+(*     {{ Γ ⊢a M ⊆ N }}. *)
+(* Proof. *)
+(*   induction 1; mauto. *)
+(*   - apply completeness in H. *)
+(*     destruct H as [W [? ?]]. *)
+(*     econstructor; mauto. *)
+(*   - assert {{ Γ ⊢ Type@i : Type@(S i) }} by mauto. *)
+(*     assert {{ Γ ⊢ Type@j : Type@(S j) }} by mauto. *)
+(*     apply soundness in H1. *)
+(*     apply soundness in H2. *)
+(*     destruct_all. *)
+(*     econstructor; try eassumption. *)
+(*     progressive_inversion. *)
+(*     mauto. *)
+(*   - assert {{ Γ ⊢ Π A B : Type@i }} as HΠ1 by mauto. *)
+(*     assert {{ Γ ⊢ Π A' B' : Type@i }} as HΠ2 by mauto. *)
+(*     apply soundness in HΠ1. *)
+(*     apply soundness in HΠ2. *)
+(*     destruct_all. *)
+(*     econstructor; try eassumption. *)
+(*     progressive_inversion. *)
+(*     simpl in *. *)
+(*     functional_initial_env_rewrite_clear. *)
+(*     simplify_evals. *)
+(*     functional_read_rewrite_clear. *)
+(*     eapply asnf_pi; trivial. *)
