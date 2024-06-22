@@ -1,5 +1,5 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import Base LibTactics CtxSub.
 From Mcltt.Core Require Export SystemOpt CoreInversions.
 Import Syntax_Notations.
 
@@ -20,7 +20,7 @@ Corollary invert_sub_id : forall Γ M A,
     {{ Γ ⊢ M : A }}.
 Proof.
   intros * [? [? [?%wf_sub_id_inversion []]]]%wf_exp_sub_inversion.
-  mauto.
+  mauto 4.
 Qed.
 
 #[export]

@@ -1,0 +1,107 @@
+From Mcltt Require Import Base LibTactics.
+From Mcltt Require Export System.
+Import Syntax_Notations.
+
+Lemma ctx_sub_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ⊆ Γ }}.
+Proof with mautosolve.
+  induction 1...
+Qed.
+
+#[export]
+Hint Resolve ctx_sub_refl : mcltt.
+
+Module ctxsub_judg.
+  #[local]
+  Ltac gen_ctxsub_helper_IH ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyping_helper H :=
+  match type of H with
+  | {{ ~?Γ ⊢ ~?M : ~?A }} => pose proof ctxsub_exp_helper _ _ _ H
+  | {{ ~?Γ ⊢ ~?M ≈ ~?N : ~?A }} => pose proof ctxsub_exp_eq_helper _ _ _ _ H
+  | {{ ~?Γ ⊢s ~?σ : ~?Δ }} => pose proof ctxsub_sub_helper _ _ _ H
+  | {{ ~?Γ ⊢s ~?σ ≈ ~?τ : ~?Δ }} => pose proof ctxsub_sub_eq_helper _ _ _ _ H
+  | {{ ~?Γ ⊢ ~?M ⊆ ~?M' }} => pose proof ctxsub_subtyping_helper _ _ _ H
+  end.
+
+  #[local]
+  Lemma ctxsub_exp_helper : forall {Γ M A}, {{ Γ ⊢ M : A }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢ M : A }}
+  with
+  ctxsub_exp_eq_helper : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢ M ≈ M' : A }}
+  with
+  ctxsub_sub_helper : forall {Γ Γ' σ}, {{ Γ ⊢s σ : Γ' }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢s σ : Γ' }}
+  with
+  ctxsub_sub_eq_helper : forall {Γ Γ' σ σ'}, {{ Γ ⊢s σ ≈ σ' : Γ' }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}
+  with
+  ctxsub_subtyping_helper : forall {Γ M M'}, {{ Γ ⊢ M ⊆ M' }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢ M ⊆ M' }}.
+  Proof with mautosolve.
+    all: inversion_clear 1;
+      (on_all_hyp: gen_ctxsub_helper_IH ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyping_helper);
+      clear ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyping_helper;
+      intros * HΓΔ; destruct (presup_ctx_sub HΓΔ); mauto 4;
+      try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
+    (* ctxsub_exp_helper & ctxsub_exp_eq_helper recursion cases *)
+    1,6-8: assert {{ ⊢ Δ, ℕ ⊆ Γ, ℕ }} by (econstructor; mautosolve);
+    assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
+    (* ctxsub_exp_helper & ctxsub_exp_eq_helper function cases *)
+    1-3,5-9: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
+      try econstructor...
+    (* ctxsub_exp_helper & ctxsub_exp_eq_helper variable cases *)
+    1-2: assert (exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢  B ⊆ A }}); destruct_conjs; mautosolve 4.
+    (* ctxsub_sub_helper & ctxsub_sub_eq_helper weakening cases *)
+    2-3: inversion_clear HΓΔ; econstructor; mautosolve 4.
+
+    - (* ctxsub_exp_eq_helper variable case *)
+      inversion_clear HΓΔ as [|Δ0 ? C'].
+      assert (exists D, {{ #x : D ∈ Δ0 }} /\ {{ Δ0 ⊢ D ⊆ B }}) as [D [i0 ?]] by mauto.
+      destruct_conjs.
+      assert {{ ⊢ Δ0, C' }} by mauto.
+      assert {{ Δ0, C' ⊢ D[Wk] ⊆ B[Wk] }}...
+    - eapply wf_subtyp_pi with (i := i); firstorder mauto 4.
+  Qed.
+
+  Corollary ctxsub_exp : forall {Γ Δ M A}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢ M : A }} -> {{ Δ ⊢ M : A }}.
+  Proof.
+    eauto using ctxsub_exp_helper.
+  Qed.
+
+  Corollary ctxsub_exp_eq : forall {Γ Δ M M' A}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢ M ≈ M' : A }} -> {{ Δ ⊢ M ≈ M' : A }}.
+  Proof.
+    eauto using ctxsub_exp_eq_helper.
+  Qed.
+
+  Corollary ctxsub_sub : forall {Γ Δ σ Γ'}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢s σ : Γ' }} -> {{ Δ ⊢s σ : Γ' }}.
+  Proof.
+    eauto using ctxsub_sub_helper.
+  Qed.
+
+  Corollary ctxsub_sub_eq : forall {Γ Δ σ σ' Γ'}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢s σ ≈ σ' : Γ' }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
+  Proof.
+    eauto using ctxsub_sub_eq_helper.
+  Qed.
+
+  Corollary ctxsub_subtyping : forall {Γ Δ A B}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢ A ⊆ B }} -> {{ Δ ⊢ A ⊆ B }}.
+  Proof.
+    eauto using ctxsub_subtyping_helper.
+  Qed.
+
+  #[export]
+  Hint Resolve ctxsub_exp ctxsub_exp_eq ctxsub_sub ctxsub_sub_eq ctxsub_subtyping : mcltt.
+End ctxsub_judg.
+
+Export ctxsub_judg.
+
+Lemma wf_ctx_sub_trans : forall Γ0 Γ1,
+    {{ ⊢ Γ0 ⊆ Γ1 }} ->
+    forall  Γ2,
+    {{ ⊢ Γ1 ⊆ Γ2 }} ->
+    {{ ⊢ Γ0 ⊆ Γ2 }}.
+Proof.
+  induction 1; intros; progressive_inversion; [constructor |].
+  eapply wf_ctx_sub_extend with (i := max i i0);
+    mauto 3 using lift_exp_max_left, lift_exp_max_right.
+Qed.
+
+#[export]
+ Hint Resolve wf_ctx_sub_trans : mcltt.
+
+#[export]
+  Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.
+Proof. eauto using wf_ctx_sub_trans. Qed.

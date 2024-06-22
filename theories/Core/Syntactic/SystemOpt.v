@@ -42,8 +42,8 @@ Corollary wf_pi_max : forall {Γ A i B j},
     {{ Γ ⊢ Π A B : Type@(max i j) }}.
 Proof.
   intros.
-  assert {{ Γ ⊢ A : Type@(max i j) }} by eauto using lift_exp_max_left.
-  assert {{ Γ, A ⊢ B : Type@(max i j) }} by eauto using lift_exp_max_right.
+  assert {{ Γ ⊢ A : Type@(max i j) }} by mauto using lift_exp_max_left.
+  assert {{ Γ, A ⊢ B : Type@(max i j) }} by mauto using lift_exp_max_right.
   mauto.
 Qed.
 
@@ -142,8 +142,8 @@ Corollary wf_exp_eq_pi_sub_max : forall {Γ σ Δ A i B j},
     {{ Γ ⊢ (Π A B)[σ] ≈ Π (A[σ]) (B[q σ]) : Type@(max i j) }}.
 Proof.
   intros.
-  assert {{ Δ ⊢ A : Type@(max i j) }} by eauto using lift_exp_max_left.
-  assert {{ Δ , A ⊢ B : Type@(max i j) }} by eauto using lift_exp_max_right.
+  assert {{ Δ ⊢ A : Type@(max i j) }} by mauto using lift_exp_max_left.
+  assert {{ Δ , A ⊢ B : Type@(max i j) }} by mauto using lift_exp_max_right.
   mauto.
 Qed.
 

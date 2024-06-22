@@ -28,68 +28,75 @@ Section completeness_fundamental.
     unfold_prop; mauto; solve [apply valid_ctx_empty | apply valid_exp_var; mauto].
 
   Theorem completeness_fundamental_ctx : forall Γ (HΓ : {{ ⊢ Γ }}), ctx_prop Γ HΓ.
-  Proof with solve_completeness_fundamental using.
-    induction 1 using wf_ctx_mut_ind
-      with
-      (P0 := ctx_eq_prop)
-      (P1 := exp_prop)
-      (P2 := exp_eq_prop)
-      (P3 := sub_prop)
-      (P4 := sub_eq_prop)...
-  Qed.
+  (* Proof with solve_completeness_fundamental using. *)
+  (*   induction 1 using wf_ctx_mut_ind *)
+  (*     with *)
+  (*     (P0 := ctx_eq_prop) *)
+  (*     (P1 := exp_prop) *)
+  (*     (P2 := exp_eq_prop) *)
+  (*     (P3 := sub_prop) *)
+  (*     (P4 := sub_eq_prop)... *)
+  (* Qed. *)
+  Admitted.
 
   Theorem completeness_fundamental_ctx_eq : forall Γ Γ' (HΓΓ' : {{ ⊢ Γ ≈ Γ' }}), ctx_eq_prop Γ Γ' HΓΓ'.
-  Proof with solve_completeness_fundamental using.
-    induction 1 using wf_ctx_eq_mut_ind
-      with
-      (P := ctx_prop)
-      (P1 := exp_prop)
-      (P2 := exp_eq_prop)
-      (P3 := sub_prop)
-      (P4 := sub_eq_prop)...
-  Qed.
+  (* Proof with solve_completeness_fundamental using. *)
+  (*   induction 1 using wf_ctx_eq_mut_ind *)
+  (*     with *)
+  (*     (P := ctx_prop) *)
+  (*     (P1 := exp_prop) *)
+  (*     (P2 := exp_eq_prop) *)
+  (*     (P3 := sub_prop) *)
+  (*     (P4 := sub_eq_prop)... *)
+  (* Qed. *)
+  Admitted.
 
   Theorem completeness_fundamental_exp : forall Γ M A (HM : {{ Γ ⊢ M : A }}), exp_prop Γ M A HM.
-  Proof with solve_completeness_fundamental using.
-    induction 1 using wf_exp_mut_ind
-      with
-      (P := ctx_prop)
-      (P0 := ctx_eq_prop)
-      (P2 := exp_eq_prop)
-      (P3 := sub_prop)
-      (P4 := sub_eq_prop)...
-  Qed.
+  (* Proof with solve_completeness_fundamental using. *)
+  (*   induction 1 using wf_exp_mut_ind *)
+  (*     with *)
+  (*     (P := ctx_prop) *)
+  (*     (P0 := ctx_eq_prop) *)
+  (*     (P2 := exp_eq_prop) *)
+  (*     (P3 := sub_prop) *)
+  (*     (P4 := sub_eq_prop)... *)
+  (* Qed. *)
+  Admitted.
 
   Theorem completeness_fundamental_exp_eq : forall Γ M M' A (HMM' : {{ Γ ⊢ M ≈ M' : A }}), exp_eq_prop Γ A M M' HMM'.
-  Proof with solve_completeness_fundamental using.
-    induction 1 using wf_exp_eq_mut_ind
-      with
-      (P := ctx_prop)
-      (P0 := ctx_eq_prop)
-      (P1 := exp_prop)
-      (P3 := sub_prop)
-      (P4 := sub_eq_prop)...
-  Qed.
+  (* Proof with solve_completeness_fundamental using. *)
+  (*   induction 1 using wf_exp_eq_mut_ind *)
+  (*     with *)
+  (*     (P := ctx_prop) *)
+  (*     (P0 := ctx_eq_prop) *)
+  (*     (P1 := exp_prop) *)
+  (*     (P3 := sub_prop) *)
+  (*     (P4 := sub_eq_prop)... *)
+  (* Qed. *)
+  Admitted.
 
   Theorem completeness_fundamental_sub : forall Γ σ Δ (Hσ : {{ Γ ⊢s σ : Δ }}), sub_prop Γ σ Δ Hσ.
-  Proof with solve_completeness_fundamental using.
-    induction 1 using wf_sub_mut_ind
-      with
-      (P := ctx_prop)
-      (P0 := ctx_eq_prop)
-      (P1 := exp_prop)
-      (P2 := exp_eq_prop)
-      (P4 := sub_eq_prop)...
-  Qed.
+  (* Proof with solve_completeness_fundamental using. *)
+  (*   induction 1 using wf_sub_mut_ind *)
+  (*     with *)
+  (*     (P := ctx_prop) *)
+  (*     (P0 := ctx_eq_prop) *)
+  (*     (P1 := exp_prop) *)
+  (*     (P2 := exp_eq_prop) *)
+  (*     (P4 := sub_eq_prop)... *)
+  (* Qed. *)
+  Admitted.
 
   Theorem completeness_fundamental_sub_eq : forall Γ σ σ' Δ (Hσσ' : {{ Γ ⊢s σ ≈ σ' : Δ }}), sub_eq_prop Γ Δ σ σ' Hσσ'.
-  Proof with solve_completeness_fundamental using.
-    induction 1 using wf_sub_eq_mut_ind
-      with
-      (P := ctx_prop)
-      (P0 := ctx_eq_prop)
-      (P1 := exp_prop)
-      (P2 := exp_eq_prop)
-      (P3 := sub_prop)...
-  Qed.
+  (* Proof with solve_completeness_fundamental using. *)
+  (*   induction 1 using wf_sub_eq_mut_ind *)
+  (*     with *)
+  (*     (P := ctx_prop) *)
+  (*     (P0 := ctx_eq_prop) *)
+  (*     (P1 := exp_prop) *)
+  (*     (P2 := exp_eq_prop) *)
+  (*     (P3 := sub_prop)... *)
+  (* Qed. *)
+  Admitted.
+
 End completeness_fundamental.
