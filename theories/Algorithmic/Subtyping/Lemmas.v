@@ -11,9 +11,9 @@ Import Syntax_Notations.
         assert {{ Γ ⊢ A : N }} by mauto; clear H
     end.
 
-Lemma alg_subtyping_nf_sound : forall Γ M N,
-    {{ Γ ⊢anf M ⊆ N }} ->
-    forall i,
+Lemma alg_subtyping_nf_sound : forall M N,
+    {{ ⊢anf M ⊆ N }} ->
+    forall Γ i,
       {{ Γ ⊢ M : Type@i }} ->
       {{ Γ ⊢ N : Type@i }} ->
       {{ Γ ⊢ M ⊆ N }}.
@@ -39,27 +39,16 @@ Proof.
     mauto.
 Qed.
 
-Lemma alg_subtyping_nf_ctx_irrel : forall Γ M N,
-    {{ Γ ⊢anf M ⊆ N }} ->
-    forall Δ,
-      {{ Δ ⊢anf M ⊆ N }}.
+Lemma alg_subtyping_nf_trans : forall M1 M0 M2,
+    {{ ⊢anf M0 ⊆ M1 }} ->
+    {{ ⊢anf M1 ⊆ M2 }} ->
+    {{ ⊢anf M0 ⊆ M2 }}.
 Proof.
-  induction 1; mauto.
-Qed.
-
-Lemma alg_subtyping_nf_trans : forall M1 Γ M0 M2,
-    {{ Γ ⊢anf M0 ⊆ M1 }} ->
-    {{ Γ ⊢anf M1 ⊆ M2 }} ->
-    {{ Γ ⊢anf M0 ⊆ M2 }}.
-Proof.
-  intro M1; induction M1; intros ? ? ? H1 H2;
+  intro M1; induction M1; intros ? ? H1 H2;
     dependent destruction H1;
     dependent destruction H2;
     simpl in *;
     try contradiction;
     mauto.
-  - apply asnf_univ. lia.
-  - apply asnf_pi.
-    + mauto.
-    + apply IHM1_2; mauto using alg_subtyping_nf_ctx_irrel.
+  apply asnf_univ. lia.
 Qed.
