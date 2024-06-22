@@ -615,6 +615,53 @@ Proof with mautosolve.
   assert (j <= max i j) by lia...
 Qed.
 
+Lemma per_subtyp_to_univ_elem : forall a b i,
+    {{ Sub a <: b at i }} ->
+    exists R R',
+      {{ DF a ≈ a ∈ per_univ_elem i ↘ R }} /\
+        {{ DF b ≈ b ∈ per_univ_elem i ↘ R' }}.
+Proof.
+  destruct 1; do 2 eexists; mauto;
+    split; per_univ_elem_econstructor; mauto;
+    try apply Equivalence_Reflexive.
+  lia.
+Qed.
+
+Lemma per_elem_subtyping : forall A B i,
+    {{ Sub A <: B at i }} ->
+    forall R R' a b,
+      {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} ->
+      {{ DF B ≈ B ∈ per_univ_elem i ↘ R' }} ->
+      R a b ->
+      R' a b.
+Proof.
+  induction 1; intros.
+  4:clear H3 H4.
+  all:(on_all_hyp: fun H => directed invert_per_univ_elem H);
+    apply_equiv_left;
+    trivial.
+  - firstorder mauto.
+  - intros.
+    deepexec IHper_subtyp ltac:(fun H => pose proof H).
+    destruct_rel_mod_eval.
+    destruct_rel_mod_app.
+    deepexec H1 ltac:(fun H => pose proof H).
+    econstructor; eauto.
+    repeat match goal with
+           | H : per_univ_elem i _ ?x ?y |- _ =>
+               tryif unify x y
+               then fail
+               else
+                 assert (per_univ_elem i _ x x) by
+               eauto using per_univ_sym, per_univ_trans;
+               assert (per_univ_elem i _ y y) by
+                 eauto using per_univ_sym, per_univ_trans;
+               fail_if_dup
+           end.
+    deepexec H2 ltac:(fun H => pose proof H).
+    trivial.
+Qed.
+
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> eq ==> eq ==> iff as per_ctx_env_morphism_iff.
 Proof with mautosolve.
