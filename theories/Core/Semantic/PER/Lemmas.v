@@ -725,6 +725,18 @@ Proof.
   firstorder.
 Qed.
 
+(* Lemma per_subtyp_trans : forall A1 A2 i, *)
+(*     {{ Sub A1 <: A2 at i }} -> *)
+(*     forall A3, *)
+(*       {{ Sub A2 <: A3 at i }} -> *)
+(*       {{ Sub A1 <: A3 at i }}. *)
+(* Proof. *)
+(*   induction 1; intros; simpl in *. *)
+(*   1-3:progressive_inversion; *)
+(*     mauto. *)
+(*   - econstructor; lia. *)
+(*   - dependent destruction H5. *)
+(*     econstructor; eauto. *)
 
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> eq ==> eq ==> iff as per_ctx_env_morphism_iff.
