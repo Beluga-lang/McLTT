@@ -662,6 +662,70 @@ Proof.
     trivial.
 Qed.
 
+Lemma PER_refl1 A (R : relation A) `(per : PER A R) : forall a b, R a b -> R a a.
+Proof.
+  intros.
+  etransitivity; [eassumption |].
+  symmetry. assumption.
+Qed.
+
+Lemma PER_refl2 A (R : relation A) `(per : PER A R) : forall a b, R a b -> R b b.
+Proof.
+  intros. symmetry in H.
+  apply PER_refl1 in H;
+    auto.
+Qed.
+
+Lemma per_subtyp_refl : forall a b i R,
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ Sub a <: b at i }} /\ {{ Sub b <: a at i }}.
+Proof.
+  simpl; induction 1 using per_univ_elem_ind;
+    subst;
+    mauto;
+    destruct_all.
+
+  assert ({{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }})
+           by (eapply per_univ_elem_pi'; eauto; intros; destruct_rel_mod_eval; mauto).
+  repeat match goal with
+         | H : ?R ?a ?b |- _ =>
+             tryif unify a b
+             then fail
+             else
+               directed pose proof (PER_refl1 _ _ _ _ _ H);
+             directed pose proof (PER_refl2 _ _ _ _ _ H);
+             fail_if_dup
+         end.
+  split; econstructor; eauto.
+  - intros;
+      destruct_rel_mod_eval;
+      functional_eval_rewrite_clear;
+      trivial.
+  - intros. symmetry in H12.
+      destruct_rel_mod_eval;
+      functional_eval_rewrite_clear;
+      trivial.
+Qed.
+
+Lemma per_subtyp_refl1 : forall a b i R,
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ Sub a <: b at i }}.
+Proof.
+  intros.
+  apply per_subtyp_refl in H.
+  firstorder.
+Qed.
+
+Lemma per_subtyp_refl2 : forall a b i R,
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ Sub b <: a at i }}.
+Proof.
+  intros.
+  apply per_subtyp_refl in H.
+  firstorder.
+Qed.
+
+
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> eq ==> eq ==> iff as per_ctx_env_morphism_iff.
 Proof with mautosolve.
