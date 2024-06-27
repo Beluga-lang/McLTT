@@ -108,3 +108,20 @@ Proof.
     functional_read_rewrite_clear.
     eapply asnf_pi; trivial.
 Qed.
+
+Lemma alg_subtyping_sound : forall Γ M N i,
+    {{ Γ ⊢a M ⊆ N }} ->
+    {{ Γ ⊢ M : Type@i }} ->
+    {{ Γ ⊢ N : Type@i }} ->
+    {{ Γ ⊢ M ⊆ N }}.
+Proof.
+  intros. destruct H.
+  on_all_hyp: fun H => apply soundness in H.
+  destruct_all.
+  functional_nbe_rewrite_clear.
+  gen_presups.
+  eapply alg_subtyping_nf_sound in H3; try eassumption.
+  etransitivity; [mauto |].
+  etransitivity; [eassumption |].
+  mauto.
+Qed.
