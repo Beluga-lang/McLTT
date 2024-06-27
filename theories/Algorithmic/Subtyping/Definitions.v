@@ -21,7 +21,7 @@ Inductive alg_subtyping_nf : nf -> nf -> Prop :=
     i <= j ->
     {{ ⊢anf Type@i ⊆ Type@j }}
 | asnf_pi : forall A B A' B',
-    {{ ⊢anf A' ⊆ A }} ->
+    A = A' ->
     {{ ⊢anf B ⊆ B' }} ->
     {{ ⊢anf Π A B ⊆ Π A' B' }}
 where "⊢anf M ⊆ N" := (alg_subtyping_nf M N) (in custom judg) : type_scope.

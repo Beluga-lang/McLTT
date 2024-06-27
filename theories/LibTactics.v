@@ -267,7 +267,7 @@ Ltac deepexec lem tac :=
                       lazymatch type of T with
                       | Prop => match goal with
                             | H : _ |- _ => unify x H
-                            | _ => idtac
+                            | _ => tac lem
                             end
                       | _ => idtac
                       end;
@@ -294,7 +294,7 @@ Ltac cutexec lem C tac :=
                         (lazymatch type of T with
                          | Prop => match goal with
                                | H : _ |- _ => unify x H
-                               | _ => idtac
+                               | _ => tac lem
                                end
                          | _ => idtac
                          end;
