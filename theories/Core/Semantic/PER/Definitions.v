@@ -227,6 +227,34 @@ Section Per_univ_elem_ind_def.
   | i, a, b, R, H := per_univ_elem_ind' i a b R _.
 End Per_univ_elem_ind_def.
 
+Reserved Notation "'Sub' a <: b 'at' i" (in custom judg at level 90, a custom domain, b custom domain, i constr).
+
+Inductive per_subtyp : nat -> domain -> domain -> Prop :=
+| per_subtyp_neut :
+  `( {{ Dom b ≈ b' ∈ per_bot }} ->
+     {{ Sub ⇑ a b <: ⇑ a' b' at i }} )
+| per_subtyp_nat :
+  `( {{ Sub ℕ <: ℕ at i }} )
+| per_subtyp_univ :
+  `( i <= j ->
+     j < k ->
+     {{ Sub 𝕌@i <: 𝕌@j at k }} )
+| per_subtyp_pi :
+  `( forall (in_rel : relation domain) elem_rel elem_rel',
+        {{ DF a ≈ a' ∈ per_univ_elem i ↘ in_rel }} ->
+        (forall c c' b b',
+            {{ Dom c ≈ c' ∈ in_rel }} ->
+            {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+            {{ ⟦ B' ⟧ p' ↦ c' ↘ b' }} ->
+            {{ Sub b <: b' at i }}) ->
+        {{ DF Π a p B ≈ Π a p B ∈ per_univ_elem i ↘ elem_rel }} ->
+        {{ DF Π a' p' B' ≈ Π a' p' B' ∈ per_univ_elem i ↘ elem_rel' }} ->
+        {{ Sub Π a p B <: Π a' p' B' at i }})
+where "'Sub' a <: b 'at' i" := (per_subtyp i a b) (in custom judg) : type_scope.
+
+#[export]
+ Hint Constructors per_subtyp : mcltt.
+
 (** Context/Environment PER *)
 
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
