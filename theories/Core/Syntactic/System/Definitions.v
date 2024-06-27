@@ -309,10 +309,10 @@ with wf_subtyping : ctx -> typ -> typ -> Prop :=
      {{ Γ ⊢ Type@i ⊆ Type@j }} )
 | wf_subtyp_pi :
   `( {{ Γ ⊢ A : Type@i }} ->
-     {{ Γ , A ⊢ B : Type@i }} ->
      {{ Γ ⊢ A' : Type@i }} ->
+     {{ Γ ⊢ A ≈ A' : Type@i }} ->
+     {{ Γ , A ⊢ B : Type@i }} ->
      {{ Γ , A' ⊢ B' : Type@i }} ->
-     {{ Γ ⊢ A' ⊆ A }} ->
      {{ Γ , A' ⊢ B ⊆ B' }} ->
      {{ Γ ⊢ Π A B ⊆ Π A' B' }} )
 where "Γ ⊢ A ⊆ A'" := (wf_subtyping Γ A A') (in custom judg) : type_scope.

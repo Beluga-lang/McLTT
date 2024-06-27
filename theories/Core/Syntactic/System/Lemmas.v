@@ -818,7 +818,7 @@ Proof.
   induction 1; intros; mauto 4.
   - transitivity {{{ Type@i}}}; [mauto |].
     transitivity {{{ Type@j}}}; [| mauto].
-    mauto.
+    mauto 3.
   - transitivity {{{ Π (A[σ]) (B [ q σ ]) }}}; [ mauto |].
     transitivity {{{ Π (A'[σ]) (B' [ q σ ]) }}}; [ | mauto].
     eapply wf_subtyp_pi with (i := i); mauto 4.
