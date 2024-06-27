@@ -676,6 +676,18 @@ Proof.
     auto.
 Qed.
 
+Ltac saturate_refl :=
+  repeat match goal with
+    | H : ?R ?a ?b |- _ =>
+        tryif unify a b
+        then fail
+        else
+          directed pose proof (PER_refl1 _ _ _ _ _ H);
+        directed pose proof (PER_refl2 _ _ _ _ _ H);
+        fail_if_dup
+    end.
+
+
 Lemma per_subtyp_refl : forall a b i R,
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
     {{ Sub a <: b at i }} /\ {{ Sub b <: a at i }}.
@@ -686,16 +698,8 @@ Proof.
     destruct_all.
 
   assert ({{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }})
-           by (eapply per_univ_elem_pi'; eauto; intros; destruct_rel_mod_eval; mauto).
-  repeat match goal with
-         | H : ?R ?a ?b |- _ =>
-             tryif unify a b
-             then fail
-             else
-               directed pose proof (PER_refl1 _ _ _ _ _ H);
-             directed pose proof (PER_refl2 _ _ _ _ _ H);
-             fail_if_dup
-         end.
+    by (eapply per_univ_elem_pi'; eauto; intros; destruct_rel_mod_eval; mauto).
+  saturate_refl.
   split; econstructor; eauto.
   - intros;
       destruct_rel_mod_eval;
@@ -725,18 +729,74 @@ Proof.
   firstorder.
 Qed.
 
-(* Lemma per_subtyp_trans : forall A1 A2 i, *)
-(*     {{ Sub A1 <: A2 at i }} -> *)
-(*     forall A3, *)
-(*       {{ Sub A2 <: A3 at i }} -> *)
-(*       {{ Sub A1 <: A3 at i }}. *)
-(* Proof. *)
-(*   induction 1; intros; simpl in *. *)
-(*   1-3:progressive_inversion; *)
-(*     mauto. *)
-(*   - econstructor; lia. *)
-(*   - dependent destruction H5. *)
-(*     econstructor; eauto. *)
+Inductive sub_trans_measure : domain -> Prop :=
+| stm_neut : forall a b,
+    sub_trans_measure d{{{ ⇑ a b }}}
+| stm_nat :
+  sub_trans_measure d{{{ ℕ }}}
+| stm_univ : forall i,
+    sub_trans_measure d{{{ 𝕌 @ i }}}
+| stm_pi : forall a p B i in_rel,
+    sub_trans_measure a ->
+    {{ DF a ≈ a ∈ per_univ_elem i ↘ in_rel }} ->
+    (forall c b : domain,
+        {{ Dom c ≈ c ∈ in_rel }} ->
+        {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+        sub_trans_measure b) ->
+    sub_trans_measure d{{{ Π a p B }}}.
+
+#[local]
+  Hint Constructors sub_trans_measure : mcltt.
+
+
+Lemma sub_trans_measure_exists : forall A1 A2 i R,
+    {{ DF A1 ≈ A2 ∈ per_univ_elem i ↘ R }} ->
+    sub_trans_measure A1.
+Proof.
+  simpl. induction 1 using per_univ_elem_ind; mauto.
+  saturate_refl.
+  econstructor; mauto; intros.
+  destruct_rel_mod_eval.
+  functional_eval_rewrite_clear.
+  trivial.
+Qed.
+
+Lemma per_subtyp_trans' : forall A2,
+    sub_trans_measure A2 ->
+    forall A1 A3 i,
+      {{ Sub A1 <: A2 at i }} ->
+      {{ Sub A2 <: A3 at i }} ->
+      {{ Sub A1 <: A3 at i }}.
+Proof.
+  induction 1; intros ? ? ? Hsub1 Hsub2; simpl in *.
+  1-3:progressive_inversion;
+  mauto.
+  - econstructor; lia.
+  - dependent destruction Hsub1.
+    dependent destruction Hsub2.
+    handle_per_univ_elem_irrel.
+    econstructor; eauto.
+    intros.
+    deepexec per_elem_subtyping ltac:(fun H => pose proof H).
+    saturate_refl.
+    directed invert_per_univ_elem H9.
+    directed invert_per_univ_elem H10.
+    destruct_rel_mod_eval.
+    functional_eval_rewrite_clear.
+    deepexec (H4 c c') ltac:(fun H => pose proof H).
+    deepexec (H8 c' c') ltac:(fun H => pose proof H).
+    eapply H2; apply_equiv_left; eauto.
+Qed.
+
+Lemma per_subtyp_trans : forall A1 A2 A3 i,
+    {{ Sub A1 <: A2 at i }} ->
+    {{ Sub A2 <: A3 at i }} ->
+    {{ Sub A1 <: A3 at i }}.
+Proof.
+  intros.
+  destruct (per_subtyp_to_univ_elem _ _ _ H0) as [? [? []]].
+  eauto using per_subtyp_trans', sub_trans_measure_exists.
+Qed.
 
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> eq ==> eq ==> iff as per_ctx_env_morphism_iff.

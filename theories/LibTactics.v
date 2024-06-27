@@ -324,10 +324,10 @@ Ltac unify_args H P :=
   let tac1 := fun H R H1 T => (let h := find_head T in unify R h; strong_apply H H1) in
   let tac2 := fun H R G => (let h := find_head G in unify R h; apply H; simpl) in
   match goal with
-  | H : ?R <∙> _, H1 : ?T |- _ => tac1 H R H1 T
-  | H : relation_equivalence ?R _, H1 : ?T |- _ => tac1 H R H1 T
-  | H : ?R <∙> _ |- ?G => tac2 H R G
-  | H : relation_equivalence ?R _ |- ?G => tac2 H R G
+  | H : ?R <∙> _, H1 : ?T |- _ => progress tac1 H R H1 T
+  | H : relation_equivalence ?R _, H1 : ?T |- _ => progress tac1 H R H1 T
+  | H : ?R <∙> _ |- ?G => progress tac2 H R G
+  | H : relation_equivalence ?R _ |- ?G => progress tac2 H R G
   end.
 
 
@@ -340,10 +340,10 @@ Ltac unify_args H P :=
   let tac1 := fun H R H1 T => (let h := find_head T in unify R h; strong_apply H H1) in
   let tac2 := fun H R G => (let h := find_head G in unify R h; apply H; simpl) in
   match goal with
-  | H : _ <∙> ?R, H1 : ?T |- _ => tac1 H R H1 T
-  | H : relation_equivalence _ ?R, H1 : ?T |- _ => tac1 H R H1 T
-  | H : _ <∙> ?R |- ?G => tac2 H R G
-  | H : relation_equivalence _ ?R |- ?G => tac2 H R G
+  | H : _ <∙> ?R, H1 : ?T |- _ => progress tac1 H R H1 T
+  | H : relation_equivalence _ ?R, H1 : ?T |- _ => progress tac1 H R H1 T
+  | H : _ <∙> ?R |- ?G => progress tac2 H R G
+  | H : relation_equivalence _ ?R |- ?G => progress tac2 H R G
   end.
 
 #[global]
