@@ -680,38 +680,22 @@ Proof.
     trivial.
 Qed.
 
-
-Lemma per_subtyp_refl : forall a b i R,
+Lemma per_subtyp_refl1 : forall a b i R,
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
-    {{ Sub a <: b at i }} /\ {{ Sub b <: a at i }}.
+    {{ Sub a <: b at i }}.
 Proof.
   simpl; induction 1 using per_univ_elem_ind;
     subst;
     mauto;
     destruct_all.
-
   assert ({{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }})
     by (eapply per_univ_elem_pi'; eauto; intros; destruct_rel_mod_eval; mauto).
   saturate_refl.
-  split; econstructor; eauto.
-  - intros;
+  econstructor; eauto.
+  intros;
       destruct_rel_mod_eval;
       functional_eval_rewrite_clear;
       trivial.
-  - symmetry. eassumption.
-  - intros. symmetry in H12.
-      destruct_rel_mod_eval;
-      functional_eval_rewrite_clear;
-      trivial.
-Qed.
-
-Lemma per_subtyp_refl1 : forall a b i R,
-    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
-    {{ Sub a <: b at i }}.
-Proof.
-  intros.
-  apply per_subtyp_refl in H.
-  firstorder.
 Qed.
 
 Lemma per_subtyp_refl2 : forall a b i R,
@@ -719,8 +703,8 @@ Lemma per_subtyp_refl2 : forall a b i R,
     {{ Sub b <: a at i }}.
 Proof.
   intros.
-  apply per_subtyp_refl in H.
-  firstorder.
+  symmetry in H.
+  eauto using per_subtyp_refl1.
 Qed.
 
 Lemma per_subtyp_trans : forall A1 A2 i,
@@ -750,10 +734,26 @@ Proof.
 Qed.
 
 #[export]
+ Hint Resolve per_subtyp_trans : mcltt.
+
+#[export]
   Instance per_subtyp_trans_ins i : Transitive (per_subtyp i).
 Proof.
   eauto using per_subtyp_trans.
 Qed.
+
+Lemma per_subtyp_cumu : forall A1 A2 i,
+    {{ Sub A1 <: A2 at i }} ->
+    forall j,
+      i <= j ->
+      {{ Sub A1 <: A2 at j }}.
+Proof.
+  induction 1; intros; econstructor; mauto.
+  lia.
+Qed.
+
+#[export]
+ Hint Resolve per_subtyp_cumu : mcltt.
 
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> eq ==> eq ==> iff as per_ctx_env_morphism_iff.
