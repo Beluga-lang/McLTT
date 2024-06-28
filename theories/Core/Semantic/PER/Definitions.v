@@ -291,3 +291,26 @@ Definition valid_ctx : ctx -> Prop := fun Γ => per_ctx Γ Γ.
 Hint Transparent valid_ctx : mcltt.
 #[export]
 Hint Unfold valid_ctx : mcltt.
+
+Reserved Notation "'SubE' Γ <: Δ" (in custom judg at level 90, Γ custom exp, Δ custom exp).
+
+
+Inductive per_ctx_subtyp : ctx -> ctx -> Prop :=
+| per_ctx_subtyp_nil :
+  {{ SubE ⋅ <: ⋅ }}
+| per_ctx_subtyp_cons :
+  `{ forall tail_rel' env_rel env_rel',
+        {{ SubE Γ <: Γ' }} ->
+        {{ EF Γ' ≈ Γ' ∈ per_ctx_env ↘ tail_rel' }} ->
+        (forall p p' a a'
+           (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}),
+            {{ ⟦ A ⟧ p ↘ a }} ->
+            {{ ⟦ A' ⟧ p' ↘ a' }} ->
+            {{ Sub a <: a' at i }}) ->
+        {{ EF Γ , A ≈ Γ , A ∈ per_ctx_env ↘ env_rel }} ->
+        {{ EF Γ' , A' ≈ Γ' , A' ∈ per_ctx_env ↘ env_rel' }} ->
+        {{ SubE Γ, A <: Γ', A' }} }
+where "'SubE' Γ <: Δ" := (per_ctx_subtyp Γ Δ) (in custom judg) : type_scope.
+
+#[export]
+Hint Constructors per_ctx_subtyp : mcltt.
