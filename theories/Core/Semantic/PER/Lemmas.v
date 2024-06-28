@@ -653,6 +653,20 @@ Ltac saturate_refl :=
         fail_if_dup
     end.
 
+Ltac saturate_refl_for hd :=
+  repeat match goal with
+    | H : ?R ?a ?b |- _ =>
+        unify R hd;
+        tryif unify a b
+        then fail
+        else
+          directed pose proof (PER_refl1 _ _ _ _ _ H);
+        directed pose proof (PER_refl2 _ _ _ _ _ H);
+        fail_if_dup
+    end.
+
+Ltac solve_refl :=
+  solve [reflexivity || apply Equivalence_Reflexive].
 
 Lemma per_elem_subtyping : forall A B i,
     {{ Sub A <: B at i }} ->
@@ -677,7 +691,6 @@ Proof.
     econstructor; eauto.
     saturate_refl.
     deepexec H1 ltac:(fun H => apply H).
-    trivial.
 Qed.
 
 Lemma per_subtyp_refl1 : forall a b i R,
@@ -1077,17 +1090,79 @@ Proof.
   destruct_all.
   deepexec IHper_ctx_subtyp ltac:(fun H => pose proof H).
   deepexec H2 ltac:(fun H => destruct H as []).
-  deepexec H12 ltac:(fun H => destruct H as []).
+  deepexec H11 ltac:(fun H => destruct H as []).
   deepexec H1 ltac:(fun H => pose proof H).
   destruct (per_subtyp_to_univ_elem _ _ _ H15) as [? [? [? ?]]].
   handle_per_univ_elem_irrel.
   eexists; try eassumption.
 
   eapply per_elem_subtyping with (i := max x (max i0 i)).
-  + eauto using per_subtyp_cumu_right.
-  + saturate_refl.
-    eauto using per_univ_elem_cumu_max_left, per_univ_elem_cumu_max_right.
-  + saturate_refl.
+  - eauto using per_subtyp_cumu_right.
+  - saturate_refl.
     eauto using per_univ_elem_cumu_max_left.
-  + trivial.
+  - saturate_refl.
+    eauto using per_univ_elem_cumu_max_left, per_univ_elem_cumu_max_right.
+  - trivial.
+Qed.
+
+Lemma per_ctx_subtyp_refl1 : forall Γ Δ R,
+    {{ EF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
+    {{ SubE Γ <: Δ }}.
+Proof.
+  induction 1; mauto.
+
+  assert (exists R, {{ EF Γ , A ≈ Γ' , A' ∈ per_ctx_env ↘ R }}) by
+    (eexists; eapply @per_ctx_env_cons' with (i := i); eassumption).
+  destruct_all.
+  econstructor; try solve [saturate_refl; mauto 2].
+  intros.
+  unfold rel_typ in *.
+  destruct_rel_mod_eval.
+  simplify_evals.
+  eauto using per_subtyp_refl1.
+Qed.
+
+Lemma per_ctx_subtyp_refl2 : forall Γ Δ R,
+    {{ EF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
+    {{ SubE Δ <: Γ }}.
+Proof.
+  intros. symmetry in H. eauto using per_ctx_subtyp_refl1.
+Qed.
+
+Lemma per_ctx_subtyp_trans : forall Γ1 Γ2,
+    {{ SubE Γ1 <: Γ2 }} ->
+    forall Γ3,
+      {{ SubE Γ2 <: Γ3 }} ->
+      {{ SubE Γ1 <: Γ3 }}.
+Proof.
+  induction 1; intros;
+    progressive_inversion;
+      mauto 1;
+      clear_PER.
+
+  handle_per_ctx_env_irrel.
+  econstructor; try eassumption.
+  - firstorder.
+  - instantiate (1 := max i i0).
+    intros.
+    cutexec per_ctx_env_subtyping H ltac:(fun H => deepexec H ltac:(fun H => pose proof H)).
+    cutexec per_ctx_env_subtyping H7 ltac:(fun H => deepexec H ltac:(fun H => pose proof H)).
+    deepexec H22 ltac:(fun H => destruct H as []).
+
+    etransitivity.
+    + saturate_refl_for tail_rel4.
+      apply_equiv_right.
+      deepexec (H1 p p) ltac:(fun H => eauto using per_subtyp_cumu_left, H).
+    + eapply per_subtyp_cumu_right.
+      eapply H9; eauto.
+      apply_equiv_left; trivial.
+Qed.
+
+#[export]
+ Hint Resolve per_ctx_subtyp_trans : mcltt.
+
+#[export]
+  Instance per_ctx_subtyp_trans_ins : Transitive per_ctx_subtyp.
+Proof.
+  eauto using per_ctx_subtyp_trans.
 Qed.

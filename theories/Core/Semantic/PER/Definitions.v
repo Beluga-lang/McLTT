@@ -299,11 +299,11 @@ Inductive per_ctx_subtyp : ctx -> ctx -> Prop :=
 | per_ctx_subtyp_nil :
   {{ SubE ⋅ <: ⋅ }}
 | per_ctx_subtyp_cons :
-  `{ forall tail_rel' env_rel env_rel',
+  `{ forall tail_rel env_rel env_rel',
         {{ SubE Γ <: Γ' }} ->
-        {{ EF Γ' ≈ Γ' ∈ per_ctx_env ↘ tail_rel' }} ->
+        {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ tail_rel }} ->
         (forall p p' a a'
-           (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel' }}),
+           (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}),
             {{ ⟦ A ⟧ p ↘ a }} ->
             {{ ⟦ A' ⟧ p' ↘ a' }} ->
             {{ Sub a <: a' at i }}) ->
