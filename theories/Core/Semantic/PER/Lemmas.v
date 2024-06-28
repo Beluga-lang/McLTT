@@ -663,8 +663,8 @@ Lemma per_elem_subtyping : forall A B i,
       R' a b.
 Proof.
   induction 1; intros.
-  4:clear H2 H3.
-  all:(on_all_hyp: fun H => directed invert_per_univ_elem H);
+  all:handle_per_univ_elem_irrel;
+    (on_all_hyp: fun H => directed invert_per_univ_elem H);
     apply_equiv_left;
     trivial.
   - firstorder mauto.
@@ -754,6 +754,22 @@ Qed.
 
 #[export]
  Hint Resolve per_subtyp_cumu : mcltt.
+
+Lemma per_subtyp_cumu_left : forall A1 A2 i j,
+    {{ Sub A1 <: A2 at i }} ->
+    {{ Sub A1 <: A2 at max i j }}.
+Proof.
+  intros. eapply per_subtyp_cumu; try eassumption.
+  lia.
+Qed.
+
+Lemma per_subtyp_cumu_right : forall A1 A2 i j,
+    {{ Sub A1 <: A2 at i }} ->
+    {{ Sub A1 <: A2 at max j i }}.
+Proof.
+  intros. eapply per_subtyp_cumu; try eassumption.
+  lia.
+Qed.
 
 Add Parametric Morphism : per_ctx_env
     with signature (@relation_equivalence env) ==> eq ==> eq ==> iff as per_ctx_env_morphism_iff.
@@ -1030,4 +1046,48 @@ Lemma per_ctx_respects_length : forall {Γ Γ'},
 Proof.
   intros * [? H].
   induction H; simpl; congruence.
+Qed.
+
+Lemma per_ctx_subtyp_to_env : forall Γ Δ,
+    {{ SubE Γ <: Δ }} ->
+    exists R R',
+      {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ R }} /\
+        {{ EF Δ ≈ Δ ∈ per_ctx_env ↘ R' }}.
+Proof.
+  destruct 1; destruct_all.
+  - repeat eexists; econstructor; apply Equivalence_Reflexive.
+  - eauto.
+Qed.
+
+Lemma per_ctx_env_subtyping : forall Γ Δ,
+    {{ SubE Γ <: Δ }} ->
+    forall R R' p p',
+      {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ R }} ->
+      {{ EF Δ ≈ Δ ∈ per_ctx_env ↘ R' }} ->
+      R p p' ->
+      R' p p'.
+Proof.
+  induction 1; intros.
+  all:handle_per_ctx_env_irrel;
+    (on_all_hyp: fun H => directed invert_per_ctx_env H);
+    apply_equiv_left;
+    trivial.
+
+  handle_per_ctx_env_irrel.
+  destruct_all.
+  deepexec IHper_ctx_subtyp ltac:(fun H => pose proof H).
+  deepexec H2 ltac:(fun H => destruct H as []).
+  deepexec H12 ltac:(fun H => destruct H as []).
+  deepexec H1 ltac:(fun H => pose proof H).
+  destruct (per_subtyp_to_univ_elem _ _ _ H15) as [? [? [? ?]]].
+  handle_per_univ_elem_irrel.
+  eexists; try eassumption.
+
+  eapply per_elem_subtyping with (i := max x (max i0 i)).
+  + eauto using per_subtyp_cumu_right.
+  + saturate_refl.
+    eauto using per_univ_elem_cumu_max_left, per_univ_elem_cumu_max_right.
+  + saturate_refl.
+    eauto using per_univ_elem_cumu_max_left.
+  + trivial.
 Qed.

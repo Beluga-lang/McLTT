@@ -303,7 +303,7 @@ Inductive per_ctx_subtyp : ctx -> ctx -> Prop :=
         {{ SubE Γ <: Γ' }} ->
         {{ EF Γ' ≈ Γ' ∈ per_ctx_env ↘ tail_rel' }} ->
         (forall p p' a a'
-           (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}),
+           (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel' }}),
             {{ ⟦ A ⟧ p ↘ a }} ->
             {{ ⟦ A' ⟧ p' ↘ a' }} ->
             {{ Sub a <: a' at i }}) ->
