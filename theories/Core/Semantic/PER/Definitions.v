@@ -227,6 +227,34 @@ Section Per_univ_elem_ind_def.
   | i, a, b, R, H := per_univ_elem_ind' i a b R _.
 End Per_univ_elem_ind_def.
 
+Reserved Notation "'Sub' a <: b 'at' i" (in custom judg at level 90, a custom domain, b custom domain, i constr).
+
+Inductive per_subtyp : nat -> domain -> domain -> Prop :=
+| per_subtyp_neut :
+  `( {{ Dom b ≈ b' ∈ per_bot }} ->
+     {{ Sub ⇑ a b <: ⇑ a' b' at i }} )
+| per_subtyp_nat :
+  `( {{ Sub ℕ <: ℕ at i }} )
+| per_subtyp_univ :
+  `( i <= j ->
+     j < k ->
+     {{ Sub 𝕌@i <: 𝕌@j at k }} )
+| per_subtyp_pi :
+  `( forall (in_rel : relation domain) elem_rel elem_rel',
+        {{ DF a ≈ a' ∈ per_univ_elem i ↘ in_rel }} ->
+        (forall c c' b b',
+            {{ Dom c ≈ c' ∈ in_rel }} ->
+            {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+            {{ ⟦ B' ⟧ p' ↦ c' ↘ b' }} ->
+            {{ Sub b <: b' at i }}) ->
+        {{ DF Π a p B ≈ Π a p B ∈ per_univ_elem i ↘ elem_rel }} ->
+        {{ DF Π a' p' B' ≈ Π a' p' B' ∈ per_univ_elem i ↘ elem_rel' }} ->
+        {{ Sub Π a p B <: Π a' p' B' at i }})
+where "'Sub' a <: b 'at' i" := (per_subtyp i a b) (in custom judg) : type_scope.
+
+#[export]
+ Hint Constructors per_subtyp : mcltt.
+
 (** Context/Environment PER *)
 
 Definition rel_typ (i : nat) (A : typ) (p : env) (A' : typ) (p' : env) R' := rel_mod_eval (per_univ_elem i) A p A' p' R'.
@@ -263,3 +291,26 @@ Definition valid_ctx : ctx -> Prop := fun Γ => per_ctx Γ Γ.
 Hint Transparent valid_ctx : mcltt.
 #[export]
 Hint Unfold valid_ctx : mcltt.
+
+Reserved Notation "'SubE' Γ <: Δ" (in custom judg at level 90, Γ custom exp, Δ custom exp).
+
+
+Inductive per_ctx_subtyp : ctx -> ctx -> Prop :=
+| per_ctx_subtyp_nil :
+  {{ SubE ⋅ <: ⋅ }}
+| per_ctx_subtyp_cons :
+  `{ forall tail_rel env_rel env_rel',
+        {{ SubE Γ <: Γ' }} ->
+        {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ tail_rel }} ->
+        (forall p p' a a'
+           (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}),
+            {{ ⟦ A ⟧ p ↘ a }} ->
+            {{ ⟦ A' ⟧ p' ↘ a' }} ->
+            {{ Sub a <: a' at i }}) ->
+        {{ EF Γ , A ≈ Γ , A ∈ per_ctx_env ↘ env_rel }} ->
+        {{ EF Γ' , A' ≈ Γ' , A' ∈ per_ctx_env ↘ env_rel' }} ->
+        {{ SubE Γ, A <: Γ', A' }} }
+where "'SubE' Γ <: Δ" := (per_ctx_subtyp Γ Δ) (in custom judg) : type_scope.
+
+#[export]
+Hint Constructors per_ctx_subtyp : mcltt.

@@ -266,12 +266,11 @@ Ltac deepexec lem tac :=
       exvar T ltac:(fun x =>
                       lazymatch type of T with
                       | Prop => match goal with
-                            | H : _ |- _ => unify x H
-                            | _ => idtac
+                            | H : _ |- _ => unify x H; deepexec constr:(lem x) tac
+                            | _ => deepexec constr:(lem x) tac
                             end
-                      | _ => idtac
-                      end;
-                      deepexec constr:(lem x) tac)
+                      | _ => deepexec constr:(lem x) tac
+                      end)
   | _ => tac lem
   end.
 
@@ -291,14 +290,13 @@ Ltac cutexec lem C tac :=
                         unify x C;
                         tac lem
                       else
-                        (lazymatch type of T with
+                        lazymatch type of T with
                          | Prop => match goal with
-                               | H : _ |- _ => unify x H
-                               | _ => idtac
+                               | H : _ |- _ => unify x H; cutexec constr:(lem x) C tac
+                               | _ => cutexec constr:(lem x) C tac
                                end
-                         | _ => idtac
-                         end;
-                         cutexec constr:(lem x) C tac))
+                         | _ => cutexec constr:(lem x) C tac
+                         end)
   | _ => tac lem
   end.
 
@@ -348,3 +346,11 @@ Ltac unify_args H P :=
 
 #[global]
   Ltac apply_equiv_right := repeat apply_equiv_right1.
+
+#[global]
+  Ltac clear_PER :=
+  repeat match goal with
+    | H : PER _ |- _ => clear H
+    | H : Symmetric _ |- _ => clear H
+    | H : Transitive _ |- _ => clear H
+    end.
