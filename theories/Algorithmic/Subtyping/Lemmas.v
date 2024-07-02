@@ -87,7 +87,7 @@ Proof.
     assert {{ Γ ⊢ Type@j : Type@(S j) }} by mauto.
     on_all_hyp: fun H => apply soundness in H.
     destruct_all.
-    econstructor; try eassumption.
+    econstructor; mauto 2.
     progressive_inversion.
     mauto.
   - assert {{ Γ ⊢ Π A B : Type@i }} as HΠ1 by mauto.
@@ -100,7 +100,7 @@ Proof.
     apply soundness in HΠ1.
     apply soundness in HΠ2.
     destruct_all.
-    econstructor; try eassumption.
+    econstructor; mauto 2.
     progressive_inversion.
     simpl in *.
     functional_initial_env_rewrite_clear.
@@ -118,6 +118,7 @@ Proof.
   intros. destruct H.
   on_all_hyp: fun H => apply soundness in H.
   destruct_all.
+  on_all_hyp: fun H => apply nbe_type_to_nbe_ty in H.
   functional_nbe_rewrite_clear.
   gen_presups.
   eapply alg_subtyping_nf_sound in H3; try eassumption.

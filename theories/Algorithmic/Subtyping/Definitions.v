@@ -28,10 +28,9 @@ where "⊢anf M ⊆ N" := (alg_subtyping_nf M N) (in custom judg) : type_scope.
 
 
 Inductive alg_subtyping : ctx -> typ -> typ -> Prop :=
-| alg_subtyp_run :
-  forall Γ M N i j A B,
-    nbe Γ M {{{ Type@i }}} A ->
-    nbe Γ N {{{ Type@j }}} B ->
+| alg_subtyp_run : forall Γ M N A B,
+    nbe_ty Γ M A ->
+    nbe_ty Γ N B ->
     {{ ⊢anf A ⊆ B }} ->
     {{ Γ ⊢a M ⊆ N }}
 where "Γ ⊢a M ⊆ N" := (alg_subtyping Γ M N) (in custom judg) : type_scope.
