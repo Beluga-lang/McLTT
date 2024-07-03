@@ -828,6 +828,19 @@ Qed.
 Hint Resolve wf_subtyping_sub : mcltt.
 
 
+Lemma wf_subtyp_univ_weaken : forall Γ i j A,
+    {{ Γ ⊢ Type@i ⊆ Type@j }} ->
+    {{ ⊢ Γ , A }} ->
+    {{ Γ , A ⊢ Type@i ⊆ Type@j }}.
+Proof.
+  intros.
+  eapply wf_subtyping_sub with (σ := {{{ Wk }}}) in H.
+  - transitivity {{{ Type@i[Wk] }}}; [mauto |].
+    etransitivity; mauto.
+  - mauto.
+Qed.
+
+
 Lemma ctx_sub_ctx_lookup : forall Γ Δ, {{ ⊢ Δ ⊆ Γ }} -> forall A x, {{ #x : A ∈ Γ }} -> exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢ B ⊆ A }}.
 Proof.
   induction 1; intros; progressive_inversion.

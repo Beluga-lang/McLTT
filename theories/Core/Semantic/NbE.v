@@ -114,6 +114,41 @@ Qed.
 #[export]
 Hint Resolve functional_nbe_of_typ : mcltt.
 
+
+Inductive nbe_ty : ctx -> typ -> nf -> Prop :=
+| nbe_ty_run :
+  `( initial_env Γ p ->
+     {{ ⟦ M ⟧ p ↘ m }} ->
+     {{ Rtyp m in (length Γ) ↘ W }} ->
+     nbe_ty Γ M W ).
+
+#[export]
+Hint Constructors nbe_ty : mcltt.
+
+Lemma functional_nbe_ty : forall Γ M w w',
+    nbe_ty Γ M w ->
+    nbe_ty Γ M w' ->
+    w = w'.
+Proof.
+  intros.
+  inversion_clear H; inversion_clear H0;
+    functional_initial_env_rewrite_clear;
+  functional_eval_rewrite_clear;
+  functional_read_rewrite_clear;
+  reflexivity.
+Qed.
+
+Lemma nbe_type_to_nbe_ty : forall Γ M i w,
+    nbe Γ M {{{ Type@i }}} w ->
+    nbe_ty Γ M w.
+Proof.
+  intros. progressive_inversion.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve functional_nbe_ty nbe_type_to_nbe_ty : mcltt.
+
 Ltac functional_nbe_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_nbe equality between" o1 "and" o2 "cannot be solved by mauto" in
   match goal with
@@ -121,5 +156,7 @@ Ltac functional_nbe_rewrite_clear1 :=
       clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]; clear H2
   | H1 : nbe ?G ?A {{{ Type@?i }}} ?W, H2 : nbe ?G ?A {{{ Type@?j }}} ?W' |- _ =>
       clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]
+  | H1 : nbe_ty ?G ?M ?W, H2 : nbe_ty ?G ?M ?W' |- _ =>
+      clean replace W' with W by first [solve [mauto 2] | tactic_error W' W]; clear H2
   end.
 Ltac functional_nbe_rewrite_clear := repeat functional_nbe_rewrite_clear1.
