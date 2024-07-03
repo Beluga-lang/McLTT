@@ -45,12 +45,12 @@ Ltac destruct_rel_typ :=
 (** Universe/Element PER Helper Tactics *)
 
 Ltac basic_invert_per_univ_elem H :=
-  simp per_univ_elem in H;
+  progress simp per_univ_elem in H;
   inversion H;
   subst;
   try rewrite <- per_univ_elem_equation_1 in *.
 
 Ltac basic_per_univ_elem_econstructor :=
-  simp per_univ_elem;
+  progress simp per_univ_elem;
   econstructor;
   try rewrite <- per_univ_elem_equation_1 in *.
