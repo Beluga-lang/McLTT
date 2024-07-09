@@ -207,3 +207,10 @@ Proof.
   split.
   - econstructor; eauto using per_univ_elem_cumu_max_right.
   - econstructor; eauto.
+    apply per_univ_elem_cumu_max_right with (i := i) in H10.
+    apply per_univ_elem_cumu_max_left with (j := j) in H4.
+    handle_per_univ_elem_irrel.
+    eapply per_elem_subtyping_gen with (i := max i j); try eassumption.
+    + eapply per_subtyp_cumu_right. eassumption.
+    + symmetry. eauto using per_univ_elem_cumu_max_right.
+Qed.
