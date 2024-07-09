@@ -665,20 +665,6 @@ Proof.
   all:etransitivity; [| symmetry]; eassumption.
 Qed.
 
-(* Lemma per_subtyp_transp : forall A B i, *)
-(*     {{ Sub A <: B at i }} -> *)
-(*     forall A' B' R R', *)
-(*     {{ DF A ≈ A' ∈ per_univ_elem i ↘ R }} -> *)
-(*     {{ DF B ≈ B' ∈ per_univ_elem i ↘ R' }} -> *)
-(*     {{ Sub A' <: B' at i }}. *)
-(* Proof. *)
-(*   induction 1; intros; *)
-(*     (on_all_hyp: fun H => directed invert_per_univ_elem H); *)
-(*     apply_equiv_left; *)
-(*     mauto. *)
-(*   handle_per_univ_elem_irrel. *)
-(*   econstructor; eauto. *)
-
 Lemma per_subtyp_refl1 : forall a b i R,
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
     {{ Sub a <: b at i }}.
@@ -739,6 +725,19 @@ Qed.
   Instance per_subtyp_trans_ins i : Transitive (per_subtyp i).
 Proof.
   eauto using per_subtyp_trans.
+Qed.
+
+Lemma per_subtyp_transp : forall A B i A' B' R R',
+    {{ Sub A <: B at i }} ->
+    {{ DF A ≈ A' ∈ per_univ_elem i ↘ R }} ->
+    {{ DF B ≈ B' ∈ per_univ_elem i ↘ R' }} ->
+    {{ Sub A' <: B' at i }}.
+Proof.
+  intros.
+  etransitivity; [eapply per_subtyp_refl2; eassumption |].
+  etransitivity; [eassumption |].
+  eapply per_subtyp_refl1.
+  eassumption.
 Qed.
 
 Lemma per_subtyp_cumu : forall A1 A2 i,
