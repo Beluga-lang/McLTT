@@ -653,6 +653,32 @@ Proof.
     deepexec H1 ltac:(fun H => apply H).
 Qed.
 
+Lemma per_elem_subtyping_gen : forall A B i A' B' R R' a b,
+    {{ Sub A <: B at i }} ->
+    {{ DF A ≈ A' ∈ per_univ_elem i ↘ R }} ->
+    {{ DF B ≈ B' ∈ per_univ_elem i ↘ R' }} ->
+    R a b ->
+    R' a b.
+Proof.
+  intros.
+  eapply per_elem_subtyping; try eassumption.
+  all:etransitivity; [| symmetry]; eassumption.
+Qed.
+
+(* Lemma per_subtyp_transp : forall A B i, *)
+(*     {{ Sub A <: B at i }} -> *)
+(*     forall A' B' R R', *)
+(*     {{ DF A ≈ A' ∈ per_univ_elem i ↘ R }} -> *)
+(*     {{ DF B ≈ B' ∈ per_univ_elem i ↘ R' }} -> *)
+(*     {{ Sub A' <: B' at i }}. *)
+(* Proof. *)
+(*   induction 1; intros; *)
+(*     (on_all_hyp: fun H => directed invert_per_univ_elem H); *)
+(*     apply_equiv_left; *)
+(*     mauto. *)
+(*   handle_per_univ_elem_irrel. *)
+(*   econstructor; eauto. *)
+
 Lemma per_subtyp_refl1 : forall a b i R,
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
     {{ Sub a <: b at i }}.

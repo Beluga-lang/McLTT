@@ -72,6 +72,6 @@ Proof.
   destruct H3 as [? [? []]].
   on_all_hyp: fun H => (eapply rel_ctx_extend' in H; destruct H).
   econstructor; mauto; intros.
-  deepexec H3 ltac:(fun H => destruct H as []).
+  deepexec H3 ltac:(fun H => destruct H as [? [? [? [? []]]]]).
   simplify_evals. eassumption.
 Qed.

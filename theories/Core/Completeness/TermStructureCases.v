@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.UniverseCases.
+From Mcltt.Core Require Import Evaluation Completeness.LogicalRelation Completeness.UniverseCases.
 Import Domain_Notations.
 
 Lemma rel_exp_sub_cong : forall {Δ M M' A σ σ' Γ},
@@ -187,3 +187,23 @@ Proof.
     (on_all_hyp: destruct_rel_by_assumption env_relΓ).
     eapply rel_typ_implies_rel_exp; eauto.
 Qed.
+
+
+Lemma wf_exp_eq_subtyp' : forall Γ M M' A A',
+    {{ Γ ⊨ M ≈ M' : A }} ->
+    {{ Γ ⊨ A ⊆ A' }} ->
+    {{ Γ ⊨ M ≈ M' : A' }}.
+Proof.
+  intros * [R [HR [i ?]]] [R' [HR' [j ?]]].
+  exists R. exists HR.
+  handle_per_ctx_env_irrel.
+  exists (max i j).
+  intros.
+  deepexec H ltac:(fun H => destruct H as [elem_rel [[] []]]).
+  apply_equiv_left.
+  deepexec H0 ltac:(fun H => destruct H as [R1 [R1' [[] [[] []]]]]).
+  simplify_evals.
+  exists R1'.
+  split.
+  - econstructor; eauto using per_univ_elem_cumu_max_right.
+  - econstructor; eauto.
