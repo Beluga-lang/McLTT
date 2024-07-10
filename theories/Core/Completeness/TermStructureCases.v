@@ -213,3 +213,7 @@ Proof.
     + eauto using per_univ_elem_cumu_max_right.
     + symmetry. eauto using per_univ_elem_cumu_max_right.
 Qed.
+
+
+#[export]
+Hint Resolve wf_exp_eq_subtyp' : mcltt.

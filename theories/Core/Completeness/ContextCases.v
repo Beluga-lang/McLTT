@@ -75,3 +75,7 @@ Proof.
   deepexec H3 ltac:(fun H => destruct H as [? [? [? [? []]]]]).
   simplify_evals. eassumption.
 Qed.
+
+
+#[export]
+Hint Resolve wf_ctx_sub_empty' wf_ctx_sub_extend' : mcltt.

@@ -290,3 +290,19 @@ Proof with mautosolve.
     etransitivity; only 2,3: symmetry;
     econstructor...
 Qed.
+
+
+Lemma wf_sub_eq_subtyp' : forall Γ σ σ' Δ Δ',
+    {{ Γ ⊨s σ ≈ σ' : Δ }} ->
+    {{ SubE Δ <: Δ' }} ->
+    {{ Γ ⊨s σ ≈ σ' : Δ' }}.
+Proof.
+  intros * [R [HR [R' [HR' ?]]]] HSub.
+  destruct (per_ctx_subtyp_to_env _ _ HSub) as [? [? []]].
+  handle_per_ctx_env_irrel.
+  do 4 try eexists; eauto.
+  intros.
+  deepexec H ltac:(fun H => destruct H as []).
+  econstructor; eauto.
+  eapply per_ctx_env_subtyping; eauto.
+Qed.
