@@ -21,6 +21,7 @@
 ./Core/Completeness/TermStructureCases.v
 ./Core/Completeness/UniverseCases.v
 ./Core/Completeness/VariableCases.v
+./Core/Completeness/SubtypingCases.v
 ./Core/Completeness.v
 ./Core/Semantic/Consequences.v
 ./Core/Semantic/Domain.v

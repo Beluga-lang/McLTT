@@ -306,3 +306,7 @@ Proof.
   econstructor; eauto.
   eapply per_ctx_env_subtyping; eauto.
 Qed.
+
+
+#[export]
+  Hint Resolve wf_sub_eq_subtyp' : mcltt.
