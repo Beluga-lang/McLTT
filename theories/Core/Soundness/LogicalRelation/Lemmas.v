@@ -26,9 +26,9 @@ Proof.
     | H : _ |- _ => solve [gen_presup H; mauto]
     end.
   assert {{ Γ ⊢w Id : Γ }} by mauto.
-  specialize (H (length Γ)).
-  destruct_conjs.
-  specialize (H0 _ _ _ H2 H3).
+  match_by_head (per_bot c c) ltac:(fun H => specialize (H (length Γ)) as [L []]).
+  clear_dups.
+  assert {{ Γ ⊢ m[Id] ≈ L : ℕ }} by mauto.
   gen_presups.
   mauto.
 Qed.
@@ -60,9 +60,9 @@ Lemma glu_nat_readback : forall Γ m a,
 Proof.
   induction 1; intros; progressive_inversion; gen_presups.
   - transitivity {{{ zero [ σ ] }}}; mauto.
-  - specialize (IHglu_nat _ _ _ H1 H5).
-    transitivity {{{ (succ m') [ σ ]}}}; mauto.
-    transitivity {{{ succ m' [ σ ] }}}; mauto.
+  - assert {{ Δ ⊢ m'[σ] ≈ M : ℕ }} by mauto.
+    transitivity {{{ (succ m') [ σ ] }}}; mauto 3.
+    transitivity {{{ succ m' [ σ ] }}}; mauto 4.
   - mauto.
 Qed.
 
@@ -74,7 +74,6 @@ Qed.
   destruct_all;
   gen_presups.
 
-
 Lemma glu_univ_elem_univ_lvl : forall i P El A B,
     glu_univ_elem i P El A B ->
     forall Γ T,
@@ -85,7 +84,6 @@ Proof.
     simpl_glu_rel; trivial.
 Qed.
 
-
 Lemma glu_univ_elem_typ_resp_equiv : forall i P El A B,
     glu_univ_elem i P El A B ->
     forall Γ T T',
@@ -94,13 +92,12 @@ Lemma glu_univ_elem_typ_resp_equiv : forall i P El A B,
       P Γ T'.
 Proof.
   induction 1 using glu_univ_elem_ind; intros;
-    simpl_glu_rel; mauto.
+    simpl_glu_rel; mauto 4.
 
   split; [trivial |].
   intros.
-  specialize (H4 _ _ _ H2 H5); mauto.
+  assert {{ Δ ⊢ T[σ] ≈ V : Type@i }}; mauto.
 Qed.
-
 
 Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A B,
     glu_univ_elem i P El A B ->
@@ -113,9 +110,8 @@ Proof.
     simpl_glu_rel; repeat split; mauto.
   
   intros.
-  specialize (H4 _ _ _ H2 H7); mauto.
+  assert {{ Δ ⊢ M[σ] ≈ V : Type@i }}; mauto.
 Qed.
-
 
 Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A B,
     glu_univ_elem i P El A B ->
@@ -128,7 +124,6 @@ Proof.
     simpl_glu_rel; mauto 2;
     econstructor; mauto.
 Qed.
-
 
 Lemma glu_nat_resp_wk' : forall Γ m a,
     glu_nat Γ m a ->
@@ -169,12 +164,12 @@ Proof.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 4.
 
-  specialize (H4 (length Γ)).
-  specialize (H (length Γ)).
+  match_by_head (per_bot c c) ltac:(fun H => specialize (H (length Γ)) as [Lc []]).
+  match_by_head (per_bot b b') ltac:(fun H => specialize (H (length Γ)) as [Lb []]).
   assert {{ Γ ⊢w Id : Γ }} by mauto.
-  destruct_all.
-  specialize (H5 _ _ _ _ H6 H9 H7).
-  gen_presup H5.
+  clear_dups.
+  assert {{ Γ ⊢ m[Id] ≈ Lc : M[Id] }} by mauto.
+  gen_presups.
   mauto.
 Qed.
 
@@ -187,7 +182,8 @@ Proof.
 
   - subst. eapply per_univ_elem_core_univ'; trivial.
     reflexivity.
-  - invert_per_univ_elem H3. mauto.
+  - match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+    mauto.
 Qed.
 
 Lemma glu_univ_elem_trm_per : forall i P El A B,
@@ -198,9 +194,9 @@ Lemma glu_univ_elem_trm_per : forall i P El A B,
       R a a.
 Proof.
   induction 1 using glu_univ_elem_ind; intros;
-    try do 2 match_by_head1 per_univ_elem ltac:(fun H => invert_per_univ_elem H);
+    try do 2 match_by_head1 per_univ_elem invert_per_univ_elem;
     simpl_glu_rel;
-    mauto 4.
+    mauto 4 using glu_univ_elem_per.
 
   intros.
   destruct_rel_mod_app.
@@ -222,7 +218,7 @@ Proof.
     mauto 4.
 
   econstructor; eauto.
-  invert_per_univ_elem H3.
+  match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
   intros.
   destruct_rel_mod_eval.
   edestruct H11 as [? []]; eauto.
@@ -259,7 +255,7 @@ Proof.
     assert {{ Δ ⊢ m' : IT [ σ ]}} by eauto using glu_univ_elem_trm_escape.
     edestruct H12 as [? []]; eauto.
     eexists; split; eauto.
-    eapply H2; eauto.
+    enough {{ Δ ⊢ m[σ] m' ≈ t'[σ] m' : OT[σ,,m'] }} by eauto.
     assert {{ Γ ⊢ m ≈ t' : Π IT OT }} as Hty by mauto.
     assert {{ Δ ⊢ IT [ σ ] : Type @ i4 }} by mauto 3.
     eapply wf_exp_eq_sub_cong with (Γ := Δ) in Hty; [| eapply sub_eq_refl; mauto 3].
@@ -269,5 +265,5 @@ Proof.
     eassumption.
   - intros.
     assert {{ Δ ⊢ m [ σ ] ≈ t' [ σ ] : M [ σ ] }} by mauto 4.
-    mauto.
+    mauto 4.
 Qed.

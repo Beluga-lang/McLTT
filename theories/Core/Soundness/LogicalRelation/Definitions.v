@@ -104,7 +104,6 @@ Section Gluing.
   Definition univ_glu_pred' {j} (lt_j_i : j < i) : glu_pred :=
     fun Γ m M A =>
       {{ Γ ⊢ m : M }} /\ {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
-        per_univ j A A /\
         glu_univ_typ_rec lt_j_i A Γ m.
 
   #[global]
@@ -156,10 +155,8 @@ End Gluing.
 #[export]
 Hint Constructors glu_univ_elem_core : mcltt.
 
-
 Equations glu_univ_elem (i : nat) : typ_pred -> glu_pred -> domain -> domain -> Prop by wf i :=
 | i => glu_univ_elem_core i (fun j lt_j_i A Γ M => exists P El, glu_univ_elem j P El A A /\ P Γ M).
-
 
 Definition glu_univ (i : nat) (A : domain) : typ_pred :=
   fun Γ M => exists P El, glu_univ_elem i P El A A /\ P Γ M.
@@ -168,12 +165,10 @@ Arguments glu_univ i A Γ M/.
 Definition univ_glu_pred j i : glu_pred :=
     fun Γ m M A =>
       {{ Γ ⊢ m : M }} /\ {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
-        per_univ j A A /\
         glu_univ j A Γ m.
 Arguments univ_glu_pred j i Γ t T a/.
 
 Section GluingInduction.
-
   Hypothesis
     (motive : nat -> typ_pred -> glu_pred -> domain -> domain -> Prop)
 
@@ -220,7 +215,6 @@ Section GluingInduction.
           motive i typ_rel el_rel d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}})
   .
 
-
   #[local]
     Ltac def_simp := simp glu_univ_elem in *.
 
@@ -246,9 +240,7 @@ Section GluingInduction.
   Next Obligation.
     eapply (case_pi i); def_simp; eauto.
   Qed.
-
 End GluingInduction.
-
 
 Inductive glu_neut i Γ m M c A B : Prop :=
 | glu_neut_make : forall P El,
@@ -258,7 +250,6 @@ Inductive glu_neut i Γ m M c A B : Prop :=
     (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ a }} -> {{ Δ ⊢ m [ σ ] ≈  a : M [ σ ] }}) ->
     glu_neut i Γ m M c A B.
 
-
 Inductive glu_normal i Γ m M a A B : Prop :=
 | glu_normal_make : forall P El,
     {{ Γ ⊢ m : M }} ->
@@ -267,15 +258,12 @@ Inductive glu_normal i Γ m M a A B : Prop :=
     (forall Δ σ b, {{ Δ ⊢w σ : Γ }} -> {{ Rnf ⇓ A a in length Δ ↘ b }} -> {{ Δ ⊢ m [ σ ] ≈  b : M [ σ ] }}) ->
     glu_normal i Γ m M a A B.
 
-
 Inductive glu_typ i Γ M A B : Prop :=
-| glu_typ_make : forall P El,
+| glu_typ_make :
     {{ Γ ⊢ M : Type@i }} ->
-    glu_univ_elem i P El A B ->
     per_top_typ A B ->
     (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rtyp A in length Δ ↘ a }} -> {{ Δ ⊢ M [ σ ] ≈  a : Type@i }}) ->
     glu_typ i Γ M A B.
-
 
 Ltac invert_glu_rel1 :=
   match goal with
