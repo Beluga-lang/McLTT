@@ -83,15 +83,65 @@ Proof.
   - econstructor; lia.
 Qed.
 
-(* | wf_subtyp_pi : *)
-(*   `( {{ Γ ⊢ A : Type@i }} -> *)
-(*      {{ Γ ⊢ A' : Type@i }} -> *)
-(*      {{ Γ ⊢ A ≈ A' : Type@i }} -> *)
-(*      {{ Γ , A ⊢ B : Type@i }} -> *)
-(*      {{ Γ , A' ⊢ B' : Type@i }} -> *)
-(*      {{ Γ , A' ⊢ B ⊆ B' }} -> *)
-(*      {{ Γ ⊢ Π A B ⊆ Π A' B' }} ) *)
+
+Lemma wf_subtyp_pi' : forall Γ A A' B B' i,
+  (* {{ Γ ⊨ A : Type@i }} -> *)
+  (* {{ Γ ⊨ A' : Type@i }} -> *)
+  {{ Γ ⊨ A ≈ A' : Type@i }} ->
+  (* {{ Γ , A ⊨ B : Type@i }} -> *)
+  (* {{ Γ , A' ⊨ B' : Type@i }} -> *)
+  {{ Γ , A' ⊨ B ⊆ B' }} ->
+  {{ Γ ⊨ Π A B ⊆ Π A' B' }}.
+Proof.
+  (* intros * [RA [HRA [j1 HA]]] *)
+  (*            [RA' [HRA' [j2 HA']]] *)
+  (*            [RAA' [HRAA' [j3 HAA']]] *)
+  (*            [RB [HRB [k1 HB]]] *)
+  (*            [RB' [HRB' [k2 HB']]] *)
+  (*            [RBB' [HRBB' [k3 HBB']]]. *)
+
+  intros * [RAA' [HRAA' [j HAA']]]
+             [RBB' [HRBB' [k HBB']]].
+  progressive_invert HRBB'.
+  handle_per_ctx_env_irrel.
+  do 2 try eexists; eauto.
+  exists i.
+  intros.
+  saturate_refl_for tail_rel.
+  on_all_hyp: fun H1 =>
+                lazymatch type of H1 with
+                | tail_rel ?a ?b =>
+                    let H2 := fresh "H" in
+                    assert (RAA' a b) as H2 by firstorder;
+                    destruct (HAA' _ _ H2) as [? [[] []]]
+                end.
+  on_all_hyp: fun H =>
+                lazymatch type of H with
+                | eval_exp _ _ _ => progressive_invert H
+                end.
+  on_all_hyp: fun H =>
+                lazymatch type of H with
+                | per_univ_elem _ _ _ _ => directed invert_per_univ_elem H
+                end.
+  clear_eqs. clear_dups. apply_equiv_left.
+  destruct_all.
+  simplify_evals.
+  handle_per_univ_elem_irrel.
+  do 2 eexists. repeat split.
+  - econstructor; mauto 2.
+    eapply per_univ_elem_pi'; [ | | solve_refl].
+    + etransitivity; [| symmetry; eassumption].
+      eassumption.
+    + intros.
+
+    eauto using per_univ_elem_cumu_max_left.
+  - econstructor; eauto.
+    eauto using per_univ_elem_cumu_max_right.
+  - econstructor; eauto.
+    etransitivity;
+      eauto using per_subtyp_cumu_left, per_subtyp_cumu_right.
+Qed.
 
 
 #[export]
- Hint Resolve wf_subtyp_refl' wf_subtyp_trans' wf_subtyp_univ' : mcltt.
+ Hint Resolve wf_subtyp_refl' wf_subtyp_trans' wf_subtyp_univ' wf_subtyp_pi' : mcltt.
