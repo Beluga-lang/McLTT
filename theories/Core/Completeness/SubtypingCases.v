@@ -66,10 +66,23 @@ Proof.
       eauto using per_subtyp_cumu_left, per_subtyp_cumu_right.
 Qed.
 
-(* | wf_subtyp_univ : *)
-(*   `( {{ ⊢ Γ }} -> *)
-(*      i < j -> *)
-(*      {{ Γ ⊢ Type@i ⊆ Type@j }} ) *)
+
+Lemma wf_subtyp_univ' : forall Γ i j,
+    {{ ⊨ Γ }} ->
+    i < j ->
+    {{ Γ ⊨ Type@i ⊆ Type@j }}.
+Proof.
+  intros * [R HR] ?.
+  do 2 try eexists; eauto.
+  exists (S (max i j)).
+  intros.
+  do 2 eexists; repeat split;
+  econstructor; mauto 2.
+  - apply per_univ_elem_core_univ'; [lia | reflexivity].
+  - apply per_univ_elem_core_univ'; [lia | reflexivity].
+  - econstructor; lia.
+Qed.
+
 (* | wf_subtyp_pi : *)
 (*   `( {{ Γ ⊢ A : Type@i }} -> *)
 (*      {{ Γ ⊢ A' : Type@i }} -> *)
@@ -81,4 +94,4 @@ Qed.
 
 
 #[export]
- Hint Resolve wf_subtyp_refl' wf_subtyp_trans' : mcltt.
+ Hint Resolve wf_subtyp_refl' wf_subtyp_trans' wf_subtyp_univ' : mcltt.
