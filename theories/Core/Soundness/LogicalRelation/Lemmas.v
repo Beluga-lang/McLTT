@@ -8,13 +8,13 @@ Import Domain_Notations.
 
 Lemma glu_nat_per_nat : forall Γ m a,
     glu_nat Γ m a ->
-    per_nat a a.
+    {{ Dom a ≈ a ∈ per_nat }}.
 Proof.
   induction 1; mauto.
 Qed.
 
 #[local]
- Hint Resolve glu_nat_per_nat : mcltt.
+Hint Resolve glu_nat_per_nat : mcltt.
 
 Lemma glu_nat_escape : forall Γ m a,
     glu_nat Γ m a ->
@@ -59,10 +59,10 @@ Lemma glu_nat_readback : forall Γ m a,
       {{ Δ ⊢ m [ σ ] ≈ b : ℕ }}.
 Proof.
   induction 1; intros; progressive_inversion; gen_presups.
-  - transitivity {{{ zero [ σ ] }}}; mauto.
+  - transitivity {{{ zero[σ] }}}; mauto.
   - assert {{ Δ ⊢ m'[σ] ≈ M : ℕ }} by mauto.
-    transitivity {{{ (succ m') [ σ ] }}}; mauto 3.
-    transitivity {{{ succ m' [ σ ] }}}; mauto 4.
+    transitivity {{{ (succ m')[σ] }}}; mauto 3.
+    transitivity {{{ succ m'[σ] }}}; mauto 4.
   - mauto.
 Qed.
 
@@ -75,22 +75,24 @@ Qed.
   gen_presups.
 
 Lemma glu_univ_elem_univ_lvl : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T,
-      P Γ T ->
+      {{ Γ ⊢ T ® P }} ->
       {{ Γ ⊢ T : Type@i }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; trivial.
 Qed.
 
 Lemma glu_univ_elem_typ_resp_equiv : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T T',
-      P Γ T ->
+      {{ Γ ⊢ T ® P }} ->
       {{ Γ ⊢ T ≈ T' : Type@i }} ->
-      P Γ T'.
+      {{ Γ ⊢ T' ® P }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 4.
 
@@ -100,26 +102,28 @@ Proof.
 Qed.
 
 Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a T',
-      El Γ t T a ->
+      {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ T ≈ T' : Type@i }} ->
-      El Γ t T' a.
+      {{ Γ ⊢ t : T' ® a ∈ El }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; repeat split; mauto.
-  
+
   intros.
   assert {{ Δ ⊢ M[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
 Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T Δ,
-      P Γ T ->
+      {{ Γ ⊢ T ® P }} ->
       {{ ⊢ Γ ≈ Δ }} ->
-      P Δ T.
+      {{ Δ ⊢ T ® P }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 2;
     econstructor; mauto.
@@ -130,25 +134,25 @@ Lemma glu_nat_resp_wk' : forall Γ m a,
     forall Δ σ,
       {{ Γ ⊢ m : ℕ }} ->
       {{ Δ ⊢w σ : Γ }} ->
-      glu_nat Δ {{{ m [ σ ]}}} a.
+      glu_nat Δ {{{ m[σ] }}} a.
 Proof.
   induction 1; intros; gen_presups.
   - econstructor.
-    transitivity {{{ zero [ σ ]}}}; mauto.
+    transitivity {{{ zero[σ] }}}; mauto.
   - econstructor; [ |mauto].
-    transitivity {{{ (succ m') [σ]}}}; mauto 4.
+    transitivity {{{ (succ m')[σ] }}}; mauto 4.
   - econstructor; trivial.
     intros. gen_presups.
     assert {{ Δ0 ⊢w σ ∘ σ0 : Γ }} by mauto.
-    specialize (H0 _ _ _ H5 H4).
-    transitivity {{{ m [ σ ∘ σ0 ]}}}; mauto 4.
+    assert {{ Δ0 ⊢ m[σ ∘ σ0] ≈ v : ℕ }} by mauto 4.
+    transitivity {{{ m[σ ∘ σ0] }}}; mauto 4.
 Qed.
 
 Lemma glu_nat_resp_wk : forall Γ m a,
     glu_nat Γ m a ->
     forall Δ σ,
       {{ Δ ⊢w σ : Γ }} ->
-      glu_nat Δ {{{ m [ σ ]}}} a.
+      glu_nat Δ {{{ m[σ] }}} a.
 Proof.
   mauto using glu_nat_resp_wk'.
 Qed.
@@ -156,11 +160,12 @@ Qed.
  Hint Resolve glu_nat_resp_wk : mcltt.
 
 Lemma glu_univ_elem_trm_escape : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a,
-      El Γ t T a ->
+      {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ t : T }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 4.
 
@@ -173,10 +178,11 @@ Proof.
   mauto.
 Qed.
 
-Lemma glu_univ_elem_per : forall i P El A B,
-    glu_univ_elem i P El A B ->
-    exists R, per_univ_elem i R A B.
+Lemma glu_univ_elem_per_univ : forall i P El A B,
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Dom A ≈ B ∈ per_univ i }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros; eexists;
     try solve [per_univ_elem_econstructor; try reflexivity; trivial].
 
@@ -186,17 +192,19 @@ Proof.
     mauto.
 Qed.
 
-Lemma glu_univ_elem_trm_per : forall i P El A B,
-    glu_univ_elem i P El A B ->
+Lemma glu_univ_elem_per_elem : forall i P El A B,
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a R,
-      El Γ t T a ->
-      per_univ_elem i R A B ->
-      R a a.
+      {{ Γ ⊢ t : T ® a ∈ El }} ->
+      {{ DF A ≈ B ∈ per_univ_elem i ↘ R }} ->
+      {{ Dom a ≈ a ∈ R }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     try do 2 match_by_head1 per_univ_elem invert_per_univ_elem;
     simpl_glu_rel;
-    mauto 4 using glu_univ_elem_per.
+    try fold (per_univ j' a a);
+    mauto 4 using glu_univ_elem_per_univ.
 
   intros.
   destruct_rel_mod_app.
@@ -208,11 +216,12 @@ Proof.
 Qed.
 
 Lemma glu_univ_elem_trm_typ : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a,
-      El Γ t T a ->
-      P Γ T.
+      {{ Γ ⊢ t : T ® a ∈ El }} ->
+      {{ Γ ⊢ T ® P }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel;
     mauto 4.
@@ -225,22 +234,22 @@ Proof.
 Qed.
 
 Lemma glu_univ_elem_trm_univ_lvl : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a,
-      El Γ t T a ->
+      {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ T : Type@i }}.
 Proof.
   intros. eapply glu_univ_elem_univ_lvl; [| eapply glu_univ_elem_trm_typ]; eassumption.
 Qed.
 
-
 Lemma glu_univ_elem_trm_resp_equiv : forall i P El A B,
-    glu_univ_elem i P El A B ->
+    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a t',
-      El Γ t T a ->
+      {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ t ≈ t' : T }} ->
-      El Γ t' T a.
+      {{ Γ ⊢ t' : T ® a ∈ El }}.
 Proof.
+  simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel;
     repeat split; mauto 3.
@@ -252,18 +261,18 @@ Proof.
     invert_per_univ_elem H3.
     intros.
     destruct_rel_mod_eval.
-    assert {{ Δ ⊢ m' : IT [ σ ]}} by eauto using glu_univ_elem_trm_escape.
+    assert {{ Δ ⊢ m' : IT [σ]}} by eauto using glu_univ_elem_trm_escape.
     edestruct H12 as [? []]; eauto.
     eexists; split; eauto.
     enough {{ Δ ⊢ m[σ] m' ≈ t'[σ] m' : OT[σ,,m'] }} by eauto.
     assert {{ Γ ⊢ m ≈ t' : Π IT OT }} as Hty by mauto.
-    assert {{ Δ ⊢ IT [ σ ] : Type @ i4 }} by mauto 3.
+    eassert {{ Δ ⊢ IT[σ] : Type@_ }} by mauto 3.
     eapply wf_exp_eq_sub_cong with (Γ := Δ) in Hty; [| eapply sub_eq_refl; mauto 3].
     autorewrite with mcltt in Hty.
     eapply wf_exp_eq_app_cong with (N := m') (N' := m') in Hty; try pi_univ_level_tac; [|mauto 2].
     autorewrite with mcltt in Hty.
     eassumption.
   - intros.
-    assert {{ Δ ⊢ m [ σ ] ≈ t' [ σ ] : M [ σ ] }} by mauto 4.
+    assert {{ Δ ⊢ m[σ] ≈ t'[σ] : M[σ] }} by mauto 4.
     mauto 4.
 Qed.
