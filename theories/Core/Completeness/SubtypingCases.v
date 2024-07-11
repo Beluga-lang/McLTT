@@ -34,10 +34,38 @@ Proof.
     eauto using per_subtyp_refl1.
 Qed.
 
-(* | wf_subtyp_trans : *)
-(*   `( {{ Γ ⊢ M ⊆ M' }} -> *)
-(*      {{ Γ ⊢ M' ⊆ M'' }} -> *)
-(*      {{ Γ ⊢ M ⊆ M'' }} ) *)
+
+Lemma wf_subtyp_trans' : forall Γ M M' M'',
+    {{ Γ ⊨ M ⊆ M' }} ->
+    {{ Γ ⊨ M' ⊆ M'' }} ->
+    {{ Γ ⊨ M ⊆ M'' }}.
+Proof.
+  intros * [R [HR [i H]]] [R' [HR' [j H']]].
+  handle_per_ctx_env_irrel.
+  do 2 try eexists; eauto.
+  exists (max i j).
+  intros.
+  saturate_refl_for R'.
+  on_all_hyp: fun H1 =>
+                lazymatch type of H1 with
+                | R' ?a ?b =>
+                    let H2 := fresh "H" in
+                    assert (R a b) as H2 by firstorder;
+                    destruct (H' _ _ H1) as [? [? [[] [[] []]]]];
+                    destruct (H _ _ H2) as [? [? [[] [[] []]]]]
+                end.
+  simplify_evals.
+  handle_per_univ_elem_irrel.
+  do 2 eexists. repeat split.
+  - econstructor; eauto.
+    eauto using per_univ_elem_cumu_max_left.
+  - econstructor; eauto.
+    eauto using per_univ_elem_cumu_max_right.
+  - econstructor; eauto.
+    etransitivity;
+      eauto using per_subtyp_cumu_left, per_subtyp_cumu_right.
+Qed.
+
 (* | wf_subtyp_univ : *)
 (*   `( {{ ⊢ Γ }} -> *)
 (*      i < j -> *)
@@ -53,4 +81,4 @@ Qed.
 
 
 #[export]
- Hint Resolve wf_subtyp_refl' : mcltt.
+ Hint Resolve wf_subtyp_refl' wf_subtyp_trans' : mcltt.
