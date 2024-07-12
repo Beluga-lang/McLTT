@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Evaluation.
+From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.FunctionCases Evaluation.
 Import Domain_Notations.
 
 
@@ -105,7 +105,7 @@ Proof.
   progressive_invert HRBB'.
   handle_per_ctx_env_irrel.
   do 2 try eexists; eauto.
-  exists i.
+  exists (max j k).
   intros.
   saturate_refl_for tail_rel.
   on_all_hyp: fun H1 =>
@@ -128,20 +128,48 @@ Proof.
   simplify_evals.
   handle_per_univ_elem_irrel.
   do 2 eexists. repeat split.
+
   - econstructor; mauto 2.
     eapply per_univ_elem_pi'; [ | | solve_refl].
-    + etransitivity; [| symmetry; eassumption].
+    + apply per_univ_elem_cumu_max_left.
+      eapply per_univ_elem_cumu_ge with (i := i); [lia |].
+      etransitivity; [| symmetry; eassumption].
       eassumption.
-    + intros.
+    + apply rel_exp_pi_core; [|reflexivity].
+      intros.
+      destruct (HBB' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as [R [R' [[] []]]].
+      * apply_equiv_left.
+        unshelve eexists; [eassumption |].
+        edestruct (H0 d{{{ (p ↦ c) ↯ }}} d{{{ (p' ↦ c') ↯ }}}) as [].
+        simplify_evals.
+        handle_per_univ_elem_irrel.
+        apply_equiv_left.
+        eassumption.
+      * econstructor; eauto.
+        eexists. mauto using per_univ_elem_cumu_max_right.
 
-    eauto using per_univ_elem_cumu_max_left.
-  - econstructor; eauto.
-    eauto using per_univ_elem_cumu_max_right.
-  - econstructor; eauto.
-    etransitivity;
-      eauto using per_subtyp_cumu_left, per_subtyp_cumu_right.
+  - econstructor; mauto 2.
+    eapply per_univ_elem_pi'; [ | | solve_refl].
+    + apply per_univ_elem_cumu_max_left.
+      eapply per_univ_elem_cumu_ge with (i := i); [lia |].
+      etransitivity; [symmetry; eassumption |].
+      eassumption.
+    + apply rel_exp_pi_core; [|reflexivity].
+      intros.
+      destruct (HBB' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as [R [R' [? [[] ?]]]].
+      * apply_equiv_left.
+        unshelve eexists; [eassumption |].
+        edestruct (H0 d{{{ (p ↦ c) ↯ }}} d{{{ (p' ↦ c') ↯ }}}) as [].
+        simplify_evals.
+        handle_per_univ_elem_irrel.
+        apply_equiv_left.
+        eassumption.
+      * econstructor; eauto.
+        eexists. mauto using per_univ_elem_cumu_max_right.
+
+  - admit.
+
 Qed.
-
 
 #[export]
  Hint Resolve wf_subtyp_refl' wf_subtyp_trans' wf_subtyp_univ' wf_subtyp_pi' : mcltt.
