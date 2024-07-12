@@ -55,12 +55,12 @@ Qed.
 Hint Resolve rel_ctx_extend rel_ctx_extend' : mcltt.
 
 
-Lemma wf_ctx_sub_empty' :
+Lemma rel_ctx_sub_empty :
   {{ SubE ⋅ <: ⋅ }}.
 Proof. mauto. Qed.
 
 
-Lemma wf_ctx_sub_extend' : forall Γ Δ i A A',
+Lemma rel_ctx_sub_extend : forall Γ Δ i A A',
   {{ SubE Γ <: Δ }} ->
   {{ Γ ⊨ A : Type@i }} ->
   {{ Δ ⊨ A' : Type@i }} ->
@@ -78,4 +78,4 @@ Qed.
 
 
 #[export]
-Hint Resolve wf_ctx_sub_empty' wf_ctx_sub_extend' : mcltt.
+Hint Resolve rel_ctx_sub_empty rel_ctx_sub_extend : mcltt.

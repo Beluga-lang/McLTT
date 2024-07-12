@@ -4,7 +4,7 @@ From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.Functio
 Import Domain_Notations.
 
 
-Lemma wf_subtyp_refl' : forall Γ M M' i,
+Lemma sub_typ_subtyp_refl : forall Γ M M' i,
     {{ Γ ⊨ M ≈ M' : Type@i }} ->
     {{ Γ ⊨ M ⊆ M' }}.
 Proof.
@@ -35,7 +35,7 @@ Proof.
 Qed.
 
 
-Lemma wf_subtyp_trans' : forall Γ M M' M'',
+Lemma sub_typ_subtyp_trans : forall Γ M M' M'',
     {{ Γ ⊨ M ⊆ M' }} ->
     {{ Γ ⊨ M' ⊆ M'' }} ->
     {{ Γ ⊨ M ⊆ M'' }}.
@@ -67,7 +67,7 @@ Proof.
 Qed.
 
 
-Lemma wf_subtyp_univ' : forall Γ i j,
+Lemma sub_typ_subtyp_univ : forall Γ i j,
     {{ ⊨ Γ }} ->
     i < j ->
     {{ Γ ⊨ Type@i ⊆ Type@j }}.
@@ -84,7 +84,7 @@ Proof.
 Qed.
 
 
-Lemma wf_subtyp_pi' : forall Γ A A' B B' i,
+Lemma sub_typ_subtyp_pi : forall Γ A A' B B' i,
   {{ Γ ⊨ A ≈ A' : Type@i }} ->
   {{ Γ , A' ⊨ B ⊆ B' }} ->
   {{ Γ ⊨ Π A B ⊆ Π A' B' }}.
@@ -176,4 +176,4 @@ Proof.
 Qed.
 
 #[export]
- Hint Resolve wf_subtyp_refl' wf_subtyp_trans' wf_subtyp_univ' wf_subtyp_pi' : mcltt.
+ Hint Resolve sub_typ_subtyp_refl sub_typ_subtyp_trans sub_typ_subtyp_univ sub_typ_subtyp_pi : mcltt.

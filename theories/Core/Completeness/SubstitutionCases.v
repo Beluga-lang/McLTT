@@ -292,7 +292,7 @@ Proof with mautosolve.
 Qed.
 
 
-Lemma wf_sub_eq_subtyp' : forall Γ σ σ' Δ Δ',
+Lemma rel_sub_eq_subtyp : forall Γ σ σ' Δ Δ',
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ SubE Δ <: Δ' }} ->
     {{ Γ ⊨s σ ≈ σ' : Δ' }}.
@@ -309,4 +309,4 @@ Qed.
 
 
 #[export]
-  Hint Resolve wf_sub_eq_subtyp' : mcltt.
+  Hint Resolve rel_sub_eq_subtyp : mcltt.

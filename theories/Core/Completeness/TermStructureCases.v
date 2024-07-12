@@ -189,7 +189,7 @@ Proof.
 Qed.
 
 
-Lemma wf_exp_eq_subtyp' : forall Γ M M' A A',
+Lemma rel_exp_eq_subtyp : forall Γ M M' A A',
     {{ Γ ⊨ M ≈ M' : A }} ->
     {{ Γ ⊨ A ⊆ A' }} ->
     {{ Γ ⊨ M ≈ M' : A' }}.
@@ -216,4 +216,4 @@ Qed.
 
 
 #[export]
-Hint Resolve wf_exp_eq_subtyp' : mcltt.
+Hint Resolve rel_exp_eq_subtyp : mcltt.
