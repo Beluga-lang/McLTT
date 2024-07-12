@@ -67,6 +67,11 @@ Proof.
 Qed.
 
 
+#[export]
+  Instance sub_typ_trans Γ : Transitive (sub_typ_under_ctx Γ).
+Proof. eauto using sub_typ_subtyp_trans. Qed.
+
+
 Lemma sub_typ_subtyp_univ : forall Γ i j,
     {{ ⊨ Γ }} ->
     i < j ->
