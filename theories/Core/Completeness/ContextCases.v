@@ -1,6 +1,6 @@
 From Coq Require Import Morphisms_Relations.
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.UniverseCases.
+From Mcltt.Core Require Import Evaluation Completeness.LogicalRelation Completeness.UniverseCases.
 Import Domain_Notations.
 
 Proposition valid_ctx_empty :
@@ -41,5 +41,41 @@ Proof with intuition.
   - apply Equivalence_Reflexive.
 Qed.
 
+Lemma rel_ctx_extend' : forall {Γ A i},
+    {{ Γ ⊨ A : Type@i }} ->
+    {{ ⊨ Γ, A }}.
+Proof.
+  intros.
+  eapply rel_ctx_extend; eauto.
+  destruct H as [? []].
+  eexists. eassumption.
+Qed.
+
 #[export]
-Hint Resolve rel_ctx_extend : mcltt.
+Hint Resolve rel_ctx_extend rel_ctx_extend' : mcltt.
+
+
+Lemma rel_ctx_sub_empty :
+  {{ SubE ⋅ <: ⋅ }}.
+Proof. mauto. Qed.
+
+
+Lemma rel_ctx_sub_extend : forall Γ Δ i A A',
+  {{ SubE Γ <: Δ }} ->
+  {{ Γ ⊨ A : Type@i }} ->
+  {{ Δ ⊨ A' : Type@i }} ->
+  {{ Γ ⊨ A ⊆ A' }} ->
+  {{ SubE Γ , A <: Δ , A' }}.
+Proof.
+  intros * H H1 H2 H3.
+  pose proof H3.
+  destruct H3 as [? [? []]].
+  on_all_hyp: fun H => (eapply rel_ctx_extend' in H; destruct H).
+  econstructor; mauto; intros.
+  deepexec H3 ltac:(fun H => destruct H as [? [? [? [? []]]]]).
+  simplify_evals. eassumption.
+Qed.
+
+
+#[export]
+Hint Resolve rel_ctx_sub_empty rel_ctx_sub_extend : mcltt.

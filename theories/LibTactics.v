@@ -1,4 +1,4 @@
-From Coq Require Export Program.Equality Program.Tactics Lia RelationClasses.
+From Coq Require Export Relations.Relation_Definitions Program.Equality Program.Tactics Lia RelationClasses.
 
 Open Scope predicate_scope.
 
@@ -354,3 +354,47 @@ Ltac unify_args H P :=
     | H : Symmetric _ |- _ => clear H
     | H : Transitive _ |- _ => clear H
     end.
+
+
+Lemma PER_refl1 A (R : relation A) `(per : PER A R) : forall a b, R a b -> R a a.
+Proof.
+  intros.
+  etransitivity; [eassumption |].
+  symmetry. assumption.
+Qed.
+
+Lemma PER_refl2 A (R : relation A) `(per : PER A R) : forall a b, R a b -> R b b.
+Proof.
+  intros. symmetry in H.
+  apply PER_refl1 in H;
+    auto.
+Qed.
+
+#[global]
+  Ltac saturate_refl :=
+  repeat match goal with
+    | H : ?R ?a ?b |- _ =>
+        tryif unify a b
+        then fail
+        else
+          directed pose proof (PER_refl1 _ _ _ _ _ H);
+        directed pose proof (PER_refl2 _ _ _ _ _ H);
+        fail_if_dup
+    end.
+
+#[global]
+  Ltac saturate_refl_for hd :=
+  repeat match goal with
+    | H : ?R ?a ?b |- _ =>
+        unify R hd;
+        tryif unify a b
+        then fail
+        else
+          directed pose proof (PER_refl1 _ _ _ _ _ H);
+        directed pose proof (PER_refl2 _ _ _ _ _ H);
+        fail_if_dup
+    end.
+
+#[global]
+  Ltac solve_refl :=
+  solve [reflexivity || apply Equivalence_Reflexive].
