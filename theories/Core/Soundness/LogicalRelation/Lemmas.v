@@ -6,6 +6,18 @@ From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions.
 From Mcltt.Core.Soundness Require Export Weakening.Lemmas.
 Import Domain_Notations.
 
+Lemma pi_glu_exp_pred_pi_glu_typ_pred : forall i IR IP IEl (OP : forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ IR }}), glu_typ_pred) elem_rel OEl Γ m M a,
+    {{ Γ ⊢ m : M ® a ∈ pi_glu_exp_pred i IR IP IEl elem_rel OEl }} ->
+    (forall Δ m' M' b c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ IR }}),
+        {{ Δ ⊢ m' : M' ® b ∈ OEl _ _ equiv_c_c' }} ->
+        {{ Δ ⊢ M' ® OP _ _ equiv_c_c' }}) ->
+    {{ Γ ⊢ M ® pi_glu_typ_pred i IR IP IEl OP }}.
+Proof.
+  inversion_clear 1; econstructor; eauto.
+  intros.
+  edestruct H5 as [? []]; eauto.
+Qed.
+
 Lemma glu_nat_per_nat : forall Γ m a,
     glu_nat Γ m a ->
     {{ Dom a ≈ a ∈ per_nat }}.
