@@ -85,21 +85,10 @@ Qed.
 
 
 Lemma wf_subtyp_pi' : forall Γ A A' B B' i,
-  (* {{ Γ ⊨ A : Type@i }} -> *)
-  (* {{ Γ ⊨ A' : Type@i }} -> *)
   {{ Γ ⊨ A ≈ A' : Type@i }} ->
-  (* {{ Γ , A ⊨ B : Type@i }} -> *)
-  (* {{ Γ , A' ⊨ B' : Type@i }} -> *)
   {{ Γ , A' ⊨ B ⊆ B' }} ->
   {{ Γ ⊨ Π A B ⊆ Π A' B' }}.
 Proof.
-  (* intros * [RA [HRA [j1 HA]]] *)
-  (*            [RA' [HRA' [j2 HA']]] *)
-  (*            [RAA' [HRAA' [j3 HAA']]] *)
-  (*            [RB [HRB [k1 HB]]] *)
-  (*            [RB' [HRB' [k2 HB']]] *)
-  (*            [RBB' [HRBB' [k3 HBB']]]. *)
-
   intros * [RAA' [HRAA' [j HAA']]]
              [RBB' [HRBB' [k HBB']]].
   progressive_invert HRBB'.
@@ -127,48 +116,63 @@ Proof.
   destruct_all.
   simplify_evals.
   handle_per_univ_elem_irrel.
-  do 2 eexists. repeat split.
+  assert (forall c c', H25 c c' -> env_rel d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}).
+  {
+    intros. apply_equiv_left.
+    unshelve eexists; [eassumption |].
+    edestruct (H0 d{{{ (p ↦ c) ↯ }}} d{{{ (p' ↦ c') ↯ }}}) as [].
+    simplify_evals.
+    handle_per_univ_elem_irrel.
+    apply_equiv_left.
+    eassumption.
+  }
 
-  - econstructor; mauto 2.
-    eapply per_univ_elem_pi'; [ | | solve_refl].
-    + apply per_univ_elem_cumu_max_left.
+  assert (per_univ (Nat.max j k) d{{{ Π m0 p B }}} d{{{ Π m p' B }}}).
+  {
+    eexists. eapply per_univ_elem_pi'; [ | | solve_refl].
+    - apply per_univ_elem_cumu_max_left.
       eapply per_univ_elem_cumu_ge with (i := i); [lia |].
       etransitivity; [| symmetry; eassumption].
       eassumption.
-    + apply rel_exp_pi_core; [|reflexivity].
+    - apply rel_exp_pi_core; [|reflexivity].
       intros.
-      destruct (HBB' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as [R [R' [[] []]]].
-      * apply_equiv_left.
-        unshelve eexists; [eassumption |].
-        edestruct (H0 d{{{ (p ↦ c) ↯ }}} d{{{ (p' ↦ c') ↯ }}}) as [].
-        simplify_evals.
-        handle_per_univ_elem_irrel.
-        apply_equiv_left.
-        eassumption.
-      * econstructor; eauto.
-        eexists. mauto using per_univ_elem_cumu_max_right.
+      destruct (HBB' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as [R [R' [[] []]]];
+        [firstorder |].
+      econstructor; eauto.
+      eexists. mauto using per_univ_elem_cumu_max_right.
+  }
 
-  - econstructor; mauto 2.
-    eapply per_univ_elem_pi'; [ | | solve_refl].
-    + apply per_univ_elem_cumu_max_left.
+  assert (per_univ (Nat.max j k) d{{{ Π m'0 p B' }}} d{{{ Π m' p' B' }}}).
+  {
+    eexists. eapply per_univ_elem_pi'; [ | | solve_refl].
+    - apply per_univ_elem_cumu_max_left.
       eapply per_univ_elem_cumu_ge with (i := i); [lia |].
       etransitivity; [symmetry; eassumption |].
       eassumption.
-    + apply rel_exp_pi_core; [|reflexivity].
+    - apply rel_exp_pi_core; [|reflexivity].
       intros.
-      destruct (HBB' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as [R [R' [? [[] ?]]]].
-      * apply_equiv_left.
-        unshelve eexists; [eassumption |].
-        edestruct (H0 d{{{ (p ↦ c) ↯ }}} d{{{ (p' ↦ c') ↯ }}}) as [].
-        simplify_evals.
-        handle_per_univ_elem_irrel.
-        apply_equiv_left.
-        eassumption.
-      * econstructor; eauto.
-        eexists. mauto using per_univ_elem_cumu_max_right.
+      destruct (HBB' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as [R [R' [? [[] ?]]]];
+        [firstorder |].
+      econstructor; eauto.
+      eexists. mauto using per_univ_elem_cumu_max_right.
+  }
 
-  - admit.
+  do 2 match goal with
+  | H : per_univ _ _ _ |- _ => destruct H as []
+  end.
+  
+  do 2 eexists. repeat split; econstructor; mauto 2.
 
+  saturate_refl.
+  econstructor; try eassumption.
+  - apply per_univ_elem_cumu_max_left.
+    eapply per_univ_elem_cumu_ge with (i := i); [lia |].
+    eassumption.
+  - intros.
+    destruct (HBB' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as [R [R' [? [? []]]]];
+      [firstorder |].
+    simplify_evals.
+    mauto 2 using per_subtyp_cumu_right.
 Qed.
 
 #[export]
