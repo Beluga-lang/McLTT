@@ -36,7 +36,7 @@ Section completeness_fundamental.
   Theorem completeness_fundamental_ctx : forall Γ, {{ ⊢ Γ }} -> {{ ⊨ Γ }}.
   Proof. solve_it. Qed.
 
-  Theorem completeness_fundamental_ctx_eq : forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}.
+  Theorem completeness_fundamental_ctx_sub : forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}.
   Proof. solve_it. Qed.
 
   Theorem completeness_fundamental_exp : forall Γ M A, {{ Γ ⊢ M : A }} -> {{ Γ ⊨ M : A }}.
@@ -53,5 +53,13 @@ Section completeness_fundamental.
 
   Theorem completeness_fundamental_subtyp : forall Γ A A', {{ Γ ⊢ A ⊆ A' }} -> {{ Γ ⊨ A ⊆ A' }}.
   Proof. solve_it. Qed.
+
+  Theorem completeness_fundamental_ctx_eq : forall Γ Γ', {{ ⊢ Γ ≈ Γ' }} -> {{ ⊨ Γ ≈ Γ' }}.
+  Proof.
+    induction 1.
+    - apply valid_ctx_empty.
+    - apply completeness_fundamental_exp_eq in H2.
+      mauto.
+  Qed.
 
 End completeness_fundamental.
