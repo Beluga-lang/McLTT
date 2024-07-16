@@ -61,7 +61,7 @@ Proof.
 Qed.
 
 #[local]
- Hint Resolve glu_nat_resp_equiv : mcltt.
+Hint Resolve glu_nat_resp_equiv : mcltt.
 
 Lemma glu_nat_readback : forall Γ m a,
     glu_nat Γ m a ->
@@ -79,7 +79,7 @@ Proof.
 Qed.
 
 #[global]
-  Ltac simpl_glu_rel :=
+Ltac simpl_glu_rel :=
   apply_equiv_left;
   repeat invert_glu_rel1;
   apply_equiv_left;
@@ -289,40 +289,85 @@ Proof.
     mauto 4.
 Qed.
 
-(* Lemma glu_univ_elem_core_univ' : forall j i typ_rel el_rel, *)
-(*     j < i -> *)
-(*     (typ_rel <~> univ_glu_typ_pred j) -> *)
-(*     (el_rel <~> univ_glu_exp_pred j) -> *)
-(*     {{ GF 𝕌@j ∈ glu_univ_elem i ↘ typ_rel ↘ el_rel }}. *)
-(* Proof. *)
-(*   intros. *)
-(*   simp per_univ_elem. *)
-(*   apply per_univ_elem_core_univ; try assumption. *)
-(*   reflexivity. *)
-(* Qed. *)
-(* #[export] *)
-(* Hint Resolve per_univ_elem_core_univ' : mcltt. *)
+Lemma glu_univ_elem_core_univ' : forall j i typ_rel el_rel,
+    j < i ->
+    (typ_rel <∙> univ_glu_typ_pred j i) ->
+    (el_rel <∙> univ_glu_exp_pred j i) ->
+    {{ DG 𝕌@j ∈ glu_univ_elem i ↘ typ_rel ↘ el_rel }}.
+Proof.
+  intros.
+  unshelve basic_glu_univ_elem_econstructor; mautosolve.
+Qed.
+#[export]
+Hint Resolve glu_univ_elem_core_univ' : mcltt.
 
-Lemma per_univ_glu_univ_elem : forall i R A,
-    {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} ->
-    exists P El, {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }}.
+Ltac glu_univ_elem_econstructor :=
+  eapply glu_univ_elem_core_univ' + basic_glu_univ_elem_econstructor.
+
+Add Parametric Morphism i : (glu_univ_elem i)
+    with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> eq ==> iff as glu_univ_elem_morphism_iff.
+Proof with mautosolve.
+  intros P P' HPP' El El' HElEl'.
+  split; intro Horig; [gen P' El' | gen P El];
+    induction Horig using glu_univ_elem_ind; unshelve glu_univ_elem_econstructor;
+    try (etransitivity; [symmetry + idtac|]; eassumption); eauto.
+Qed.  
+
+Lemma per_univ_elem_pi_clean_inversion : True.
+Proof.
+  mauto.
+Qed.
+
+Lemma glu_univ_elem_morphism_per_univ : forall i a a' P El,
+    {{ Dom a ≈ a' ∈ per_univ i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P ↘ El }}.
+Proof.
+  simpl.
+  intros * [elem_rel Hper] Horig. gen P El.
+  induction Hper using per_univ_elem_ind; intros;
+    basic_invert_glu_univ_elem Horig; glu_univ_elem_econstructor; try eassumption; mauto.
+  - handle_per_univ_elem_irrel.
+    etransitivity; [symmetry| ]; eassumption.
+  - handle_per_univ_elem_irrel.
+    intros.
+    (on_all_hyp: destruct_rel_by_assumption in_rel0).
+Admitted.
+
+Lemma per_univ_glu_univ_elem : forall i R a,
+    {{ DF a ≈ a ∈ per_univ_elem i ↘ R }} ->
+    exists P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }}.
 Proof.
   simpl.
   induction 1 using per_univ_elem_ind; intros;
-    try solve [do 2 eexists; unshelve (glu_univ_elem_econstructor; try reflexivity; trivial)].
+    try solve [do 2 eexists; unshelve (glu_univ_elem_econstructor; try reflexivity; subst; trivial)].
 
-  - do 2 eexists.
-    unshelve (glu_univ_elem_econstructor; try reflexivity; mautosolve).
-    subst.
-    eassumption.
   - destruct IHper_univ_elem as [? []].
     do 2 eexists.
     glu_univ_elem_econstructor; try reflexivity; mauto.
     + etransitivity; [symmetry |]; eassumption.
-    + admit.
-    + admit.
+    + instantiate (1 := fun (c : domain) (equiv_c : in_rel c c) Γ M A m =>
+                          forall b P El,
+                            {{ ⟦ B' ⟧ p' ↦ c ↘ b }} ->
+                            glu_univ_elem i P El b ->
+                            {{ Γ ⊢ M : A ® m ∈ El }}).
+      instantiate (1 := fun (c : domain) (equiv_c : in_rel c c) Γ A =>
+                          forall b P El,
+                            {{ ⟦ B' ⟧ p' ↦ c ↘ b }} ->
+                            glu_univ_elem i P El b ->
+                            {{ Γ ⊢ A ® P }}).
+      intros.
+      (on_all_hyp: destruct_rel_by_assumption in_rel).
+      functional_eval_rewrite_clear.
+      rewrite glu_univ_elem_morphism_iff; try (eassumption + reflexivity);
+        split; intros; intuition.
+      * admit.
+      * admit.
+    + enough {{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }} by (etransitivity; [symmetry |]; eassumption).
+      per_univ_elem_econstructor; mauto.
+      intros.
+      (on_all_hyp: destruct_rel_by_assumption in_rel).
+      mauto.
   - do 2 eexists.
-    glu_univ_elem_econstructor; try reflexivity; mautosolve.
-  Unshelve.
-  all: admit.
+    basic_glu_univ_elem_econstructor; try reflexivity; mauto.
 Admitted.
