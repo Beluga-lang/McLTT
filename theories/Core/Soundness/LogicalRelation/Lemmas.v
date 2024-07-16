@@ -2,15 +2,15 @@ From Coq Require Import Morphisms Morphisms_Relations.
 
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import PER Syntactic.Corollaries.
-From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions.
+From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions LogicalRelation.CoreTactics.
 From Mcltt.Core.Soundness Require Export Weakening.Lemmas.
 Import Domain_Notations.
 
-Lemma pi_glu_exp_pred_pi_glu_typ_pred : forall i IR IP IEl (OP : forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ IR }}), glu_typ_pred) elem_rel OEl Γ m M a,
+Lemma pi_glu_exp_pred_pi_glu_typ_pred : forall i IR IP IEl (OP : forall c (equiv_c : {{ Dom c ≈ c ∈ IR }}), glu_typ_pred) elem_rel OEl Γ m M a,
     {{ Γ ⊢ m : M ® a ∈ pi_glu_exp_pred i IR IP IEl elem_rel OEl }} ->
-    (forall Δ m' M' b c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ IR }}),
-        {{ Δ ⊢ m' : M' ® b ∈ OEl _ _ equiv_c_c' }} ->
-        {{ Δ ⊢ M' ® OP _ _ equiv_c_c' }}) ->
+    (forall Δ m' M' b c (equiv_c : {{ Dom c ≈ c ∈ IR }}),
+        {{ Δ ⊢ m' : M' ® b ∈ OEl _ equiv_c }} ->
+        {{ Δ ⊢ M' ® OP _ equiv_c }}) ->
     {{ Γ ⊢ M ® pi_glu_typ_pred i IR IP IEl OP }}.
 Proof.
   inversion_clear 1; econstructor; eauto.
@@ -86,8 +86,8 @@ Qed.
   destruct_all;
   gen_presups.
 
-Lemma glu_univ_elem_univ_lvl : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_univ_lvl : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T,
       {{ Γ ⊢ T ® P }} ->
       {{ Γ ⊢ T : Type@i }}.
@@ -97,8 +97,8 @@ Proof.
     simpl_glu_rel; trivial.
 Qed.
 
-Lemma glu_univ_elem_typ_resp_equiv : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_typ_resp_equiv : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T T',
       {{ Γ ⊢ T ® P }} ->
       {{ Γ ⊢ T ≈ T' : Type@i }} ->
@@ -113,8 +113,8 @@ Proof.
   assert {{ Δ ⊢ T[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
-Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a T',
       {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ T ≈ T' : Type@i }} ->
@@ -128,8 +128,8 @@ Proof.
   assert {{ Δ ⊢ M[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
-Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T Δ,
       {{ Γ ⊢ T ® P }} ->
       {{ ⊢ Γ ≈ Δ }} ->
@@ -171,8 +171,8 @@ Qed.
 #[export]
  Hint Resolve glu_nat_resp_wk : mcltt.
 
-Lemma glu_univ_elem_trm_escape : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_trm_escape : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a,
       {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ t : T }}.
@@ -182,7 +182,7 @@ Proof.
     simpl_glu_rel; mauto 4.
 
   match_by_head (per_bot c c) ltac:(fun H => specialize (H (length Γ)) as [Lc []]).
-  match_by_head (per_bot b b') ltac:(fun H => specialize (H (length Γ)) as [Lb []]).
+  match_by_head (per_bot b b) ltac:(fun H => specialize (H (length Γ)) as [Lb []]).
   assert {{ Γ ⊢w Id : Γ }} by mauto.
   clear_dups.
   assert {{ Γ ⊢ m[Id] ≈ Lc : M[Id] }} by mauto.
@@ -190,9 +190,9 @@ Proof.
   mauto.
 Qed.
 
-Lemma glu_univ_elem_per_univ : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    {{ Dom A ≈ B ∈ per_univ i }}.
+Lemma glu_univ_elem_per_univ : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Dom A ≈ A ∈ per_univ i }}.
 Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros; eexists;
@@ -204,18 +204,18 @@ Proof.
     mauto.
 Qed.
 
-Lemma glu_univ_elem_per_elem : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_per_elem : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a R,
       {{ Γ ⊢ t : T ® a ∈ El }} ->
-      {{ DF A ≈ B ∈ per_univ_elem i ↘ R }} ->
+      {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} ->
       {{ Dom a ≈ a ∈ R }}.
 Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
     try do 2 match_by_head1 per_univ_elem invert_per_univ_elem;
     simpl_glu_rel;
-    try fold (per_univ j' a a);
+    try fold (per_univ j a a);
     mauto 4 using glu_univ_elem_per_univ.
 
   intros.
@@ -227,8 +227,8 @@ Proof.
   econstructor; firstorder eauto.
 Qed.
 
-Lemma glu_univ_elem_trm_typ : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_trm_typ : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a,
       {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ T ® P }}.
@@ -245,8 +245,8 @@ Proof.
   edestruct H11 as [? []]; eauto.
 Qed.
 
-Lemma glu_univ_elem_trm_univ_lvl : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_trm_univ_lvl : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a,
       {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ T : Type@i }}.
@@ -254,8 +254,8 @@ Proof.
   intros. eapply glu_univ_elem_univ_lvl; [| eapply glu_univ_elem_trm_typ]; eassumption.
 Qed.
 
-Lemma glu_univ_elem_trm_resp_equiv : forall i P El A B,
-    {{ Glu A ≈ B ∈ glu_univ_elem i ↘ P ↘ El }} ->
+Lemma glu_univ_elem_trm_resp_equiv : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a t',
       {{ Γ ⊢ t : T ® a ∈ El }} ->
       {{ Γ ⊢ t ≈ t' : T }} ->
@@ -288,3 +288,41 @@ Proof.
     assert {{ Δ ⊢ m[σ] ≈ t'[σ] : M[σ] }} by mauto 4.
     mauto 4.
 Qed.
+
+(* Lemma glu_univ_elem_core_univ' : forall j i typ_rel el_rel, *)
+(*     j < i -> *)
+(*     (typ_rel <~> univ_glu_typ_pred j) -> *)
+(*     (el_rel <~> univ_glu_exp_pred j) -> *)
+(*     {{ GF 𝕌@j ∈ glu_univ_elem i ↘ typ_rel ↘ el_rel }}. *)
+(* Proof. *)
+(*   intros. *)
+(*   simp per_univ_elem. *)
+(*   apply per_univ_elem_core_univ; try assumption. *)
+(*   reflexivity. *)
+(* Qed. *)
+(* #[export] *)
+(* Hint Resolve per_univ_elem_core_univ' : mcltt. *)
+
+Lemma per_univ_glu_univ_elem : forall i R A,
+    {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} ->
+    exists P El, {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }}.
+Proof.
+  simpl.
+  induction 1 using per_univ_elem_ind; intros;
+    try solve [do 2 eexists; unshelve (glu_univ_elem_econstructor; try reflexivity; trivial)].
+
+  - do 2 eexists.
+    unshelve (glu_univ_elem_econstructor; try reflexivity; mautosolve).
+    subst.
+    eassumption.
+  - destruct IHper_univ_elem as [? []].
+    do 2 eexists.
+    glu_univ_elem_econstructor; try reflexivity; mauto.
+    + etransitivity; [symmetry |]; eassumption.
+    + admit.
+    + admit.
+  - do 2 eexists.
+    glu_univ_elem_econstructor; try reflexivity; mautosolve.
+  Unshelve.
+  all: admit.
+Admitted.
