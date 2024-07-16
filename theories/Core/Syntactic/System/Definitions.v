@@ -324,7 +324,14 @@ with wf_exp_eq_mut_ind := Induction for wf_exp_eq Sort Prop
 with wf_sub_mut_ind := Induction for wf_sub Sort Prop
 with wf_sub_eq_mut_ind := Induction for wf_sub_eq Sort Prop
 with wf_subtyping_mut_ind := Induction for wf_subtyping Sort Prop.
-
+Combined Scheme syntactic_wf_mut_ind from
+  wf_ctx_mut_ind,
+  wf_ctx_sub_mut_ind,
+  wf_exp_mut_ind,
+  wf_exp_eq_mut_ind,
+  wf_sub_mut_ind,
+  wf_sub_eq_mut_ind,
+  wf_subtyping_mut_ind.
 
 Inductive wf_ctx_eq : ctx -> ctx -> Prop :=
 | wf_ctx_eq_empty : {{ ⊢ ⋅ ≈ ⋅ }}
