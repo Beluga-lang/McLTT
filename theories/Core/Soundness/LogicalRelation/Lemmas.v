@@ -308,15 +308,34 @@ Add Parametric Morphism i : (glu_univ_elem i)
     with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> eq ==> iff as glu_univ_elem_morphism_iff.
 Proof with mautosolve.
   intros P P' HPP' El El' HElEl'.
-  split; intro Horig; [gen P' El' | gen P El];
+  split; intro Horig; [gen El' P' | gen El P];
     induction Horig using glu_univ_elem_ind; unshelve glu_univ_elem_econstructor;
     try (etransitivity; [symmetry + idtac|]; eassumption); eauto.
 Qed.  
 
-Lemma per_univ_elem_pi_clean_inversion : True.
+Lemma per_univ_elem_pi_clean_inversion : forall i a p B in_rel IP IEl elem_rel typ_rel el_rel,
+  {{ DF a ≈ a ∈ per_univ_elem i ↘ in_rel }} ->
+  {{ DG a ∈ glu_univ_elem i ↘ IP ↘ IEl }} ->
+  {{ DF Π a p B ≈ Π a p B ∈ per_univ_elem i ↘ elem_rel }} ->
+  {{ DG Π a p B ∈ glu_univ_elem i ↘ typ_rel ↘ el_rel }} ->
+  exists (OP : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_typ_pred)
+     (OEl : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_exp_pred),
+      (forall {c} (equiv_c : {{ Dom c ≈ c ∈ in_rel }}) b,
+          {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+          {{ DG b ∈ glu_univ_elem i ↘ OP _ equiv_c ↘ OEl _ equiv_c }}) /\
+        (typ_rel <∙> pi_glu_typ_pred i in_rel IP IEl OP) /\
+        (el_rel <∙> pi_glu_exp_pred i in_rel IP IEl elem_rel OEl).
 Proof.
-  mauto.
-Qed.
+  simpl.
+  pose proof (@relation_equivalence_pointwise domain).
+  intros * Hinper Hinglu Hper Hglu.
+  basic_invert_glu_univ_elem Hglu.
+  handle_per_univ_elem_irrel.
+  do 2 eexists; intuition.
+  - intros Γ A; split; intros.
+    + assert (pi_glu_typ_pred i in_rel0 IP0 IEl0 OP Γ A) as [] by intuition.
+      econstructor; intuition.
+Admitted.
 
 Lemma glu_univ_elem_morphism_per_univ : forall i a a' P El,
     {{ Dom a ≈ a' ∈ per_univ i }} ->
