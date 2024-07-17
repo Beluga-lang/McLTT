@@ -1,5 +1,5 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import System Evaluation Readback NbE CoreTypeInversions Presup CtxSub SystemOpt.
+From Mcltt.Core Require Import Evaluation Readback NbE CoreTypeInversions Presup CtxSub SystemOpt.
 From Mcltt.Core.Completeness Require Import Consequences.Rules.
 From Mcltt Require Import Completeness Soundness.
 From Mcltt.Algorithmic Require Import Subtyping.Definitions.
@@ -121,8 +121,8 @@ Proof.
   on_all_hyp: fun H => apply nbe_type_to_nbe_ty in H.
   functional_nbe_rewrite_clear.
   gen_presups.
-  eapply alg_subtyping_nf_sound in H3; try eassumption.
-  etransitivity; [mauto |].
-  etransitivity; [eassumption |].
+  assert {{ Γ ⊢ A ⊆ B }} by mauto 3 using alg_subtyping_nf_sound.
+  transitivity A; [mauto |].
+  transitivity B; [eassumption |].
   mauto.
 Qed.
