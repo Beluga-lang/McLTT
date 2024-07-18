@@ -194,26 +194,25 @@ Lemma rel_exp_eq_subtyp : forall Γ M M' A A',
     {{ Γ ⊨ A ⊆ A' }} ->
     {{ Γ ⊨ M ≈ M' : A' }}.
 Proof.
-  intros * [R [HR [i ?]]] [R' [HR' [j ?]]].
-  exists R. exists HR.
+  pose proof (@relation_equivalence_pointwise domain).
+  pose proof (@relation_equivalence_pointwise env).
+  intros * [env_relΓ [? [i]]] [? [? [j]]].
+  pose env_relΓ.
   handle_per_ctx_env_irrel.
-  exists (max i j).
+  eexists_rel_exp_with (max i j).
   intros.
-  deepexec H ltac:(fun H => destruct H as [elem_rel [[] []]]).
-  apply_equiv_left.
-  deepexec H0 ltac:(fun H => destruct H as [R1 [R1' [[] [[] []]]]]).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
   simplify_evals.
-  exists R1'.
-  split.
-  - econstructor; eauto using per_univ_elem_cumu_max_right.
-  - econstructor; eauto.
-    handle_per_univ_elem_irrel.
-    eapply per_elem_subtyping_gen with (i := max i j); try eassumption.
-    + eapply per_subtyp_cumu_right. eassumption.
-    + eauto using per_univ_elem_cumu_max_right.
-    + symmetry. eauto using per_univ_elem_cumu_max_right.
+  eexists.
+  split; econstructor; eauto using per_univ_elem_cumu_max_right.
+  handle_per_univ_elem_irrel.
+  eapply per_elem_subtyping_gen with (i := max i j); try eassumption.
+  - eauto using per_subtyp_cumu_right.
+  - eauto using per_univ_elem_cumu_max_right.
+  - symmetry. eauto using per_univ_elem_cumu_max_right.
 Qed.
-
 
 #[export]
 Hint Resolve rel_exp_eq_subtyp : mcltt.

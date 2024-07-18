@@ -683,6 +683,9 @@ Proof.
       trivial.
 Qed.
 
+#[export]
+Hint Resolve per_subtyp_refl1 : mcltt.
+
 Lemma per_subtyp_refl2 : forall a b i R,
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
     {{ Sub b <: a at i }}.
@@ -691,6 +694,9 @@ Proof.
   symmetry in H.
   eauto using per_subtyp_refl1.
 Qed.
+
+#[export]
+Hint Resolve per_subtyp_refl2 : mcltt.
 
 Lemma per_subtyp_trans : forall A1 A2 i,
     {{ Sub A1 <: A2 at i }} ->

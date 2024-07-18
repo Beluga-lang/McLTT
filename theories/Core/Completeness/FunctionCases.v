@@ -24,31 +24,36 @@ Proof.
 Qed.
 
 Lemma rel_exp_of_pi : forall {Γ M M' A B},
-    (exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
+    (exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i j,
       forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
       exists in_rel out_rel,
         rel_typ i A p A p' in_rel /\
-          (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_typ i B d{{{ p ↦ c }}} B d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) /\
+          (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_typ j B d{{{ p ↦ c }}} B d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) /\
           rel_exp M p M' p'
             (fun f f' : domain => forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app f c f' c' (out_rel c c' equiv_c_c'))) ->
     {{ Γ ⊨ M ≈ M' : Π A B }}.
 Proof.
-  intros * [env_relΓ].
+  intros * [env_relΓ [? [i [j]]]].
   destruct_conjs.
-  eexists_rel_exp.
+  eexists_rel_exp_with (max i j).
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  rename x0 into in_rel.
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
   eexists; split; econstructor; mauto.
-  - per_univ_elem_econstructor; try eassumption.
-    apply Equivalence_Reflexive.
+  - per_univ_elem_econstructor; eauto using per_univ_elem_cumu_max_left.
+    + intros.
+      (on_all_hyp: destruct_rel_by_assumption in_rel).
+      econstructor; eauto using per_univ_elem_cumu_max_right.
+    + apply Equivalence_Reflexive.
   - mauto.
 Qed.
 
 Ltac eexists_rel_exp_of_pi :=
   apply rel_exp_of_pi;
-  eexists_rel_exp.
+  eexists_rel_exp;
+  eexists.
 
 #[local]
 Ltac extract_output_info_with p c p' c' env_rel :=
@@ -165,13 +170,12 @@ Proof with mautosolve.
   destruct_by_head per_univ.
   functional_eval_rewrite_clear.
   do 2 eexists.
-  repeat split; [econstructor; [| | eapply per_univ_elem_cumu_max_left] | | econstructor]; mauto.
+  repeat split; [econstructor | | econstructor]; mauto.
   - eapply rel_exp_pi_core; eauto; try reflexivity.
     intros.
     extract_output_info_with p c p' c' env_relΓA.
     econstructor; eauto.
-    eexists.
-    eapply per_univ_elem_cumu_max_right...
+    eexists...
   - intros.
     extract_output_info_with p c p' c' env_relΓA.
     econstructor; mauto.
@@ -201,7 +205,7 @@ Proof with mautosolve.
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   eexists.
   split; econstructor; mauto 4.
-  - per_univ_elem_econstructor; [eapply per_univ_elem_cumu_max_left | | apply Equivalence_Reflexive]; eauto.
+  - per_univ_elem_econstructor; [apply per_univ_elem_cumu_max_right | | apply Equivalence_Reflexive]; eauto.
     intros.
     eapply rel_exp_pi_core; eauto; try reflexivity.
     clear dependent c.
@@ -210,7 +214,7 @@ Proof with mautosolve.
     extract_output_info_with o c o' c' env_relΔA.
     econstructor; eauto.
     eexists.
-    eapply per_univ_elem_cumu_max_right...
+    eapply per_univ_elem_cumu_max_left...
   - intros ? **.
     extract_output_info_with o c o' c' env_relΔA.
     econstructor; mauto.
