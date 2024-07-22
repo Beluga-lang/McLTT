@@ -352,6 +352,14 @@ Proof.
   firstorder.
 Qed.
 
+Corollary per_univ_sym' : forall i a b,
+    {{ Dom a ≈ b ∈ per_univ i }} ->
+    {{ Dom b ≈ a ∈ per_univ i }}.
+Proof.
+  intros * [? ?%per_univ_elem_sym].
+  firstorder.
+Qed.
+
 Corollary per_elem_sym : forall i R a b m m',
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
     {{ Dom m ≈ m' ∈ R }} ->
@@ -476,6 +484,16 @@ Proof.
   firstorder.
 Qed.
 
+Corollary per_univ_trans' : forall i j A1 A2 A3,
+    {{ Dom A1 ≈ A2 ∈ per_univ i }} ->
+    {{ Dom A2 ≈ A3 ∈ per_univ j }} ->
+    {{ Dom A1 ≈ A3 ∈ per_univ i }}.
+Proof.
+  intros * [? ?] [? ?].
+  handle_per_univ_elem_irrel.
+  firstorder mauto using per_univ_trans.
+Qed.
+
 Corollary per_elem_trans : forall i R A1 A2 a1 a2 a3,
     per_univ_elem i R A1 A2 ->
     R a1 a2 ->
@@ -492,6 +510,14 @@ Proof.
   split.
   - auto using per_univ_sym.
   - eauto using per_univ_trans.
+Qed.
+
+#[export]
+Instance per_univ_PER' {i} : PER (per_univ i).
+Proof.
+  split.
+  - auto using per_univ_sym'.
+  - eauto using per_univ_trans'.
 Qed.
 
 #[export]

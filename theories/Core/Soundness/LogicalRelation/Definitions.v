@@ -12,21 +12,22 @@ Generalizable All Variables.
 
 Notation "'glu_typ_pred_args'" := (Tcons ctx (Tcons typ Tnil)).
 Notation "'glu_typ_pred'" := (predicate glu_typ_pred_args).
-Notation "'glu_typ_pred_equivalence'" := (@predicate_equivalence glu_typ_pred_args).
-Notation "Γ ⊢ A ® R" := ((R Γ A : Prop) : Prop) (in custom judg at level 80, Γ custom exp, A custom exp, R constr).
+Notation "'glu_typ_pred_equivalence'" := (@predicate_equivalence glu_typ_pred_args) (only parsing).
+(* This type annotation is to distinguish this notation from others *)
+Notation "Γ ⊢ A ® R" := ((R Γ A : Prop) : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, A custom exp, R constr).
 
 Notation "'glu_exp_pred_args'" := (Tcons ctx (Tcons exp (Tcons typ (Tcons domain Tnil)))).
 Notation "'glu_exp_pred'" := (predicate glu_exp_pred_args).
-Notation "'glu_exp_pred_equivalence'" := (@predicate_equivalence glu_exp_pred_args).
-Notation "Γ ⊢ M : A ® m ∈ R" := (R Γ M A m : (Prop : Type)) (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp, m custom domain, R constr).
+Notation "'glu_exp_pred_equivalence'" := (@predicate_equivalence glu_exp_pred_args) (only parsing).
+Notation "Γ ⊢ M : A ® m ∈ R" := (R Γ M A m : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp, m custom domain, R constr).
 
 Notation "'glu_sub_pred_args'" := (Tcons ctx (Tcons sub (Tcons env Tnil))).
 Notation "'glu_sub_pred'" := (predicate glu_sub_pred_args).
-Notation "'glu_sub_pred_equivalence'" := (@predicate_equivalence glu_sub_pred_args).
-Notation "Γ ⊢s σ ® ρ ∈ R" := (R Γ σ ρ : Prop) (in custom judg at level 80, Γ custom exp, σ custom exp, ρ custom domain, R constr).
+Notation "'glu_sub_pred_equivalence'" := (@predicate_equivalence glu_sub_pred_args) (only parsing).
+Notation "Γ ⊢s σ ® ρ ∈ R" := (R Γ σ ρ : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, σ custom exp, ρ custom domain, R constr).
 
-Notation "'DG' a ∈ R ↘ P ↘ El" := (R P El a : Prop) (in custom judg at level 90, a custom domain, R constr, P constr, El constr).
-Notation "'EG' A ∈ R ↘ Sb " := (R Sb A : Prop) (in custom judg at level 90, A custom exp, R constr, Sb constr).
+Notation "'DG' a ∈ R ↘ P ↘ El" := (R P El a : (Prop : (Type : Type))) (in custom judg at level 90, a custom domain, R constr, P constr, El constr).
+Notation "'EG' A ∈ R ↘ Sb " := (R Sb A : (Prop : (Type : Type))) (in custom judg at level 90, A custom exp, R constr, Sb constr).
 
 Inductive glu_nat : ctx -> exp -> domain -> Prop :=
 | glu_nat_zero :
@@ -77,8 +78,8 @@ Inductive pi_glu_typ_pred i
        (forall Δ σ m a,
            {{ Δ ⊢w σ : Γ }} ->
            {{ Δ ⊢ m : IT[σ] ® a ∈ IEl }} ->
-           forall (equiv_a_a : {{ Dom a ≈ a ∈ IR }}),
-             {{ Δ ⊢ OT[σ,,m] ® OP _ equiv_a_a }}) ->
+           forall (equiv_a : {{ Dom a ≈ a ∈ IR }}),
+             {{ Δ ⊢ OT[σ,,m] ® OP _ equiv_a }}) ->
        {{ Γ ⊢ M ® pi_glu_typ_pred i IR IP IEl OP }} }.
 
 Inductive pi_glu_exp_pred i
@@ -96,8 +97,8 @@ Inductive pi_glu_exp_pred i
      (forall Δ σ m' b,
          {{ Δ ⊢w σ : Γ }} ->
          {{ Δ ⊢ m' : IT[ σ ] ® b ∈ IEl }} ->
-         forall (equiv_b_b : {{ Dom b ≈ b ∈ IR }}),
-         exists ab, {{ $| a & b |↘ ab }} /\ {{ Δ ⊢ m[σ] m' : OT[σ,,m'] ® ab ∈ OEl _ equiv_b_b }}) ->
+         forall (equiv_b : {{ Dom b ≈ b ∈ IR }}),
+         exists ab, {{ $| a & b |↘ ab }} /\ {{ Δ ⊢ m[σ] m' : OT[σ,,m'] ® ab ∈ OEl _ equiv_b }}) ->
      {{ Γ ⊢ m : M ® a ∈ pi_glu_exp_pred i IR IP IEl elem_rel OEl }} }.
 
 #[export]
