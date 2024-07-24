@@ -83,8 +83,6 @@ Lemma rel_exp_cumu : forall {i Γ A A'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ ⊨ A ≈ A' : Type@(S i) }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ]%rel_exp_of_typ_inversion.
   destruct_conjs.
   eexists_rel_exp_of_typ.

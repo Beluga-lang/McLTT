@@ -76,8 +76,6 @@ Lemma rel_exp_pi_core : forall {i o B o' B' R out_rel},
                    R' m m') ->
     (forall c c' (equiv_c_c' : R c c'), rel_typ i B d{{{ o ↦ c }}} B' d{{{ o' ↦ c' }}} (out_rel c c' equiv_c_c')).
 Proof with intuition.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros.
   subst.
   (on_all_hyp: destruct_rel_by_assumption R).
@@ -94,8 +92,6 @@ Lemma rel_exp_pi_cong : forall {i Γ A A' B B'},
     {{ Γ , A ⊨ B ≈ B' : Type@i }} ->
     {{ Γ ⊨ Π A B ≈ Π A' B' : Type@i }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ]%rel_exp_of_typ_inversion [env_relΓA]%rel_exp_of_typ_inversion.
   destruct_conjs.
   pose env_relΓA.
@@ -124,8 +120,6 @@ Lemma rel_exp_pi_sub : forall {i Γ σ Δ A B},
     {{ Δ , A ⊨ B : Type@i }} ->
     {{ Γ ⊨ (Π A B)[σ] ≈ Π (A[σ]) (B[q σ]) : Type@i }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΔ]%rel_exp_of_typ_inversion [env_relΔA]%rel_exp_of_typ_inversion.
   destruct_conjs.
   pose env_relΔ.
@@ -157,8 +151,6 @@ Lemma rel_exp_fn_cong : forall {i Γ A A' B M M'},
     {{ Γ , A ⊨ M ≈ M' : B }} ->
     {{ Γ ⊨ λ A M ≈ λ A' M' : Π A B }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ]%rel_exp_of_typ_inversion [env_relΓA].
   destruct_conjs.
   pose env_relΓA.
@@ -192,8 +184,6 @@ Lemma rel_exp_fn_sub : forall {Γ σ Δ A M B},
     {{ Δ , A ⊨ M : B }} ->
     {{ Γ ⊨ (λ A M)[σ] ≈ λ A[σ] M[q σ] : (Π A B)[σ] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [env_relΔA].
   destruct_conjs.
   pose env_relΔA.
@@ -231,8 +221,6 @@ Lemma rel_exp_app_cong : forall {Γ M M' A B N N'},
     {{ Γ ⊨ N ≈ N' : A }} ->
     {{ Γ ⊨ M N ≈ M' N' : B[Id,,N] }}.
 Proof with intuition.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ]%rel_exp_of_pi_inversion [].
   destruct_conjs.
   pose env_relΓ.
@@ -262,8 +250,6 @@ Lemma rel_exp_app_sub : forall {Γ σ Δ M A B N},
     {{ Δ ⊨ N : A }} ->
     {{ Γ ⊨ (M N)[σ] ≈ M[σ] N[σ] : B[σ,,N[σ]] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΔ]%rel_exp_of_pi_inversion [].
   destruct_conjs.
   pose env_relΓ.
@@ -290,8 +276,6 @@ Lemma rel_exp_pi_beta : forall {Γ A M B N},
   {{ Γ ⊨ N : A }} ->
   {{ Γ ⊨ (λ A M) N ≈ M[Id,,N] : B[Id,,N] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓA] [env_relΓ].
   destruct_conjs.
   pose env_relΓA.
@@ -317,8 +301,6 @@ Lemma rel_exp_pi_eta : forall {Γ M A B},
   {{ Γ ⊨ M : Π A B }} ->
   {{ Γ ⊨ M ≈ λ A (M[Wk] #0) : Π A B }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ]%rel_exp_of_pi_inversion.
   destruct_conjs.
   pose env_relΓ.

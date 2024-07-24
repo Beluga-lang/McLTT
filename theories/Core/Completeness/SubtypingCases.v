@@ -7,7 +7,6 @@ Lemma sub_typ_subtyp_refl : forall Γ M M' i,
     {{ Γ ⊨ M ≈ M' : Type@i }} ->
     {{ Γ ⊨ M ⊆ M' }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
   intros * [env_relΓ].
   destruct_conjs.
   eexists_sub_typ.
@@ -29,8 +28,6 @@ Lemma sub_typ_subtyp_trans : forall Γ M M' M'',
     {{ Γ ⊨ M' ⊆ M'' }} ->
     {{ Γ ⊨ M ⊆ M'' }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [i]]] [? [? [j]]].
   destruct_conjs.
   pose env_relΓ.
@@ -76,8 +73,6 @@ Lemma sub_typ_subtyp_pi : forall Γ A A' B B' i,
   {{ Γ , A' ⊨ B ⊆ B' }} ->
   {{ Γ ⊨ Π A B ⊆ Π A' B' }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [env_relΓA' [? [k]]].
   destruct_conjs.
   pose env_relΓ.

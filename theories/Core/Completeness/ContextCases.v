@@ -18,8 +18,6 @@ Lemma rel_ctx_extend : forall {Γ Γ' A A' i},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ ⊨ Γ, A ≈ Γ', A' }}.
 Proof with intuition.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓΓ'] [env_relΓ]%rel_exp_of_typ_inversion.
   pose env_relΓ.
   destruct_conjs.
@@ -36,7 +34,7 @@ Proof with intuition.
     econstructor; eauto.
     apply -> per_univ_elem_morphism_iff; eauto.
     split; intros; destruct_by_head rel_typ; handle_per_univ_elem_irrel...
-    eapply H7.
+    eapply H5.
     mauto.
   - apply Equivalence_Reflexive.
 Qed.

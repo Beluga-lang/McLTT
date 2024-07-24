@@ -8,8 +8,6 @@ Lemma rel_exp_sub_cong : forall {Δ M M' A σ σ' Γ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ Γ ⊨ M[σ] ≈ M'[σ'] : A[σ] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΔ] [env_relΓ].
   destruct_conjs.
   pose env_relΔ.
@@ -56,8 +54,6 @@ Lemma rel_exp_sub_compose : forall {Γ τ Γ' σ Γ'' M A},
     {{ Γ'' ⊨ M : A }} ->
     {{ Γ ⊨ M[σ ∘ τ] ≈ M[σ][τ] : A[σ ∘ τ] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΓ']]] [? [? [env_relΓ'']]] [].
   destruct_conjs.
   pose env_relΓ'.
@@ -87,8 +83,6 @@ Lemma rel_exp_conv : forall {Γ M M' A A' i},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ ⊨ M ≈ M' : A' }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] []%rel_exp_of_typ_inversion.
   destruct_conjs.
   pose env_relΓ.
@@ -113,8 +107,6 @@ Lemma rel_exp_sym : forall {Γ M M' A},
     {{ Γ ⊨ M ≈ M' : A }} ->
     {{ Γ ⊨ M' ≈ M : A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ].
   destruct_conjs.
   eexists_rel_exp.
@@ -137,8 +129,6 @@ Lemma rel_exp_trans : forall {Γ M1 M2 M3 A},
     {{ Γ ⊨ M2 ≈ M3 : A }} ->
     {{ Γ ⊨ M1 ≈ M3 : A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [].
   destruct_conjs.
   pose env_relΓ.
@@ -169,8 +159,6 @@ Lemma presup_rel_exp : forall {Γ M M' A},
     {{ Γ ⊨ M ≈ M' : A }} ->
     {{ ⊨ Γ }} /\ {{ Γ ⊨ M : A }} /\ {{ Γ ⊨ M' : A }} /\ exists i, {{ Γ ⊨ A : Type@i }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros *.
   assert (Hpart : {{ Γ ⊨ M ≈ M' : A }} -> {{ Γ ⊨ M : A }} /\ {{ Γ ⊨ M' : A }})
     by (split; unfold valid_exp_under_ctx; etransitivity; [|symmetry|symmetry|]; eassumption).
@@ -194,8 +182,6 @@ Lemma rel_exp_eq_subtyp : forall Γ M M' A A',
     {{ Γ ⊨ A ⊆ A' }} ->
     {{ Γ ⊨ M ≈ M' : A' }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [i]]] [? [? [j]]].
   pose env_relΓ.
   handle_per_ctx_env_irrel.

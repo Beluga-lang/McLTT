@@ -18,8 +18,6 @@ Lemma rel_sub_weaken : forall {Γ A},
     {{ ⊨ Γ, A }} ->
     {{ Γ, A ⊨s Wk ≈ Wk : Γ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓA].
   inversion_by_head (per_ctx_env env_relΓA); subst.
   eexists_rel_sub.
@@ -36,8 +34,6 @@ Lemma rel_sub_compose_cong : forall {Γ τ τ' Γ' σ σ' Γ''},
     {{ Γ' ⊨s σ ≈ σ' : Γ'' }} ->
     {{ Γ ⊨s σ ∘ τ ≈ σ' ∘ τ' : Γ'' }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΓ']]] [].
   destruct_conjs.
   pose env_relΓ'.
@@ -57,8 +53,6 @@ Lemma rel_sub_extend_cong : forall {i Γ M M' σ σ' Δ A},
     {{ Γ ⊨ M ≈ M' : A[σ] }} ->
     {{ Γ ⊨s σ ,, M ≈ σ' ,, M' : Δ, A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] HA [].
   destruct_conjs.
   pose env_relΓ.
@@ -115,8 +109,6 @@ Lemma rel_sub_compose_assoc : forall {Γ σ Γ' σ' Γ'' σ'' Γ'''},
     {{ Γ''' ⊨s σ'' : Γ'' }} ->
     {{ Γ''' ⊨s (σ ∘ σ') ∘ σ'' ≈ σ ∘ (σ' ∘ σ'') : Γ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ'] [env_relΓ'' [? []]] [env_relΓ'''].
   destruct_conjs.
   pose env_relΓ'.
@@ -140,8 +132,6 @@ Lemma rel_sub_extend_compose : forall {Γ τ Γ' M σ Γ'' A i},
     {{ Γ ⊨s τ : Γ' }} ->
     {{ Γ ⊨s (σ ,, M) ∘ τ ≈ (σ ∘ τ) ,, M[τ] : Γ'', A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓ'']]] HA [] [env_relΓ].
   destruct_conjs.
   pose env_relΓ'.
@@ -170,8 +160,6 @@ Lemma rel_sub_p_extend : forall {Γ' M σ Γ A},
     {{ Γ' ⊨ M : A[σ] }} ->
     {{ Γ' ⊨s Wk ∘ (σ ,, M) ≈ σ : Γ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ'] [].
   destruct_conjs.
   pose env_relΓ'.
@@ -192,8 +180,6 @@ Lemma rel_sub_extend : forall {Γ' σ Γ A},
     {{ Γ' ⊨s σ : Γ, A }} ->
     {{ Γ' ⊨s σ ≈ (Wk ∘ σ) ,, #0[σ] : Γ, A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓA]]].
   destruct_conjs.
   pose env_relΓ'.
@@ -231,8 +217,6 @@ Lemma rel_sub_trans : forall {Γ σ σ' σ'' Δ},
     {{ Γ ⊨s σ' ≈ σ'' : Δ }} ->
     {{ Γ ⊨s σ ≈ σ'' : Δ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [].
   destruct_conjs.
   pose env_relΓ.
@@ -259,8 +243,6 @@ Lemma rel_sub_conv : forall {Γ σ σ' Δ Δ'},
     {{ ⊨ Δ ≈ Δ' }} ->
     {{ Γ ⊨s σ ≈ σ' : Δ' }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [? [? [env_relΔ]]] [].
   destruct_conjs.
   pose env_relΔ.
