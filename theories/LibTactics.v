@@ -4,6 +4,10 @@ Open Scope predicate_scope.
 
 Create HintDb mcltt discriminated.
 
+(* Transparency setting for generalized rewriting *)
+#[export]
+Typeclasses Transparent arrows.
+
 (** Generalization of Variables *)
 
 Tactic Notation "gen" ident(x) := generalize dependent x.
