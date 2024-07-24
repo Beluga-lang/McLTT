@@ -157,19 +157,24 @@ Tactic Notation "clean" "replace" uconstr(exp0) "with" uconstr(exp1) "by" tactic
   | _ => t
   end.
 
+Ltac unify_by_head_of t head :=
+  match t with
+  | ?X _ _ _ _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ => unify X head
+  | ?X _ _ _ => unify X head
+  | ?X _ _ => unify X head
+  | ?X _ => unify X head
+  | ?X => unify X head
+  end.
+
 Ltac match_by_head1 head tac :=
   match goal with
-  | [ H : ?X _ _ _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ |- _ ] => unify X head; tac H
-  | [ H : ?X |- _ ] => unify X head; tac H
+  | [ H : ?T |- _ ] => unify_by_head_of T head; tac H
   end.
 Ltac match_by_head head tac := repeat (match_by_head1 head ltac:(fun H => tac H; try mark H)); unmark_all.
 
@@ -386,7 +391,7 @@ Qed.
   Ltac saturate_refl_for hd :=
   repeat match goal with
     | H : ?R ?a ?b |- _ =>
-        unify R hd;
+        unify_by_head_of R hd;
         tryif unify a b
         then fail
         else

@@ -10,6 +10,12 @@ Proof.
   split; intros []; econstructor; unfold Symmetric, Transitive in *; intuition.
 Qed.
 
+#[export]
+Instance subrelation_relation_equivalence {A} : relation_equivalence ~> pointwise_relation A (pointwise_relation A iff).
+Proof.
+  intros R R' HRR' x x'; intuition.
+Qed.
+
 Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A p A' p' : (rel_mod_eval R0 A p A' p')
     with signature (@relation_equivalence domain) ==> iff as rel_mod_eval_morphism.
 Proof.
@@ -316,9 +322,7 @@ Lemma per_univ_elem_sym : forall i R a b,
           {{ Dom m' ≈ m ∈ R }}).
 Proof with mautosolve.
   simpl.
-  induction 1 using per_univ_elem_ind; subst;
-    (* why does rewrite on <~> works only with this? *)
-    pose proof (@relation_equivalence_pointwise domain).
+  induction 1 using per_univ_elem_ind; subst.
   - split.
     + apply per_univ_elem_core_univ'; firstorder.
     + intros.
@@ -436,7 +440,6 @@ Lemma per_univ_elem_trans : forall i R A1 A2,
           R a2 a3 ->
           R a1 a3).
 Proof with (basic_per_univ_elem_econstructor; mautosolve).
-  pose proof (@relation_equivalence_pointwise domain).
   induction 1 using per_univ_elem_ind;
     [> split;
      [ intros * HT2; basic_invert_per_univ_elem HT2; clear HT2
@@ -446,8 +449,8 @@ Proof with (basic_per_univ_elem_econstructor; mautosolve).
     destruct HTR1, HTR2.
     functional_eval_rewrite_clear.
     handle_per_univ_elem_irrel.
-    specialize (H3 _ _ _ H1) as [].
     eexists.
+    specialize (H2 _ _ _ H0) as [].
     intuition.
   - (* nat case *)
     idtac...
@@ -636,21 +639,22 @@ Lemma per_elem_subtyping : forall A B i,
       R a b ->
       R' a b.
 Proof.
-  induction 1; intros.
-  all:handle_per_univ_elem_irrel;
+  induction 1; intros;
+    handle_per_univ_elem_irrel;
+    saturate_refl;
     (on_all_hyp: fun H => directed invert_per_univ_elem H);
-    apply_equiv_left;
+    handle_per_univ_elem_irrel;
+    clear_refl_eqs;
     trivial.
   - firstorder mauto.
   - intros.
     handle_per_univ_elem_irrel.
-    assert (in_rel c c') by (apply_equiv_left; trivial).
-    assert (in_rel1 c c') by (apply_equiv_left; trivial).
     destruct_rel_mod_eval.
+    saturate_refl_for per_univ_elem.
     destruct_rel_mod_app.
+    simplify_evals.
     econstructor; eauto.
-    saturate_refl.
-    deepexec H1 ltac:(fun H => apply H).
+    intuition.
 Qed.
 
 Lemma per_elem_subtyping_gen : forall A B i A' B' R R' a b,
@@ -661,8 +665,7 @@ Lemma per_elem_subtyping_gen : forall A B i A' B' R R' a b,
     R' a b.
 Proof.
   intros.
-  eapply per_elem_subtyping; try eassumption.
-  all:etransitivity; [| symmetry]; eassumption.
+  eapply per_elem_subtyping; saturate_refl; try eassumption.
 Qed.
 
 Lemma per_subtyp_refl1 : forall a b i R,
@@ -678,9 +681,9 @@ Proof.
   saturate_refl.
   econstructor; eauto.
   intros;
-      destruct_rel_mod_eval;
-      functional_eval_rewrite_clear;
-      trivial.
+    destruct_rel_mod_eval;
+    functional_eval_rewrite_clear;
+    trivial.
 Qed.
 
 #[export]
@@ -705,8 +708,7 @@ Lemma per_subtyp_trans : forall A1 A2 i,
       {{ Sub A1 <: A3 at i }}.
 Proof.
   induction 1; intros ? Hsub; simpl in *.
-  1-3:progressive_inversion;
-  mauto.
+  1-3: progressive_inversion; mauto.
   - econstructor; lia.
   - dependent destruction Hsub.
     handle_per_univ_elem_irrel.
@@ -714,21 +716,17 @@ Proof.
     + etransitivity; eassumption.
     + intros.
       saturate_refl.
-      directed invert_per_univ_elem H6.
-      directed invert_per_univ_elem H7.
+      (on_all_hyp: fun H => directed invert_per_univ_elem H).
       destruct_rel_mod_eval.
-      functional_eval_rewrite_clear.
-      deepexec (H0 c c') ltac:(fun H => pose proof H).
-      deepexec (H5 c' c') ltac:(fun H => pose proof H);
-        [ apply_equiv_left; trivial |].
-      eauto.
+      handle_per_univ_elem_irrel.
+      intuition.
 Qed.
 
 #[export]
- Hint Resolve per_subtyp_trans : mcltt.
+Hint Resolve per_subtyp_trans : mcltt.
 
 #[export]
-  Instance per_subtyp_trans_ins i : Transitive (per_subtyp i).
+Instance per_subtyp_trans_ins i : Transitive (per_subtyp i).
 Proof.
   eauto using per_subtyp_trans.
 Qed.
@@ -739,11 +737,7 @@ Lemma per_subtyp_transp : forall A B i A' B' R R',
     {{ DF B ≈ B' ∈ per_univ_elem i ↘ R' }} ->
     {{ Sub A' <: B' at i }}.
 Proof.
-  intros.
-  etransitivity; [eapply per_subtyp_refl2; eassumption |].
-  etransitivity; [eassumption |].
-  eapply per_subtyp_refl1.
-  eassumption.
+  mauto using per_subtyp_refl1, per_subtyp_refl2.
 Qed.
 
 Lemma per_subtyp_cumu : forall A1 A2 i,
@@ -1071,29 +1065,22 @@ Lemma per_ctx_env_subtyping : forall Γ Δ,
       R p p' ->
       R' p p'.
 Proof.
-  induction 1; intros.
-  all:handle_per_ctx_env_irrel;
+  induction 1; intros;
+    handle_per_ctx_env_irrel;
     (on_all_hyp: fun H => directed invert_per_ctx_env H);
-    apply_equiv_left;
+    apply_relation_equivalence;
     trivial.
 
-  handle_per_ctx_env_irrel.
   destruct_all.
-  deepexec IHper_ctx_subtyp ltac:(fun H => pose proof H).
-  deepexec H2 ltac:(fun H => destruct H as []).
-  deepexec H11 ltac:(fun H => destruct H as []).
-  deepexec H1 ltac:(fun H => pose proof H).
-  destruct (per_subtyp_to_univ_elem _ _ _ H15) as [? [? [? ?]]].
-  handle_per_univ_elem_irrel.
-  eexists; try eassumption.
-
-  eapply per_elem_subtyping with (i := max x (max i0 i)).
+  assert {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel0 }} by intuition.
+  unshelve eexists; [eassumption |].
+  destruct_rel_typ.
+  eapply per_elem_subtyping with (i := max x (max i0 i)); try eassumption.
   - eauto using per_subtyp_cumu_right.
   - saturate_refl.
     eauto using per_univ_elem_cumu_max_left.
   - saturate_refl.
     eauto using per_univ_elem_cumu_max_left, per_univ_elem_cumu_max_right.
-  - trivial.
 Qed.
 
 Lemma per_ctx_subtyp_refl1 : forall Γ Δ R,
@@ -1103,12 +1090,11 @@ Proof.
   induction 1; mauto.
 
   assert (exists R, {{ EF Γ , A ≈ Γ' , A' ∈ per_ctx_env ↘ R }}) by
-    (eexists; eapply @per_ctx_env_cons' with (i := i); eassumption).
+    (eexists; eapply per_ctx_env_cons'; eassumption).
   destruct_all.
   econstructor; try solve [saturate_refl; mauto 2].
   intros.
-  unfold rel_typ in *.
-  destruct_rel_mod_eval.
+  destruct_rel_typ.
   simplify_evals.
   eauto using per_subtyp_refl1.
 Qed.
@@ -1127,33 +1113,32 @@ Lemma per_ctx_subtyp_trans : forall Γ1 Γ2,
       {{ SubE Γ1 <: Γ3 }}.
 Proof.
   induction 1; intros;
-    progressive_inversion;
-      mauto 1;
-      clear_PER.
+    (on_all_hyp: fun H => directed invert_per_ctx_env H);
+    mauto 1;
+    clear_PER.
 
   handle_per_ctx_env_irrel.
   econstructor; try eassumption.
   - firstorder.
   - instantiate (1 := max i i0).
     intros.
-    cutexec per_ctx_env_subtyping H ltac:(fun H => deepexec H ltac:(fun H => pose proof H)).
-    cutexec per_ctx_env_subtyping H7 ltac:(fun H => deepexec H ltac:(fun H => pose proof H)).
-    deepexec H22 ltac:(fun H => destruct H as []).
-
+    assert {{ Dom p ≈ p' ∈ tail_rel0 }} by (eapply per_ctx_env_subtyping; revgoals; eassumption).
+    saturate_refl_for tail_rel.
+    destruct_rel_typ.
+    handle_per_univ_elem_irrel.
     etransitivity.
-    + saturate_refl_for tail_rel4.
-      apply_equiv_right.
-      deepexec (H1 p p) ltac:(fun H => eauto using per_subtyp_cumu_left, H).
-    + eapply per_subtyp_cumu_right.
-      eapply H9; eauto.
-      apply_equiv_left; trivial.
+    + intuition mauto using per_subtyp_cumu_left.
+    + intuition mauto using per_subtyp_cumu_right.
+  - econstructor; intuition.
+    + typeclasses eauto.
+    + solve_refl.
 Qed.
 
 #[export]
- Hint Resolve per_ctx_subtyp_trans : mcltt.
+Hint Resolve per_ctx_subtyp_trans : mcltt.
 
 #[export]
-  Instance per_ctx_subtyp_trans_ins : Transitive per_ctx_subtyp.
+Instance per_ctx_subtyp_trans_ins : Transitive per_ctx_subtyp.
 Proof.
   eauto using per_ctx_subtyp_trans.
 Qed.
