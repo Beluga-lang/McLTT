@@ -1,4 +1,5 @@
-From Coq Require Export Relations.Relation_Definitions Program.Equality Program.Tactics Lia RelationClasses.
+From Coq Require Export Equivalence Lia Morphisms Program.Equality Program.Tactics Relation_Definitions RelationClasses.
+From Equations Require Export Equations.
 
 Open Scope predicate_scope.
 
@@ -416,7 +417,7 @@ Proof.
 Qed.
 
 #[export]
-Instance subrelation_relation_equivalence {A} : relation_equivalence ~> pointwise_relation A (pointwise_relation A iff).
+Instance subrelation_relation_equivalence {A} : subrelation relation_equivalence (pointwise_relation A (pointwise_relation A iff)).
 Proof.
-  intros R R' HRR' x x'; intuition.
+  intro; intuition.
 Qed.
