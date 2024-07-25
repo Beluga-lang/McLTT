@@ -7,11 +7,26 @@ Ltac eexists_rel_exp :=
   eexists; [eassumption |];
   eexists.
 
+Ltac eexists_rel_exp_with i :=
+  eexists;
+  eexists; [eassumption |];
+  exists i.
+
 Ltac eexists_rel_sub :=
   eexists;
   eexists; [eassumption |];
   eexists;
   eexists; [eassumption |].
+
+Ltac eexists_sub_typ :=
+  eexists;
+  eexists; [eassumption |];
+  eexists.
+
+Ltac eexists_sub_typ_with i :=
+  eexists;
+  eexists; [eassumption |];
+  exists i.
 
 Ltac invert_rel_typ_body :=
   simplify_evals;

@@ -22,7 +22,6 @@ Lemma realize_per_univ_elem_gen : forall {i a a' R},
     /\ (forall {c c'}, {{ Dom c ≈ c' ∈ per_bot }} -> {{ Dom ⇑ a c ≈ ⇑ a' c' ∈ R }})
     /\ (forall {b b'}, {{ Dom b ≈ b' ∈ R }} -> {{ Dom ⇓ a b ≈ ⇓ a' b' ∈ per_top }}).
 Proof with (solve [try (try (eexists; split); econstructor); mauto]).
-  pose proof (@relation_equivalence_pointwise domain).
   intros * Hunivelem. simpl in Hunivelem.
   induction Hunivelem using per_univ_elem_ind; repeat split; intros;
     apply_relation_equivalence; mauto.
@@ -32,32 +31,32 @@ Proof with (solve [try (try (eexists; split); econstructor); mauto]).
     per_univ_elem_econstructor...
   - subst.
     destruct_by_head per_univ.
-    specialize (H3 _ _ _ H1).
+    specialize (H2 _ _ _ H0).
     destruct_conjs.
     intro s.
-    specialize (H2 s) as [? []]...
+    specialize (H1 s) as [? []]...
   - destruct IHHunivelem as [? []].
     intro s.
     assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
     destruct_rel_mod_eval.
-    specialize (H10 (S s)) as [? []].
-    specialize (H3 s) as [? []]...
+    specialize (H9 (S s)) as [? []].
+    specialize (H2 s) as [? []]...
   - intros c0 c0' equiv_c0_c0'.
     destruct_conjs.
     destruct_rel_mod_eval.
     econstructor; try solve [econstructor; eauto].
     enough ({{ Dom c ⇓ A c0 ≈ c' ⇓ A' c0' ∈ per_bot }}) by eauto.
     intro s.
-    specialize (H4 s) as [? []].
-    specialize (H6 _ _ equiv_c0_c0' s) as [? []]...
+    specialize (H3 s) as [? []].
+    specialize (H5 _ _ equiv_c0_c0' s) as [? []]...
   - destruct_conjs.
     intro s.
     assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
     destruct_rel_mod_eval.
     destruct_rel_mod_app.
     assert {{ Dom ⇓ a fa ≈ ⇓ a' f'a' ∈ per_top }} by eauto.
-    specialize (H3 s) as [? []].
-    specialize (H17 (S s)) as [? []]...
+    specialize (H2 s) as [? []].
+    specialize (H16 (S s)) as [? []]...
   - intro s.
     (on_all_hyp: fun H => destruct (H s) as [? []])...
   - intro s.
@@ -100,7 +99,6 @@ Lemma per_ctx_then_per_env_initial_env : forall {Γ Γ' env_rel},
     {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ env_rel }} ->
     exists p p', initial_env Γ p /\ initial_env Γ' p' /\ {{ Dom p ≈ p' ∈ env_rel }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise env).
   induction 1.
   - do 2 eexists; intuition.
   - destruct_conjs.

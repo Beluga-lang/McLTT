@@ -327,7 +327,6 @@ Lemma per_univ_elem_pi_clean_inversion : forall i a p B in_rel IP IEl elem_rel t
         (el_rel <∙> pi_glu_exp_pred i in_rel IP IEl elem_rel OEl).
 Proof.
   simpl.
-  pose proof (@relation_equivalence_pointwise domain).
   intros * Hinper Hinglu Hper Hglu.
   basic_invert_glu_univ_elem Hglu.
   handle_per_univ_elem_irrel.

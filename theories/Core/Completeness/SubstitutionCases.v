@@ -18,8 +18,6 @@ Lemma rel_sub_weaken : forall {Γ A},
     {{ ⊨ Γ, A }} ->
     {{ Γ, A ⊨s Wk ≈ Wk : Γ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓA].
   inversion_by_head (per_ctx_env env_relΓA); subst.
   eexists_rel_sub.
@@ -36,11 +34,9 @@ Lemma rel_sub_compose_cong : forall {Γ τ τ' Γ' σ σ' Γ''},
     {{ Γ' ⊨s σ ≈ σ' : Γ'' }} ->
     {{ Γ ⊨s σ ∘ τ ≈ σ' ∘ τ' : Γ'' }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΓ']]] [].
   destruct_conjs.
-  pose (env_relΓ'0 := env_relΓ').
+  pose env_relΓ'.
   handle_per_ctx_env_irrel.
   eexists_rel_sub.
   intros.
@@ -57,15 +53,12 @@ Lemma rel_sub_extend_cong : forall {i Γ M M' σ σ' Δ A},
     {{ Γ ⊨ M ≈ M' : A[σ] }} ->
     {{ Γ ⊨s σ ,, M ≈ σ' ,, M' : Δ, A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] HA [].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
-  pose (env_relΔ0 := env_relΔ).
+  pose env_relΓ.
+  pose env_relΔ.
   assert {{ ⊨ Δ, A }} as [env_relΔA] by (eapply rel_ctx_extend; eauto; eexists; mauto).
   destruct_conjs.
-  pose (env_relΔA0 := env_relΔA).
   handle_per_ctx_env_irrel.
   eexists_rel_sub.
   match_by_head (per_ctx_env env_relΔA) invert_per_ctx_env.
@@ -116,12 +109,10 @@ Lemma rel_sub_compose_assoc : forall {Γ σ Γ' σ' Γ'' σ'' Γ'''},
     {{ Γ''' ⊨s σ'' : Γ'' }} ->
     {{ Γ''' ⊨s (σ ∘ σ') ∘ σ'' ≈ σ ∘ (σ' ∘ σ'') : Γ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ' [? [env_relΓ]]] [env_relΓ'' [? []]] [env_relΓ'''].
+  intros * [env_relΓ'] [env_relΓ'' [? []]] [env_relΓ'''].
   destruct_conjs.
-  pose (env_relΓ'0 := env_relΓ').
-  pose (env_relΓ''0 := env_relΓ'').
+  pose env_relΓ'.
+  pose env_relΓ''.
   handle_per_ctx_env_irrel.
   eexists_rel_sub.
   intros.
@@ -141,19 +132,15 @@ Lemma rel_sub_extend_compose : forall {Γ τ Γ' M σ Γ'' A i},
     {{ Γ ⊨s τ : Γ' }} ->
     {{ Γ ⊨s (σ ,, M) ∘ τ ≈ (σ ∘ τ) ,, M[τ] : Γ'', A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓ'']]] HA [] [env_relΓ].
   destruct_conjs.
-  pose (env_relΓ'0 := env_relΓ').
-  pose (env_relΓ''0 := env_relΓ'').
+  pose env_relΓ'.
+  pose env_relΓ''.
+  handle_per_ctx_env_irrel.
   assert {{ ⊨ Γ'', A }} as [env_relΓ''A] by (eapply rel_ctx_extend; eauto; eexists; eassumption).
   destruct_conjs.
-  pose (env_relΓ''A0 := env_relΓ''A).
-  handle_per_ctx_env_irrel.
   eexists_rel_sub.
   match_by_head (per_ctx_env env_relΓ''A) invert_per_ctx_env.
-  destruct_conjs.
   handle_per_ctx_env_irrel.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
@@ -173,12 +160,9 @@ Lemma rel_sub_p_extend : forall {Γ' M σ Γ A},
     {{ Γ' ⊨ M : A[σ] }} ->
     {{ Γ' ⊨s Wk ∘ (σ ,, M) ≈ σ : Γ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ' [? [env_relΓ]]] [].
+  intros * [env_relΓ'] [].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
-  pose (env_relΓ'0 := env_relΓ').
+  pose env_relΓ'.
   handle_per_ctx_env_irrel.
   eexists_rel_sub.
   intros.
@@ -196,12 +180,9 @@ Lemma rel_sub_extend : forall {Γ' σ Γ A},
     {{ Γ' ⊨s σ : Γ, A }} ->
     {{ Γ' ⊨s σ ≈ (Wk ∘ σ) ,, #0[σ] : Γ, A }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ' [? [env_relΓA]]].
   destruct_conjs.
-  pose (env_relΓA0 := env_relΓA).
-  pose (env_relΓ'0 := env_relΓ').
+  pose env_relΓ'.
   inversion_by_head (per_ctx_env env_relΓA); subst.
   rename tail_rel into env_relΓ.
   handle_per_ctx_env_irrel.
@@ -236,11 +217,9 @@ Lemma rel_sub_trans : forall {Γ σ σ' σ'' Δ},
     {{ Γ ⊨s σ' ≈ σ'' : Δ }} ->
     {{ Γ ⊨s σ ≈ σ'' : Δ }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ] [].
   destruct_conjs.
-  pose (env_relΓ0 := env_relΓ).
+  pose env_relΓ.
   handle_per_ctx_env_irrel.
   eexists_rel_sub.
   intros.
@@ -264,16 +243,12 @@ Lemma rel_sub_conv : forall {Γ σ σ' Δ Δ'},
     {{ ⊨ Δ ≈ Δ' }} ->
     {{ Γ ⊨s σ ≈ σ' : Δ' }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
-  intros * [env_relΓ [? [env_relΔ]]] [].
+  intros * [? [? [env_relΔ]]] [].
   destruct_conjs.
-  pose (env_relΔ0 := env_relΔ).
+  pose env_relΔ.
   handle_per_ctx_env_irrel.
   assert {{ EF Δ' ≈ Δ' ∈ per_ctx_env ↘ env_relΔ }} by (etransitivity; [symmetry |]; eassumption).
-  eexists_rel_sub.
-  intros.
-  (on_all_hyp: destruct_rel_by_assumption env_relΓ)...
+  eexists_rel_sub...
 Qed.
 
 #[export]
@@ -283,7 +258,7 @@ Lemma presup_rel_sub : forall {Γ σ σ' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ ⊨ Γ }} /\ {{ Γ ⊨s σ : Δ }} /\ {{ Γ ⊨s σ' : Δ }} /\ {{ ⊨ Δ }}.
 Proof with mautosolve.
-  intros * [env_relΓ [? [env_relΔ]]].
+  intros * [].
   destruct_conjs.
   repeat split; try solve [eexists; eauto];
     unfold valid_sub_under_ctx;
@@ -291,22 +266,21 @@ Proof with mautosolve.
     econstructor...
 Qed.
 
-
 Lemma rel_sub_eq_subtyp : forall Γ σ σ' Δ Δ',
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
     {{ SubE Δ <: Δ' }} ->
     {{ Γ ⊨s σ ≈ σ' : Δ' }}.
 Proof.
-  intros * [R [HR [R' [HR' ?]]]] HSub.
-  destruct (per_ctx_subtyp_to_env _ _ HSub) as [? [? []]].
+  intros * [env_relΓ] HSub.
+  pose proof (per_ctx_subtyp_to_env _ _ HSub).
+  destruct_conjs.
   handle_per_ctx_env_irrel.
-  do 4 try eexists; eauto.
+  eexists_rel_sub.
   intros.
-  deepexec H ltac:(fun H => destruct H as []).
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   econstructor; eauto.
   eapply per_ctx_env_subtyping; eauto.
 Qed.
 
-
 #[export]
-  Hint Resolve rel_sub_eq_subtyp : mcltt.
+Hint Resolve rel_sub_eq_subtyp : mcltt.

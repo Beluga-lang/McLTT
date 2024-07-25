@@ -203,8 +203,6 @@ Lemma rel_exp_of_sub_id_N : forall {Γ M M' N A},
           exists elem_rel, rel_typ i A d{{{ p ↦ n }}} A d{{{ p' ↦ n' }}} elem_rel /\ rel_exp M p M' p' elem_rel) ->
     {{ Γ ⊨ M ≈ M' : A[Id,,N] }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * []%rel_exp_of_nat_inversion [env_relΓ].
   destruct_conjs.
   pose env_relΓ.
@@ -238,8 +236,6 @@ Lemma eval_natrec_sub_neut : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' 
         {{ ⟦ MZ' ⟧ o' ↘ mz' }} ->
         {{ Dom rec m under o return A | zero -> mz | succ -> MS end ≈ rec m' under p' return A'[q σ] | zero -> mz' | succ -> MS'[q (q σ)] end ∈ per_bot }}).
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * equiv_Γ_Γ equiv_Δ_Δ
              [env_relΔℕ]%rel_exp_of_typ_inversion
              []%rel_exp_of_sub_id_zero_inversion
@@ -342,8 +338,6 @@ Lemma eval_natrec_rel : forall {Γ env_relΓ MZ MZ' MS MS' A A' i m m'},
             {{ rec m' ⟦return A' | zero -> MZ' | succ -> MS' end⟧ p' ↘ r' }} /\
             {{ Dom r ≈ r' ∈ elem_rel }}).
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * equiv_Γ_Γ HA HMZ HMS equiv_m_m'.
   induction equiv_m_m'; intros;
     apply rel_exp_of_typ_inversion in HA as [env_relΓℕ];
@@ -426,8 +420,6 @@ Lemma rel_exp_natrec_cong_rel_typ: forall {Γ A A' i M M' env_relΓ},
       exists elem_rel,
         rel_typ i A d{{{ p ↦ n }}} A d{{{ p' ↦ n' }}} elem_rel.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
   assert {{ Γ ⊨ ℕ : Type@0 }} by mauto.
@@ -452,8 +444,6 @@ Lemma rel_exp_natrec_cong : forall {Γ MZ MZ' MS MS' A A' i M M'},
     {{ Γ ⊨ M ≈ M' : ℕ }} ->
     {{ Γ ⊨ rec M return A | zero -> MZ | succ -> MS end ≈ rec M' return A' | zero -> MZ' | succ -> MS' end : A[Id,,M] }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * HAA' ? ? [env_relΓ]%rel_exp_of_nat_inversion.
   destruct_conjs.
   pose env_relΓ.
@@ -506,8 +496,6 @@ Lemma eval_natrec_sub_rel : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' A
             {{ rec m' ⟦return A'[q σ] | zero -> MZ'[σ] | succ -> MS'[q (q σ)] end⟧ p' ↘ r' }} /\
             {{ Dom r ≈ r' ∈ elem_rel }}).
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * equiv_Γ_Γ equiv_Δ_Δ HA HMZ HMS equiv_m_m'.
   induction equiv_m_m'; intros;
     apply rel_exp_of_typ_inversion in HA as [env_relΔℕ];
@@ -589,8 +577,6 @@ Lemma rel_exp_natrec_sub_rel_typ: forall {Γ σ Δ A i M env_relΓ},
     exists elem_rel,
       rel_typ i {{{ A[σ,,M[σ]] }}} p {{{ A[σ,,M[σ]] }}} p' elem_rel.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
   assert {{ ⊨ Δ }} by (eapply presup_rel_sub; eauto).
@@ -612,8 +598,6 @@ Lemma rel_exp_natrec_sub : forall {Γ σ Δ MZ MS A i M},
     {{ Δ ⊨ M : ℕ }} ->
     {{ Γ ⊨ rec M return A | zero -> MZ | succ -> MS end[σ] ≈ rec M[σ] return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M[σ]] }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] HA ? ? []%rel_exp_of_nat_inversion.
   destruct_conjs.
   handle_per_ctx_env_irrel.
@@ -643,8 +627,6 @@ Lemma rel_exp_nat_beta_zero : forall {Γ MZ MS A},
     {{ Γ, ℕ, A ⊨ MS : A[Wk∘Wk,,succ(#1)] }} ->
     {{ Γ ⊨ rec zero return A | zero -> MZ | succ -> MS end ≈ MZ : A[Id,,zero] }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ]%rel_exp_of_sub_id_zero_inversion [env_relΓℕA]%rel_exp_of_sub_wkwk_succ_var1_inversion.
   destruct_conjs.
   assert {{ ⊨ Γ, ℕ }} as [env_relΓℕ] by (match_by_head (per_ctx_env env_relΓℕA) invert_per_ctx_env; eexists; eauto).
@@ -679,8 +661,6 @@ Lemma rel_exp_nat_beta_succ_rel_typ : forall {Γ env_relΓ A i M},
     exists elem_rel,
       rel_typ i {{{ A[Id,,succ M] }}} p {{{ A[Id,,succ M] }}} p' elem_rel.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
   assert {{ Γ ⊨ ℕ : Type@0 }} by mauto.
@@ -702,8 +682,6 @@ Lemma rel_exp_nat_beta_succ : forall {Γ MZ MS A i M},
     {{ Γ ⊨ M : ℕ }} ->
     {{ Γ ⊨ rec succ M return A | zero -> MZ | succ -> MS end ≈ MS[Id,,M,,rec M return A | zero -> MZ | succ -> MS end] : A[Id,,succ M] }}.
 Proof.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * HA ? ? [env_relΓ]%rel_exp_of_nat_inversion.
   destruct_conjs.
   eexists_rel_exp.

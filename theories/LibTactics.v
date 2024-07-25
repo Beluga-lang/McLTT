@@ -1,8 +1,13 @@
-From Coq Require Export Relations.Relation_Definitions Program.Equality Program.Tactics Lia RelationClasses.
+From Coq Require Export Equivalence Lia Morphisms Program.Equality Program.Tactics Relation_Definitions RelationClasses.
+From Equations Require Export Equations.
 
 Open Scope predicate_scope.
 
 Create HintDb mcltt discriminated.
+
+(* Transparency setting for generalized rewriting *)
+#[export]
+Typeclasses Transparent arrows.
 
 (** Generalization of Variables *)
 
@@ -157,19 +162,24 @@ Tactic Notation "clean" "replace" uconstr(exp0) "with" uconstr(exp1) "by" tactic
   | _ => t
   end.
 
+Ltac unify_by_head_of t head :=
+  match t with
+  | ?X _ _ _ _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ _ => unify X head
+  | ?X _ _ _ _ => unify X head
+  | ?X _ _ _ => unify X head
+  | ?X _ _ => unify X head
+  | ?X _ => unify X head
+  | ?X => unify X head
+  end.
+
 Ltac match_by_head1 head tac :=
   match goal with
-  | [ H : ?X _ _ _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ _ |- _ ] => unify X head; tac H
-  | [ H : ?X _ |- _ ] => unify X head; tac H
-  | [ H : ?X |- _ ] => unify X head; tac H
+  | [ H : ?T |- _ ] => unify_by_head_of T head; tac H
   end.
 Ltac match_by_head head tac := repeat (match_by_head1 head ltac:(fun H => tac H; try mark H)); unmark_all.
 
@@ -386,7 +396,7 @@ Qed.
   Ltac saturate_refl_for hd :=
   repeat match goal with
     | H : ?R ?a ?b |- _ =>
-        unify R hd;
+        unify_by_head_of R hd;
         tryif unify a b
         then fail
         else
@@ -398,3 +408,16 @@ Qed.
 #[global]
   Ltac solve_refl :=
   solve [reflexivity || apply Equivalence_Reflexive].
+
+(* Helper Instances for Generalized Rewriting *)
+Add Parametric Morphism A : PER
+    with signature (@relation_equivalence A) ==> iff as PER_morphism.
+Proof.
+  split; intros []; econstructor; unfold Symmetric, Transitive in *; intuition.
+Qed.
+
+#[export]
+Instance subrelation_relation_equivalence {A} : subrelation relation_equivalence (pointwise_relation A (pointwise_relation A iff)).
+Proof.
+  intro; intuition.
+Qed.

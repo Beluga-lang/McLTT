@@ -18,8 +18,6 @@ Lemma rel_ctx_extend : forall {Γ Γ' A A' i},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
     {{ ⊨ Γ, A ≈ Γ', A' }}.
 Proof with intuition.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓΓ'] [env_relΓ]%rel_exp_of_typ_inversion.
   pose env_relΓ.
   destruct_conjs.
@@ -36,7 +34,7 @@ Proof with intuition.
     econstructor; eauto.
     apply -> per_univ_elem_morphism_iff; eauto.
     split; intros; destruct_by_head rel_typ; handle_per_univ_elem_irrel...
-    eapply H7.
+    eapply H5.
     mauto.
   - apply Equivalence_Reflexive.
 Qed.
@@ -54,11 +52,9 @@ Qed.
 #[export]
 Hint Resolve rel_ctx_extend rel_ctx_extend' : mcltt.
 
-
 Lemma rel_ctx_sub_empty :
   {{ SubE ⋅ <: ⋅ }}.
 Proof. mauto. Qed.
-
 
 Lemma rel_ctx_sub_extend : forall Γ Δ i A A',
   {{ SubE Γ <: Δ }} ->
@@ -67,15 +63,15 @@ Lemma rel_ctx_sub_extend : forall Γ Δ i A A',
   {{ Γ ⊨ A ⊆ A' }} ->
   {{ SubE Γ , A <: Δ , A' }}.
 Proof.
-  intros * H H1 H2 H3.
-  pose proof H3.
-  destruct H3 as [? [? []]].
-  on_all_hyp: fun H => (eapply rel_ctx_extend' in H; destruct H).
+  intros * ? []%rel_ctx_extend' []%rel_ctx_extend' [env_relΓ].
+  pose env_relΓ.
+  destruct_conjs.
   econstructor; mauto; intros.
-  deepexec H3 ltac:(fun H => destruct H as [? [? [? [? []]]]]).
-  simplify_evals. eassumption.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  destruct_by_head rel_exp.
+  simplify_evals.
+  eassumption.
 Qed.
-
 
 #[export]
 Hint Resolve rel_ctx_sub_empty rel_ctx_sub_extend : mcltt.

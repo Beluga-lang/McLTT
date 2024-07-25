@@ -11,15 +11,13 @@ Lemma valid_lookup : forall {Γ x A env_rel}
     exists elem_rel,
       rel_typ i A p A p' elem_rel /\ rel_exp {{{ #x }}} p {{{ #x }}} p' elem_rel.
 Proof with solve [split; mauto].
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * ? HxinΓ.
   assert {{ #x : A ∈ Γ }} as HxinΓ' by mauto.
   remember Γ as Δ eqn:HΔΓ in HxinΓ', equiv_Γ_Γ at 2. clear HΔΓ. rename equiv_Γ_Γ into equiv_Γ_Δ.
   remember A as A' eqn:HAA' in HxinΓ' |- * at 2. clear HAA'.
   gen Δ A' env_rel.
   induction HxinΓ; intros * equiv_Γ_Δ HxinΓ0; inversion HxinΓ0; subst; clear HxinΓ0; inversion_clear equiv_Γ_Δ; subst;
-    [| specialize (IHHxinΓ _ _ _ equiv_Γ_Γ' H2) as [j ?]; destruct_conjs];
+    [| specialize (IHHxinΓ _ _ _ equiv_Γ_Γ' H0) as [j ?]; destruct_conjs];
     apply_relation_equivalence;
     eexists; intros ? ? [];
     (on_all_hyp: destruct_rel_by_assumption tail_rel); destruct_conjs;
@@ -48,8 +46,6 @@ Lemma rel_exp_var_0_sub : forall {Γ M σ Δ A},
   {{ Γ ⊨ M : A[σ] }} ->
   {{ Γ ⊨ #0[σ ,, M] ≈ M : A[σ] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [].
   destruct_conjs.
   pose env_relΓ.
@@ -74,8 +70,6 @@ Lemma rel_exp_var_S_sub : forall {Γ M σ Δ A x B},
   {{ #x : B ∈ Δ }} ->
   {{ Γ ⊨ #(S x)[σ ,, M] ≈ #x[σ] : B[σ] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓ [? [env_relΔ]]] [] HxinΓ.
   destruct_conjs.
   pose env_relΓ.
@@ -102,8 +96,6 @@ Lemma rel_exp_var_weaken : forall {Γ B x A},
     {{ #x : A ∈ Γ }} ->
     {{ Γ , B ⊨ #x[Wk] ≈ #(S x) : A[Wk] }}.
 Proof with mautosolve.
-  pose proof (@relation_equivalence_pointwise domain).
-  pose proof (@relation_equivalence_pointwise env).
   intros * [env_relΓB] HxinΓ.
   inversion_by_head (per_ctx_env env_relΓB); subst.
   unshelve epose proof (valid_lookup _ HxinΓ); shelve_unifiable; [eassumption |].
