@@ -407,3 +407,16 @@ Qed.
 #[global]
   Ltac solve_refl :=
   solve [reflexivity || apply Equivalence_Reflexive].
+
+(* Helper Instances for Generalized Rewriting *)
+Add Parametric Morphism A : PER
+    with signature (@relation_equivalence A) ==> iff as PER_morphism.
+Proof.
+  split; intros []; econstructor; unfold Symmetric, Transitive in *; intuition.
+Qed.
+
+#[export]
+Instance subrelation_relation_equivalence {A} : relation_equivalence ~> pointwise_relation A (pointwise_relation A iff).
+Proof.
+  intros R R' HRR' x x'; intuition.
+Qed.

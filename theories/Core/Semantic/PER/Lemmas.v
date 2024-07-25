@@ -4,18 +4,6 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import PER.Definitions PER.CoreTactics.
 Import Domain_Notations.
 
-Add Parametric Morphism A : PER
-    with signature (@relation_equivalence A) ==> iff as PER_morphism.
-Proof.
-  split; intros []; econstructor; unfold Symmetric, Transitive in *; intuition.
-Qed.
-
-#[export]
-Instance subrelation_relation_equivalence {A} : relation_equivalence ~> pointwise_relation A (pointwise_relation A iff).
-Proof.
-  intros R R' HRR' x x'; intuition.
-Qed.
-
 Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A p A' p' : (rel_mod_eval R0 A p A' p')
     with signature (@relation_equivalence domain) ==> iff as rel_mod_eval_morphism.
 Proof.
