@@ -303,13 +303,10 @@ Variant cons_glu_sub_pred i Γ A (TSb : glu_sub_pred) : glu_sub_pred :=
 | mk_cons_glu_sub_pred :
   `{ forall P El,
         {{ Δ ⊢s σ : Γ, A }} ->
-        (* Do we need the following argument?
-           In other words, is it possible to prove that "TSb" respects
-           wf_sub_eq without the following condition? *)
-        {{ Δ ⊢s Wk ∘ σ ≈ Wk∘σ : Γ }} ->
         {{ ⟦ A ⟧ ρ ↯ ↘ a }} ->
         {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
         {{ Δ ⊢ #0[σ] : A[Wk∘σ] ® ~(ρ 0) ∈ El }} ->
+        {{ Δ ⊢s Wk ∘ σ ® ρ ↯ ∈ TSb }} ->
         {{ Δ ⊢s σ ® ρ ∈ cons_glu_sub_pred i Γ A TSb }} }.
 
 Inductive glu_ctx_env : glu_sub_pred -> ctx -> Prop :=
