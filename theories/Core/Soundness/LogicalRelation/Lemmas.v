@@ -460,30 +460,31 @@ Ltac handle_functional_glu_univ_elem :=
   apply_predicate_equivalence;
   clear_dups.
 
-Lemma glu_univ_elem_pi_clean_inversion : forall {i a p B in_rel elem_rel typ_rel el_rel},
+Lemma glu_univ_elem_pi_clean_inversion : forall {i a p B in_rel typ_rel el_rel},
   {{ DF a ≈ a ∈ per_univ_elem i ↘ in_rel }} ->
-  {{ DF Π a p B ≈ Π a p B ∈ per_univ_elem i ↘ elem_rel }} ->
   {{ DG Π a p B ∈ glu_univ_elem i ↘ typ_rel ↘ el_rel }} ->
-  exists IP IEl (OP : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_typ_pred)
+  exists elem_rel IP IEl (OP : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_typ_pred)
      (OEl : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_exp_pred),
+    {{ DF Π a p B ≈ Π a p B ∈ per_univ_elem i ↘ elem_rel }} /\
       {{ DG a ∈ glu_univ_elem i ↘ IP ↘ IEl }} /\
-        (forall c (equiv_c : {{ Dom c ≈ c ∈ in_rel }}) b,
-            {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
-            {{ DG b ∈ glu_univ_elem i ↘ OP _ equiv_c ↘ OEl _ equiv_c }}) /\
-        (typ_rel <∙> pi_glu_typ_pred i in_rel IP IEl OP) /\
-        (el_rel <∙> pi_glu_exp_pred i in_rel IP IEl elem_rel OEl).
+      (forall c (equiv_c : {{ Dom c ≈ c ∈ in_rel }}) b,
+          {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+          {{ DG b ∈ glu_univ_elem i ↘ OP _ equiv_c ↘ OEl _ equiv_c }}) /\
+      (typ_rel <∙> pi_glu_typ_pred i in_rel IP IEl OP) /\
+      (el_rel <∙> pi_glu_exp_pred i in_rel IP IEl elem_rel OEl).
 Proof.
   intros *.
   simpl.
-  intros Hinper Hper Hglu.
+  intros Hinper Hglu.
   basic_invert_glu_univ_elem Hglu.
   handle_functional_glu_univ_elem.
   handle_per_univ_elem_irrel.
-  do 4 eexists.
+  do 5 eexists.
   repeat split.
   1: eassumption.
+  1: eassumption.
   1: instantiate (1 := fun c equiv_c Γ M A m => forall (b : domain) Pb Elb,
-                          {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+                        {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
                           {{ DG b ∈ glu_univ_elem i ↘ Pb ↘ Elb }} ->
                           {{ Γ ⊢ M : A ® m ∈ Elb }}).
   1: instantiate (1 := fun c equiv_c Γ A => forall (b : domain) Pb Elb,
@@ -535,8 +536,8 @@ Proof.
 Qed.
 
 Ltac invert_glu_univ_elem H :=
-  (unshelve eapply (glu_univ_elem_pi_clean_inversion _ _) in H; [eassumption | eassumption | | |];
-   destruct H as [? [? [? [? [? [? []]]]]]])
+  (unshelve eapply (glu_univ_elem_pi_clean_inversion _) in H; shelve_unifiable; [eassumption |];
+   destruct H as [? [? [? [? [? [? [? [? []]]]]]]]])
   + basic_invert_glu_univ_elem H.
 
 Lemma glu_univ_elem_morphism_helper : forall i a a' P El,
@@ -558,6 +559,7 @@ Proof.
     destruct_rel_mod_eval.
     handle_per_univ_elem_irrel.
     intuition.
+  - apply pi_glu_exp_pred_morphism_glu_exp_pred_equivalence; try reflexivity.
   - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence.
     eassumption.
   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
@@ -619,3 +621,313 @@ Proof.
   - do 2 eexists.
     glu_univ_elem_econstructor; try reflexivity; mauto.
 Qed.
+
+#[export]
+Instance subrelation_glu_typ_pred_equivalence_iff : subrelation glu_typ_pred_equivalence (@pointwise_relation ctx (predicate (Tcons typ Tnil)) (@pointwise_relation typ (predicate Tnil) iff)).
+Proof.
+  intros ? ? ? ? ?. intuition.
+Qed.
+
+#[export]
+Instance subrelation_glu_typ_pred_equivalence_impl : subrelation glu_typ_pred_equivalence (@pointwise_relation ctx (predicate (Tcons typ Tnil)) (@pointwise_relation typ (predicate Tnil) Basics.impl)).
+Proof.
+  intros ? ? ? ? ? ?. intuition.
+Qed.
+
+#[export]
+Instance subrelation_glu_exp_pred_equivalence_iff : subrelation glu_exp_pred_equivalence (@pointwise_relation ctx (predicate (Tcons exp (Tcons typ (Tcons domain Tnil)))) (@pointwise_relation exp (predicate (Tcons typ (Tcons domain Tnil))) (@pointwise_relation typ (predicate (Tcons domain Tnil)) (@pointwise_relation domain (predicate Tnil) iff)))).
+Proof.
+  intros ? ? ? ? ? ? ?. intuition.
+Qed.
+
+#[export]
+Instance subrelation_glu_exp_pred_equivalence_impl : subrelation glu_exp_pred_equivalence (@pointwise_relation ctx (predicate (Tcons exp (Tcons typ (Tcons domain Tnil)))) (@pointwise_relation exp (predicate (Tcons typ (Tcons domain Tnil))) (@pointwise_relation typ (predicate (Tcons domain Tnil)) (@pointwise_relation domain (predicate Tnil) Basics.impl)))).
+Proof.
+  intros ? ? ? ? ? ? ? ?. intuition.
+Qed.
+
+Typeclasses Transparent Basics.flip.
+
+Lemma ctx_sub_preserves_length : forall {Δ Γ},
+    {{ ⊢ Δ ⊆ Γ }} ->
+    length Δ = length Γ.
+Proof.
+  induction 1; simpl; auto.
+Qed.
+
+#[export]
+Hint Resolve ctx_sub_preserves_length : mcltt.
+
+Lemma weakening_var : forall {Γ σ Δ x A},
+    {{ Γ ⊢w σ : Δ }} ->
+    {{ #x : A ∈ Δ }} ->
+    {{ Γ ⊢ #x[σ] ≈ #(x + length Γ - length Δ) : A[σ] }}.
+Proof.
+  intros * Hwk. gen A x.
+  dependent induction Hwk; intros.
+  - gen_presups.
+    assert {{ ⊢ Γ ⊆ Δ }} by mauto.
+    assert (length Γ = length Δ) by mauto.
+    replace (x + length Γ - length Δ) with x by lia.
+    assert {{ Γ ⊢ #x[σ] ≈ #x[Id] : A[σ] }} by mauto.
+    gen_presups.
+    enough {{ Γ ⊢ #x[Id] ≈ #x : A[σ] }}; mauto.
+  - assert {{ Δ ⊢ #x : A }} by mauto.
+    assert {{ Γ ⊢s τ : Δ, T }} by mauto.
+    gen_presups.
+    assert {{ Γ ⊢ #x[σ] ≈ #x[Wk∘τ] : A[σ] }} by mauto.
+    assert {{ Γ ⊢ A[σ] ≈ A[Wk∘τ] : Type@i }} by mauto.
+    assert {{ Δ, T ⊢s Wk : Δ }} by mauto.
+    assert {{ Γ ⊢ A[Wk∘τ] ≈ A[Wk][τ] : Type@i }} by mauto.
+    assert {{ Γ ⊢ A[σ] ≈ A[Wk][τ] : Type@i }} by mauto.
+    assert {{ Γ ⊢ #x[σ] ≈ #x[Wk∘τ] : A[Wk][τ] }} by mauto.
+    assert {{ Γ ⊢ #x[Wk∘τ] ≈ #x[Wk][τ] : A[Wk][τ] }} by mauto.
+    assert {{ # (S x) : A[Wk] ∈ Δ, T }} by mauto.
+    assert {{ Γ ⊢ #(S x)[τ] ≈ #(S x + length Γ - length {{{ Δ, T }}}) : A[Wk][τ] }} by mauto.
+    enough {{ Γ ⊢ #x[σ] ≈ #(x + length Γ - length Δ) : A[Wk][τ] }} by mauto 3.
+    assert {{ Γ ⊢s τ ≈ τ : Δ, T }} by mauto.
+    enough {{ Γ ⊢ #x[Wk][τ] ≈ #(S x)[τ] : A[Wk][τ] }}; mauto 4.
+Qed.
+
+Lemma ctx_lookup_implies_length_gt : forall {Γ x A},
+    {{ #x : A ∈ Γ }} ->
+    length Γ > x.
+Proof.
+  induction 1; simpl; lia.
+Qed.
+
+Lemma glu_univ_elem_exp_var0 : forall {i a P El Γ σ Δ x A},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢w σ : Δ }} ->
+    {{ Δ ⊢ A ® P }} ->
+    {{ #x : A ∈ Δ }} ->
+    {{ Γ ⊢ #x[σ] : A[σ] ® ⇑! a (length Δ - x - 1) ∈ El }}.
+Proof.
+  simpl in *.
+  intros * Hglu. gen A x Γ σ. gen Δ.
+  induction Hglu using glu_univ_elem_ind; intros;
+    handle_functional_glu_univ_elem.
+  - simpl in *.
+    assert {{ Γ ⊢s σ : Δ }} by mauto.
+    gen_presups.
+    assert {{ Δ ⊢ #x : A }} by mauto.
+    assert {{ Γ ⊢ A[σ] ≈ Type@j[σ] : Type@i }} by mauto 4.
+    assert {{ Γ ⊢ A[σ] ≈ Type@j : Type@i }} by mauto 4.
+    repeat split; mauto 3.
+    do 2 eexists; split; [econstructor |]; try reflexivity; mauto.
+    simpl.
+    split; mauto 3.
+    intros Δ' σ' **.
+    inversion_clear_by_head read_ne.
+    assert (length Δ > x) by mauto using ctx_lookup_implies_length_gt.
+    replace (length Δ' - (length Δ - x - 1) - 1) with (x + length Δ' - length Δ) by lia.
+    assert {{ Δ' ⊢s σ' : Γ }} by mauto.
+    assert {{ Δ' ⊢w σ ∘ σ' : Δ }} by mauto.
+    assert {{ Δ' ⊢s σ ∘ σ' : Δ }} by mauto.
+    assert {{ Δ' ⊢ #x[σ][σ'] ≈ #x[σ∘σ'] : Type@j }} by mauto 4.
+    assert {{ Δ' ⊢ A[σ∘σ'] ≈ Type@j[σ∘σ'] : Type@i }} by mauto 4.
+    assert {{ Δ' ⊢ A[σ∘σ'] ≈ Type@j : Type@i }} by mauto 4.
+    enough {{ Δ' ⊢ #x[σ∘σ'] ≈ #(x + length Δ' - length Δ) : A[σ∘σ'] }} by mauto 4.
+    apply weakening_var; mauto.
+  - simpl in *.
+    assert {{ Γ ⊢s σ : Δ }} by mauto.
+    gen_presups.
+    assert {{ ⊢ Γ }} by mauto 3.
+    assert {{ Γ ⊢ A[σ] ≈ ℕ[σ] : Type@i }} by mauto 4.
+    assert (0 <= i) by lia.
+    assert {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }} by mauto 4.
+    assert {{ Γ ⊢ A[σ] ≈ ℕ : Type@i }} by mauto 4.
+    split; mauto 3.
+    econstructor; mauto 3.
+    intros Δ' σ' **.
+    inversion_clear_by_head read_ne.
+    assert (length Δ > x) by mauto using ctx_lookup_implies_length_gt.
+    replace (length Δ' - (length Δ - x - 1) - 1) with (x + length Δ' - length Δ) by lia.
+    assert {{ ⊢ Δ' }} by mauto 3.
+    assert {{ Δ' ⊢s σ' : Γ }} by mauto.
+    assert {{ Δ' ⊢s σ ∘ σ' : Δ }} by mauto.
+    assert {{ Δ' ⊢ #x[σ][σ'] ≈ #x[σ∘σ'] : ℕ }} by mauto 4.
+    assert {{ Δ' ⊢ A[σ∘σ'] ≈ ℕ[σ∘σ'] : Type@i }} by mauto 4.
+    assert {{ Δ' ⊢ A[σ∘σ'] ≈ ℕ : Type@i }} by mauto 4.
+    enough {{ Δ' ⊢ #x[σ∘σ'] ≈ #(x + length Δ' - length Δ) : A[σ∘σ'] }} by mauto 4.
+    apply weakening_var; mauto.
+  - inversion_clear_by_head pi_glu_typ_pred.
+    assert {{ Γ ⊢s σ : Δ }} by mauto.
+    gen_presups.
+    assert ({{ Δ ⊢ IT : Type@i }} /\ {{ Δ, IT ⊢ OT : Type@i }}) as [] by mauto.
+    assert {{ Γ, IT[σ] ⊢s q σ : Δ, IT }} by mauto.
+    assert {{ Γ ⊢ A[σ] ≈ Π (IT [σ]) (OT [q σ]) : Type@i }} by mauto 4.
+    econstructor; mauto 3.
+    + admit. (* by semantic realizability *)
+    + intros.
+      eapply glu_univ_elem_typ_resp_equiv; mauto.
+    + intros Δ' σ' **.
+      assert {{ ⊢ Δ' }} by mauto 3.
+      assert {{ Δ' ⊢s σ' : Γ }} by mauto.
+      assert {{ Δ' ⊢s σ ∘ σ' : Δ }} by mauto.
+      assert {{ Δ' ⊢ IT[σ][σ'] ≈ IT[σ∘σ'] : Type@i }} by mauto.
+      assert {{ Δ' ⊢ m' : IT[σ∘σ'] ® b ∈ IEl }} by (eapply glu_univ_elem_trm_resp_typ_equiv; mauto).
+      assert {{ Δ' ⊢ OT[σ∘σ' ,, m'] ® OP b equiv_b }} by mauto.
+      match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+      destruct_rel_mod_eval.
+      handle_per_univ_elem_irrel.
+      admit.
+  - destruct_by_head neut_glu_typ_pred.
+    admit.
+    (* econstructor; mauto 3. *)
+    (* + assert {{ ⊢ Γ, A }} by mauto 3. *)
+    (*   assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3. *)
+    (*   econstructor; mauto 3. *)
+    (*   intros. *)
+    (*   assert {{ Δ ⊢s σ : Γ, A }} as Hσ by mauto. *)
+    (*   assert {{ Δ ⊢ A[Wk][σ] ≈ A[Wk∘σ] : Type@i }} by mauto. *)
+    (*   enough {{ Δ ⊢ A[Wk∘σ] ≈ V : Type@i }}; mauto. *)
+    (* + intros. *)
+    (*   dir_inversion_by_head read_ne; subst. *)
+    (*   simpl. *)
+    (*   replace (length Δ - length Γ - 1) with (0 + length Δ - length {{{ Γ, A }}}) by (simpl; lia). *)
+    (*   assert {{ Δ ⊢s σ : Γ, A }} as Hσ by mauto. *)
+    (*   gen_presup Hσ. *)
+    (*   apply weakening_var; mauto. *)
+Admitted.
+
+Lemma glu_univ_elem_typ_per_univ_escape : forall {i a a' P P' El El' Γ A A'},
+    {{ Dom a ≈ a' ∈ per_univ i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A' ® P' }} ->
+    {{ Γ ⊢ A ≈ A' : Type@i }}.
+Proof with mauto 4.
+  intros * [elem_rel Hper] Hglu Hglu'.
+  gen A' A Γ. gen El' El P' P.
+  induction Hper using per_univ_elem_ind; intros; simpl in *;
+    saturate_refl_for per_univ_elem;
+    handle_per_univ_elem_irrel;
+    invert_glu_univ_elem Hglu;
+    invert_glu_univ_elem Hglu';
+    handle_functional_glu_univ_elem; mauto 4.
+  - match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+    rename x0 into IP. pose IP.
+    rename x1 into IEl. pose IEl.
+    assert {{ DG A' ∈ glu_univ_elem i ↘ IP ↘ IEl }} by (match_by_head per_univ_elem ltac:(fun H => rewrite <- H); mauto).
+    handle_functional_glu_univ_elem.
+    handle_per_univ_elem_irrel.
+    destruct_by_head pi_glu_typ_pred.
+
+    assert {{ Γ ⊢ IT ≈ IT0 : Type@i }}.
+    {
+      assert {{ Γ ⊢ IT[Id] ≈ IT0[Id] : Type@i }} as HIdEq by (eapply IHHper; mauto 4).
+      gen_presup HIdEq.
+      assert {{ Γ ⊢ IT0[Id] ≈ IT0 : Type@i }} by mauto 4.
+      assert {{ Γ ⊢ IT ≈ IT[Id] : Type@i }}...
+    }
+
+    assert {{ Γ, IT ⊢ OT ≈ OT0 : Type@i }}.
+    {
+      assert {{ Dom ⇑! A 0 ≈ ⇑! A 0 ∈ in_rel }} as equiv_0 by admit. (* by semantic realizability *)
+      destruct_rel_mod_eval.
+      handle_per_univ_elem_irrel.
+      rename a1 into b.
+      rename a2 into b'.
+      assert {{ DG b ∈ glu_univ_elem i ↘ x2 d{{{ ⇑! A 0 }}} equiv_0 ↘ x3 d{{{ ⇑! A 0 }}} equiv_0 }} by mauto.
+      assert {{ DG b' ∈ glu_univ_elem i ↘ x7 d{{{ ⇑! A 0 }}} equiv_0 ↘ x8 d{{{ ⇑! A 0 }}} equiv_0 }} by mauto.
+      assert {{ Γ, IT ⊢w Wk : Γ }} by mauto.
+      assert {{ Γ, IT ⊢ OT[Wk,,#0] ® x7 d{{{ ⇑! A 0 }}} equiv_0 }}.
+      {
+        eapply H12; mauto.
+      }
+      assert {{ Γ, IT ⊢s Wk,,#0 ≈ Id : Γ, IT }} by admit.
+    }
+
+Lemma neut_glu_typ_pred_subtyping : forall {i b b' a a' Γ A},
+    {{ Sub ⇑ b a <: ⇑ b' a' at i }} ->
+    {{ Γ ⊢ A ® neut_glu_typ_pred i a }} ->
+    {{ Γ ⊢ A ® neut_glu_typ_pred i a' }}.
+Proof.
+  intros * Hsub [].
+  inversion_clear Hsub.
+  econstructor; mauto 3.
+  intros Δ σ V **.
+  match_by_head per_bot ltac:(fun H => destruct (H (length Δ)) as [? []]).
+  functional_read_rewrite_clear.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve neut_glu_typ_pred_subtyping : mcltt.
+
+Lemma glu_univ_elem_typ_subtyping_escape : forall {i a a' P P' El El' Γ A A'},
+    {{ Sub a <: a' at i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A' ® P' }} ->
+    {{ Γ ⊢ A ⊆ A' }}.
+Proof with mauto 4.
+  intros * Hsub Hglu Hglu'.
+  gen A' A Γ. gen El' El P' P.
+  induction Hsub; intros; simpl in *;
+    saturate_refl_for per_univ_elem;
+    invert_glu_univ_elem Hglu;
+    invert_glu_univ_elem Hglu';
+    handle_functional_glu_univ_elem; mauto 4.
+  - destruct_by_head neut_glu_typ_pred.
+    assert (exists L : ne, {{ Rne b in length Γ ↘ L }} /\ {{ Rne b' in length Γ ↘ L }}) as [V []] by mauto.
+    assert {{ Γ ⊢ A[Id] ≈ V : Type@i }} by mauto 4.
+    assert {{ Γ ⊢ A'[Id] ≈ V : Type@i }} by mauto 4.
+    assert {{ Γ ⊢ A ≈ V : Type@i }} by mauto 4.
+    enough {{ Γ ⊢ A' ≈ V : Type@i }}...
+  - simpl in *.
+    gen_presups.
+    assert {{ Γ ⊢ Type@i ⊆ Type@j }} by mauto 3.
+    enough {{ Γ ⊢ A ⊆ Type@j }}...
+  - match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+    destruct_by_head pi_glu_typ_pred.
+    handle_per_univ_elem_irrel.
+    match_by_head glu_univ_elem ltac:(fun H' => rewrite H in H').
+
+Lemma glu_univ_elem_typ_subtyping : forall {i a a' P P' El El' Γ A},
+    {{ Sub a <: a' at i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    exists A', {{ Γ ⊢ A ⊆ A' }} /\ {{ Γ ⊢ A' ® P' }}.
+Proof.
+  intros * Hsub Hglu Hglu'.
+  gen P P' El El'. gen Γ A.
+  induction Hsub; intros; simpl in *;
+    saturate_refl_for per_univ_elem;
+    invert_glu_univ_elem Hglu;
+    invert_glu_univ_elem Hglu';
+    handle_functional_glu_univ_elem; eexists.
+  - split; mauto 4.
+    eapply wf_subtyping_refl.
+    destruct_by_head neut_glu_typ_pred.
+    eassumption.
+  - split; mauto 4.
+    simpl in *.
+    gen_presups.
+    econstructor; mauto 4.
+  - simpl in *.
+    gen_presups.
+    split; [| eapply exp_eq_refl; mauto 3].
+    etransitivity; mauto 4.
+  - destruct_by_head pi_glu_typ_pred.
+    match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+    handle_per_univ_elem_irrel.
+    split; mauto 4.
+    econstructor; mauto 4; intros.
+    + 
+    destruct_rel_mod_eval.
+    (* Why does "unshelve eapply (per_univ_elem_pi_clean_inversion _) in H2" unshelves "?A'" as well? *)
+    Unshelve.
+    + unshelve eapply (per_univ_elem_pi_clean_inversion _) in H2; shelve_unifiable; [eassumption |].
+      all: (only 1: exact B').
+      destruct_conjs.
+      idtac.
+      destruct H2 as [? []].
+      match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+      destruct_by_head pi_glu_typ_pred.
+      split.
+Admitted.
