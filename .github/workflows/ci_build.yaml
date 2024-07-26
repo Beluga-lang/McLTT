@@ -6,7 +6,8 @@ on:
   pull_request:
     branches:
       - main
-
+  workflow_dispatch:
+  
 env:
   REGISTRY: "ghcr.io"
   IMAGE_TAG: "beluga-lang/mcltt:main"
