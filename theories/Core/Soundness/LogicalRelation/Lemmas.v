@@ -113,6 +113,16 @@ Proof.
   assert {{ Δ ⊢ T[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
+
+Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (P Γ)
+    with signature wf_exp_eq Γ {{{Type@i}}} ==> iff as glu_univ_elem_typ_morphism_iff.
+Proof.
+  intros. split; intros;
+    eapply glu_univ_elem_typ_resp_equiv;
+    mauto 2.
+Qed.
+
+
 Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a T',

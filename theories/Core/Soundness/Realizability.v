@@ -39,7 +39,6 @@ Inductive glu_typ_top Γ T i A : Prop :=
 #[export]
   Hint Constructors glu_typ_top : mcltt.
 
-
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     (forall Γ T R, {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> P Γ T -> glu_typ_top Γ T i A) /\
@@ -112,4 +111,23 @@ Proof.
       autorewrite with mcltt.
       mauto using glu_nat_readback.
 
+  - match_by_head pi_glu_typ_pred progressive_invert.
+    handle_per_univ_elem_irrel.
+    invert_per_univ_elem H6.
+    econstructor; eauto; intros.
+    + gen_presups. trivial.
+    + assert {{ Γ ⊢w Id : Γ }} by mauto 4.
+      specialize (H12 _ _ H17).
+      assert {{ Γ ⊢ IT : Type@i}} by mauto 3 using glu_univ_elem_univ_lvl, invert_sub_id.
+      assert {{ Γ ⊢ IT[Id] ≈ IT : Type@i}} by mauto 3.
+      rewrite H19 in H12.
+      progressive_invert H16.
+      destruct (H9 _ _ _ H0 H12) as [].
+
+      transitivity {{{(Π IT OT) [σ]}}};[mauto 3 |].
+      transitivity {{{Π (IT [ σ ]) (OT [q σ])}}};[mauto 3 |].
+      simpl. apply wf_exp_eq_pi_cong'; [firstorder |].
+      admit.
+
+      
 Admitted.
