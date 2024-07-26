@@ -26,8 +26,8 @@ Qed.
 #[export]
 Hint Resolve invert_sub_id : mcltt.
 
-Add Parametric Morphism i Γ Δ t (H : {{ Δ ⊢ t : Type@i }}) : (a_sub t)
-    with signature wf_sub_eq Γ Δ ==> wf_exp_eq Γ {{{ Type@i }}} as sub_typ_cong1.
+Add Parametric Morphism i Γ Δ : a_sub
+    with signature wf_exp_eq Δ {{{ Type@i }}} ==> wf_sub_eq Γ Δ ==> wf_exp_eq Γ {{{ Type@i }}} as sub_typ_cong.
 Proof.
   intros.
   gen_presups.

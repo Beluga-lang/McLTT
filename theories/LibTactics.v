@@ -421,3 +421,15 @@ Instance subrelation_relation_equivalence {A} : subrelation relation_equivalence
 Proof.
   intro; intuition.
 Qed.
+
+(* The following facility converts search of Proper from type class instances to the local context *)
+
+Class PERElem (A : Type) (P : A -> Prop) (R : A -> A -> Prop) :=
+  per_elem : forall a, P a -> R a a.
+
+#[export]
+  Instance PERProper (A : Type) (P : A -> Prop) (R : A -> A -> Prop) `(Ins : PERElem A P R) a (H : P a) :
+  Proper R a.
+Proof.
+  cbv. auto using per_elem.
+Qed.

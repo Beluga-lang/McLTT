@@ -65,9 +65,9 @@ Proof.
       * rewrite <- H4. trivial.
       * intros.
         saturate_weakening_escape.
-        assert {{ Δ ⊢ T [σ] ≈ Type @ j[σ] : Type @ i }} by mauto 3.
         rewrite <- wf_exp_eq_typ_sub; try eassumption.
-        rewrite <- H12. firstorder.
+        rewrite <- H4.
+        firstorder.
   - deepexec glu_univ_elem_per_univ ltac:(fun H => pose proof H).
     firstorder.
     specialize (H _ _ _ H9) as [? []].
@@ -81,8 +81,7 @@ Proof.
       progressive_invert H15.
       deepexec H20 ltac:(fun H => pose proof H).
       functional_read_rewrite_clear.
-      assert {{ Δ ⊢ T [σ] ≈ Type @ j[σ] : Type @ i }} by mauto 3.
-      rewrite H19.
+      rewrite H6.
       autorewrite with mcltt.
       trivial.
 
@@ -106,8 +105,7 @@ Proof.
     + mauto 2.
     + intros.
       saturate_weakening_escape.
-      assert {{ Δ ⊢ T [σ] ≈ ℕ[σ] : Type @ i }} by mauto 3.
-      rewrite H9.
+      rewrite H1.
       autorewrite with mcltt.
       mauto using glu_nat_readback.
 
@@ -124,6 +122,7 @@ Proof.
       progressive_invert H16.
       destruct (H9 _ _ _ H0 H12) as [].
 
+      
       transitivity {{{(Π IT OT) [σ]}}};[mauto 3 |].
       transitivity {{{Π (IT [ σ ]) (OT [q σ])}}};[mauto 3 |].
       simpl. apply wf_exp_eq_pi_cong'; [firstorder |].
