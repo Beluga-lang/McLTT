@@ -18,6 +18,17 @@ Qed.
 #[export]
 Hint Resolve weakening_escape : mcltt.
 
+
+Ltac saturate_weakening_escape1 :=
+  match goal with
+  | H : {{ ~_ ⊢w ~_ : ~_ }} |- _ =>
+      pose proof (weakening_escape _ _ _ H);
+      fail_if_dup
+  end.
+
+Ltac saturate_weakening_escape :=
+  repeat saturate_weakening_escape1.
+
 Lemma weakening_resp_equiv : forall Γ σ σ' Δ,
     {{ Γ ⊢w σ : Δ }} ->
     {{ Γ ⊢s σ ≈ σ' : Δ }} ->

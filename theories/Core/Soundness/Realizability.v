@@ -39,45 +39,6 @@ Inductive glu_typ_top Γ T i A : Prop :=
 #[export]
   Hint Constructors glu_typ_top : mcltt.
 
-Ltac saturate_weakening_escape1 :=
-  match goal with
-  | H : {{ ~_ ⊢w ~_ : ~_ }} |- _ =>
-      pose proof (weakening_escape _ _ _ H);
-      fail_if_dup
-  end.
-
-Ltac saturate_weakening_escape :=
-  repeat saturate_weakening_escape1.
-
-Lemma wf_subtyp_univ_gen : forall Γ i j,
-    {{ ⊢ Γ }} ->
-    i <= j ->
-    {{ Γ ⊢ Type@i ⊆ Type@j }}.
-Proof.
-  intros.
-  assert (i = j \/ i < j) by lia.
-  destruct H1; subst; mauto 2.
-Qed.
-
-Lemma wf_exp_eq_nat_sub_gen : forall Γ σ Δ i,
-    {{ Γ ⊢s σ : Δ }} ->
-    {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }}.
-Proof.
-  intros.
-  eapply wf_exp_eq_subtyp with (A := {{{ Type@0 }}}).
-  - mauto 3.
-  - gen_presups.
-    eapply wf_subtyp_univ_gen;
-      eauto.
-    lia.
-Qed.
-
-#[export]
- Hint Resolve wf_subtyp_univ_gen wf_exp_eq_nat_sub_gen : mcltt.
-
-#[export]
-Hint Rewrite -> wf_exp_eq_nat_sub_gen using eassumption : mcltt.
-
 
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->

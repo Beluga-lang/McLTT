@@ -285,3 +285,33 @@ Qed.
 Hint Resolve wf_subtyp_pi' : mcltt.
 #[export]
 Remove Hints wf_subtyp_pi : mcltt.
+
+
+Lemma wf_subtyp_univ_gen : forall Γ i j,
+    {{ ⊢ Γ }} ->
+    i <= j ->
+    {{ Γ ⊢ Type@i ⊆ Type@j }}.
+Proof.
+  intros.
+  assert (i = j \/ i < j) by lia.
+  destruct H1; subst; mauto 2.
+Qed.
+
+Lemma wf_exp_eq_nat_sub_gen : forall Γ σ Δ i,
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }}.
+Proof.
+  intros.
+  eapply wf_exp_eq_subtyp with (A := {{{ Type@0 }}}).
+  - mauto 3.
+  - gen_presups.
+    eapply wf_subtyp_univ_gen;
+      eauto.
+    lia.
+Qed.
+
+#[export]
+ Hint Resolve wf_subtyp_univ_gen wf_exp_eq_nat_sub_gen : mcltt.
+
+#[export]
+Hint Rewrite -> wf_exp_eq_nat_sub_gen using eassumption : mcltt.
