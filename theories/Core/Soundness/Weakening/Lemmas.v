@@ -1,7 +1,7 @@
 From Coq Require Import Program.Equality.
 
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Syntactic.Corollaries Weakening.Definition.
+From Mcltt.Core Require Import Syntactic.Corollaries Syntactic.CtxSub Weakening.Definition.
 Import Syntax_Notations.
 
 Lemma weakening_escape : forall Γ σ Δ,
@@ -35,24 +35,26 @@ Proof.
   induction 1; mauto.
 Qed.
 
+Lemma ctxsub_weakening : forall Γ σ Δ,
+    {{ Γ ⊢w σ : Δ }} ->
+    forall Δ',
+      {{ ⊢ Δ ⊆ Δ' }} ->
+      {{ Γ ⊢w σ : Δ' }}.
+Proof.
+  induction 1; mauto.
+Qed.
+
 Lemma weakening_conv : forall Γ σ Δ,
     {{ Γ ⊢w σ : Δ }} ->
     forall Δ',
       {{ ⊢ Δ ≈ Δ' }} ->
       {{ Γ ⊢w σ : Δ' }}.
 Proof.
-  induction 1; intros; mauto.
-  eapply wk_p.
-  - eapply IHweakening.
-    apply weakening_escape in H.
-    gen_presup H.
-    progressive_invert HΔ.
-    econstructor; [ | | eapply ctxeq_exp | ..]; mauto.
-  - mauto.
+  intros; mauto using ctxsub_weakening.
 Qed.
 
 #[export]
-Hint Resolve weakening_conv : mcltt.
+Hint Resolve ctxsub_weakening weakening_conv : mcltt.
 
 Lemma weakening_compose : forall Γ' σ' Γ'',
     {{ Γ' ⊢w σ' : Γ'' }} ->
@@ -60,16 +62,15 @@ Lemma weakening_compose : forall Γ' σ' Γ'',
       {{ Γ ⊢w σ : Γ' }} ->
       {{ Γ ⊢w σ' ∘ σ : Γ'' }}.
 Proof with mautosolve.
-(*   induction 1; intros. *)
-(*   - gen_presup H. *)
-(*     assert {{ ⊢ Γ ⊆ Δ }} by mauto. *)
-(*     eapply weakening_resp_equiv; [mauto 2 |]. *)
-(*     transitivity {{{ Id ∘ σ0 }}}... *)
-(*   - eapply wk_p; [eauto |]. *)
-(*     transitivity {{{ Wk ∘ τ ∘ σ0 }}}; mauto 4. *)
-(*     eapply wf_sub_eq_compose_assoc; revgoals... *)
-(* Qed. *)
-Admitted.
+  induction 1; intros.
+  - gen_presup H.
+    assert {{ ⊢ Γ ⊆ Δ }} by mauto.
+    eapply weakening_resp_equiv; [mauto 2 |].
+    transitivity {{{ Id ∘ σ0 }}}...
+  - eapply wk_p; eauto.
+    transitivity {{{ Wk ∘ τ ∘ σ0 }}}; mauto 4.
+    eapply wf_sub_eq_compose_assoc; revgoals...
+Qed.
 
 #[export]
 Hint Resolve weakening_compose : mcltt.
