@@ -383,6 +383,12 @@ Proof.
   intros; split; mauto.
 Qed.
 
+Add Parametric Morphism Γ T : (wf_exp_eq Γ T)
+    with signature (wf_exp_eq Γ T) ==> (wf_exp_eq Γ T) ==> iff as wf_exp_eq_morph2.
+Proof.
+  intros; split; mauto.
+Qed.
+
 #[export]
 Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using eassumption : mcltt.
 

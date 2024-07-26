@@ -39,6 +39,18 @@ Inductive glu_typ_top Γ T i A : Prop :=
 #[export]
   Hint Constructors glu_typ_top : mcltt.
 
+Ltac syn_equiv_sub1 :=
+  let step lem := solve [eapply lem; mauto 4] in
+  etransitivity;
+  [
+    step wf_exp_eq_pi_sub ||
+      step wf_exp_eq_nat_sub_gen ||
+      step wf_exp_eq_zero_sub ||
+      step wf_exp_eq_succ_sub
+  |].
+
+Ltac syn_equiv_sub := repeat syn_equiv_sub1; symmetry; repeat syn_equiv_sub1; symmetry.
+
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     (forall Γ T R, {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> P Γ T -> glu_typ_top Γ T i A) /\
@@ -114,17 +126,15 @@ Proof.
     invert_per_univ_elem H6.
     econstructor; eauto; intros.
     + gen_presups. trivial.
-    + assert {{ Γ ⊢w Id : Γ }} by mauto 4.
-      specialize (H12 _ _ H17).
+    + saturate_weakening_escape.
+      assert {{ Γ ⊢w Id : Γ }} by mauto 4.
+      specialize (H12 _ _ H18).
       assert {{ Γ ⊢ IT : Type@i}} by mauto 3 using glu_univ_elem_univ_lvl, invert_sub_id.
       assert {{ Γ ⊢ IT[Id] ≈ IT : Type@i}} by mauto 3.
-      rewrite H19 in H12.
+      rewrite H20 in H12.
       progressive_invert H16.
       destruct (H9 _ _ _ H0 H12) as [].
-
-      
-      transitivity {{{(Π IT OT) [σ]}}};[mauto 3 |].
-      transitivity {{{Π (IT [ σ ]) (OT [q σ])}}};[mauto 3 |].
+      rewrite H7. syn_equiv_sub.
       simpl. apply wf_exp_eq_pi_cong'; [firstorder |].
       admit.
 
