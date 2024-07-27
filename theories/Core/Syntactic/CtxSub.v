@@ -105,3 +105,10 @@ Qed.
 #[export]
   Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.
 Proof. eauto using wf_ctx_sub_trans. Qed.
+
+
+Add Parametric Morphism : wf_exp
+  with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_exp_morphism.
+Proof.
+  cbv. intros. mauto 3.
+Qed.

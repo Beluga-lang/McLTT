@@ -433,3 +433,20 @@ Class PERElem (A : Type) (P : A -> Prop) (R : A -> A -> Prop) :=
 Proof.
   cbv. auto using per_elem.
 Qed.
+
+
+Ltac bulky_rewrite1 :=
+  match goal with
+  | H : _ |- _ => rewrite H
+  | _ => progress (autorewrite with mcltt)
+  end.
+
+Ltac bulky_rewrite := repeat (bulky_rewrite1; mauto 2).
+
+Ltac bulky_rewrite_in1 HT :=
+  match goal with
+  | H : _ |- _ => tryif unify H HT then fail else rewrite H in HT
+  | _ => progress (autorewrite with mcltt in HT)
+  end.
+
+Ltac bulky_rewrite_in HT := repeat (bulky_rewrite_in1 HT; mauto 2).

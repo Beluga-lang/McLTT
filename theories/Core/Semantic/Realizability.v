@@ -110,3 +110,11 @@ Proof.
     erewrite per_ctx_respects_length; mauto.
     eexists; eauto.
 Qed.
+
+Lemma var_per_elem : forall {A B i R} n,
+    {{ DF A ≈ B ∈ per_univ_elem i ↘ R }} ->
+    {{ Dom ⇑! A n ≈ ⇑! B n ∈ R }}.
+Proof.
+  intros.
+  eapply per_bot_then_per_elem; mauto.
+Qed.

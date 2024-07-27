@@ -1,4 +1,4 @@
-From Coq Require Import Setoid.
+From Coq Require Import Setoid Nat.
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Export CtxEq Presup System CoreTypeInversions.
 Import Syntax_Notations.
@@ -287,16 +287,6 @@ Hint Resolve wf_subtyp_pi' : mcltt.
 Remove Hints wf_subtyp_pi : mcltt.
 
 
-Lemma wf_subtyp_univ_gen : forall Γ i j,
-    {{ ⊢ Γ }} ->
-    i <= j ->
-    {{ Γ ⊢ Type@i ⊆ Type@j }}.
-Proof.
-  intros.
-  assert (i = j \/ i < j) by lia.
-  destruct H1; subst; mauto 2.
-Qed.
-
 Lemma wf_exp_eq_nat_sub_gen : forall Γ σ Δ i,
     {{ Γ ⊢s σ : Δ }} ->
     {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }}.
@@ -305,13 +295,86 @@ Proof.
   eapply wf_exp_eq_subtyp with (A := {{{ Type@0 }}}).
   - mauto 3.
   - gen_presups.
-    eapply wf_subtyp_univ_gen;
+    eapply wf_subtyping_ge;
       eauto.
     lia.
 Qed.
 
 #[export]
- Hint Resolve wf_subtyp_univ_gen wf_exp_eq_nat_sub_gen : mcltt.
+ Hint Resolve wf_exp_eq_nat_sub_gen : mcltt.
 
 #[export]
 Hint Rewrite -> wf_exp_eq_nat_sub_gen using eassumption : mcltt.
+
+
+Lemma wf_ctx_sub_length : forall Γ Δ,
+    {{ ⊢ Γ ⊆ Δ }} ->
+    length Γ = length Δ.
+Proof. induction 1; simpl; auto. Qed.
+
+Open Scope list_scope.
+
+Lemma app_ctx_lookup : forall Δ T Γ n,
+    length Δ = n ->
+    {{ #n : ~(iter (S n) (fun T => {{{T [ Wk ]}}}) T) ∈ ~(Δ ++ T :: Γ) }}.
+Proof.
+  induction Δ; intros; simpl in *; subst; mauto.
+Qed.
+
+Lemma ctx_lookup_functional : forall n T Γ,
+    {{ #n : T ∈ Γ }} ->
+    forall T',
+      {{ #n : T' ∈ Γ }} ->
+      T = T'.
+Proof.
+  induction 1; intros; progressive_inversion; eauto.
+  erewrite IHctx_lookup; eauto.
+Qed.
+
+Lemma app_ctx_vlookup : forall Δ T Γ n,
+    {{ ⊢ ~(Δ ++ T :: Γ) }} ->
+    length Δ = n ->
+    {{ ~(Δ ++ T :: Γ) ⊢ #n : ~(iter (S n) (fun T => {{{T [ Wk ]}}}) T) }}.
+Proof.
+  intros. econstructor; auto using app_ctx_lookup.
+Qed.
+
+Lemma sub_q_eq : forall Δ A i Γ σ σ',
+                   {{ Δ ⊢ A : Type@i }} ->
+                   {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+                   {{ Γ, A[σ] ⊢s q σ ≈ q σ' : Δ, A }}.
+Proof.
+  intros. gen_presup H0.
+  econstructor; mauto 3.
+  - econstructor; mauto 4.
+  - rewrite <- exp_eq_sub_compose_typ; mauto 4.
+Qed.
+#[export]
+ Hint Resolve sub_q_eq : mcltt.
+
+Lemma wf_subtyping_subst_eq : forall Δ A B,
+    {{ Δ ⊢ A ⊆ B }} ->
+    forall Γ σ σ',
+      {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+      {{ Γ ⊢ A [σ] ⊆ B[σ'] }}.
+Proof.
+  induction 1; intros * Hσσ'; gen_presup Hσσ'.
+  - econstructor. mauto 4.
+  - etransitivity; mauto 4.
+  - autorewrite with mcltt.
+    mauto 2.
+  - autorewrite with mcltt.
+    eapply wf_subtyp_pi'; mauto.
+Qed.
+
+
+Lemma wf_subtyping_subst : forall Δ A B,
+    {{ Δ ⊢ A ⊆ B }} ->
+    forall Γ σ,
+      {{ Γ ⊢s σ : Δ }} ->
+      {{ Γ ⊢ A [σ] ⊆ B[σ] }}.
+Proof.
+  intros; mauto 2 using wf_subtyping_subst_eq.
+Qed.
+#[export]
+ Hint Resolve wf_subtyping_subst_eq wf_subtyping_subst : mcltt.

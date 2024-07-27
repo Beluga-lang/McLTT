@@ -1,7 +1,10 @@
 (* From Coq Require Import Equivalence Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses. *)
 
+From Coq Require Import Nat.
+
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import PER Syntactic.SystemOpt Syntactic.Corollaries.
+From Mcltt.Core.Syntactic Require Import CtxSub SystemOpt Corollaries CoreInversions.
+From Mcltt.Core Require Import PER.
 From Mcltt.Core.Semantic Require Import Realizability Readback.
 From Mcltt.Core.Soundness Require Export LogicalRelation Weakening.
 Import Domain_Notations.
@@ -39,17 +42,57 @@ Inductive glu_typ_top Γ T i A : Prop :=
 #[export]
   Hint Constructors glu_typ_top : mcltt.
 
-Ltac syn_equiv_sub1 :=
-  let step lem := solve [eapply lem; mauto 4] in
-  etransitivity;
-  [
-    step wf_exp_eq_pi_sub ||
-      step wf_exp_eq_nat_sub_gen ||
-      step wf_exp_eq_zero_sub ||
-      step wf_exp_eq_succ_sub
-  |].
+Open Scope list_scope.
 
-Ltac syn_equiv_sub := repeat syn_equiv_sub1; symmetry; repeat syn_equiv_sub1; symmetry.
+Lemma var_arith : forall Γ1 Γ2 (T : typ),
+    length (Γ1 ++ T :: Γ2) - length Γ2 - 1 = length Γ1.
+Proof.
+  intros.
+  rewrite List.app_length. simpl.
+  lia.
+Qed.
+
+(* Lemma var_weaken_gen : forall Δ σ Γ, *)
+(*     {{ Δ ⊢w σ : Γ }} -> *)
+(*     forall Γ1 Γ2 T, *)
+(*       Γ = Γ1 ++ T :: Γ2 -> *)
+(*       {{Δ ⊢ (# (length Γ1)) [σ] ≈ # (length Δ - length Γ2 - 1) : ~(iter (S (length Γ1)) (fun T => {{{T [ Wk ]}}}) T) [ σ ] }}. *)
+(* Proof. *)
+(*   induction 1; intros; subst; gen_presups. *)
+(*   - pose proof (app_ctx_vlookup _ _ _ _ HΔ eq_refl). *)
+(*     gen_presup H0. *)
+(*     clear_dups. *)
+(*     apply wf_sub_id_inversion in Hτ. *)
+(*     pose proof (wf_ctx_sub_length _ _ Hτ). *)
+(*     transitivity {{{#(length Γ1) [Id]}}}; [mauto 3 |]. *)
+(*     rewrite H1, var_arith, H. *)
+(*     bulky_rewrite. mauto 3. *)
+(*   - pose proof (app_ctx_vlookup _ _ _ _ HΔ0 eq_refl). *)
+(*     gen_presup H2. *)
+(*     clear_dups. *)
+(*     assert {{ Δ', T ⊢s Wk : ~ (Γ1 ++ {{{ Γ2, T0 }}}) }} by mauto. *)
+(*     transitivity {{{#(length Γ1) [Wk ∘ τ]}}}; [mauto 3 |]. *)
+(*     rewrite H1. *)
+(*     etransitivity; [eapply wf_exp_eq_sub_compose; mauto 3 |]. *)
+
+(*     rewrite <- exp_eq_sub_compose_typ; mauto 2. *)
+(*     etransitivity. *)
+(*     + eapply wf_exp_eq_sub_cong; [ |mauto 3]. *)
+(*       eapply wf_exp_eq_subtyp. *)
+(*       eapply wf_exp_eq_var_weaken; [mauto 3|]. *)
+(*       all:admit. *)
+(*     + specialize (IHweakening (T :: Γ1) Γ2 T0 eq_refl) *)
+
+(*       2:mauto. *)
+
+(*       wf_exp_eq_var_weaken *)
+
+(*       rewrite IHweakening. *)
+(*     + *)
+(*     rewrite wf_exp_eq_sub_compose. *)
+
+(*     simpl. autorewrite with mcltt. *)
+
 
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -93,9 +136,7 @@ Proof.
       progressive_invert H15.
       deepexec H20 ltac:(fun H => pose proof H).
       functional_read_rewrite_clear.
-      rewrite H6.
-      autorewrite with mcltt.
-      trivial.
+      bulky_rewrite.
 
   - econstructor; eauto; intros.
     progressive_inversion.
@@ -117,8 +158,7 @@ Proof.
     + mauto 2.
     + intros.
       saturate_weakening_escape.
-      rewrite H1.
-      autorewrite with mcltt.
+      bulky_rewrite.
       mauto using glu_nat_readback.
 
   - match_by_head pi_glu_typ_pred progressive_invert.
@@ -131,11 +171,18 @@ Proof.
       specialize (H12 _ _ H18).
       assert {{ Γ ⊢ IT : Type@i}} by mauto 3 using glu_univ_elem_univ_lvl, invert_sub_id.
       assert {{ Γ ⊢ IT[Id] ≈ IT : Type@i}} by mauto 3.
-      rewrite H20 in H12.
+      bulky_rewrite_in H12.
       progressive_invert H16.
       destruct (H9 _ _ _ H0 H12) as [].
-      rewrite H7. syn_equiv_sub.
+      bulky_rewrite.
       simpl. apply wf_exp_eq_pi_cong'; [firstorder |].
+      pose proof (var_per_elem (length Δ) H0).
+      destruct_rel_mod_eval.
+      simplify_evals.
+      destruct (H2 _ H24 _ H16) as [? []].
+
+
+      destruct (H2 _ _ _)
       admit.
 
       
