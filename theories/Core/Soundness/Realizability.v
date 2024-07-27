@@ -44,6 +44,26 @@ Inductive glu_typ_top Γ T i A : Prop :=
 
 Open Scope list_scope.
 
+Lemma wf_ctx_sub_ctx_lookup : forall n T Γ,
+    {{ #n : T ∈ Γ }} ->
+    forall Δ,
+      {{ ⊢ Δ ⊆ Γ}} ->
+      exists Δ1 T0 Δ2 T',
+        Δ = Δ1 ++ T0 :: Δ2 /\
+          n = length Δ1 /\
+          T' = iter (S n) (fun T => {{{T [ Wk ]}}}) T0 /\
+          {{ #n : T' ∈ Δ }} /\
+          {{ Δ ⊢ T' ⊆ T }}.
+Proof.
+  induction 1; intros; progressive_inversion.
+  - exists nil.
+    repeat eexists; mauto 4.
+  - edestruct IHctx_lookup as [Δ1 [? [? [? [? [? [? []]]]]]]]; eauto.
+    exists (A0 :: Δ1). subst.
+    repeat eexists; mauto 4.
+Qed.
+
+
 Lemma var_arith : forall Γ1 Γ2 (T : typ),
     length (Γ1 ++ T :: Γ2) - length Γ2 - 1 = length Γ1.
 Proof.
@@ -52,47 +72,77 @@ Proof.
   lia.
 Qed.
 
-(* Lemma var_weaken_gen : forall Δ σ Γ, *)
-(*     {{ Δ ⊢w σ : Γ }} -> *)
-(*     forall Γ1 Γ2 T, *)
-(*       Γ = Γ1 ++ T :: Γ2 -> *)
-(*       {{Δ ⊢ (# (length Γ1)) [σ] ≈ # (length Δ - length Γ2 - 1) : ~(iter (S (length Γ1)) (fun T => {{{T [ Wk ]}}}) T) [ σ ] }}. *)
-(* Proof. *)
-(*   induction 1; intros; subst; gen_presups. *)
-(*   - pose proof (app_ctx_vlookup _ _ _ _ HΔ eq_refl). *)
-(*     gen_presup H0. *)
-(*     clear_dups. *)
-(*     apply wf_sub_id_inversion in Hτ. *)
-(*     pose proof (wf_ctx_sub_length _ _ Hτ). *)
-(*     transitivity {{{#(length Γ1) [Id]}}}; [mauto 3 |]. *)
-(*     rewrite H1, var_arith, H. *)
-(*     bulky_rewrite. mauto 3. *)
-(*   - pose proof (app_ctx_vlookup _ _ _ _ HΔ0 eq_refl). *)
-(*     gen_presup H2. *)
-(*     clear_dups. *)
-(*     assert {{ Δ', T ⊢s Wk : ~ (Γ1 ++ {{{ Γ2, T0 }}}) }} by mauto. *)
-(*     transitivity {{{#(length Γ1) [Wk ∘ τ]}}}; [mauto 3 |]. *)
-(*     rewrite H1. *)
-(*     etransitivity; [eapply wf_exp_eq_sub_compose; mauto 3 |]. *)
+Lemma var_weaken_gen : forall Δ σ Γ,
+    {{ Δ ⊢w σ : Γ }} ->
+    forall Γ1 Γ2 T,
+      Γ = Γ1 ++ T :: Γ2 ->
+      {{Δ ⊢ (# (length Γ1)) [σ] ≈ # (length Δ - length Γ2 - 1) : ~(iter (S (length Γ1)) (fun T => {{{T [ Wk ]}}}) T) [ σ ] }}.
+Proof.
+  induction 1; intros; subst; gen_presups.
+  - pose proof (app_ctx_vlookup _ _ _ _ HΔ eq_refl).
+    gen_presup H0.
+    clear_dups.
+    apply wf_sub_id_inversion in Hτ.
+    pose proof (wf_ctx_sub_length _ _ Hτ).
+    transitivity {{{#(length Γ1) [Id]}}}; [mauto 3 |].
+    rewrite H1, var_arith, H.
+    bulky_rewrite. mauto 3.
+  - pose proof (app_ctx_vlookup _ _ _ _ HΔ0 eq_refl).
+    pose proof (app_ctx_lookup Γ1 T0 Γ2 _ eq_refl).
+    gen_presup H2.
+    clear_dups.
+    assert {{ Δ', T ⊢s Wk : ~ (Γ1 ++ {{{ Γ2, T0 }}}) }} by mauto.
+    transitivity {{{#(length Γ1) [Wk ∘ τ]}}}; [mauto 3 |].
+    rewrite H1.
+    etransitivity; [eapply wf_exp_eq_sub_compose; mauto 3 |].
+    pose proof (wf_ctx_sub_length _ _ H0).
 
-(*     rewrite <- exp_eq_sub_compose_typ; mauto 2. *)
-(*     etransitivity. *)
-(*     + eapply wf_exp_eq_sub_cong; [ |mauto 3]. *)
-(*       eapply wf_exp_eq_subtyp. *)
-(*       eapply wf_exp_eq_var_weaken; [mauto 3|]. *)
-(*       all:admit. *)
-(*     + specialize (IHweakening (T :: Γ1) Γ2 T0 eq_refl) *)
+    rewrite <- exp_eq_sub_compose_typ; mauto 2.
+    deepexec wf_ctx_sub_ctx_lookup ltac:(fun H => destruct H as [? [? [? [? [-> [? [-> []]]]]]]]).
+    repeat rewrite List.app_length in *.
+    rewrite H6 in *.
+    assert (length x1 = length Γ2) by (simpl in *; lia).
+    rewrite <- H9.
 
-(*       2:mauto. *)
+    etransitivity.
+    + eapply wf_exp_eq_sub_cong; [ |mauto 3].
+      eapply wf_exp_eq_subtyp.
+      * eapply wf_exp_eq_var_weaken; [mauto 3|]; eauto.
+      * mauto 4.
+    + eapply wf_exp_eq_subtyp.
+      * eapply IHweakening with (Γ1 := T :: _).
+        reflexivity.
+      * eapply wf_subtyping_subst; [ |mauto 3].
+        simpl. eapply wf_subtyping_subst; mauto 3.
+Qed.
 
-(*       wf_exp_eq_var_weaken *)
+Ltac saturate_glu_info1 :=
+  match goal with
+  | H : glu_univ_elem _ ?P _ _,
+      H1 : ?P _ _ |- _ =>
+      pose proof (glu_univ_elem_univ_lvl _ _ _ _ H _ _ H1);
+      fail_if_dup
+  | H : glu_univ_elem _ _ ?El _,
+      H1 : ?El _ _ _ _ |- _ =>
+      pose proof (glu_univ_elem_trm_escape _ _ _ _ H _ _ _ _ H1);
+      fail_if_dup
+  end.
 
-(*       rewrite IHweakening. *)
-(*     + *)
-(*     rewrite wf_exp_eq_sub_compose. *)
+Ltac saturate_glu_info :=
+  clear_dups;
+  repeat saturate_glu_info1.
 
-(*     simpl. autorewrite with mcltt. *)
-
+Lemma var_glu_elem_bot : forall A i P El Γ T,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    P Γ T ->
+    glu_elem_bot (T :: Γ) {{{#0}}} {{{T[Wk]}}} i d{{{! (length Γ)}}} A.
+Proof.
+  intros. saturate_glu_info.
+  econstructor; mauto 4.
+  - admit.
+  - intros. progressive_inversion.
+    exact (var_weaken_gen _ _ _ H2 nil _ _ eq_refl).
+Admitted.
 
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -168,6 +218,7 @@ Proof.
     + gen_presups. trivial.
     + saturate_weakening_escape.
       assert {{ Γ ⊢w Id : Γ }} by mauto 4.
+      pose proof (H12 _ _ H15).
       specialize (H12 _ _ H18).
       assert {{ Γ ⊢ IT : Type@i}} by mauto 3 using glu_univ_elem_univ_lvl, invert_sub_id.
       assert {{ Γ ⊢ IT[Id] ≈ IT : Type@i}} by mauto 3.
@@ -179,10 +230,12 @@ Proof.
       pose proof (var_per_elem (length Δ) H0).
       destruct_rel_mod_eval.
       simplify_evals.
-      destruct (H2 _ H24 _ H16) as [? []].
+      destruct (H2 _ H25 _ H16) as [? []].
+      specialize (H10 _ _ _ _ (var_glu_elem_bot _ _ _ _ _ _ H H19)).
+      (* specialize (H13 _ _ _ _ _ H10 H25). *)
+      (* specialize (H19 _ _ _ H27). *)
 
 
-      destruct (H2 _ _ _)
       admit.
 
       
