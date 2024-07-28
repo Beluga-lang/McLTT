@@ -396,7 +396,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using eassumption : mcltt.
+Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using mauto 3 : mcltt.
 
 #[export]
 Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left

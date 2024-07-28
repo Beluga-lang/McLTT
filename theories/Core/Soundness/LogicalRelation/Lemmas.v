@@ -15,7 +15,7 @@ Lemma pi_glu_exp_pred_pi_glu_typ_pred : forall i IR IP IEl (OP : forall c (equiv
 Proof.
   inversion_clear 1; econstructor; eauto.
   intros.
-  edestruct H5 as [? []]; eauto.
+  edestruct H6 as [? []]; eauto.
 Qed.
 
 Lemma glu_nat_per_nat : forall Γ m a,
@@ -269,7 +269,7 @@ Proof.
   match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
   intros.
   destruct_rel_mod_eval.
-  edestruct H11 as [? []]; eauto.
+  edestruct H12 as [? []]; eauto.
 Qed.
 
 Lemma glu_univ_elem_trm_univ_lvl : forall i P El A,
@@ -301,7 +301,7 @@ Proof.
     intros.
     destruct_rel_mod_eval.
     assert {{ Δ ⊢ m' : IT [σ]}} by eauto using glu_univ_elem_trm_escape.
-    edestruct H12 as [? []]; eauto.
+    edestruct H13 as [? []]; eauto.
     eexists; split; eauto.
     enough {{ Δ ⊢ m[σ] m' ≈ t'[σ] m' : OT[σ,,m'] }} by eauto.
     assert {{ Γ ⊢ m ≈ t' : Π IT OT }} as Hty by mauto.

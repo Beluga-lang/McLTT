@@ -73,6 +73,7 @@ Inductive pi_glu_typ_pred i
   (OP : forall c (equiv_c : {{ Dom c ≈ c ∈ IR }}), glu_typ_pred) : glu_typ_pred :=
 | mk_pi_glu_typ_pred :
     `{ {{ Γ ⊢ M ≈ Π IT OT : Type@i }} ->
+       {{ Γ ⊢ IT : Type@i }} ->
        {{ Γ , IT ⊢ OT : Type@i }} ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ IT[σ] ® IP }}) ->
        (forall Δ σ m a,
@@ -92,6 +93,7 @@ Inductive pi_glu_exp_pred i
   `{ {{ Γ ⊢ m : M }} ->
      {{ Dom a ≈ a ∈ elem_rel }} ->
      {{ Γ ⊢ M ≈ Π IT OT : Type@i }} ->
+       {{ Γ ⊢ IT : Type@i }} ->
      {{ Γ , IT ⊢ OT : Type@i }} ->
      (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ IT[σ] ® IP }}) ->
      (forall Δ σ m' b,

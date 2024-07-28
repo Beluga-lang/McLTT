@@ -235,6 +235,17 @@ Proof.
     [setoid_rewrite <- HRR' | setoid_rewrite HRR']; eassumption.
 Qed.
 
+Lemma domain_app_per : forall f f' a a',
+  {{ Dom f ≈ f' ∈ per_bot }} ->
+  {{ Dom a ≈ a' ∈ per_top }} ->
+  {{ Dom f a ≈ f' a' ∈ per_bot }}.
+Proof.
+  intros. intros s.
+  destruct (H s) as [? []].
+  destruct (H0 s) as [? []].
+  mauto.
+Qed.
+
 Ltac rewrite_relation_equivalence_left :=
   repeat match goal with
     | H : ?R1 <~> ?R2 |- _ =>

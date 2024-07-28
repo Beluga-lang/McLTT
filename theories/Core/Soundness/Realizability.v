@@ -128,10 +128,13 @@ Proof.
     exact (var_weaken_gen _ _ _ H2 nil _ _ eq_refl).
 Admitted.
 
+(* #[local] *)
+(*  Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mcltt. *)
+
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     (forall Γ T R, {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> P Γ T -> glu_typ_top Γ T i A) /\
-      (forall Γ t T c, glu_elem_bot Γ t T i c A -> El Γ T t d{{{ ⇑ A c }}}) /\
+      (forall Γ t T c, {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} -> glu_elem_bot Γ t T i c A -> El Γ T t d{{{ ⇑ A c }}}) /\
       (forall Γ t T a R, El Γ T t a -> {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> R a a -> glu_elem_top Γ t T i a A).
 Proof.
   simpl. induction 1 using glu_univ_elem_ind.
@@ -144,18 +147,19 @@ Proof.
   - econstructor; eauto; intros.
     progressive_inversion.
     transitivity {{{Type@j [ σ ]}}}; mauto 4.
-  - match_by_head glu_univ_elem invert_glu_univ_elem.
+  - handle_functional_glu_univ_elem.
+    match_by_head glu_univ_elem invert_glu_univ_elem.
     clear_dups.
     apply_equiv_left.
     repeat split; eauto.
     repeat eexists.
     + glu_univ_elem_econstructor; eauto; reflexivity.
     + simpl. repeat split.
-      * rewrite <- H4. trivial.
+      * rewrite <- H5. trivial.
       * intros.
         saturate_weakening_escape.
         rewrite <- wf_exp_eq_typ_sub; try eassumption.
-        rewrite <- H4.
+        rewrite <- H5.
         firstorder.
   - deepexec glu_univ_elem_per_univ ltac:(fun H => pose proof H).
     firstorder.
@@ -175,7 +179,8 @@ Proof.
   - econstructor; eauto; intros.
     progressive_inversion.
     transitivity {{{ℕ [ σ ]}}}; mauto 3.
-  - match_by_head glu_univ_elem invert_glu_univ_elem.
+  - handle_functional_glu_univ_elem.
+    match_by_head glu_univ_elem invert_glu_univ_elem.
     apply_equiv_left.
     repeat split; eauto.
     econstructor; trivial.
@@ -184,7 +189,7 @@ Proof.
     saturate_weakening_escape.
     assert {{ Δ ⊢ T [σ] ≈ ℕ[σ] : Type @ i }} by mauto 3.
     rewrite <- wf_exp_eq_nat_sub; try eassumption.
-    rewrite <- H11. firstorder.
+    rewrite <- H10. firstorder.
   - econstructor.
     + rewrite H1. mauto 3.
     + glu_univ_elem_econstructor; eauto.
@@ -202,25 +207,57 @@ Proof.
     + gen_presups. trivial.
     + saturate_weakening_escape.
       assert {{ Γ ⊢w Id : Γ }} by mauto 4.
-      pose proof (H12 _ _ H15).
-      specialize (H12 _ _ H18).
-      assert {{ Γ ⊢ IT : Type@i}} by mauto 3 using glu_univ_elem_univ_lvl, invert_sub_id.
+      pose proof (H13 _ _ H16).
+      specialize (H13 _ _ H19).
       assert {{ Γ ⊢ IT[Id] ≈ IT : Type@i}} by mauto 3.
-      bulky_rewrite_in H12.
-      progressive_invert H16.
-      destruct (H9 _ _ _ H0 H12) as [].
+      bulky_rewrite_in H13.
+      progressive_invert H17.
+      destruct (H9 _ _ _ H0 H13) as [].
       bulky_rewrite.
       simpl. apply wf_exp_eq_pi_cong'; [firstorder |].
       pose proof (var_per_elem (length Δ) H0).
       destruct_rel_mod_eval.
       simplify_evals.
-      destruct (H2 _ H25 _ H16) as [? []].
-      specialize (H10 _ _ _ _ (var_glu_elem_bot _ _ _ _ _ _ H H19)).
-      (* specialize (H13 _ _ _ _ _ H10 H25). *)
-      (* specialize (H19 _ _ _ H27). *)
+      destruct (H2 _ H25 _ H17) as [? []].
+      specialize (H10 _ _ _ _ ltac:(trivial) (var_glu_elem_bot _ _ _ _ _ _ H H20)).
+      autorewrite with mcltt in H10.
+      specialize (H14 {{{Δ, IT[σ]}}} {{{σ ∘ Wk}}} _ _ ltac:(mauto) H10 H25).
+      specialize (H8 _ _ _ H28 H14) as [].
+      etransitivity; [| eapply H30]; mauto 3.
+  - handle_functional_glu_univ_elem.
+    apply_equiv_left.
+    destruct H10.
+    econstructor; try eapply per_bot_then_per_elem; eauto.
 
-
+    intros.
+    saturate_weakening_escape.
+    saturate_glu_info.
+    match_by_head1 per_univ_elem invert_per_univ_elem.
+    destruct_rel_mod_eval.
+    simplify_evals.
+    eexists; repeat split; mauto 3.
+    eapply H2; eauto.
+    assert {{ Δ ⊢ t [σ] : M[σ] }} by mauto 3.
+    bulky_rewrite_in H24.
+    econstructor; eauto.
+    + eassert {{ Δ ⊢ ~ (a_sub t σ) m' : ~_ }} by (eapply wf_app'; eassumption).
+      autorewrite with mcltt in H26.
+      trivial.
+    + mauto using domain_app_per.
+    + intros.
+      saturate_weakening_escape.
+      progressive_invert H27.
+      destruct (H15 _ _ _ _ _ H19 H0 equiv_b).
+      handle_functional_glu_univ_elem.
+      autorewrite with mcltt.
+      rewrite wf_sub_eq_extend_compose; mauto 4.
       admit.
+      (* etransitivity. *)
+      (* eapply wf_exp_eq_conv. *)
+      (* eapply wf_exp_eq_app_sub'; eauto. *)
+      (* autorewrite with mcltt. *)
 
-      
+      (* rewrite wf_exp_eq_app_sub'. *)
+    (* admit. *)
+
 Admitted.
