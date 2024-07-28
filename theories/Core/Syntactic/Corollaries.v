@@ -33,3 +33,27 @@ Proof.
   gen_presups.
   mauto 4.
 Qed.
+
+
+Add Parametric Morphism Γ1 Γ2 Γ3 : a_compose
+    with signature wf_sub_eq Γ2 Γ3 ==> wf_sub_eq Γ1 Γ2 ==> wf_sub_eq Γ1 Γ3 as sub_compose_cong.
+Proof. mauto. Qed.
+
+Lemma sub_decompose_q_typ : forall Γ S T i σ Δ Δ' τ t,
+  {{Γ, S ⊢ T : Type@i}} ->
+  {{Δ ⊢s σ : Γ}} ->
+  {{Δ' ⊢s τ : Δ}} ->
+  {{Δ' ⊢ t : S [ σ ] [ τ ]}} ->
+  {{Δ' ⊢ T [ σ ∘ τ ,, t ] ≈ T [ q σ ] [ τ ,, t ] : Type@i}}.
+Proof.
+  intros. gen_presups.
+  simpl. autorewrite with mcltt.
+  rewrite wf_sub_eq_extend_compose; mauto 3;
+    [| mauto
+    | rewrite <- exp_eq_sub_compose_typ; mauto 4].
+  eapply exp_eq_sub_cong_typ2'; [mauto 2 | mauto |].
+  eapply wf_sub_eq_extend_cong; eauto.
+  - rewrite wf_sub_eq_compose_assoc; mauto 3; mauto 4.
+    rewrite wf_sub_eq_p_extend; eauto; mauto 4.
+  - rewrite <- exp_eq_sub_compose_typ; mauto 4.
+Qed.

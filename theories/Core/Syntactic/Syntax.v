@@ -108,6 +108,10 @@ Proof.
     apply PeanoNat.Nat.eq_dec.
 Defined.
 
+Definition q σ := a_extend (a_compose σ a_weaken) (a_var 0).
+Arguments q σ/.
+
+
 #[global] Declare Custom Entry exp.
 #[global] Declare Custom Entry nf.
 
@@ -137,7 +141,7 @@ Module Syntax_Notations.
 
   Infix "∘" := a_compose (in custom exp at level 40) : mcltt_scope.
   Infix ",," := a_extend (in custom exp at level 50) : mcltt_scope.
-  Notation "'q' σ" := ({{{ σ ∘ Wk ,, # 0 }}}) (in custom exp at level 30) : mcltt_scope.
+  Notation "'q' σ" := (q σ) (in custom exp at level 30) : mcltt_scope.
 
   Notation "⋅" := nil (in custom exp at level 0) : mcltt_scope.
   Notation "x , y" := (cons y x) (in custom exp at level 50) : mcltt_scope.

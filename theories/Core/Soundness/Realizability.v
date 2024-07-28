@@ -128,8 +128,8 @@ Proof.
     exact (var_weaken_gen _ _ _ H2 nil _ _ eq_refl).
 Admitted.
 
-(* #[local] *)
-(*  Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mcltt. *)
+#[local]
+ Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mcltt.
 
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -250,14 +250,22 @@ Proof.
       destruct (H15 _ _ _ _ _ H19 H0 equiv_b).
       handle_functional_glu_univ_elem.
       autorewrite with mcltt.
-      rewrite wf_sub_eq_extend_compose; mauto 4.
-      admit.
-      (* etransitivity. *)
-      (* eapply wf_exp_eq_conv. *)
-      (* eapply wf_exp_eq_app_sub'; eauto. *)
-      (* autorewrite with mcltt. *)
 
-      (* rewrite wf_exp_eq_app_sub'. *)
-    (* admit. *)
+      etransitivity.
+      * rewrite sub_decompose_q_typ; mauto 4.
+      * simpl.
+        rewrite <- sub_eq_q_sigma_id_extend; mauto 4.
+        rewrite <- exp_eq_sub_compose_typ; mauto 3;
+          [eapply wf_exp_eq_app_cong' |].
+        -- specialize (H12 _ {{{σ ∘ σ0}}} _ ltac:(mauto 3) ltac:(eassumption)).
+           rewrite wf_exp_eq_sub_compose with (M := t) in H12; mauto 3.
+           bulky_rewrite_in H12.
+        -- rewrite <- exp_eq_sub_compose_typ; mauto 3.
+        -- econstructor; mauto 3.
+           autorewrite with mcltt.
+          rewrite <- exp_eq_sub_compose_typ; mauto 3.
+
+  -
+        admit.
 
 Admitted.
