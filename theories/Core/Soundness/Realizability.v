@@ -116,22 +116,6 @@ Proof.
         simpl. eapply wf_subtyping_subst; mauto 3.
 Qed.
 
-Ltac saturate_glu_info1 :=
-  match goal with
-  | H : glu_univ_elem _ ?P _ _,
-      H1 : ?P _ _ |- _ =>
-      pose proof (glu_univ_elem_univ_lvl _ _ _ _ H _ _ H1);
-      fail_if_dup
-  | H : glu_univ_elem _ _ ?El _,
-      H1 : ?El _ _ _ _ |- _ =>
-      pose proof (glu_univ_elem_trm_escape _ _ _ _ H _ _ _ _ H1);
-      fail_if_dup
-  end.
-
-Ltac saturate_glu_info :=
-  clear_dups;
-  repeat saturate_glu_info1.
-
 Lemma var_glu_elem_bot : forall A i P El Γ T,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     P Γ T ->
@@ -147,8 +131,8 @@ Admitted.
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     (forall Γ T R, {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> P Γ T -> glu_typ_top Γ T i A) /\
-      (forall Γ t T c, glu_elem_bot Γ t T i c A -> El Γ t T d{{{ ⇑ A c }}}) /\
-      (forall Γ t T a R, El Γ t T a -> {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> R a a -> glu_elem_top Γ t T i a A).
+      (forall Γ t T c, glu_elem_bot Γ t T i c A -> El Γ T t d{{{ ⇑ A c }}}) /\
+      (forall Γ t T a R, El Γ T t a -> {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> R a a -> glu_elem_top Γ t T i a A).
 Proof.
   simpl. induction 1 using glu_univ_elem_ind.
   all:split; [| split]; intros;

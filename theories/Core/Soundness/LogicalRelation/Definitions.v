@@ -16,10 +16,10 @@ Notation "'glu_typ_pred_equivalence'" := (@predicate_equivalence glu_typ_pred_ar
 (* This type annotation is to distinguish this notation from others *)
 Notation "Γ ⊢ A ® R" := ((R Γ A : Prop) : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, A custom exp, R constr).
 
-Notation "'glu_exp_pred_args'" := (Tcons ctx (Tcons exp (Tcons typ (Tcons domain Tnil)))).
+Notation "'glu_exp_pred_args'" := (Tcons ctx (Tcons typ (Tcons exp (Tcons domain Tnil)))).
 Notation "'glu_exp_pred'" := (predicate glu_exp_pred_args).
 Notation "'glu_exp_pred_equivalence'" := (@predicate_equivalence glu_exp_pred_args) (only parsing).
-Notation "Γ ⊢ M : A ® m ∈ R" := (R Γ M A m : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp, m custom domain, R constr).
+Notation "Γ ⊢ M : A ® m ∈ R" := (R Γ A M m : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp, m custom domain, R constr).
 
 Notation "'glu_sub_pred_args'" := (Tcons ctx (Tcons sub (Tcons env Tnil))).
 Notation "'glu_sub_pred'" := (predicate glu_sub_pred_args).
@@ -48,7 +48,7 @@ Hint Constructors glu_nat : mcltt.
 Definition nat_glu_typ_pred i : glu_typ_pred := fun Γ M => {{ Γ ⊢ M ≈ ℕ : Type@i }}.
 Arguments nat_glu_typ_pred i Γ M/.
 
-Definition nat_glu_exp_pred i : glu_exp_pred := fun Γ m M a => {{ Γ ⊢ M ® nat_glu_typ_pred i }} /\ glu_nat Γ m a.
+Definition nat_glu_exp_pred i : glu_exp_pred := fun Γ M m a => {{ Γ ⊢ M ® nat_glu_typ_pred i }} /\ glu_nat Γ m a.
 Arguments nat_glu_exp_pred i Γ m M a/.
 
 Definition neut_glu_typ_pred i C : glu_typ_pred :=
@@ -113,7 +113,7 @@ Section Gluing.
       (glu_univ_typ_rec : forall {j}, j < i -> domain -> glu_typ_pred).
 
   Definition univ_glu_exp_pred' {j} (lt_j_i : j < i) : glu_exp_pred :=
-    fun Γ m M A =>
+    fun Γ M m A =>
       {{ Γ ⊢ m : M }} /\
         {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
         {{ Γ ⊢ m ® glu_univ_typ_rec lt_j_i A }}.
@@ -172,7 +172,7 @@ Definition glu_univ_typ (i : nat) (A : domain) : glu_typ_pred :=
 Arguments glu_univ_typ i A Γ M/.
 
 Definition univ_glu_exp_pred j i : glu_exp_pred :=
-    fun Γ m M A =>
+    fun Γ M m A =>
       {{ Γ ⊢ m : M }} /\ {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
         {{ Γ ⊢ m ® glu_univ_typ j A }}.
 Arguments univ_glu_exp_pred j i Γ t T a/.
@@ -250,7 +250,7 @@ Section GluingInduction.
   Qed.
 End GluingInduction.
 
-Inductive glu_neut i A Γ m M c : Prop :=
+Inductive glu_neut i A Γ M m c : Prop :=
 | mk_glu_neut :
     {{ Γ ⊢ m : M }} ->
     {{ Γ ⊢ M ® glu_univ_typ i A }} ->
@@ -258,7 +258,7 @@ Inductive glu_neut i A Γ m M c : Prop :=
     (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ a }} -> {{ Δ ⊢ m[σ] ≈ a : M[σ] }}) ->
     {{ Γ ⊢ m : M ® c ∈ glu_neut i A }}.
 
-Inductive glu_norm i A Γ m M a : Prop :=
+Inductive glu_norm i A Γ M m a : Prop :=
 | mk_glu_norm :
     {{ Γ ⊢ m : M }} ->
     {{ Γ ⊢ M ® glu_univ_typ i A }} ->
