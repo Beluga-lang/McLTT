@@ -169,7 +169,7 @@ Proof.
     + mauto 2.
     + intros.
       saturate_weakening_escape.
-      deepexec H ltac:(fun H => destruct H as [? [? []]]).
+      deepexec H ltac:(fun H => destruct H).
       progressive_invert H16.
       deepexec H20 ltac:(fun H => pose proof H).
       functional_read_rewrite_clear.
@@ -224,7 +224,7 @@ Proof.
       etransitivity; [| eapply H30]; mauto 3.
   - handle_functional_glu_univ_elem.
     apply_equiv_left.
-    destruct H10.
+    invert_glu_rel1.
     econstructor; try eapply per_bot_then_per_elem; eauto.
 
     intros.
@@ -237,7 +237,8 @@ Proof.
     eapply H2; eauto.
     assert {{ Δ ⊢ t [σ] : M[σ] }} by mauto 3.
     bulky_rewrite_in H24.
-    econstructor; eauto.
+    unshelve (econstructor; eauto).
+    + trivial.
     + eassert {{ Δ ⊢ ~ (a_sub t σ) m' : ~_ }} by (eapply wf_app'; eassumption).
       autorewrite with mcltt in H26.
       trivial.
@@ -268,21 +269,21 @@ Proof.
     pose proof H8.
     invert_per_univ_elem H8.
     econstructor; mauto 3.
-    + destruct H7. trivial.
+    + invert_glu_rel1. trivial.
     + eapply glu_univ_elem_trm_typ; eauto.
     + intros.
       saturate_weakening_escape.
-      destruct H7. clear_dups.
-      progressive_invert H14.
+      invert_glu_rel1. clear_dups.
+      progressive_invert H20.
 
       assert {{ Γ ⊢w Id : Γ }} by mauto 4.
-      pose proof (H20 _ _ H24).
-      specialize (H20 _ _ H8).
+      pose proof (H10 _ _ H24).
+      specialize (H10 _ _ H19).
       assert {{ Γ ⊢ IT[Id] ≈ IT : Type@i}} by mauto 3.
       bulky_rewrite_in H25.
       destruct (H11 _ _ _ ltac:(eassumption) ltac:(eassumption)) as [].
-      specialize (H29 _ _ _ H8 H9).
-      rewrite H17 in *.
+      specialize (H29 _ _ _ H19 H9).
+      rewrite H5 in *.
       autorewrite with mcltt.
       eassert {{ Δ ⊢ m[σ] : ~_ }} by (mauto 2).
       autorewrite with mcltt in H30.
@@ -294,9 +295,9 @@ Proof.
       destruct_rel_mod_eval.
       simplify_evals.
       destruct (H2 _ ltac:(eassumption) _ ltac:(eassumption)) as [? []].
-      specialize (H12 _ _ _ _ ltac:(trivial) (var_glu_elem_bot _ _ _ _ _ _ H H20)).
+      specialize (H12 _ _ _ _ ltac:(trivial) (var_glu_elem_bot _ _ _ _ _ _ H H10)).
       autorewrite with mcltt in H12.
-      specialize (H21 {{{Δ, IT[σ]}}} {{{σ ∘ Wk}}} _ _ ltac:(mauto) ltac:(eassumption) ltac:(eassumption)) as [? []].
+      specialize (H14 {{{Δ, IT[σ]}}} {{{σ ∘ Wk}}} _ _ ltac:(mauto) ltac:(eassumption) ltac:(eassumption)) as [? []].
       apply_equiv_left.
       destruct_rel_mod_app.
       simplify_evals.
@@ -315,6 +316,29 @@ Proof.
       symmetry.
       rewrite <- wf_exp_eq_pi_sub; mauto 4.
 
-  - admit.
+  - econstructor; eauto.
+    intros.
+    progressive_inversion.
+    firstorder.
+  - handle_functional_glu_univ_elem.
+    apply_equiv_left.
+    econstructor; eauto.
+  - handle_functional_glu_univ_elem.
+    invert_glu_rel1.
+    econstructor; eauto.
+    + invert_glu_rel1.
+      specialize (H7 (length Γ)) as [? []].
+      specialize (H3 (length Γ)) as [? []].
+      assert {{ Γ ⊢w Id : Γ }} by mauto.
+      clear_dups. progressive_inversion.
+      deepexec H6 ltac:(fun H => pose proof H).
+      autorewrite with mcltt in H;
+        gen_presups; mauto 3.
+    + intros s. destruct (H1 s) as [? []].
+      mauto.
+    + intros.
+    progressive_inversion.
+    specialize (H10 (length Δ)) as [? []].
+    firstorder.
 
 Admitted.
