@@ -1,5 +1,3 @@
-(* From Coq Require Import Equivalence Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses. *)
-
 From Coq Require Import Nat.
 
 From Mcltt Require Import Base LibTactics.
@@ -9,36 +7,36 @@ From Mcltt.Core.Semantic Require Import Realizability Readback.
 From Mcltt.Core.Soundness Require Export LogicalRelation Weakening.
 Import Domain_Notations.
 
-Inductive glu_elem_bot Γ t T i c A : Prop :=
+Inductive glu_elem_bot i A Γ T t c : Prop :=
 | glu_elem_bot_make : forall P El,
     {{ Γ ⊢ t : T }} ->
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    P Γ T ->
-    per_bot c c ->
+    {{ Γ ⊢ T ® P }} ->
+    {{ Dom c ≈ c ∈ per_bot }} ->
     (forall Δ σ w, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ w }} -> {{ Δ ⊢ t [ σ ] ≈ w : T [ σ ] }}) ->
-    glu_elem_bot Γ t T i c A.
+    {{ Γ ⊢ t : T ® c ∈ glu_elem_bot i A }}.
 #[export]
   Hint Constructors glu_elem_bot : mcltt.
 
 
-Inductive glu_elem_top Γ t T i a A : Prop :=
+Inductive glu_elem_top i A Γ T t a : Prop :=
 | glu_elem_top_make : forall P El,
     {{ Γ ⊢ t : T }} ->
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    P Γ T ->
-    per_top d{{{ ⇓ A a }}} d{{{ ⇓ A a }}} ->
+    {{ Γ ⊢ T ® P }} ->
+    {{ Dom ⇓ A a ≈ ⇓ A a ∈ per_top }} ->
     (forall Δ σ w, {{ Δ ⊢w σ : Γ }} -> {{ Rnf ⇓ A a in length Δ ↘ w }} -> {{ Δ ⊢ t [ σ ] ≈ w : T [ σ ] }}) ->
-    glu_elem_top Γ t T i a A.
+    {{ Γ ⊢ t : T ® a ∈ glu_elem_top i A }}.
 #[export]
   Hint Constructors glu_elem_top : mcltt.
 
 
-Inductive glu_typ_top Γ T i A : Prop :=
+Inductive glu_typ_top i A Γ T : Prop :=
 | glu_typ_top_make :
     {{ Γ ⊢ T : Type@i }} ->
-    per_top_typ A A ->
+    {{ Dom A ≈ A ∈ per_top_typ }} ->
     (forall Δ σ W, {{ Δ ⊢w σ : Γ }} -> {{ Rtyp A in length Δ ↘ W }} -> {{ Δ ⊢ T [ σ ] ≈ W : Type@i }}) ->
-    glu_typ_top Γ T i A.
+    {{ Γ ⊢ T ® glu_typ_top i A }}.
 #[export]
   Hint Constructors glu_typ_top : mcltt.
 
@@ -118,8 +116,8 @@ Qed.
 
 Lemma var_glu_elem_bot : forall A i P El Γ T,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    P Γ T ->
-    glu_elem_bot (T :: Γ) {{{#0}}} {{{T[Wk]}}} i d{{{! (length Γ)}}} A.
+    {{ Γ ⊢ T ® P }} ->
+    {{ Γ, T ⊢ #0 : T[Wk] ® ! (length Γ) ∈ glu_elem_bot i A }}.
 Proof.
   intros. saturate_glu_info.
   econstructor; mauto 4.
@@ -133,9 +131,17 @@ Admitted.
 
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    (forall Γ T R, {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> P Γ T -> glu_typ_top Γ T i A) /\
-      (forall Γ t T c, {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} -> glu_elem_bot Γ t T i c A -> El Γ T t d{{{ ⇑ A c }}}) /\
-      (forall Γ t T a R, {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} -> El Γ T t a -> {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} -> R a a -> glu_elem_top Γ t T i a A).
+    (forall Γ T R, {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} ->
+              {{ Γ ⊢ T ® P }} ->
+              {{ Γ ⊢ T ® glu_typ_top i A }}) /\
+      (forall Γ t T c, {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+                  {{ Γ ⊢ t : T ® c ∈ glu_elem_bot i A }} ->
+                  {{ Γ ⊢ t : T ® ⇑ A c ∈ El }}) /\
+      (forall Γ t T a R, {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+                    {{ Γ ⊢ t : T ® a ∈ El }} ->
+                    {{ DF A ≈ A ∈ per_univ_elem i ↘ R }} ->
+                    {{ Dom a ≈ a ∈ R }} ->
+                    {{ Γ ⊢ t : T ® a ∈ glu_elem_top i A }}).
 Proof.
   simpl. induction 1 using glu_univ_elem_ind.
   all:split; [| split]; intros;
