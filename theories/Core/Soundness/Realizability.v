@@ -7,39 +7,6 @@ From Mcltt.Core.Semantic Require Import Realizability Readback.
 From Mcltt.Core.Soundness Require Export LogicalRelation Weakening.
 Import Domain_Notations.
 
-Inductive glu_elem_bot i A Γ T t c : Prop :=
-| glu_elem_bot_make : forall P El,
-    {{ Γ ⊢ t : T }} ->
-    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    {{ Γ ⊢ T ® P }} ->
-    {{ Dom c ≈ c ∈ per_bot }} ->
-    (forall Δ σ w, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ w }} -> {{ Δ ⊢ t [ σ ] ≈ w : T [ σ ] }}) ->
-    {{ Γ ⊢ t : T ® c ∈ glu_elem_bot i A }}.
-#[export]
-  Hint Constructors glu_elem_bot : mcltt.
-
-
-Inductive glu_elem_top i A Γ T t a : Prop :=
-| glu_elem_top_make : forall P El,
-    {{ Γ ⊢ t : T }} ->
-    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    {{ Γ ⊢ T ® P }} ->
-    {{ Dom ⇓ A a ≈ ⇓ A a ∈ per_top }} ->
-    (forall Δ σ w, {{ Δ ⊢w σ : Γ }} -> {{ Rnf ⇓ A a in length Δ ↘ w }} -> {{ Δ ⊢ t [ σ ] ≈ w : T [ σ ] }}) ->
-    {{ Γ ⊢ t : T ® a ∈ glu_elem_top i A }}.
-#[export]
-  Hint Constructors glu_elem_top : mcltt.
-
-
-Inductive glu_typ_top i A Γ T : Prop :=
-| glu_typ_top_make :
-    {{ Γ ⊢ T : Type@i }} ->
-    {{ Dom A ≈ A ∈ per_top_typ }} ->
-    (forall Δ σ W, {{ Δ ⊢w σ : Γ }} -> {{ Rtyp A in length Δ ↘ W }} -> {{ Δ ⊢ T [ σ ] ≈ W : Type@i }}) ->
-    {{ Γ ⊢ T ® glu_typ_top i A }}.
-#[export]
-  Hint Constructors glu_typ_top : mcltt.
-
 Open Scope list_scope.
 
 Lemma wf_ctx_sub_ctx_lookup : forall n T Γ,
