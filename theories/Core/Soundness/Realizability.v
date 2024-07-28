@@ -347,4 +347,44 @@ Proof.
     specialize (H10 (length Δ)) as [? []].
     firstorder.
 
-Admitted.
+Qed.
+
+Corollary realize_glu_typ_top : forall A i P El,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    forall Γ T,
+      {{ Γ ⊢ T ® P }} ->
+      {{ Γ ⊢ T ® glu_typ_top i A }}.
+Proof.
+  intros.
+  pose proof H.
+  eapply glu_univ_elem_per_univ in H.
+  simpl in *. destruct_all.
+  eapply realize_glu_univ_elem_gen; eauto.
+Qed.
+
+Theorem realize_glu_elem_bot : forall A i P El,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    forall Γ t T c,
+      {{ Γ ⊢ t : T ® c ∈ glu_elem_bot i A }} ->
+      {{ Γ ⊢ t : T ® ⇑ A c ∈ El }}.
+Proof.
+  intros.
+  eapply realize_glu_univ_elem_gen; eauto.
+Qed.
+
+Theorem realize_glu_elem_top : forall A i P El,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    forall Γ t T a,
+      {{ Γ ⊢ t : T ® a ∈ El }} ->
+      {{ Γ ⊢ t : T ® a ∈ glu_elem_top i A }}.
+Proof.
+  intros.
+  pose proof H.
+  eapply glu_univ_elem_per_univ in H.
+  simpl in *. destruct_all.
+  eapply realize_glu_univ_elem_gen; eauto.
+  eapply glu_univ_elem_per_elem; eauto.
+Qed.
+
+#[export]
+  Hint Resolve realize_glu_typ_top realize_glu_elem_top : mcltt.
