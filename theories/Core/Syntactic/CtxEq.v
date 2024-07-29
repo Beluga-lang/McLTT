@@ -41,8 +41,8 @@ Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, {{ ⊢ Γ0 ≈ Γ1 }} -> {{ ⊢ Γ1 �
 Proof with mautosolve.
   intros * HΓ01.
   gen Γ2.
-  induction HΓ01 as [|Γ0 ? T0 i01 T1]; mauto.
-  inversion_clear 1 as [|? Γ2' ? i12 T2].
+  induction HΓ01 as [|Γ0 ? i01 T0 T1]; mauto.
+  inversion_clear 1 as [|? Γ2' i12 ? T2].
   clear Γ2; rename Γ2' into Γ2.
   set (i := max i01 i12).
   assert {{ Γ0 ⊢ T0 : Type@i }} by mauto using lift_exp_max_left.

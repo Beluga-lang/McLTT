@@ -16,9 +16,9 @@ Section completeness_fundamental.
   Theorem completeness_fundamental :
     (forall Γ, {{ ⊢ Γ }} -> {{ ⊨ Γ }}) /\
       (forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}) /\
-      (forall Γ M A, {{ Γ ⊢ M : A }} -> {{ Γ ⊨ M : A }}) /\
+      (forall Γ A M, {{ Γ ⊢ M : A }} -> {{ Γ ⊨ M : A }}) /\
       (forall Γ A M M', {{ Γ ⊢ M ≈ M' : A }} -> {{ Γ ⊨ M ≈ M' : A }}) /\
-      (forall Γ σ Δ, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊨s σ : Δ }}) /\
+      (forall Γ Δ σ, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊨s σ : Δ }}) /\
       (forall Γ Δ σ σ', {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ Γ ⊨s σ ≈ σ' : Δ }}) /\
       (forall Γ A A', {{ Γ ⊢ A ⊆ A' }} -> {{ Γ ⊨ A ⊆ A' }}).
   Proof.

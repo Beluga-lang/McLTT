@@ -10,7 +10,8 @@ Inductive weakening : ctx -> sub -> ctx -> Prop :=
   `( {{ Γ ⊢s σ ≈ Id : Δ }} ->
      {{ Γ ⊢w σ : Δ }} )
 | wk_p :
-  `( {{ Γ ⊢w τ : Δ , T }} ->
+  `( {{ Γ ⊢w τ : Δ', T }} ->
+     {{ ⊢ Δ' ⊆ Δ }} ->
      {{ Γ ⊢s σ ≈ Wk ∘ τ : Δ }} ->
      {{ Γ ⊢w σ : Δ }} )
 where "Γ ⊢w σ : Δ" := (weakening Γ σ Δ) (in custom judg) : type_scope.

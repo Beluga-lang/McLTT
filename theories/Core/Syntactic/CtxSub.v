@@ -49,7 +49,7 @@ Module ctxsub_judg.
     2-3: inversion_clear HΓΔ; econstructor; mautosolve 4.
 
     - (* ctxsub_exp_eq_helper variable case *)
-      inversion_clear HΓΔ as [|Δ0 ? C'].
+      inversion_clear HΓΔ as [|Δ0 ? ? C'].
       assert (exists D, {{ #x : D ∈ Δ0 }} /\ {{ Δ0 ⊢ D ⊆ B }}) as [D [i0 ?]] by mauto.
       destruct_conjs.
       assert {{ ⊢ Δ0, C' }} by mauto.
@@ -105,3 +105,10 @@ Qed.
 #[export]
   Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.
 Proof. eauto using wf_ctx_sub_trans. Qed.
+
+
+Add Parametric Morphism : wf_exp
+  with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_exp_morphism.
+Proof.
+  cbv. intros. mauto 3.
+Qed.

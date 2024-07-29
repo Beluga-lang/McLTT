@@ -39,7 +39,7 @@ with wf_ctx_sub : ctx -> ctx -> Prop :=
      {{ ⊢ Γ , A ⊆ Δ , A' }} )
 where "⊢ Γ ⊆ Γ'" := (wf_ctx_sub Γ Γ') (in custom judg) : type_scope
 
-with wf_exp : ctx -> exp -> typ -> Prop :=
+with wf_exp : ctx -> typ -> exp -> Prop :=
 | wf_typ :
   `( {{ ⊢ Γ }} ->
      {{ Γ ⊢ Type@i : Type@(S i) }} )
@@ -84,9 +84,9 @@ with wf_exp : ctx -> exp -> typ -> Prop :=
   `( {{ Γ ⊢ M : A }} ->
      {{ Γ ⊢ A ⊆ A' }} ->
      {{ Γ ⊢ M : A' }} )
-where "Γ ⊢ M : A" := (wf_exp Γ M A) (in custom judg) : type_scope
+where "Γ ⊢ M : A" := (wf_exp Γ A M) (in custom judg) : type_scope
 
-with wf_sub : ctx -> sub -> ctx -> Prop :=
+with wf_sub : ctx -> ctx -> sub -> Prop :=
 | wf_sub_id :
   `( {{ ⊢ Γ }} ->
      {{ Γ ⊢s Id : Γ }} )
@@ -106,7 +106,7 @@ with wf_sub : ctx -> sub -> ctx -> Prop :=
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ ⊢ Δ ⊆ Δ' }} ->
      {{ Γ ⊢s σ : Δ' }} )
-where "Γ ⊢s σ : Δ" := (wf_sub Γ σ Δ) (in custom judg) : type_scope
+where "Γ ⊢s σ : Δ" := (wf_sub Γ Δ σ) (in custom judg) : type_scope
 
 with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
 | wf_exp_eq_typ_sub :
@@ -372,7 +372,7 @@ Qed.
 
 
 Add Parametric Morphism i Γ : (wf_exp Γ)
-    with signature eq ==> wf_exp_eq Γ {{{ Type@i }}} ==> iff as wf_exp_morph.
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> iff as wf_exp_morph.
 Proof.
   intros; split; mauto.
 Qed.
@@ -383,10 +383,55 @@ Proof.
   intros; split; mauto.
 Qed.
 
+Add Parametric Morphism Γ T : (wf_exp_eq Γ T)
+    with signature (wf_exp_eq Γ T) ==> eq ==> iff as wf_exp_eq_morph1.
+Proof.
+  intros; split; mauto.
+Qed.
+
+Add Parametric Morphism Γ T : (wf_exp_eq Γ T)
+    with signature eq ==> (wf_exp_eq Γ T) ==> iff as wf_exp_eq_morph2.
+Proof.
+  intros; split; mauto.
+Qed.
+
 #[export]
-Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using eassumption : mcltt.
+Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using mauto 3 : mcltt.
 
 #[export]
 Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left
                   wf_sub_eq_compose_assoc (* prefer right association *)
                   wf_sub_eq_p_extend using mauto 4 : mcltt.
+
+
+#[export]
+ Hint Rewrite -> wf_exp_eq_sub_id wf_exp_eq_pi_sub using mauto 4 : mcltt.
+
+#[export]
+  Instance wf_exp_eq_per_elem Γ T : PERElem _ (wf_exp Γ T) (wf_exp_eq Γ T).
+Proof.
+  intros a Ha. mauto.
+Qed.
+
+
+#[export]
+  Instance wf_sub_eq_per_elem Γ Δ : PERElem _ (wf_sub Γ Δ) (wf_sub_eq Γ Δ).
+Proof.
+  intros a Ha. mauto.
+Qed.
+
+
+Add Parametric Morphism Γ j : (wf_subtyping Γ)
+    with signature eq ==> (wf_exp_eq Γ {{{Type@j}}}) ==> iff as wf_subtyping_resp_exp_eq_morphism1.
+Proof.
+  split; intros;
+    etransitivity; mauto 3.
+Qed.
+
+
+Add Parametric Morphism Γ i : (wf_subtyping Γ)
+    with signature (wf_exp_eq Γ {{{Type@i}}}) ==> eq ==> iff as wf_subtyping_resp_exp_eq_morphism2.
+Proof.
+  split; intros;
+    etransitivity; mauto 3.
+Qed.

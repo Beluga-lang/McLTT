@@ -764,17 +764,6 @@ Qed.
 #[export]
 Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
 
-(* Lemma typ_subsumption_wf_ctx : forall {Γ A A'}, *)
-(*     {{ Γ ⊢ A ⊆ A' }} -> *)
-(*     {{ ⊢ Γ }}. *)
-(* Proof. *)
-(*   intros * H. *)
-(*   dependent induction H; mauto. *)
-(* Qed. *)
-
-(* #[export] *)
-(* Hint Resolve typ_subsumption_wf_ctx : mcltt. *)
-
 Fact wf_subtyping_refl : forall {Γ A i},
     {{ Γ ⊢ A : Type@i }} ->
     {{ Γ ⊢ A ⊆ A }}.

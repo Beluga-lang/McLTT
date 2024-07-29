@@ -285,3 +285,19 @@ Qed.
 Hint Resolve wf_subtyp_pi' : mcltt.
 #[export]
 Remove Hints wf_subtyp_pi : mcltt.
+
+
+Lemma wf_exp_eq_nat_sub_gen : forall Γ σ Δ i,
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }}.
+Proof.
+  intros.
+  assert (0 <= i) by lia.
+  mauto.
+Qed.
+
+#[export]
+ Hint Resolve wf_exp_eq_nat_sub_gen : mcltt.
+
+#[export]
+Hint Rewrite -> wf_exp_eq_nat_sub_gen using eassumption : mcltt.

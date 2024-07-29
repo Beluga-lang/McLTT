@@ -15,7 +15,7 @@ Lemma pi_glu_exp_pred_pi_glu_typ_pred : forall i IR IP IEl (OP : forall c (equiv
 Proof.
   inversion_clear 1; econstructor; eauto.
   intros.
-  edestruct H5 as [? []]; eauto.
+  edestruct H6 as [? []]; eauto.
 Qed.
 
 Lemma glu_nat_per_nat : forall Γ m a,
@@ -113,6 +113,16 @@ Proof.
   assert {{ Δ ⊢ T[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
+
+Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (P Γ)
+    with signature wf_exp_eq Γ {{{Type@i}}} ==> iff as glu_univ_elem_typ_morphism_iff1.
+Proof.
+  intros. split; intros;
+    eapply glu_univ_elem_typ_resp_equiv;
+    mauto 2.
+Qed.
+
+
 Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a T',
@@ -128,6 +138,14 @@ Proof.
   assert {{ Δ ⊢ M[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
+Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (El Γ)
+    with signature wf_exp_eq Γ {{{Type@i}}} ==> eq ==> eq ==> iff as glu_univ_elem_elem_morphism_iff1.
+Proof.
+  split; intros;
+    eapply glu_univ_elem_trm_resp_typ_equiv;
+    mauto 2.
+Qed.
+
 Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T Δ,
@@ -140,6 +158,15 @@ Proof.
     simpl_glu_rel; mauto 2;
     econstructor; mauto.
 Qed.
+
+Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) : P
+    with signature wf_ctx_eq ==> eq ==> iff as glu_univ_elem_typ_morphism_iff2.
+Proof.
+  intros. split; intros;
+    eapply glu_univ_elem_typ_resp_ctx_equiv;
+    mauto 2.
+Qed.
+
 
 Lemma glu_nat_resp_wk' : forall Γ m a,
     glu_nat Γ m a ->
@@ -242,7 +269,7 @@ Proof.
   match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
   intros.
   destruct_rel_mod_eval.
-  edestruct H11 as [? []]; eauto.
+  edestruct H12 as [? []]; eauto.
 Qed.
 
 Lemma glu_univ_elem_trm_univ_lvl : forall i P El A,
@@ -274,7 +301,7 @@ Proof.
     intros.
     destruct_rel_mod_eval.
     assert {{ Δ ⊢ m' : IT [σ]}} by eauto using glu_univ_elem_trm_escape.
-    edestruct H12 as [? []]; eauto.
+    edestruct H13 as [? []]; eauto.
     eexists; split; eauto.
     enough {{ Δ ⊢ m[σ] m' ≈ t'[σ] m' : OT[σ,,m'] }} by eauto.
     assert {{ Γ ⊢ m ≈ t' : Π IT OT }} as Hty by mauto.
@@ -288,6 +315,16 @@ Proof.
     assert {{ Δ ⊢ m[σ] ≈ t'[σ] : M[σ] }} by mauto 4.
     mauto 4.
 Qed.
+
+
+Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ T : (El Γ T)
+    with signature wf_exp_eq Γ T ==> eq ==> iff as glu_univ_elem_elem_morphism_iff2.
+Proof.
+  split; intros;
+    eapply glu_univ_elem_trm_resp_equiv;
+    mauto 2.
+Qed.
+
 
 Lemma glu_univ_elem_core_univ' : forall j i typ_rel el_rel,
     j < i ->
@@ -482,7 +519,7 @@ Proof.
   do 4 eexists.
   repeat split.
   1: eassumption.
-  1: instantiate (1 := fun c equiv_c Γ M A m => forall (b : domain) Pb Elb,
+  1: instantiate (1 := fun c equiv_c Γ A M m => forall (b : domain) Pb Elb,
                           {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
                           {{ DG b ∈ glu_univ_elem i ↘ Pb ↘ Elb }} ->
                           {{ Γ ⊢ M : A ® m ∈ Elb }}).
@@ -496,7 +533,7 @@ Proof.
     assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv0_c ↘ OEl c equiv0_c }} by mauto 3.
     apply -> simple_glu_univ_elem_morphism_iff; [| reflexivity | |]; [eauto | |].
     + intros ? ? ? ?.
-      split; [intros; handle_functional_glu_univ_elem |]; intuition.
+      split; intros; handle_functional_glu_univ_elem; intuition.
     + intros ? ?.
       split; [intros; handle_functional_glu_univ_elem |]; intuition.
   - rename a0 into c.
@@ -596,7 +633,7 @@ Proof.
     do 2 eexists.
     glu_univ_elem_econstructor; try (eassumption + reflexivity).
     + saturate_refl; eassumption.
-    + instantiate (1 := fun (c : domain) (equiv_c : in_rel c c) Γ M A m =>
+    + instantiate (1 := fun (c : domain) (equiv_c : in_rel c c) Γ A M m =>
                           forall b P El,
                             {{ ⟦ B' ⟧ p' ↦ c ↘ b }} ->
                             glu_univ_elem i P El b ->
@@ -620,6 +657,22 @@ Proof.
     glu_univ_elem_econstructor; try reflexivity; mauto.
 Qed.
 
+Ltac saturate_glu_info1 :=
+  match goal with
+  | H : glu_univ_elem _ ?P _ _,
+      H1 : ?P _ _ |- _ =>
+      pose proof (glu_univ_elem_univ_lvl _ _ _ _ H _ _ H1);
+      fail_if_dup
+  | H : glu_univ_elem _ _ ?El _,
+      H1 : ?El _ _ _ _ |- _ =>
+      pose proof (glu_univ_elem_trm_escape _ _ _ _ H _ _ _ _ H1);
+      fail_if_dup
+  end.
+
+Ltac saturate_glu_info :=
+  clear_dups;
+  repeat saturate_glu_info1.
+
 (* TODO: strengthen the result (implication from P to P' / El to El') *)
 Lemma glu_univ_elem_cumu_ge : forall {i j a P El},
     i <= j ->
@@ -635,7 +688,7 @@ Proof.
   destruct_conjs.
   do 2 eexists.
   glu_univ_elem_econstructor; try reflexivity; mauto.
-  instantiate (1 := fun c equiv_c Γ M A m => forall b Pb Elb,
+  instantiate (1 := fun c equiv_c Γ A M m => forall b Pb Elb,
                         {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
                         glu_univ_elem j Pb Elb b ->
                         {{ Γ ⊢ M : A ® m ∈ Elb }}).

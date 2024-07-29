@@ -16,10 +16,10 @@ Notation "'glu_typ_pred_equivalence'" := (@predicate_equivalence glu_typ_pred_ar
 (* This type annotation is to distinguish this notation from others *)
 Notation "Γ ⊢ A ® R" := ((R Γ A : Prop) : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, A custom exp, R constr).
 
-Notation "'glu_exp_pred_args'" := (Tcons ctx (Tcons exp (Tcons typ (Tcons domain Tnil)))).
+Notation "'glu_exp_pred_args'" := (Tcons ctx (Tcons typ (Tcons exp (Tcons domain Tnil)))).
 Notation "'glu_exp_pred'" := (predicate glu_exp_pred_args).
 Notation "'glu_exp_pred_equivalence'" := (@predicate_equivalence glu_exp_pred_args) (only parsing).
-Notation "Γ ⊢ M : A ® m ∈ R" := (R Γ M A m : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp, m custom domain, R constr).
+Notation "Γ ⊢ M : A ® m ∈ R" := (R Γ A M m : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp, m custom domain, R constr).
 
 Notation "'glu_sub_pred_args'" := (Tcons ctx (Tcons sub (Tcons env Tnil))).
 Notation "'glu_sub_pred'" := (predicate glu_sub_pred_args).
@@ -48,7 +48,7 @@ Hint Constructors glu_nat : mcltt.
 Definition nat_glu_typ_pred i : glu_typ_pred := fun Γ M => {{ Γ ⊢ M ≈ ℕ : Type@i }}.
 Arguments nat_glu_typ_pred i Γ M/.
 
-Definition nat_glu_exp_pred i : glu_exp_pred := fun Γ m M a => {{ Γ ⊢ M ® nat_glu_typ_pred i }} /\ glu_nat Γ m a.
+Definition nat_glu_exp_pred i : glu_exp_pred := fun Γ M m a => {{ Γ ⊢ M ® nat_glu_typ_pred i }} /\ glu_nat Γ m a.
 Arguments nat_glu_exp_pred i Γ m M a/.
 
 Definition neut_glu_typ_pred i C : glu_typ_pred :=
@@ -73,6 +73,7 @@ Inductive pi_glu_typ_pred i
   (OP : forall c (equiv_c : {{ Dom c ≈ c ∈ IR }}), glu_typ_pred) : glu_typ_pred :=
 | mk_pi_glu_typ_pred :
     `{ {{ Γ ⊢ M ≈ Π IT OT : Type@i }} ->
+       {{ Γ ⊢ IT : Type@i }} ->
        {{ Γ , IT ⊢ OT : Type@i }} ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ IT[σ] ® IP }}) ->
        (forall Δ σ m a,
@@ -92,6 +93,7 @@ Inductive pi_glu_exp_pred i
   `{ {{ Γ ⊢ m : M }} ->
      {{ Dom a ≈ a ∈ elem_rel }} ->
      {{ Γ ⊢ M ≈ Π IT OT : Type@i }} ->
+       {{ Γ ⊢ IT : Type@i }} ->
      {{ Γ , IT ⊢ OT : Type@i }} ->
      (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ IT[σ] ® IP }}) ->
      (forall Δ σ m' b,
@@ -113,7 +115,7 @@ Section Gluing.
       (glu_univ_typ_rec : forall {j}, j < i -> domain -> glu_typ_pred).
 
   Definition univ_glu_exp_pred' {j} (lt_j_i : j < i) : glu_exp_pred :=
-    fun Γ m M A =>
+    fun Γ M m A =>
       {{ Γ ⊢ m : M }} /\
         {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
         {{ Γ ⊢ m ® glu_univ_typ_rec lt_j_i A }}.
@@ -172,7 +174,7 @@ Definition glu_univ_typ (i : nat) (A : domain) : glu_typ_pred :=
 Arguments glu_univ_typ i A Γ M/.
 
 Definition univ_glu_exp_pred j i : glu_exp_pred :=
-    fun Γ m M A =>
+    fun Γ M m A =>
       {{ Γ ⊢ m : M }} /\ {{ Γ ⊢ M ≈ Type@j : Type@i }} /\
         {{ Γ ⊢ m ® glu_univ_typ j A }}.
 Arguments univ_glu_exp_pred j i Γ t T a/.
@@ -250,28 +252,38 @@ Section GluingInduction.
   Qed.
 End GluingInduction.
 
-Inductive glu_neut i A Γ m M c : Prop :=
-| mk_glu_neut :
-    {{ Γ ⊢ m : M }} ->
-    {{ Γ ⊢ M ® glu_univ_typ i A }} ->
-    {{ Dom c ≈ c ∈ per_bot }} ->
-    (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ a }} -> {{ Δ ⊢ m[σ] ≈ a : M[σ] }}) ->
-    {{ Γ ⊢ m : M ® c ∈ glu_neut i A }}.
-
-Inductive glu_norm i A Γ m M a : Prop :=
-| mk_glu_norm :
-    {{ Γ ⊢ m : M }} ->
-    {{ Γ ⊢ M ® glu_univ_typ i A }} ->
-    {{ Dom ⇓ A a ≈ ⇓ A a ∈ per_top }} ->
-    (forall Δ σ b, {{ Δ ⊢w σ : Γ }} -> {{ Rnf ⇓ A a in length Δ ↘ b }} -> {{ Δ ⊢ m [ σ ] ≈  b : M [ σ ] }}) ->
-    {{ Γ ⊢ m : M ® a ∈ glu_norm i A }}.
-
-Inductive glu_typ i A Γ M : Prop :=
-| mk_glu_typ : forall P El,
-    {{ Γ ⊢ M : Type@i }} ->
+Inductive glu_elem_bot i A Γ T t c : Prop :=
+| glu_elem_bot_make : forall P El,
+    {{ Γ ⊢ t : T }} ->
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    (forall Δ σ a, {{ Δ ⊢w σ : Γ }} -> {{ Rtyp A in length Δ ↘ a }} -> {{ Δ ⊢ M[σ] ≈ a : Type@i }}) ->
-    {{ Γ ⊢ M ® glu_typ i A }}.
+    {{ Γ ⊢ T ® P }} ->
+    {{ Dom c ≈ c ∈ per_bot }} ->
+    (forall Δ σ w, {{ Δ ⊢w σ : Γ }} -> {{ Rne c in length Δ ↘ w }} -> {{ Δ ⊢ t [ σ ] ≈ w : T [ σ ] }}) ->
+    {{ Γ ⊢ t : T ® c ∈ glu_elem_bot i A }}.
+#[export]
+  Hint Constructors glu_elem_bot : mcltt.
+
+
+Inductive glu_elem_top i A Γ T t a : Prop :=
+| glu_elem_top_make : forall P El,
+    {{ Γ ⊢ t : T }} ->
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ T ® P }} ->
+    {{ Dom ⇓ A a ≈ ⇓ A a ∈ per_top }} ->
+    (forall Δ σ w, {{ Δ ⊢w σ : Γ }} -> {{ Rnf ⇓ A a in length Δ ↘ w }} -> {{ Δ ⊢ t [ σ ] ≈ w : T [ σ ] }}) ->
+    {{ Γ ⊢ t : T ® a ∈ glu_elem_top i A }}.
+#[export]
+  Hint Constructors glu_elem_top : mcltt.
+
+
+Inductive glu_typ_top i A Γ T : Prop :=
+| glu_typ_top_make :
+    {{ Γ ⊢ T : Type@i }} ->
+    {{ Dom A ≈ A ∈ per_top_typ }} ->
+    (forall Δ σ W, {{ Δ ⊢w σ : Γ }} -> {{ Rtyp A in length Δ ↘ W }} -> {{ Δ ⊢ T [ σ ] ≈ W : Type@i }}) ->
+    {{ Γ ⊢ T ® glu_typ_top i A }}.
+#[export]
+  Hint Constructors glu_typ_top : mcltt.
 
 Ltac invert_glu_rel1 :=
   match goal with
