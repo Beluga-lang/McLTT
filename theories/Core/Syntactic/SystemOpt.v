@@ -292,12 +292,8 @@ Lemma wf_exp_eq_nat_sub_gen : forall Γ σ Δ i,
     {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }}.
 Proof.
   intros.
-  eapply wf_exp_eq_subtyp with (A := {{{ Type@0 }}}).
-  - mauto 3.
-  - gen_presups.
-    eapply wf_subtyping_ge;
-      eauto.
-    lia.
+  assert (0 <= i) by lia.
+  mauto.
 Qed.
 
 #[export]
