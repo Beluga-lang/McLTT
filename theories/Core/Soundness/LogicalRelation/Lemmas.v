@@ -673,35 +673,35 @@ Ltac saturate_glu_info :=
   clear_dups;
   repeat saturate_glu_info1.
 
-(* (* TODO: strengthen the result (implication from P to P' / El to El') *) *)
-(* Lemma glu_univ_elem_cumu_ge : forall {i j a P El}, *)
-(*     i <= j -> *)
-(*     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} -> *)
-(*     exists P' El', {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }}. *)
-(* Proof. *)
-(*   simpl. *)
-(*   intros * Hge Hglu. gen j. *)
-(*   induction Hglu using glu_univ_elem_ind; intros; *)
-(*     handle_functional_glu_univ_elem; try solve [do 2 eexists; glu_univ_elem_econstructor; try (reflexivity + lia); mauto]. *)
+(* TODO: strengthen the result (implication from P to P' / El to El') *)
+Lemma glu_univ_elem_cumu_ge : forall {i j a P El},
+    i <= j ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    exists P' El', {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }}.
+Proof.
+  simpl.
+  intros * Hge Hglu. gen j.
+  induction Hglu using glu_univ_elem_ind; intros;
+    handle_functional_glu_univ_elem; try solve [do 2 eexists; glu_univ_elem_econstructor; try (reflexivity + lia); mauto].
 
-(*   edestruct IHHglu; [eassumption |]. *)
-(*   destruct_conjs. *)
-(*   do 2 eexists. *)
-(*   glu_univ_elem_econstructor; try reflexivity; mauto. *)
-(*   instantiate (1 := fun c equiv_c Γ M A m => forall b Pb Elb, *)
-(*                         {{ ⟦ B ⟧ p ↦ c ↘ b }} -> *)
-(*                         glu_univ_elem j Pb Elb b -> *)
-(*                         {{ Γ ⊢ M : A ® m ∈ Elb }}). *)
-(*   instantiate (1 := fun c equiv_c Γ A => forall b Pb Elb, *)
-(*                         {{ ⟦ B ⟧ p ↦ c ↘ b }} -> *)
-(*                         glu_univ_elem j Pb Elb b -> *)
-(*                         {{ Γ ⊢ A ® Pb }}). *)
-(*   intros. *)
-(*   assert (exists (P' : ctx -> typ -> Prop) (El' : ctx -> typ -> typ -> domain -> Prop), glu_univ_elem j P' El' b) as [] by mauto. *)
-(*   destruct_conjs. *)
-(*   rewrite simple_glu_univ_elem_morphism_iff; try (eassumption + reflexivity); *)
-(*     split; intros; handle_functional_glu_univ_elem; intuition. *)
-(* Qed. *)
+  edestruct IHHglu; [eassumption |].
+  destruct_conjs.
+  do 2 eexists.
+  glu_univ_elem_econstructor; try reflexivity; mauto.
+  instantiate (1 := fun c equiv_c Γ A M m => forall b Pb Elb,
+                        {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+                        glu_univ_elem j Pb Elb b ->
+                        {{ Γ ⊢ M : A ® m ∈ Elb }}).
+  instantiate (1 := fun c equiv_c Γ A => forall b Pb Elb,
+                        {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
+                        glu_univ_elem j Pb Elb b ->
+                        {{ Γ ⊢ A ® Pb }}).
+  intros.
+  assert (exists (P' : ctx -> typ -> Prop) (El' : ctx -> typ -> typ -> domain -> Prop), glu_univ_elem j P' El' b) as [] by mauto.
+  destruct_conjs.
+  rewrite simple_glu_univ_elem_morphism_iff; try (eassumption + reflexivity);
+    split; intros; handle_functional_glu_univ_elem; intuition.
+Qed.
 
 Lemma glu_univ_elem_typ_monotone : forall {i a P El Δ σ Γ A},
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
