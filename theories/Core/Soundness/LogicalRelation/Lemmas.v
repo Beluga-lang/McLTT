@@ -650,6 +650,20 @@ Proof.
     split; intros; handle_functional_glu_univ_elem; intuition.
 Qed.
 
+Lemma glu_univ_elem_typ_monotone : forall {i a P El Δ σ Γ A},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Δ ⊢w σ : Γ }} ->
+    {{ Δ ⊢ A[σ] ® P }}.
+Admitted.
+
+Lemma glu_univ_elem_exp_monotone : forall {i a P El Δ σ Γ M A m},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Δ ⊢w σ : Γ }} ->
+    {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}.
+Admitted.
+
 (* Simple Morphism instance for "glu_ctx_env" *)
 Add Parametric Morphism : glu_ctx_env
     with signature glu_sub_pred_equivalence ==> eq ==> iff as simple_glu_ctx_env_morphism_iff.
