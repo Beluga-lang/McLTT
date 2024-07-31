@@ -207,14 +207,6 @@ Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 4.
-
-  match_by_head (per_bot c c) ltac:(fun H => specialize (H (length Γ)) as [Lc []]).
-  match_by_head (per_bot b b) ltac:(fun H => specialize (H (length Γ)) as [Lb []]).
-  assert {{ Γ ⊢w Id : Γ }} by mauto.
-  clear_dups.
-  assert {{ Γ ⊢ m[Id] ≈ Lc : M[Id] }} by mauto.
-  gen_presups.
-  mauto.
 Qed.
 
 Lemma glu_univ_elem_per_univ : forall i P El A,
@@ -703,19 +695,109 @@ Proof.
     split; intros; handle_functional_glu_univ_elem; intuition.
 Qed.
 
-Lemma glu_univ_elem_typ_monotone : forall {i a P El Δ σ Γ A},
-    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    {{ Γ ⊢ A ® P }} ->
-    {{ Δ ⊢w σ : Γ }} ->
-    {{ Δ ⊢ A[σ] ® P }}.
-Admitted.
+#[local]
+ Hint Rewrite -> sub_decompose_q using solve [mauto 4] : mcltt.
 
-Lemma glu_univ_elem_exp_monotone : forall {i a P El Δ σ Γ M A m},
+
+Lemma glu_univ_elem_typ_monotone : forall i a P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    {{ Γ ⊢ M : A ® m ∈ El }} ->
-    {{ Δ ⊢w σ : Γ }} ->
-    {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}.
-Admitted.
+    forall Δ σ Γ A,
+      {{ Γ ⊢ A ® P }} ->
+      {{ Δ ⊢w σ : Γ }} ->
+      {{ Δ ⊢ A[σ] ® P }}.
+Proof.
+  simpl. induction 1 using glu_univ_elem_ind; intros;
+    saturate_weakening_escape;
+    handle_functional_glu_univ_elem;
+    apply_equiv_left;
+    try solve [bulky_rewrite].
+  - simpl_glu_rel. econstructor; eauto; try solve [bulky_rewrite]; mauto 3.
+    intros.
+    saturate_weakening_escape.
+    saturate_glu_info.
+    invert_per_univ_elem H3.
+    destruct_rel_mod_eval.
+    simplify_evals.
+    deepexec H1 ltac:(fun H => pose proof H).
+    autorewrite with mcltt in H15.
+    autorewrite with mcltt in H17.
+    autorewrite with mcltt.
+    + eapply H11; mauto 2.
+    + econstructor; mauto 2.
+      bulky_rewrite.
+
+  - destruct_conjs.
+    split; [mauto 3 |].
+    intros.
+    saturate_weakening_escape.
+    autorewrite with mcltt.
+    mauto 3.
+Qed.
+
+
+Lemma glu_univ_elem_exp_monotone : forall i a P El,
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    forall Δ σ Γ M A m,
+      {{ Γ ⊢ M : A ® m ∈ El }} ->
+      {{ Δ ⊢w σ : Γ }} ->
+      {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}.
+Proof.
+  simpl. induction 1 using glu_univ_elem_ind; intros;
+    saturate_weakening_escape;
+    handle_functional_glu_univ_elem;
+    apply_equiv_left;
+    destruct_all.
+  - repeat eexists; mauto 2; bulky_rewrite.
+    eapply glu_univ_elem_typ_monotone; eauto.
+  - repeat eexists; mauto 2; bulky_rewrite.
+
+  - simpl_glu_rel.
+    econstructor; mauto 4;
+      intros;
+      saturate_weakening_escape.
+    + eapply glu_univ_elem_typ_monotone; eauto.
+    + saturate_glu_info.
+      invert_per_univ_elem H3.
+      apply_equiv_left.
+      destruct_rel_mod_eval.
+      destruct_rel_mod_app.
+      simplify_evals.
+      deepexec H1 ltac:(fun H => pose proof H).
+      autorewrite with mcltt in H17.
+      autorewrite with mcltt in H19.
+      repeat eexists; eauto.
+      assert {{ Δ0 ⊢s σ0,, m' : Δ, ~ (a_sub IT σ) }}. {
+        econstructor; mauto 2.
+        bulky_rewrite.
+      }
+      assert {{Δ0 ⊢ (m [σ][σ0]) m' ≈ (m [σ ∘ σ0]) m' : OT [σ ∘ σ0,, m']}}. {
+        rewrite <- sub_eq_q_sigma_id_extend; mauto 4.
+        rewrite <- exp_eq_sub_compose_typ; mauto 3;
+          [eapply wf_exp_eq_app_cong' |];
+          mauto 4.
+        symmetry.
+        bulky_rewrite_in H4.
+        eapply wf_exp_eq_conv; mauto 3.
+      }
+
+      bulky_rewrite.
+      edestruct H13 with (b := b) as [? []];
+        simplify_evals; [| | eassumption];
+      mauto.
+
+  - simpl_glu_rel.
+    econstructor; repeat split; mauto 3;
+      intros;
+      saturate_weakening_escape.
+    + autorewrite with mcltt.
+      mauto 3.
+    + autorewrite with mcltt.
+      etransitivity.
+      * symmetry.
+        eapply wf_exp_eq_sub_compose;
+          mauto 3.
+      * mauto 3.
+Qed.
 
 (* Simple Morphism instance for "glu_ctx_env" *)
 Add Parametric Morphism : glu_ctx_env

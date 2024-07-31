@@ -110,6 +110,26 @@ Qed.
 #[export]
  Hint Resolve wf_subtyping_subst_eq wf_subtyping_subst : mcltt.
 
+Lemma sub_decompose_q : forall Γ S i σ Δ Δ' τ t,
+  {{Γ ⊢ S : Type@i}} ->
+  {{Δ ⊢s σ : Γ}} ->
+  {{Δ' ⊢s τ : Δ}} ->
+  {{Δ' ⊢ t : S [ σ ] [ τ ]}} ->
+  {{Δ' ⊢s q σ ∘ (τ ,, t) ≈ σ ∘ τ ,, t : Γ, S}}.
+Proof.
+  intros. gen_presups.
+  simpl. autorewrite with mcltt.
+  symmetry.
+  rewrite wf_sub_eq_extend_compose; mauto 3;
+    [| mauto
+    | rewrite <- exp_eq_sub_compose_typ; mauto 4].
+  eapply wf_sub_eq_extend_cong; eauto.
+  - rewrite wf_sub_eq_compose_assoc; mauto 3; mauto 4.
+    rewrite wf_sub_eq_p_extend; eauto; mauto 4.
+  - rewrite <- exp_eq_sub_compose_typ; mauto 4.
+Qed.
+
+
 Lemma sub_decompose_q_typ : forall Γ S T i σ Δ Δ' τ t,
   {{Γ, S ⊢ T : Type@i}} ->
   {{Δ ⊢s σ : Γ}} ->
@@ -118,13 +138,7 @@ Lemma sub_decompose_q_typ : forall Γ S T i σ Δ Δ' τ t,
   {{Δ' ⊢ T [ σ ∘ τ ,, t ] ≈ T [ q σ ] [ τ ,, t ] : Type@i}}.
 Proof.
   intros. gen_presups.
-  simpl. autorewrite with mcltt.
-  rewrite wf_sub_eq_extend_compose; mauto 3;
-    [| mauto
-    | rewrite <- exp_eq_sub_compose_typ; mauto 4].
+  autorewrite with mcltt.
   eapply exp_eq_sub_cong_typ2'; [mauto 2 | mauto |].
-  eapply wf_sub_eq_extend_cong; eauto.
-  - rewrite wf_sub_eq_compose_assoc; mauto 3; mauto 4.
-    rewrite wf_sub_eq_p_extend; eauto; mauto 4.
-  - rewrite <- exp_eq_sub_compose_typ; mauto 4.
+  symmetry. mauto using sub_decompose_q.
 Qed.
