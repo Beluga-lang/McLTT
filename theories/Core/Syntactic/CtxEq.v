@@ -68,35 +68,35 @@ Qed.
 
 
 Add Parametric Morphism : wf_exp
-  with signature wf_ctx_eq --> eq ==> eq ==> iff as ctxeq_exp_morphism.
+  with signature wf_ctx_eq ==> eq ==> eq ==> iff as ctxeq_exp_morphism.
 Proof.
   intros. split; mauto 3.
 Qed.
 
 
 Add Parametric Morphism : wf_exp_eq
-  with signature wf_ctx_eq --> eq ==> eq ==> eq ==> iff as ctxeq_exp_eq_morphism.
+  with signature wf_ctx_eq ==> eq ==> eq ==> eq ==> iff as ctxeq_exp_eq_morphism.
 Proof.
   intros. split; mauto 3.
 Qed.
 
 
 Add Parametric Morphism : wf_sub
-  with signature wf_ctx_eq --> eq ==> eq ==> iff as ctxeq_sub_morphism.
+  with signature wf_ctx_eq ==> eq ==> eq ==> iff as ctxeq_sub_morphism.
 Proof.
   intros. split; mauto 3.
 Qed.
 
 
 Add Parametric Morphism : wf_sub_eq
-  with signature wf_ctx_eq --> eq ==> eq ==> eq ==> iff as ctxeq_sub_eq_morphism.
+  with signature wf_ctx_eq ==> eq ==> eq ==> eq ==> iff as ctxeq_sub_eq_morphism.
 Proof.
   intros. split; mauto 3.
 Qed.
 
 
 Add Parametric Morphism : wf_subtyping
-  with signature wf_ctx_eq --> eq ==> eq ==> iff as ctxeq_subtyping_morphism.
+  with signature wf_ctx_eq ==> eq ==> eq ==> iff as ctxeq_subtyping_morphism.
 Proof.
   intros. split; mauto 3.
 Qed.
