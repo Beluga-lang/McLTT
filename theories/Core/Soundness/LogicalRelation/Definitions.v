@@ -58,7 +58,8 @@ Arguments neut_glu_typ_pred i C Γ M/.
 
 Inductive neut_glu_exp_pred i C : glu_exp_pred :=
 | mk_neut_glu_exp_pred :
-    `{ {{ Γ ⊢ M ® neut_glu_typ_pred i C }} ->
+  `{ {{ Γ ⊢ M ® neut_glu_typ_pred i C }} ->
+     {{ Γ ⊢ m : M }} ->
        {{ Dom c ≈ c ∈ per_bot }} ->
        (forall Δ σ V v, {{ Δ ⊢w σ : Γ }} ->
                       {{ Rne C in length Δ ↘ V }} ->
