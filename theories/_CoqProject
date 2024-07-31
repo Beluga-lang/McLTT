@@ -52,6 +52,7 @@
 ./Core/Syntactic/System/Tactics.v
 ./Core/Syntactic/SystemOpt.v
 ./Core/Soundness.v
+./Core/Soundness/Cumulativity.v
 ./Core/Soundness/LogicalRelation.v
 ./Core/Soundness/LogicalRelation/CoreTactics.v
 ./Core/Soundness/LogicalRelation/Definitions.v
