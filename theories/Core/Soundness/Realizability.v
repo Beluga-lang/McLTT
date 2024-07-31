@@ -88,10 +88,11 @@ Lemma var_glu_elem_bot : forall A i P El Γ T,
 Proof.
   intros. saturate_glu_info.
   econstructor; mauto 4.
-  - admit.
+  - eapply glu_univ_elem_typ_monotone; eauto.
+    mauto 4.
   - intros. progressive_inversion.
     exact (var_weaken_gen _ _ _ H2 nil _ _ eq_refl).
-Admitted.
+Qed.
 
 #[local]
  Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mcltt.
