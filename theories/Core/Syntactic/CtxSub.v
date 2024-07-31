@@ -112,3 +112,31 @@ Add Parametric Morphism : wf_exp
 Proof.
   cbv. intros. mauto 3.
 Qed.
+
+
+Add Parametric Morphism : wf_exp_eq
+  with signature wf_ctx_sub --> eq ==> eq ==> eq ==> Basics.impl as ctxsub_exp_eq_morphism.
+Proof.
+  cbv. intros. mauto 3.
+Qed.
+
+
+Add Parametric Morphism : wf_sub
+  with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_sub_morphism.
+Proof.
+  cbv. intros. mauto 3.
+Qed.
+
+
+Add Parametric Morphism : wf_sub_eq
+  with signature wf_ctx_sub --> eq ==> eq ==> eq ==> Basics.impl as ctxsub_sub_eq_morphism.
+Proof.
+  cbv. intros. mauto 3.
+Qed.
+
+
+Add Parametric Morphism : wf_subtyping
+  with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_subtyping_morphism.
+Proof.
+  cbv. intros. mauto 3.
+Qed.
