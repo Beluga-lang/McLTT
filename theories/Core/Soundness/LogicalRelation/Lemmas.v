@@ -135,9 +135,7 @@ Proof.
     simpl_glu_rel; repeat split; mauto.
 
   intros.
-  symmetry in H3.
-  saturate_weakening_escape.
-  bulky_rewrite.
+  assert {{ Δ ⊢ M[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
 Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (El Γ)
