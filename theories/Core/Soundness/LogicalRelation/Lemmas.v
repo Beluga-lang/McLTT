@@ -489,28 +489,28 @@ Ltac handle_functional_glu_univ_elem :=
   apply_predicate_equivalence;
   clear_dups.
 
-Lemma glu_univ_elem_pi_clean_inversion : forall {i a p B in_rel elem_rel typ_rel el_rel},
+Lemma glu_univ_elem_pi_clean_inversion : forall {i a p B in_rel typ_rel el_rel},
   {{ DF a ≈ a ∈ per_univ_elem i ↘ in_rel }} ->
-  {{ DF Π a p B ≈ Π a p B ∈ per_univ_elem i ↘ elem_rel }} ->
   {{ DG Π a p B ∈ glu_univ_elem i ↘ typ_rel ↘ el_rel }} ->
   exists IP IEl (OP : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_typ_pred)
-     (OEl : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_exp_pred),
+     (OEl : forall c (equiv_c_c : {{ Dom c ≈ c ∈ in_rel }}), glu_exp_pred) elem_rel,
       {{ DG a ∈ glu_univ_elem i ↘ IP ↘ IEl }} /\
         (forall c (equiv_c : {{ Dom c ≈ c ∈ in_rel }}) b,
             {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
             {{ DG b ∈ glu_univ_elem i ↘ OP _ equiv_c ↘ OEl _ equiv_c }}) /\
+        {{ DF Π a p B ≈ Π a p B ∈ per_univ_elem i ↘ elem_rel }} /\
         (typ_rel <∙> pi_glu_typ_pred i in_rel IP IEl OP) /\
         (el_rel <∙> pi_glu_exp_pred i in_rel IP IEl elem_rel OEl).
 Proof.
   intros *.
   simpl.
-  intros Hinper Hper Hglu.
+  intros Hinper Hglu.
   basic_invert_glu_univ_elem Hglu.
   handle_functional_glu_univ_elem.
   handle_per_univ_elem_irrel.
-  do 4 eexists.
+  do 5 eexists.
   repeat split.
-  1: eassumption.
+  1,3: eassumption.
   1: instantiate (1 := fun c equiv_c Γ A M m => forall (b : domain) Pb Elb,
                           {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
                           {{ DG b ∈ glu_univ_elem i ↘ Pb ↘ Elb }} ->
@@ -563,9 +563,11 @@ Proof.
     intuition.
 Qed.
 
+Arguments glu_univ_elem_pi_clean_inversion _ _ _ _ _ _ _ _ _ &.
+
 Ltac invert_glu_univ_elem H :=
-  (unshelve eapply (glu_univ_elem_pi_clean_inversion _ _) in H; [eassumption | eassumption | | |];
-   destruct H as [? [? [? [? [? [? []]]]]]])
+  (unshelve eapply (glu_univ_elem_pi_clean_inversion _) in H; shelve_unifiable; [eassumption |];
+   destruct H as [? [? [? [? [? [? [? [? []]]]]]]]])
   + basic_invert_glu_univ_elem H.
 
 Lemma glu_univ_elem_morphism_helper : forall i a a' P El,
@@ -587,6 +589,7 @@ Proof.
     destruct_rel_mod_eval.
     handle_per_univ_elem_irrel.
     intuition.
+  - reflexivity.
   - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence.
     eassumption.
   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
@@ -665,39 +668,8 @@ Ltac saturate_glu_info :=
   clear_dups;
   repeat saturate_glu_info1.
 
-(* TODO: strengthen the result (implication from P to P' / El to El') *)
-Lemma glu_univ_elem_cumu_ge : forall {i j a P El},
-    i <= j ->
-    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    exists P' El', {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }}.
-Proof.
-  simpl.
-  intros * Hge Hglu. gen j.
-  induction Hglu using glu_univ_elem_ind; intros;
-    handle_functional_glu_univ_elem; try solve [do 2 eexists; glu_univ_elem_econstructor; try (reflexivity + lia); mauto].
-
-  edestruct IHHglu; [eassumption |].
-  destruct_conjs.
-  do 2 eexists.
-  glu_univ_elem_econstructor; try reflexivity; mauto.
-  instantiate (1 := fun c equiv_c Γ A M m => forall b Pb Elb,
-                        {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
-                        glu_univ_elem j Pb Elb b ->
-                        {{ Γ ⊢ M : A ® m ∈ Elb }}).
-  instantiate (1 := fun c equiv_c Γ A => forall b Pb Elb,
-                        {{ ⟦ B ⟧ p ↦ c ↘ b }} ->
-                        glu_univ_elem j Pb Elb b ->
-                        {{ Γ ⊢ A ® Pb }}).
-  intros.
-  assert (exists (P' : ctx -> typ -> Prop) (El' : ctx -> typ -> typ -> domain -> Prop), glu_univ_elem j P' El' b) as [] by mauto.
-  destruct_conjs.
-  rewrite simple_glu_univ_elem_morphism_iff; try (eassumption + reflexivity);
-    split; intros; handle_functional_glu_univ_elem; intuition.
-Qed.
-
 #[local]
- Hint Rewrite -> sub_decompose_q using solve [mauto 4] : mcltt.
-
+Hint Rewrite -> sub_decompose_q using solve [mauto 4] : mcltt.
 
 Lemma glu_univ_elem_typ_monotone : forall i a P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -798,6 +770,34 @@ Proof.
           mauto 3.
       * mauto 3.
 Qed.
+
+#[export]
+Instance subrelation_glu_typ_pred_equivalence_iff : subrelation glu_typ_pred_equivalence (@pointwise_relation ctx (predicate (Tcons typ Tnil)) (@pointwise_relation typ (predicate Tnil) iff)).
+Proof.
+  intros ? ? ? ? ?. intuition.
+Qed.
+
+#[export]
+Instance subrelation_glu_exp_pred_equivalence_iff : subrelation glu_exp_pred_equivalence (@pointwise_relation ctx (predicate (Tcons exp (Tcons typ (Tcons domain Tnil)))) (@pointwise_relation exp (predicate (Tcons typ (Tcons domain Tnil))) (@pointwise_relation typ (predicate (Tcons domain Tnil)) (@pointwise_relation domain (predicate Tnil) iff)))).
+Proof.
+  intros ? ? ? ? ? ? ?. intuition.
+Qed.
+
+(* Why do we need these impl instances? It would be much more concise if we can remove these impl instances. *)
+#[export]
+Instance subrelation_glu_typ_pred_equivalence_impl : subrelation glu_typ_pred_equivalence (@pointwise_relation ctx (predicate (Tcons typ Tnil)) (@pointwise_relation typ (predicate Tnil) Basics.impl)).
+Proof.
+  intros ? ? ? ? ? ?. intuition.
+Qed.
+
+#[export]
+Instance subrelation_glu_exp_pred_equivalence_impl : subrelation glu_exp_pred_equivalence (@pointwise_relation ctx (predicate (Tcons exp (Tcons typ (Tcons domain Tnil)))) (@pointwise_relation exp (predicate (Tcons typ (Tcons domain Tnil))) (@pointwise_relation typ (predicate (Tcons domain Tnil)) (@pointwise_relation domain (predicate Tnil) Basics.impl)))).
+Proof.
+  intros ? ? ? ? ? ? ? ?. intuition.
+Qed.
+
+#[export]
+Typeclasses Transparent Basics.flip.
 
 (* Simple Morphism instance for "glu_ctx_env" *)
 Add Parametric Morphism : glu_ctx_env
