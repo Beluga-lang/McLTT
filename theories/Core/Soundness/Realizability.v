@@ -300,22 +300,14 @@ Proof.
   - handle_functional_glu_univ_elem.
     invert_glu_rel1.
     econstructor; eauto.
-    + invert_glu_rel1.
-      specialize (H7 (length Γ)) as [? []].
-      specialize (H3 (length Γ)) as [? []].
-      assert {{ Γ ⊢w Id : Γ }} by mauto.
-      clear_dups. progressive_inversion.
-      deepexec H6 ltac:(fun H => pose proof H).
-      autorewrite with mcltt in H;
-        gen_presups; mauto 3.
-    + intros s. destruct (H1 s) as [? []].
+    + intros s. destruct (H3 s) as [? []].
       mauto.
     + intros.
-    progressive_inversion.
-    specialize (H10 (length Δ)) as [? []].
-    firstorder.
-
+      progressive_inversion.
+      specialize (H11 (length Δ)) as [? []].
+      firstorder.
 Qed.
+
 
 Corollary realize_glu_typ_top : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
