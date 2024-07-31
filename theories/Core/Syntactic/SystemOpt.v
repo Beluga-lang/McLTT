@@ -301,3 +301,16 @@ Qed.
 
 #[export]
 Hint Rewrite -> wf_exp_eq_nat_sub_gen using eassumption : mcltt.
+
+
+Lemma wf_exp_eq_typ_sub' : forall Γ σ Δ i j,
+    {{ Γ ⊢s σ : Δ }} ->
+    i < j ->
+    {{ Γ ⊢ Type@i[σ] ≈ Type@i : Type@j }}.
+Proof. mauto 3. Qed.
+
+#[export]
+ Hint Resolve wf_exp_eq_typ_sub' : mcltt.
+
+#[export]
+Hint Rewrite -> wf_exp_eq_typ_sub' using solve [try lia; mauto 3] : mcltt.
