@@ -48,7 +48,7 @@ Qed.
 #[export]
 Hint Resolve glu_nat_escape : mcltt.
 
-Lemma glu_nat_resp_equiv : forall Γ m a,
+Lemma glu_nat_resp_exp_eq : forall Γ m a,
     glu_nat Γ m a ->
     forall m',
     {{ Γ ⊢ m ≈ m' : ℕ }} ->
@@ -61,7 +61,18 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve glu_nat_resp_equiv : mcltt.
+Hint Resolve glu_nat_resp_exp_eq : mcltt.
+
+Lemma glu_nat_resp_ctx_eq : forall Γ m a Δ,
+    glu_nat Γ m a ->
+    {{ ⊢ Γ ≈ Δ }} ->
+    glu_nat Δ m a.
+Proof.
+  induction 1; intros; mauto.
+Qed.
+
+#[local]
+Hint Resolve glu_nat_resp_ctx_eq : mcltt.
 
 Lemma glu_nat_readback : forall Γ m a,
     glu_nat Γ m a ->
@@ -97,7 +108,7 @@ Proof.
     simpl_glu_rel; trivial.
 Qed.
 
-Lemma glu_univ_elem_typ_resp_equiv : forall i P El A,
+Lemma glu_univ_elem_typ_resp_exp_eq : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T T',
       {{ Γ ⊢ T ® P }} ->
@@ -118,12 +129,12 @@ Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (P Γ)
     with signature wf_exp_eq Γ {{{Type@i}}} ==> iff as glu_univ_elem_typ_morphism_iff1.
 Proof.
   intros. split; intros;
-    eapply glu_univ_elem_typ_resp_equiv;
+    eapply glu_univ_elem_typ_resp_exp_eq;
     mauto 2.
 Qed.
 
 
-Lemma glu_univ_elem_trm_resp_typ_equiv : forall i P El A,
+Lemma glu_univ_elem_trm_resp_typ_exp_eq : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a T',
       {{ Γ ⊢ t : T ® a ∈ El }} ->
@@ -139,14 +150,14 @@ Proof.
 Qed.
 
 Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (El Γ)
-    with signature wf_exp_eq Γ {{{Type@i}}} ==> eq ==> eq ==> iff as glu_univ_elem_elem_morphism_iff1.
+    with signature wf_exp_eq Γ {{{Type@i}}} ==> eq ==> eq ==> iff as glu_univ_elem_trm_morphism_iff1.
 Proof.
   split; intros;
-    eapply glu_univ_elem_trm_resp_typ_equiv;
+    eapply glu_univ_elem_trm_resp_typ_exp_eq;
     mauto 2.
 Qed.
 
-Lemma glu_univ_elem_typ_resp_ctx_equiv : forall i P El A,
+Lemma glu_univ_elem_typ_resp_ctx_eq : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ T Δ,
       {{ Γ ⊢ T ® P }} ->
@@ -163,10 +174,36 @@ Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) : P
     with signature wf_ctx_eq ==> eq ==> iff as glu_univ_elem_typ_morphism_iff2.
 Proof.
   intros. split; intros;
-    eapply glu_univ_elem_typ_resp_ctx_equiv;
+    eapply glu_univ_elem_typ_resp_ctx_eq;
     mauto 2.
 Qed.
 
+Lemma glu_univ_elem_trm_resp_ctx_eq : forall i P El A,
+    {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    forall Γ T M m Δ,
+      {{ Γ ⊢ M : T ® m ∈ El }} ->
+      {{ ⊢ Γ ≈ Δ }} ->
+      {{ Δ ⊢ M : T ® m ∈ El }}.
+Proof.
+  simpl.
+  induction 1 using glu_univ_elem_ind; intros;
+    simpl_glu_rel; mauto 2;
+    econstructor; mauto using glu_nat_resp_ctx_eq.
+
+  - split; mauto.
+    do 2 eexists.
+    split; mauto.
+    eapply glu_univ_elem_typ_resp_ctx_eq; mauto.
+  - split; mauto.
+Qed.
+
+Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) : El
+    with signature wf_ctx_eq ==> eq ==> eq ==> eq ==> iff as glu_univ_elem_trm_morphism_iff2.
+Proof.
+  intros. split; intros;
+    eapply glu_univ_elem_trm_resp_ctx_eq;
+    mauto 2.
+Qed.
 
 Lemma glu_nat_resp_wk' : forall Γ m a,
     glu_nat Γ m a ->
@@ -273,7 +310,7 @@ Proof.
   intros. eapply glu_univ_elem_univ_lvl; [| eapply glu_univ_elem_trm_typ]; eassumption.
 Qed.
 
-Lemma glu_univ_elem_trm_resp_equiv : forall i P El A,
+Lemma glu_univ_elem_trm_resp_exp_eq : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a t',
       {{ Γ ⊢ t : T ® a ∈ El }} ->
@@ -286,7 +323,7 @@ Proof.
     repeat split; mauto 3.
 
   - repeat eexists; try split; eauto.
-    eapply glu_univ_elem_typ_resp_equiv; mauto.
+    eapply glu_univ_elem_typ_resp_exp_eq; mauto.
 
   - econstructor; eauto.
     invert_per_univ_elem H3.
@@ -308,15 +345,13 @@ Proof.
     mauto 4.
 Qed.
 
-
 Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ T : (El Γ T)
-    with signature wf_exp_eq Γ T ==> eq ==> iff as glu_univ_elem_elem_morphism_iff2.
+    with signature wf_exp_eq Γ T ==> eq ==> iff as glu_univ_elem_trm_morphism_iff3.
 Proof.
   split; intros;
-    eapply glu_univ_elem_trm_resp_equiv;
+    eapply glu_univ_elem_trm_resp_exp_eq;
     mauto 2.
 Qed.
-
 
 Lemma glu_univ_elem_core_univ' : forall j i typ_rel el_rel,
     j < i ->
@@ -327,6 +362,7 @@ Proof.
   intros.
   unshelve basic_glu_univ_elem_econstructor; mautosolve.
 Qed.
+
 #[export]
 Hint Resolve glu_univ_elem_core_univ' : mcltt.
 

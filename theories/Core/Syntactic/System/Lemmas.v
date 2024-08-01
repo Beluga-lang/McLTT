@@ -343,6 +343,23 @@ Qed.
 #[export]
 Hint Resolve sub_eq_extend_cong_typ' sub_eq_extend_compose_typ sub_eq_p_extend_typ : mcltt.
 
+Lemma sub_eq_wk_var0_id : forall Γ A i,
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ, A ⊢s Wk,,#0 ≈ Id : Γ, A }}.
+Proof.
+  intros * ?.
+  assert {{ ⊢ Γ, A }} by mauto 3.
+  assert {{ Γ, A ⊢s (Wk∘Id),,#0[Id] ≈ Id : Γ, A }} by mauto.
+  assert {{ Γ, A ⊢s Wk ≈ Wk∘Id : Γ }} by mauto.
+  assert {{ Γ, A ⊢ #0 ≈ #0[Id] : A[Wk] }} by mauto.
+  mauto 4.
+Qed.
+
+#[export]
+Hint Resolve sub_eq_wk_var0_id : mcltt.
+#[export]
+Hint Rewrite -> sub_eq_wk_var0_id using mauto 4 : mcltt.
+
 Lemma exp_eq_sub_sub_compose_cong_typ : forall {Γ Δ Δ' Ψ σ τ σ' τ' A i}, {{ Ψ ⊢ A : Type@i }} -> {{ Δ ⊢s σ : Ψ }} -> {{ Δ' ⊢s σ' : Ψ }} -> {{ Γ ⊢s τ : Δ }} -> {{ Γ ⊢s τ' : Δ' }} -> {{ Γ ⊢s σ∘τ ≈ σ'∘τ' : Ψ }} -> {{ Γ ⊢ A[σ][τ] ≈ A[σ'][τ'] : Type@i }}.
 Proof with mautosolve.
   intros.
