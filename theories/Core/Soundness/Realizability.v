@@ -51,7 +51,7 @@ Proof.
     pose proof (wf_ctx_sub_length _ _ Hτ).
     transitivity {{{#(length Γ1) [Id]}}}; [mauto 3 |].
     rewrite H1, var_arith, H.
-    bulky_rewrite. mauto 3.
+    bulky_rewrite.
   - pose proof (app_ctx_vlookup _ _ _ _ HΔ0 eq_refl).
     pose proof (app_ctx_lookup Γ1 T0 Γ2 _ eq_refl).
     gen_presup H2.
