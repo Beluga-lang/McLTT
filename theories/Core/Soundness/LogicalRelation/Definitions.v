@@ -109,6 +109,7 @@ Hint Constructors neut_glu_exp_pred pi_glu_typ_pred pi_glu_exp_pred : mcltt.
 
 Definition univ_glu_typ_pred j i : glu_typ_pred := fun Γ T => {{ Γ ⊢ T ≈ Type@j :  Type@i }}.
 Arguments univ_glu_typ_pred j i Γ T/.
+Transparent univ_glu_typ_pred.
 
 Section Gluing.
   Variable

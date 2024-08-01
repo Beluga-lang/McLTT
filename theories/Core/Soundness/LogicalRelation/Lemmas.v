@@ -681,7 +681,7 @@ Proof.
   simpl. induction 1 using glu_univ_elem_ind; intros;
     saturate_weakening_escape;
     handle_functional_glu_univ_elem;
-    apply_equiv_left;
+    simpl in *;
     try solve [bulky_rewrite].
   - simpl_glu_rel. econstructor; eauto; try solve [bulky_rewrite]; mauto 3.
     intros.
@@ -691,12 +691,8 @@ Proof.
     destruct_rel_mod_eval.
     simplify_evals.
     deepexec H1 ltac:(fun H => pose proof H).
-    autorewrite with mcltt in H15.
-    autorewrite with mcltt in H17.
-    autorewrite with mcltt.
-    + eapply H11; mauto 2.
-    + econstructor; mauto 2.
-      bulky_rewrite.
+    autorewrite with mcltt in *.
+    mauto 3.
 
   - destruct_conjs.
     split; [mauto 3 |].
@@ -717,7 +713,7 @@ Proof.
   simpl. induction 1 using glu_univ_elem_ind; intros;
     saturate_weakening_escape;
     handle_functional_glu_univ_elem;
-    apply_equiv_left;
+    simpl in *;
     destruct_all.
   - repeat eexists; mauto 2; bulky_rewrite.
     eapply glu_univ_elem_typ_monotone; eauto.
@@ -735,8 +731,7 @@ Proof.
       destruct_rel_mod_app.
       simplify_evals.
       deepexec H1 ltac:(fun H => pose proof H).
-      autorewrite with mcltt in H17.
-      autorewrite with mcltt in H19.
+      autorewrite with mcltt in *.
       repeat eexists; eauto.
       assert {{ Δ0 ⊢s σ0,, m' : Δ, ~ (a_sub IT σ) }}. {
         econstructor; mauto 2.
@@ -753,7 +748,7 @@ Proof.
       }
 
       bulky_rewrite.
-      edestruct H13 with (b := b) as [? []];
+      edestruct H10 with (b := b) as [? []];
         simplify_evals; [| | eassumption];
       mauto.
 
@@ -770,15 +765,6 @@ Proof.
           mauto 3.
       * mauto 3.
 Qed.
-
-#[export]
- Hint Extern 1 (subrelation (@predicate_equivalence ?Ts) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
-
-#[export]
- Hint Extern 1 (subrelation iff Basics.impl) => exact iff_impl_subrelation : typeclass_instances.
-
-#[export]
- Hint Extern 1 (subrelation iff (Basics.flip Basics.impl)) => exact iff_flip_impl_subrelation : typeclass_instances.
 
 (* Simple Morphism instance for "glu_ctx_env" *)
 Add Parametric Morphism : glu_ctx_env
