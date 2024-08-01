@@ -1,9 +1,8 @@
 From Coq Require Import Nat.
 
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core.Syntactic Require Import CtxSub SystemOpt Corollaries CoreInversions.
-From Mcltt.Core Require Import PER.
-From Mcltt.Core.Semantic Require Import Realizability Readback.
+From Mcltt.Core.Syntactic Require Import CtxSub Corollaries.
+From Mcltt.Core.Semantic Require Import Realizability.
 From Mcltt.Core.Soundness Require Export LogicalRelation Weakening.
 Import Domain_Notations.
 
@@ -95,7 +94,7 @@ Proof.
 Qed.
 
 #[local]
- Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mcltt.
+Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mcltt.
 
 Theorem realize_glu_univ_elem_gen : forall A i P El,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -162,7 +161,7 @@ Proof.
     saturate_weakening_escape.
     assert {{ Δ ⊢ T [σ] ≈ ℕ[σ] : Type @ i }} by mauto 3.
     rewrite <- wf_exp_eq_nat_sub; try eassumption.
-    rewrite <- H10. firstorder.
+    mauto 3.
   - econstructor; eauto.
     + rewrite H2. mauto 3.
     + apply_equiv_left. trivial.
@@ -210,16 +209,16 @@ Proof.
     eexists; repeat split; mauto 3.
     eapply H2; eauto.
     assert {{ Δ ⊢ t [σ] : M[σ] }} by mauto 3.
-    bulky_rewrite_in H24.
+    bulky_rewrite_in H23.
     unshelve (econstructor; eauto).
     + trivial.
     + eassert {{ Δ ⊢ ~ (a_sub t σ) m' : ~_ }} by (eapply wf_app'; eassumption).
-      autorewrite with mcltt in H26.
+      autorewrite with mcltt in H25.
       trivial.
     + mauto using domain_app_per.
     + intros.
       saturate_weakening_escape.
-      progressive_invert H27.
+      progressive_invert H26.
       destruct (H15 _ _ _ _ _ ltac:(eassumption) ltac:(eassumption) ltac:(eassumption) equiv_b).
       handle_functional_glu_univ_elem.
       autorewrite with mcltt.
@@ -347,4 +346,4 @@ Proof.
 Qed.
 
 #[export]
-  Hint Resolve realize_glu_typ_top realize_glu_elem_top : mcltt.
+Hint Resolve realize_glu_typ_top realize_glu_elem_top : mcltt.

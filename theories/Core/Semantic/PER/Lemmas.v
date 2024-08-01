@@ -598,7 +598,7 @@ Proof.
 Qed.
 
 Ltac invert_per_univ_elem H :=
-  (unshelve eapply (per_univ_elem_pi_clean_inversion _) in H; [| eassumption | |]; destruct H as [? []])
+  (unshelve eapply (per_univ_elem_pi_clean_inversion _) in H; shelve_unifiable; [eassumption |]; destruct H as [? []])
   + basic_invert_per_univ_elem H.
 
 Lemma per_univ_elem_cumu : forall i a0 a1 R,

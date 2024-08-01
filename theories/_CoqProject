@@ -52,14 +52,15 @@
 ./Core/Syntactic/System/Tactics.v
 ./Core/Syntactic/SystemOpt.v
 ./Core/Soundness.v
+./Core/Soundness/Cumulativity.v
 ./Core/Soundness/LogicalRelation.v
 ./Core/Soundness/LogicalRelation/CoreTactics.v
 ./Core/Soundness/LogicalRelation/Definitions.v
 ./Core/Soundness/LogicalRelation/Lemmas.v
+./Core/Soundness/Realizability.v
 ./Core/Soundness/Weakening.v
 ./Core/Soundness/Weakening/Definition.v
 ./Core/Soundness/Weakening/Lemmas.v
-./Core/Soundness/Realizability.v
 ./Frontend/Elaborator.v
 ./Frontend/Parser.v
 ./Frontend/ParserExtraction.v

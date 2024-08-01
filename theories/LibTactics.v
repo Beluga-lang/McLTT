@@ -410,16 +410,22 @@ Qed.
   solve [reflexivity || apply Equivalence_Reflexive].
 
 (* Helper Instances for Generalized Rewriting *)
+#[export]
+Hint Extern 1 (subrelation (@predicate_equivalence ?Ts) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
+
+#[export]
+Hint Extern 1 (subrelation iff Basics.impl) => exact iff_impl_subrelation : typeclass_instances.
+
+#[export]
+Hint Extern 1 (subrelation iff (Basics.flip Basics.impl)) => exact iff_flip_impl_subrelation : typeclass_instances.
+
+#[export]
+Hint Extern 1 (subrelation (@relation_equivalence ?A) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
+
 Add Parametric Morphism A : PER
     with signature (@relation_equivalence A) ==> iff as PER_morphism.
 Proof.
   split; intros []; econstructor; unfold Symmetric, Transitive in *; intuition.
-Qed.
-
-#[export]
-Instance subrelation_relation_equivalence {A} : subrelation relation_equivalence (pointwise_relation A (pointwise_relation A iff)).
-Proof.
-  intro; intuition.
 Qed.
 
 (* The following facility converts search of Proper from type class instances to the local context *)

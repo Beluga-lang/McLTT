@@ -14,7 +14,7 @@ Notation "'glu_typ_pred_args'" := (Tcons ctx (Tcons typ Tnil)).
 Notation "'glu_typ_pred'" := (predicate glu_typ_pred_args).
 Notation "'glu_typ_pred_equivalence'" := (@predicate_equivalence glu_typ_pred_args) (only parsing).
 (* This type annotation is to distinguish this notation from others *)
-Notation "Γ ⊢ A ® R" := ((R Γ A : Prop) : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, A custom exp, R constr).
+Notation "Γ ⊢ A ® R" := ((R Γ A : (Prop : Type)) : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, A custom exp, R constr).
 
 Notation "'glu_exp_pred_args'" := (Tcons ctx (Tcons typ (Tcons exp (Tcons domain Tnil)))).
 Notation "'glu_exp_pred'" := (predicate glu_exp_pred_args).
@@ -24,10 +24,10 @@ Notation "Γ ⊢ M : A ® m ∈ R" := (R Γ A M m : (Prop : (Type : Type))) (in 
 Notation "'glu_sub_pred_args'" := (Tcons ctx (Tcons sub (Tcons env Tnil))).
 Notation "'glu_sub_pred'" := (predicate glu_sub_pred_args).
 Notation "'glu_sub_pred_equivalence'" := (@predicate_equivalence glu_sub_pred_args) (only parsing).
-Notation "Γ ⊢s σ ® ρ ∈ R" := (R Γ σ ρ : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, σ custom exp, ρ custom domain, R constr).
+Notation "Γ ⊢s σ ® ρ ∈ R" := ((R Γ σ ρ : Prop) : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, σ custom exp, ρ custom domain, R constr).
 
-Notation "'DG' a ∈ R ↘ P ↘ El" := (R P El a : (Prop : (Type : Type))) (in custom judg at level 90, a custom domain, R constr, P constr, El constr).
-Notation "'EG' A ∈ R ↘ Sb " := (R Sb A : (Prop : (Type : Type))) (in custom judg at level 90, A custom exp, R constr, Sb constr).
+Notation "'DG' a ∈ R ↘ P ↘ El" := (R P El a : ((Prop : Type) : (Type : Type))) (in custom judg at level 90, a custom domain, R constr, P constr, El constr).
+Notation "'EG' A ∈ R ↘ Sb " := (R Sb A : ((Prop : (Type : Type)) : (Type : Type))) (in custom judg at level 90, A custom exp, R constr, Sb constr).
 
 Inductive glu_nat : ctx -> exp -> domain -> Prop :=
 | glu_nat_zero :
@@ -109,6 +109,7 @@ Hint Constructors neut_glu_exp_pred pi_glu_typ_pred pi_glu_exp_pred : mcltt.
 
 Definition univ_glu_typ_pred j i : glu_typ_pred := fun Γ T => {{ Γ ⊢ T ≈ Type@j :  Type@i }}.
 Arguments univ_glu_typ_pred j i Γ T/.
+Transparent univ_glu_typ_pred.
 
 Section Gluing.
   Variable

@@ -22,6 +22,20 @@ Hint Resolve wf_ctx_eq_extend' : mcltt.
 #[export]
 Remove Hints wf_ctx_eq_extend : mcltt.
 
+Corollary wf_nat' : forall {Γ i},
+    {{ ⊢ Γ }} ->
+    {{ Γ ⊢ ℕ : Type@i }}.
+Proof.
+  intros.
+  assert (0 <= i) by lia.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_nat' : mcltt.
+#[export]
+Remove Hints wf_nat : mcltt.
+
 Corollary wf_natrec' : forall {Γ A MZ MS M},
     {{ Γ ⊢ MZ : A[Id,,zero] }} ->
     {{ Γ , ℕ , A ⊢ MS : A[Wk∘Wk,,succ(#1)] }} ->
@@ -77,6 +91,35 @@ Qed.
 Hint Resolve wf_app' : mcltt.
 #[export]
 Remove Hints wf_app : mcltt.
+
+Lemma wf_exp_eq_typ_sub' : forall Γ σ Δ i j,
+    {{ Γ ⊢s σ : Δ }} ->
+    i < j ->
+    {{ Γ ⊢ Type@i[σ] ≈ Type@i : Type@j }}.
+Proof. mauto 3. Qed.
+
+#[export]
+Hint Resolve wf_exp_eq_typ_sub' : mcltt.
+
+#[export]
+Hint Rewrite -> wf_exp_eq_typ_sub' using solve [lia | mauto 3] : mcltt.
+
+Corollary wf_exp_eq_nat_sub' : forall Γ σ Δ i,
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }}.
+Proof.
+  intros.
+  assert (0 <= i) by lia.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_exp_eq_nat_sub' : mcltt.
+#[export]
+Remove Hints wf_exp_eq_nat_sub : mcltt.
+
+#[export]
+Hint Rewrite -> wf_exp_eq_nat_sub' using mautosolve 3 : mcltt.
 
 Corollary wf_exp_eq_natrec_cong' : forall {Γ A A' i MZ MZ' MS MS' M M'},
     {{ Γ , ℕ ⊢ A ≈ A' : Type@i }} ->
@@ -285,32 +328,3 @@ Qed.
 Hint Resolve wf_subtyp_pi' : mcltt.
 #[export]
 Remove Hints wf_subtyp_pi : mcltt.
-
-
-Lemma wf_exp_eq_nat_sub_gen : forall Γ σ Δ i,
-    {{ Γ ⊢s σ : Δ }} ->
-    {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@i }}.
-Proof.
-  intros.
-  assert (0 <= i) by lia.
-  mauto.
-Qed.
-
-#[export]
- Hint Resolve wf_exp_eq_nat_sub_gen : mcltt.
-
-#[export]
-Hint Rewrite -> wf_exp_eq_nat_sub_gen using solve [mauto 3] : mcltt.
-
-
-Lemma wf_exp_eq_typ_sub' : forall Γ σ Δ i j,
-    {{ Γ ⊢s σ : Δ }} ->
-    i < j ->
-    {{ Γ ⊢ Type@i[σ] ≈ Type@i : Type@j }}.
-Proof. mauto 3. Qed.
-
-#[export]
- Hint Resolve wf_exp_eq_typ_sub' : mcltt.
-
-#[export]
-Hint Rewrite -> wf_exp_eq_typ_sub' using solve [lia | mauto 3] : mcltt.
