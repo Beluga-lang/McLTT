@@ -55,18 +55,17 @@ Proof.
     {
       assert {{ Γ, IT ⊢ #0 : IT[Wk] ® !(length Γ) ∈ glu_elem_bot i A }} by eauto using var_glu_elem_bot.
       assert {{ Γ, IT ⊢ #0 : IT[Wk] ® ⇑! A (length Γ) ∈ IEl }} by (eapply realize_glu_elem_bot; mauto).
-      assert {{ Γ, IT ⊢ OT[Wk,,#0] ≈ OT : Type@i }} by (bulky_rewrite1; mauto 3).
-      eapply glu_univ_elem_typ_resp_equiv; mauto.
+      assert {{ Γ, IT ⊢ OT[Wk,,#0] ≈ OT : Type@i }} as <- by (bulky_rewrite1; mauto 3).
+      mauto.
     }
     assert {{ Γ, IT ⊢ OT' ® OP' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' }}.
     {
       assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® !(length Γ) ∈ glu_elem_bot i A' }} by eauto using var_glu_elem_bot.
       assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® ⇑! A' (length Γ) ∈ IEl' }} by (eapply realize_glu_elem_bot; mauto).
       assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ® OP' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' }} by mauto.
-      assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ≈ OT' : Type@i }} by (bulky_rewrite1; mauto 3).
-      assert {{ ⊢ Γ, IT' ≈ Γ, IT }} by mauto.
-      eapply glu_univ_elem_typ_resp_ctx_equiv; mauto.
-      eapply glu_univ_elem_typ_resp_equiv; mauto.
+      assert {{ ⊢ Γ, IT' ≈ Γ, IT }} as <- by mauto.
+      assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ≈ OT' : Type@i }} as <- by (bulky_rewrite1; mauto 3).
+      mauto.
     }
     mauto 3.
   - match_by_head (per_bot b b') ltac:(fun H => specialize (H (length Γ)) as [V []]).
