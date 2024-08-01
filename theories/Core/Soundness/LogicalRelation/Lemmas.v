@@ -772,32 +772,13 @@ Proof.
 Qed.
 
 #[export]
-Instance subrelation_glu_typ_pred_equivalence_iff : subrelation glu_typ_pred_equivalence (@pointwise_relation ctx (predicate (Tcons typ Tnil)) (@pointwise_relation typ (predicate Tnil) iff)).
-Proof.
-  intros ? ? ? ? ?. intuition.
-Qed.
+ Hint Extern 1 (subrelation (@predicate_equivalence ?Ts) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
 
 #[export]
-Instance subrelation_glu_exp_pred_equivalence_iff : subrelation glu_exp_pred_equivalence (@pointwise_relation ctx (predicate (Tcons exp (Tcons typ (Tcons domain Tnil)))) (@pointwise_relation exp (predicate (Tcons typ (Tcons domain Tnil))) (@pointwise_relation typ (predicate (Tcons domain Tnil)) (@pointwise_relation domain (predicate Tnil) iff)))).
-Proof.
-  intros ? ? ? ? ? ? ?. intuition.
-Qed.
-
-(* Why do we need these impl instances? It would be much more concise if we can remove these impl instances. *)
-#[export]
-Instance subrelation_glu_typ_pred_equivalence_impl : subrelation glu_typ_pred_equivalence (@pointwise_relation ctx (predicate (Tcons typ Tnil)) (@pointwise_relation typ (predicate Tnil) Basics.impl)).
-Proof.
-  intros ? ? ? ? ? ?. intuition.
-Qed.
+ Hint Extern 1 (subrelation iff Basics.impl) => exact iff_impl_subrelation : typeclass_instances.
 
 #[export]
-Instance subrelation_glu_exp_pred_equivalence_impl : subrelation glu_exp_pred_equivalence (@pointwise_relation ctx (predicate (Tcons exp (Tcons typ (Tcons domain Tnil)))) (@pointwise_relation exp (predicate (Tcons typ (Tcons domain Tnil))) (@pointwise_relation typ (predicate (Tcons domain Tnil)) (@pointwise_relation domain (predicate Tnil) Basics.impl)))).
-Proof.
-  intros ? ? ? ? ? ? ? ?. intuition.
-Qed.
-
-#[export]
-Typeclasses Transparent Basics.flip.
+ Hint Extern 1 (subrelation iff (Basics.flip Basics.impl)) => exact iff_flip_impl_subrelation : typeclass_instances.
 
 (* Simple Morphism instance for "glu_ctx_env" *)
 Add Parametric Morphism : glu_ctx_env
