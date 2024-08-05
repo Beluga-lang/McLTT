@@ -32,12 +32,14 @@ Proof.
     assert {{ Γ ⊢ IT ® IP }}.
     {
       assert {{ Γ ⊢ IT[Id] ® IP }} by mauto.
-      enough {{ Γ ⊢ IT[Id] ≈ IT : Type@i }} as <-; mauto.
+      simpl in *.
+      autorewrite with mcltt in *; mauto.
     }
     assert {{ Γ ⊢ IT' ® IP' }}.
     {
       assert {{ Γ ⊢ IT'[Id] ® IP' }} by mauto.
-      enough {{ Γ ⊢ IT'[Id] ≈ IT' : Type@i }} as <-; mauto.
+      simpl in *.
+      autorewrite with mcltt in *; mauto.
     }
     do 2 bulky_rewrite1.
     assert {{ Γ ⊢ IT ≈ IT' : Type@i }} by mauto.
