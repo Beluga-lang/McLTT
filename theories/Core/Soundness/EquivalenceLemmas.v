@@ -15,29 +15,31 @@ Lemma glu_univ_elem_per_univ_typ_escape : forall {i a a' P P' El El' Γ A A'},
     {{ Γ ⊢ A' ® P' }} ->
     {{ Γ ⊢ A ≈ A' : Type@i }}.
 Proof.
-  intros * [elem_rel Hper] Hglu Hglu' HA HA'.
+  intros * [? Hper] Hglu Hglu' HA HA'.
   gen A' A Γ. gen El' El P' P.
   induction Hper using per_univ_elem_ind; intros; subst;
     saturate_refl_for per_univ_elem;
     invert_glu_univ_elem Hglu;
     handle_functional_glu_univ_elem;
+    handle_per_univ_elem_irrel;
+    destruct_by_head pi_glu_typ_pred;
+    saturate_glu_by_per;
     invert_glu_univ_elem Hglu';
     handle_functional_glu_univ_elem;
     try solve [simpl in *; mauto 4].
   - destruct_by_head pi_glu_typ_pred.
-    rename M into M'. rename IT into IT'. rename OT into OT'.
-    rename x4 into IP'. rename x5 into IEl'. rename x6 into OP'. rename x7 into OEl'.
-    rename M0 into M. rename IT0 into IT. rename OT0 into OT.
     rename x into IP. rename x0 into IEl. rename x1 into OP. rename x2 into OEl.
+    rename M0 into M'. rename IT0 into IT'. rename OT0 into OT'.
+    rename x4 into OP'. rename x5 into OEl'.
     assert {{ Γ ⊢ IT ® IP }}.
     {
       assert {{ Γ ⊢ IT[Id] ® IP }} by mauto.
       simpl in *.
       autorewrite with mcltt in *; mauto.
     }
-    assert {{ Γ ⊢ IT' ® IP' }}.
+    assert {{ Γ ⊢ IT' ® IP }}.
     {
-      assert {{ Γ ⊢ IT'[Id] ® IP' }} by mauto.
+      assert {{ Γ ⊢ IT'[Id] ® IP }} by mauto.
       simpl in *.
       autorewrite with mcltt in *; mauto.
     }
@@ -63,7 +65,7 @@ Proof.
     assert {{ Γ, IT ⊢ OT' ® OP' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' }}.
     {
       assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® !(length Γ) ∈ glu_elem_bot i A' }} by eauto using var_glu_elem_bot.
-      assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® ⇑! A' (length Γ) ∈ IEl' }} by (eapply realize_glu_elem_bot; mauto).
+      assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® ⇑! A' (length Γ) ∈ IEl }} by (eapply realize_glu_elem_bot; mauto).
       assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ® OP' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' }} by mauto.
       assert {{ ⊢ Γ, IT' ≈ Γ, IT }} as <- by mauto.
       assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ≈ OT' : Type@i }} as <- by (bulky_rewrite1; mauto 3).
