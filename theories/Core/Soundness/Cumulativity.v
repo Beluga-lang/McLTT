@@ -107,9 +107,9 @@ Section glu_univ_elem_cumulativity.
       assert (exists ac, {{ $| a0 & c |↘ ac }} /\ {{ Δ ⊢ m[σ] m' : OT0[σ,,m'] ® ac ∈ OEl' c equiv_c }}) by mauto.
       destruct_conjs.
       functional_eval_rewrite_clear.
-      enough {{ Δ ⊢ OT[σ,,m'] ≈ OT0[σ,,m'] : Type@j }} by (rewrite glu_univ_elem_elem_morphism_iff1; mauto).
-      assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv_c ↘ OEl c equiv_c }} by mauto.
       assert {{ DG b ∈ glu_univ_elem j ↘ OP' c equiv_c ↘ OEl' c equiv_c }} by mauto.
+      enough {{ Δ ⊢ OT[σ,,m'] ≈ OT0[σ,,m'] : Type@j }} as -> by mauto.
+      assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv_c ↘ OEl c equiv_c }} by mauto.
       assert {{ Δ ⊢ OT0[σ,,m'] ® OP' c equiv_c }} by (eapply glu_univ_elem_trm_typ; mauto).
       assert {{ Δ ⊢ OT[σ,,m'] ® glu_typ_top i b }} as [] by mauto 3.
       assert {{ Δ ⊢ OT0[σ,,m'] ® glu_typ_top j b }} as [] by mauto 3.
