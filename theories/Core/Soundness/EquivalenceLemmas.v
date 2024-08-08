@@ -80,3 +80,15 @@ Proof.
     assert {{ Γ ⊢ A'[Id] ≈ V : Type@i }} as -> by mauto 4.
     mauto 4.
 Qed.
+
+Lemma glu_univ_elem_per_univ_typ_iff : forall {i a a' P P' El El'},
+    {{ Dom a ≈ a' ∈ per_univ i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
+    (P <∙> P') /\ (El <∙> El').
+Proof.
+  intros * Hper **.
+  eapply functional_glu_univ_elem;
+    [eassumption | rewrite Hper];
+    eassumption.
+Qed.
