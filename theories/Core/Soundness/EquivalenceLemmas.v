@@ -7,16 +7,16 @@ From Mcltt.Core.Soundness Require Import Realizability.
 From Mcltt.Core.Soundness Require Export LogicalRelation.
 Import Domain_Notations.
 
-Lemma glu_univ_elem_per_univ_typ_escape : forall {i a a' P P' El El' Γ A A'},
-    {{ Dom a ≈ a' ∈ per_univ i }} ->
+Lemma glu_univ_elem_per_univ_elem_typ_escape : forall {i a a' elem_rel P P' El El' Γ A A'},
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ elem_rel }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
     {{ Γ ⊢ A ® P }} ->
     {{ Γ ⊢ A' ® P' }} ->
     {{ Γ ⊢ A ≈ A' : Type@i }}.
 Proof.
-  intros * [? Hper] Hglu Hglu' HA HA'.
-  gen A' A Γ. gen El' El P' P.
+  intros * Hper Hglu Hglu' HA HA'.
+  gen A' A Γ. gen El' El P' P. simpl in Hper.
   induction Hper using per_univ_elem_ind; intros; subst;
     saturate_refl_for per_univ_elem;
     invert_glu_univ_elem Hglu;
@@ -79,6 +79,18 @@ Proof.
     assert {{ Γ ⊢ A'[Id] ≈ A' : Type@i }} as <- by mauto 4.
     assert {{ Γ ⊢ A'[Id] ≈ V : Type@i }} as -> by mauto 4.
     mauto 4.
+Qed.
+
+Lemma glu_univ_elem_per_univ_typ_escape : forall {i a a' P P' El El' Γ A A'},
+    {{ Dom a ≈ a' ∈ per_univ i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A' ® P' }} ->
+    {{ Γ ⊢ A ≈ A' : Type@i }}.
+Proof.
+  intros * [] **.
+  mauto using glu_univ_elem_per_univ_elem_typ_escape.
 Qed.
 
 Lemma glu_univ_elem_per_univ_typ_iff : forall {i a a' P P' El El'},

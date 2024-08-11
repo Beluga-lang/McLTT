@@ -3,8 +3,7 @@ From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_De
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import Realizability.
-From Mcltt.Core.Soundness Require Export LogicalRelation EquivalenceLemmas.
+From Mcltt.Core.Soundness Require Import Cumulativity EquivalenceLemmas LogicalRelation Realizability SubtypingLemmas.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
@@ -37,24 +36,35 @@ Proof.
   destruct_conjs.
   eapply destruct_glu_rel_exp in HA, HA'; try eassumption.
   destruct_conjs.
+  rename i0 into k.
   econstructor; split; [eassumption |].
-  exists (max i j); intros.
+  exists (max i (max j k)); intros.
   (* TODO: extract this as a tactic *)
-  match goal with
-  | H: context[glu_rel_exp_sub _ _ _ _ _ _] |- _ => edestruct H; try eassumption
-  end.
+  repeat match goal with
+         | H: context[glu_rel_exp_sub _ _ _ _ _ _] |- _ =>
+             match type of H with
+             | __mark__ _ _ => fail 1
+             | _ => edestruct H; try eassumption; mark H
+             end
+         end; unmark_all.
+  simplify_evals.
+  match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
+  handle_functional_glu_univ_elem.
+  simpl in *.
   (* TODO: introduce a lemma for glu_ctx_env *)
   assert {{ Dom ρ ≈ ρ ∈ env_relΓ }} by admit.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
-  rename m' into a'.
-  (* assert (exists P' El', {{ DG a' ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }}) as [P' [El']]. *)
-  (* { *)
-  (*   assert (exists R R', {{ DF a ≈ a ∈ per_univ_elem j ↘ R }} /\ {{ DF a' ≈ a' ∈ per_univ_elem j ↘ R' }}) by mauto using per_subtyp_to_univ_elem. *)
-  (*   destruct_conjs. *)
-  (*   assert {{ Dom a' ≈ a' ∈ per_univ (max i j) }} by (eexists; mauto using per_univ_elem_cumu_max_right). *)
-  (*   apply per_univ_glu_univ_elem; mauto. *)
-  (* } *)
-  (* econstructor; try eassumption. *)
+  assert (exists P El, glu_univ_elem (max i (max j k)) P El m0) as [? []] by admit. (* simple by cumulativity *)
+  econstructor; try eassumption.
+  assert {{ Sub m <: m0 at max i (max j k) }} by mauto using per_subtyp_cumu_left, per_subtyp_cumu_right.
+  assert (exists P El, glu_univ_elem (max i (max j k)) P El m) as [? []] by admit. (* simple by cumulativity *)
+  eapply glu_univ_elem_per_subtyp_trm_if; mauto.
+  - assert (k <= max i (max j k)) by lia.
+    eapply glu_univ_elem_typ_cumu_ge; mauto.
+  - assert (k <= max i (max j k)) by lia.
+    eapply glu_univ_elem_typ_cumu_ge; revgoals; mauto.
+  - assert (i <= max i (max j k)) by lia.
+    eapply glu_univ_elem_exp_cumu_ge; mauto.
 Admitted.
