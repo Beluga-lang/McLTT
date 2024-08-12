@@ -91,13 +91,12 @@ Lemma glu_univ_elem_per_subtyp_trm_if : forall {i a a' P P' El El' Γ A A' M m},
     {{ Sub a <: a' at i }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
-    {{ Γ ⊢ A ® P }} ->
     {{ Γ ⊢ A' ® P' }} ->
     {{ Γ ⊢ M : A ® m ∈ El }} ->
     {{ Γ ⊢ M : A' ® m ∈ El' }}.
 Proof.
   intros * Hsubtyp Hglu Hglu' HA HA'.
-  assert {{ Γ ⊢ A ⊆ A' }} by mauto 3 using glu_univ_elem_per_subtyp_typ_escape.
+  assert {{ Γ ⊢ A ⊆ A' }} by (eapply glu_univ_elem_per_subtyp_typ_escape; only 4: eapply glu_univ_elem_trm_typ; mauto).
   gen m M A' A. gen Γ. gen El' El P' P.
   induction Hsubtyp using per_subtyp_ind; intros; subst;
     saturate_refl_for per_univ_elem;
@@ -126,27 +125,27 @@ Proof.
   - simpl in *.
     destruct_conjs.
     intuition mauto 3.
-    assert (exists P El, {{ DG m ∈ glu_univ_elem j ↘ P ↘ El }}) as [? [?]].
-    {
-      assert {{ Dom m ≈ m ∈ per_univ i }} as [] by mauto using glu_univ_elem_per_univ.
-      mauto using per_univ_glu_univ_elem.
-    }
+    assert (exists P El, {{ DG m ∈ glu_univ_elem j ↘ P ↘ El }}) as [? [?]] by mauto.
     do 2 eexists; split; mauto.
     eapply glu_univ_elem_typ_cumu_ge; revgoals; mautosolve.
   - rename M into A.
     rename M0 into A'.
     rename m into M.
-    rename IT1 into IT'. rename OT1 into OT'.
+    rename IT0 into IT'. rename OT0 into OT'.
     rename x into IP. rename x0 into IEl.
     rename x1 into OP. rename x2 into OEl.
+    rename x3 into OP'. rename x4 into OEl'.
     handle_per_univ_elem_irrel.
     econstructor; mauto 4.
-    + admit.
+    + enough {{ Sub Π a p B <: Π a' p' B' at i }} by (eapply per_elem_subtyping; try eassumption).
+      econstructor; mauto.
     + intros.
+      rename b into c.
+      rename equiv_b into equiv_c.
       assert {{ Γ ⊢w Id : Γ }} by mauto.
-      assert {{ Γ ⊢ IT0 ® IP }}.
+      assert {{ Γ ⊢ IT ® IP }}.
       {
-        assert {{ Γ ⊢ IT0[Id] ® IP }} by mauto.
+        assert {{ Γ ⊢ IT[Id] ® IP }} by mauto.
         simpl in *.
         autorewrite with mcltt in *; mauto.
       }
@@ -156,15 +155,20 @@ Proof.
         simpl in *.
         autorewrite with mcltt in *; mauto.
       }
-      assert {{ Δ ⊢ IT0[σ] ≈ IT'[σ] : Type@i }} by mauto 4 using glu_univ_elem_per_univ_elem_typ_escape.
-      assert {{ Δ ⊢ m' : IT0[σ] ® b ∈ IEl }} by (simpl; bulky_rewrite1; eassumption).
-      assert (exists ab : domain, {{ $| a0 & b |↘ ab }} /\ OEl b equiv_b Δ (a_sub OT0 {{{ σ,, m' }}}) {{{ ~ (a_sub M σ) m' }}} ab) by mauto.
+      assert {{ Δ ⊢ IT[σ] ≈ IT'[σ] : Type@i }} by mauto 4 using glu_univ_elem_per_univ_elem_typ_escape.
+      assert {{ Δ ⊢ m' : IT[σ] ® c ∈ IEl }} by (simpl; bulky_rewrite1; eassumption).
+      assert (exists ac : domain, {{ $| a0 & c |↘ ac }} /\ OEl c equiv_c Δ (a_sub OT {{{ σ,, m' }}}) {{{ ~ (a_sub M σ) m' }}} ac) by mauto.
       destruct_conjs.
       eexists; split; mauto.
       match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
       destruct_rel_mod_eval.
       handle_per_univ_elem_irrel.
-      eapply H1 with (M := {{{ M[σ] m' }}}) (m := H35); mauto 3.
-      * admit. (* almost obvious *)
-      * admit. (* by a separate lemma *)
-Admitted.
+      rename a1 into b.
+      rename a2 into b'.
+      eapply H1 with (M := {{{ M[σ] m' }}}) (m := H30); mauto 3.
+      assert {{ Δ ⊢ OT[σ,,m'] ® OP c equiv_c }} by (eapply glu_univ_elem_trm_typ; mauto).
+      assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv_c ↘ OEl c equiv_c }} by mauto.
+      assert {{ DG b' ∈ glu_univ_elem i ↘ OP' c equiv_c ↘ OEl' c equiv_c }} by mauto.
+      enough {{ Sub b <: b' at i }} by mauto 3 using glu_univ_elem_per_subtyp_typ_escape.
+      mauto.
+Qed.

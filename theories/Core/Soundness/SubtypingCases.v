@@ -56,13 +56,15 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
-  assert (exists P El, glu_univ_elem (max i (max j k)) P El m0) as [? []] by admit. (* simple by cumulativity *)
+  assert (exists P El, glu_univ_elem (max i (max j k)) P El m0) as [? []].
+  {
+    assert (exists P El, glu_univ_elem (max j k) P El m0) as [? []];
+      mauto using glu_univ_elem_cumu_max_right.
+  }
   econstructor; try eassumption.
   assert {{ Sub m <: m0 at max i (max j k) }} by mauto using per_subtyp_cumu_left, per_subtyp_cumu_right.
-  assert (exists P El, glu_univ_elem (max i (max j k)) P El m) as [? []] by admit. (* simple by cumulativity *)
+  assert (exists P El, glu_univ_elem (max i (max j k)) P El m) as [? []] by mauto using glu_univ_elem_cumu_max_left.
   eapply glu_univ_elem_per_subtyp_trm_if; mauto.
-  - assert (k <= max i (max j k)) by lia.
-    eapply glu_univ_elem_typ_cumu_ge; mauto.
   - assert (k <= max i (max j k)) by lia.
     eapply glu_univ_elem_typ_cumu_ge; revgoals; mauto.
   - assert (i <= max i (max j k)) by lia.

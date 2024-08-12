@@ -7,6 +7,38 @@ From Mcltt.Core.Soundness Require Import Realizability.
 From Mcltt.Core.Soundness Require Export LogicalRelation.
 Import Domain_Notations.
 
+Corollary glu_univ_elem_cumu_ge : forall {i j a P El},
+    i <= j ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    exists P' El', {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }}.
+Proof.
+  intros.
+  assert {{ Dom a ≈ a ∈ per_univ i }} as [R] by mauto.
+  assert {{ DF a ≈ a ∈ per_univ_elem j ↘ R }} by mauto using per_univ_elem_cumu_ge.
+  mauto.
+Qed.
+
+#[export]
+Hint Resolve glu_univ_elem_cumu_ge : mcltt.
+
+Corollary glu_univ_elem_cumu_max_left : forall {i j a P El},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    exists P' El', {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }}.
+Proof.
+  intros.
+  assert (i <= max i j) by lia.
+  mauto.
+Qed.
+
+Corollary glu_univ_elem_cumu_max_right : forall {i j a P El},
+    {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} ->
+    exists P' El', {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }}.
+Proof.
+  intros.
+  assert (j <= max i j) by lia.
+  mauto.
+Qed.
+
 Section glu_univ_elem_cumulativity.
   #[local]
   Lemma glu_univ_elem_cumulativity_ge : forall {i j a P P' El El'},
