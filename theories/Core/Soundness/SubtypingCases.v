@@ -3,27 +3,9 @@ From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_De
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import Cumulativity EquivalenceLemmas LogicalRelation Realizability SubtypingLemmas.
+From Mcltt.Core.Soundness Require Import LogicalRelation Realizability.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
-
-(* TODO: move this to a better place *)
-Lemma destruct_glu_rel_exp : forall {Γ Sb M A},
-  {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
-  {{ Γ ⊩ M : A }} ->
-  exists i,
-  forall Δ σ ρ,
-    {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
-    glu_rel_exp_sub i Δ M A σ ρ.
-Proof.
-  intros * ? [Sb'].
-  destruct_conjs.
-  eexists; intros.
-  (* TODO: handle functional glu_ctx_env here *)
-  assert (Sb <∙> Sb') by admit.
-  apply_predicate_equivalence.
-  mauto.
-Admitted.
 
 Lemma glu_rel_exp_subtyp : forall {Γ M A A' i},
     {{ Γ ⊩ A : Type@i }} ->
@@ -51,8 +33,7 @@ Proof.
   match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
   handle_functional_glu_univ_elem.
   simpl in *.
-  (* TODO: introduce a lemma for glu_ctx_env *)
-  assert {{ Dom ρ ≈ ρ ∈ env_relΓ }} by admit.
+  assert {{ Dom ρ ≈ ρ ∈ env_relΓ }} by (eapply glu_ctx_env_per_env; mauto).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head rel_exp.
   handle_per_univ_elem_irrel.
@@ -69,4 +50,4 @@ Proof.
     eapply glu_univ_elem_typ_cumu_ge; revgoals; mauto.
   - assert (i <= max i (max j k)) by lia.
     eapply glu_univ_elem_exp_cumu_ge; mauto.
-Admitted.
+Qed.
