@@ -3,7 +3,7 @@ From Coq Require Import Equivalence Morphisms Morphisms_Prop Morphisms_Relations
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import PER Syntactic.Corollaries.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
+From Mcltt.Core.Semantic Require Import NbE Realizability.
 From Mcltt.Core.Soundness Require Import Realizability.
 From Mcltt.Core.Soundness Require Import LogicalRelation.Core.
 From Mcltt.Core.Syntactic Require Import Corollaries.
@@ -624,6 +624,36 @@ Proof.
   eapply glu_univ_elem_per_subtyp_trm_conv; mauto.
 Qed.
 
+Lemma glu_ctx_env_sub_monotone : forall Γ Sb,
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    forall Δ' σ Δ τ p,
+      {{ Δ ⊢s τ ® p ∈ Sb }} ->
+      {{ Δ' ⊢w σ : Δ }} ->
+      {{ Δ' ⊢s τ ∘ σ ® p ∈ Sb }}.
+Proof.
+  induction 1; intros * HSb Hσ;
+    apply_predicate_equivalence;
+    simpl in *;
+    mauto.
+
+  destruct_by_head cons_glu_sub_pred.
+  econstructor; mauto.
+  - assert {{ Δ' ⊢ #0[σ0][σ] : A[Wk∘σ0][σ] ® ~(ρ 0) ∈ El }} by (eapply glu_univ_elem_exp_monotone; mauto).
+    assert {{ Γ, A ⊢ #0 : A[Wk] }} by mauto 3.
+    assert {{ Δ ⊢ A[Wk∘σ0] : Type@i }} by (eapply glu_univ_elem_trm_univ_lvl; mauto).
+    assert {{ ⊢ Γ, A }} by mauto 3.
+    assert {{ Γ,A ⊢s Wk : Γ }} by mauto 3.
+    assert {{ Δ' ⊢s σ : Δ }} by mauto 3.
+    assert {{ Δ' ⊢ A[Wk][σ0∘σ] ≈ A[Wk∘(σ0∘σ)] : Type@i }} as <- by mauto 3.
+    assert {{ Δ' ⊢ #0[σ0][σ] ≈ #0[σ0∘σ] : A[Wk][σ0∘σ] }} as <- by mauto 3.
+    assert {{ Δ' ⊢ A[Wk][σ0][σ] ≈ A[Wk][σ0∘σ] : Type@i }} as <- by mauto 3.
+    assert {{ Δ ⊢ A[Wk∘σ0] ≈ A[Wk][σ0] : Type@i }} by mauto 3.
+    assert {{ Δ' ⊢ A[Wk∘σ0][σ] ≈ A[Wk][σ0][σ] : Type@i }} as <- by mauto 3.
+    eassumption.
+  - assert {{ Δ' ⊢s (Wk ∘ σ0) ∘ σ ® ρ ↯ ∈ TSb }} by mauto.
+    admit. (* by rewriting *)
+Admitted.
+
 Lemma destruct_glu_rel_exp : forall {Γ Sb M A},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩ M : A }} ->
@@ -638,3 +668,25 @@ Proof.
   handle_functional_glu_ctx_env.
   mauto.
 Qed.
+
+Lemma initial_env_glu_rel_exp : forall {Γ p Sb},
+    initial_env Γ p ->
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    {{ Γ ⊢s Id ® p ∈ Sb }}.
+Proof.
+  intros * Hinit HΓ.
+  gen p.
+  induction HΓ; intros * Hinit;
+    dependent destruction Hinit;
+    apply_predicate_equivalence;
+    try solve [econstructor; mauto].
+
+  assert (glu_rel_typ_sub i Γ A {{{ Id }}} p) as [] by mauto.
+  functional_eval_rewrite_clear.
+  econstructor; mauto.
+  - eapply realize_glu_elem_bot; mauto.
+    assert {{ Γ, A[Id] ⊢ #0 : A[Id][Wk] ® !(length Γ) ∈ glu_elem_bot i a }} as [] by (eapply var_glu_elem_bot; mauto).
+    admit. (* by some rewriting *)
+  - assert {{ Γ, A ⊢s Id∘Wk ® p ∈ TSb }} by (eapply glu_ctx_env_sub_monotone; mauto 4).
+    admit. (* by some rewriting *)
+Admitted.
