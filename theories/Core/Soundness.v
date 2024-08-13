@@ -1,5 +1,7 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Semantic.Domain Semantic.NbE System.
+From Mcltt.Core.Semantic Require Import NbE.
+From Mcltt.Core.Soundness Require Import LogicalRelation FundamentalTheorem.
+From Mcltt.Core.Syntactic Require Import SystemOpt.
 Import Domain_Notations.
 
 Theorem soundness : forall {Γ M A},
