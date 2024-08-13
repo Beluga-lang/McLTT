@@ -51,3 +51,26 @@ Proof.
   - assert (i <= max i (max j k)) by lia.
     eapply glu_univ_elem_exp_cumu_ge; mauto.
 Qed.
+
+Lemma glu_rel_sub_subtyp : forall {Γ σ Δ Δ'},
+    {{ ⊩ Δ' }} ->
+    {{ Γ ⊩s σ : Δ }} ->
+    {{ ⊢ Δ ⊆ Δ' }} ->
+    {{ Γ ⊩s σ : Δ' }}.
+Proof.
+  intros * [SbΔ'] [SbΓ [SbΔ]] Hsubtyp.
+  pose proof (completeness_fundamental_ctx_sub _ _ Hsubtyp).
+  destruct_conjs.
+  econstructor; eexists; repeat split; [eassumption | eassumption |].
+  intros.
+  (* TODO: extract this as a tactic *)
+  repeat match goal with
+         | H: context[glu_rel_sub_sub _ _ _ _ _] |- _ =>
+             match type of H with
+             | __mark__ _ _ => fail 1
+             | _ => edestruct H; try eassumption; mark H
+             end
+         end; unmark_all.
+  econstructor; mauto.
+  eapply glu_ctx_env_per_ctx_subtyp_sub_if; only 3: eassumption; mauto.
+Qed.

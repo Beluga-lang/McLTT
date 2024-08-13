@@ -266,14 +266,14 @@ Proof.
 Qed.
 
 Lemma glu_univ_elem_exp_conv : forall {i j k a a' P P' El El' Γ A M m},
+    {{ Dom a ≈ a' ∈ per_univ k }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a' ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
-    {{ Dom a ≈ a' ∈ per_univ k }} ->
     {{ Γ ⊢ M : A ® m ∈ El }} ->
     {{ Γ ⊢ A ® P' }} ->
     {{ Γ ⊢ M : A ® m ∈ El' }}.
 Proof.
-  intros * ? ? [] ? ?.
+  intros * [] ? ? ? ?.
   assert {{ Dom a ≈ a' ∈ per_univ (max i k) }} by (eexists; mauto using per_univ_elem_cumu_max_right).
   assert (exists P El, {{ DG a ∈ glu_univ_elem (max i k) ↘ P ↘ El }}) as [Pik [Elik]] by mauto using glu_univ_elem_cumu_max_left.
   assert {{ DG a' ∈ glu_univ_elem (max i k) ↘ Pik ↘ Elik }} by (erewrite <- glu_univ_elem_morphism_iff; try reflexivity; mauto).
@@ -455,6 +455,26 @@ Proof.
       eapply H1; mauto 2.
 Qed.
 
+Lemma glu_univ_elem_per_subtyp_trm_conv : forall {i j k a a' P P' El El' Γ A A' M m},
+    {{ Sub a <: a' at i }} ->
+    {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem k ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A' ® P' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Γ ⊢ M : A' ® m ∈ El' }}.
+Proof.
+  intros.
+  assert {{ Sub a <: a' at (max i (max j k)) }} by mauto using per_subtyp_cumu_left.
+  assert (j <= max i (max j k)) by lia.
+  assert (exists P El, {{ DG a ∈ glu_univ_elem (max i (max j k)) ↘ P ↘ El }}) as [Ptop [Eltop]] by mauto using glu_univ_elem_cumu_ge.
+  assert (k <= max i (max j k)) by lia.
+  assert (exists P El, {{ DG a' ∈ glu_univ_elem (max i (max j k)) ↘ P ↘ El }}) as [Ptop' [Eltop']] by mauto using glu_univ_elem_cumu_ge.
+  assert {{ Γ ⊢ A' ® Ptop' }} by (eapply glu_univ_elem_typ_cumu_ge; mauto).
+  assert {{ Γ ⊢ M : A ® m ∈ Eltop }} by (eapply @glu_univ_elem_exp_cumu_ge with (i := j); mauto).
+  assert {{ Γ ⊢ M : A' ® m ∈ Eltop' }} by (eapply glu_univ_elem_per_subtyp_trm_if; mauto).
+  eapply glu_univ_elem_exp_lower; mauto.
+Qed.
+
 Lemma glu_ctx_env_per_env : forall {Γ Sb env_rel Δ σ p},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }} ->
@@ -570,6 +590,40 @@ Ltac handle_functional_glu_ctx_env :=
   apply_predicate_equivalence;
   clear_dups.
 
+Lemma glu_ctx_env_per_ctx_subtyp_sub_if : forall Δ Δ' Sb Sb' Γ σ p,
+    {{ ⊢ Δ ⊆ Δ' }} ->
+    {{ SubE Δ <: Δ' }} ->
+    {{ EG Δ ∈ glu_ctx_env ↘ Sb }} ->
+    {{ EG Δ' ∈ glu_ctx_env ↘ Sb' }} ->
+    {{ Γ ⊢s σ ® p ∈ Sb }} ->
+    {{ Γ ⊢s σ ® p ∈ Sb' }}.
+Proof.
+  intros * Hsubtyp Hper Hglu Hglu'.
+  gen p σ Γ. gen Sb' Sb.
+  induction Hsubtyp; intros;
+    dependent destruction Hper;
+    dependent destruction Hglu;
+    dependent destruction Hglu';
+    handle_functional_glu_ctx_env;
+    eauto.
+
+  rename Δ into Γ'.
+  rename i0 into j.
+  rename i1 into k.
+  rename i2 into l.
+  rename TSb0 into TSb'.
+  destruct_by_head cons_glu_sub_pred.
+  assert (glu_rel_typ_sub l Δ A' {{{ Wk∘σ }}} d{{{ ρ ↯ }}}) as [] by intuition.
+  rename a0 into a'.
+  rename P0 into P'.
+  rename El0 into El'.
+  assert {{ Dom ρ ↯ ≈ ρ ↯ ∈ tail_rel }} by (eapply glu_ctx_env_per_env; only 3: eassumption; eassumption).
+  assert {{ Sub a <: a' at j }} by mauto 4.
+  assert {{ ⊢ Γ, A ⊆ Γ', A' }} by mauto 3.
+  econstructor; mauto; intuition.
+  eapply glu_univ_elem_per_subtyp_trm_conv; mauto.
+Qed.
+
 Lemma destruct_glu_rel_exp : forall {Γ Sb M A},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩ M : A }} ->
@@ -578,7 +632,7 @@ Lemma destruct_glu_rel_exp : forall {Γ Sb M A},
       {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
       glu_rel_exp_sub i Δ M A σ ρ.
 Proof.
-  intros * ? [Sb'].
+  intros * ? [].
   destruct_conjs.
   eexists; intros.
   handle_functional_glu_ctx_env.
