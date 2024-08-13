@@ -9,6 +9,31 @@ From Mcltt.Core.Soundness Require Import LogicalRelation.Core.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
+Add Parametric Morphism i a Γ A M : (glu_elem_bot i a Γ A M)
+    with signature per_bot ==> iff as glu_elem_bot_morphism_iff4.
+Proof.
+  intros m m' Hmm' *.
+  split; intros []; econstructor; mauto 3;
+    try (etransitivity; mauto 4);
+    intros;
+    specialize (Hmm' (length Δ)) as [? []];
+    functional_read_rewrite_clear;
+    mauto.
+Qed.
+
+Add Parametric Morphism i a Γ A M R (H : per_univ_elem i R a a) : (glu_elem_top i a Γ A M)
+    with signature R ==> iff as glu_elem_top_morphism_iff4.
+Proof.
+  intros m m' Hmm' *.
+  split; intros []; econstructor; mauto 3;
+    pose proof (per_elem_then_per_top H Hmm') as Hmm'';
+    try (etransitivity; mauto 4);
+    intros;
+    specialize (Hmm'' (length Δ)) as [? []];
+    functional_read_rewrite_clear;
+    mauto.
+Qed.
+
 Lemma glu_univ_elem_typ_escape : forall {i j a P P' El El' Γ A A'},
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
@@ -231,7 +256,7 @@ Section glu_univ_elem_cumulativity.
   Qed.
 End glu_univ_elem_cumulativity.
 
-Corollary glu_univ_elem_typ_cumu_ge :  forall {i j a P P' El El' Γ A},
+Corollary glu_univ_elem_typ_cumu_ge : forall {i j a P P' El El' Γ A},
     i <= j ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
@@ -242,15 +267,59 @@ Proof.
   eapply glu_univ_elem_cumulativity_ge; mauto.
 Qed.
 
-Corollary glu_univ_elem_exp_cumu_ge :  forall {i j a P P' El El' Γ A M m},
+Corollary glu_univ_elem_typ_cumu_max_left : forall {i j a P P' El El' Γ A},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A ® P' }}.
+Proof.
+  intros.
+  assert (i <= max i j) by lia.
+  eapply glu_univ_elem_typ_cumu_ge; mauto.
+Qed.
+
+Corollary glu_univ_elem_typ_cumu_max_right : forall {i j a P P' El El' Γ A},
+    {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A ® P' }}.
+Proof.
+  intros.
+  assert (j <= max i j) by lia.
+  eapply glu_univ_elem_typ_cumu_ge; mauto.
+Qed.
+
+Corollary glu_univ_elem_exp_cumu_ge : forall {i j a P P' El El' Γ A M m},
     i <= j ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
     {{ Γ ⊢ M : A ® m ∈ El }} ->
     {{ Γ ⊢ M : A ® m ∈ El' }}.
 Proof.
-  intros * ? ? ?. gen m M A Γ.
+  intros. gen m M A Γ.
   eapply glu_univ_elem_cumulativity_ge; mauto.
+Qed.
+
+Corollary glu_univ_elem_exp_cumu_max_left : forall {i j a P P' El El' Γ A M m},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Γ ⊢ M : A ® m ∈ El' }}.
+Proof.
+  intros.
+  assert (i <= max i j) by lia.
+  eapply glu_univ_elem_exp_cumu_ge; mauto.
+Qed.
+
+Corollary glu_univ_elem_exp_cumu_max_right : forall {i j a P P' El El' Γ A M m},
+    {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Γ ⊢ M : A ® m ∈ El' }}.
+Proof.
+  intros.
+  assert (j <= max i j) by lia.
+  eapply glu_univ_elem_exp_cumu_ge; mauto.
 Qed.
 
 Corollary glu_univ_elem_exp_lower :  forall {i j a P P' El El' Γ A M m},
@@ -265,6 +334,30 @@ Proof.
   eapply glu_univ_elem_cumulativity_ge; mauto.
 Qed.
 
+Corollary glu_univ_elem_exp_lower_max_left :  forall {i j a P P' El El' Γ A M m},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ M : A ® m ∈ El' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }}.
+Proof.
+  intros.
+  assert (i <= max i j) by lia.
+  eapply glu_univ_elem_exp_lower; mauto.
+Qed.
+
+Corollary glu_univ_elem_exp_lower_max_right :  forall {i j a P P' El El' Γ A M m},
+    {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ M : A ® m ∈ El' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }}.
+Proof.
+  intros.
+  assert (j <= max i j) by lia.
+  eapply glu_univ_elem_exp_lower; mauto.
+Qed.
+
 Lemma glu_univ_elem_exp_conv : forall {i j k a a' P P' El El' Γ A M m},
     {{ Dom a ≈ a' ∈ per_univ k }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -274,16 +367,13 @@ Lemma glu_univ_elem_exp_conv : forall {i j k a a' P P' El El' Γ A M m},
     {{ Γ ⊢ M : A ® m ∈ El' }}.
 Proof.
   intros * [] ? ? ? ?.
-  assert {{ Dom a ≈ a' ∈ per_univ (max i k) }} by (eexists; mauto using per_univ_elem_cumu_max_right).
+  assert {{ Dom a ≈ a' ∈ per_univ (max i k) }} as Haa' by (eexists; mauto using per_univ_elem_cumu_max_right).
   assert (exists P El, {{ DG a ∈ glu_univ_elem (max i k) ↘ P ↘ El }}) as [Pik [Elik]] by mauto using glu_univ_elem_cumu_max_left.
-  assert {{ DG a' ∈ glu_univ_elem (max i k) ↘ Pik ↘ Elik }} by (erewrite <- glu_univ_elem_morphism_iff; try reflexivity; mauto).
-  assert (i <= max i k) by lia.
-  assert {{ Γ ⊢ M : A ® m ∈ Elik }} by (eapply glu_univ_elem_exp_cumu_ge; mauto).
+  assert {{ DG a' ∈ glu_univ_elem (max i k) ↘ Pik ↘ Elik }} by (setoid_rewrite <- Haa'; eassumption).
+  assert {{ Γ ⊢ M : A ® m ∈ Elik }} by (eapply glu_univ_elem_exp_cumu_max_left; [| | eassumption]; eassumption).
   assert (exists P El, {{ DG a' ∈ glu_univ_elem (max j (max i k)) ↘ P ↘ El }}) as [Ptop [Eltop]] by mauto using glu_univ_elem_cumu_max_right.
-  assert (max i k <= max j (max i k)) by lia.
-  assert {{ Γ ⊢ M : A ® m ∈ Eltop }} by (eapply glu_univ_elem_exp_cumu_ge; mauto).
-  assert (j <= max j (max i k)) by lia.
-  eapply glu_univ_elem_exp_lower; mauto.
+  assert {{ Γ ⊢ M : A ® m ∈ Eltop }} by (eapply glu_univ_elem_exp_cumu_max_right; [| | eassumption]; eassumption).
+  eapply glu_univ_elem_exp_lower_max_left; mauto.
 Qed.
 
 Lemma glu_univ_elem_per_subtyp_typ_escape : forall {i a a' P P' El El' Γ A A'},
@@ -349,16 +439,14 @@ Proof.
     assert {{ DG b' ∈ glu_univ_elem i ↘ OP' d{{{ ⇑! a' (length Γ) }}} equiv_len'_len' ↘ OEl' d{{{ ⇑! a' (length Γ) }}} equiv_len'_len' }} by mauto.
     assert {{ Γ, IT' ⊢ OT ® OP d{{{ ⇑! a (length Γ) }}} equiv_len_len }}.
     {
-      assert {{ Γ, IT ⊢ #0 : IT[Wk] ® !(length Γ) ∈ glu_elem_bot i a }} by eauto using var_glu_elem_bot.
-      assert {{ Γ, IT ⊢ #0 : IT[Wk] ® ⇑! a (length Γ) ∈ IEl }} by (eapply realize_glu_elem_bot; mauto).
+      assert {{ Γ, IT ⊢ #0 : IT[Wk] ® ⇑! a (length Γ) ∈ IEl }} by (eapply var0_glu_elem; mauto).
       assert {{ ⊢ Γ, IT' ≈ Γ, IT }} as -> by mauto.
       assert {{ Γ, IT ⊢ OT[Wk,,#0] ≈ OT : Type@i }} as <- by (bulky_rewrite1; mauto 3).
       mauto.
     }
     assert {{ Γ, IT' ⊢ OT' ® OP' d{{{ ⇑! a' (length Γ) }}} equiv_len'_len' }}.
     {
-      assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® !(length Γ) ∈ glu_elem_bot i a' }} by eauto using var_glu_elem_bot.
-      assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® ⇑! a' (length Γ) ∈ IEl }} by (eapply realize_glu_elem_bot; mauto).
+      assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® ⇑! a' (length Γ) ∈ IEl }} by (eapply var0_glu_elem; mauto).
       assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ® OP' d{{{ ⇑! a' (length Γ) }}} equiv_len'_len' }} by mauto.
       assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ≈ OT' : Type@i }} as <- by (bulky_rewrite1; mauto 3).
       mauto.
@@ -475,6 +563,60 @@ Proof.
   eapply glu_univ_elem_exp_lower; mauto.
 Qed.
 
+Lemma glu_ctx_env_sub_resp_ctx_eq : forall {Γ Sb},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    forall {Δ Δ' σ p},
+      {{ Δ ⊢s σ ® p ∈ Sb }} ->
+      {{ ⊢ Δ ≈ Δ' }} ->
+      {{ Δ' ⊢s σ ® p ∈ Sb }}.
+Proof.
+  induction 1; intros * HSb Hctxeq;
+    apply_predicate_equivalence;
+    simpl in *;
+    mauto.
+
+  destruct_by_head cons_glu_sub_pred.
+  econstructor; mauto 4.
+  rewrite <- Hctxeq; eassumption.
+Qed.
+
+Add Parametric Morphism Sb Γ (H : glu_ctx_env Sb Γ) : Sb
+    with signature wf_ctx_eq ==> eq ==> eq ==> iff as glu_ctx_env_sub_morphism_iff1.
+Proof.
+  intros.
+  split; intros; eapply glu_ctx_env_sub_resp_ctx_eq; mauto.
+Qed.
+
+Lemma glu_ctx_env_sub_resp_sub_eq : forall {Γ Sb},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    forall {Δ σ σ' p},
+      {{ Δ ⊢s σ ® p ∈ Sb }} ->
+      {{ Δ ⊢s σ ≈ σ' : Γ }} ->
+      {{ Δ ⊢s σ' ® p ∈ Sb }}.
+Proof.
+  induction 1; intros * HSb Hsubeq;
+    apply_predicate_equivalence;
+    simpl in *;
+    gen_presup Hsubeq;
+    try eassumption.
+  
+  destruct_by_head cons_glu_sub_pred.
+  econstructor; mauto 4.
+  assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3.
+  assert {{ Δ ⊢s Wk∘σ ≈ Wk∘σ' : Γ }} by mauto 3.
+  assert {{ Δ ⊢ A[Wk∘σ] ≈ A[Wk∘σ'] : Type@i }} as <- by mauto 3.
+  assert {{ Δ ⊢ #0[σ] ≈ #0[σ'] : A[Wk][σ] }} by mauto 3.
+  assert {{ Δ ⊢ #0[σ] ≈ #0[σ'] : A[Wk∘σ] }} as <- by mauto 3.
+  eassumption.
+Qed.
+
+Add Parametric Morphism Sb Γ (H : glu_ctx_env Sb Γ) Δ : (Sb Δ)
+    with signature wf_sub_eq Δ Γ  ==> eq ==> iff as glu_ctx_env_sub_morphism_iff2.
+Proof.
+  intros.
+  split; intros; eapply glu_ctx_env_sub_resp_sub_eq; mauto.
+Qed.
+
 Lemma glu_ctx_env_per_env : forall {Γ Sb env_rel Δ σ p},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }} ->
@@ -496,8 +638,7 @@ Proof.
   handle_per_univ_elem_irrel.
   assert (exists P' El', {{ DG a ∈ glu_univ_elem (max i j) ↘ P' ↘ El' }}) as [? []] by mauto using glu_univ_elem_cumu_max_left.
   eexists; eapply glu_univ_elem_per_elem; mauto using per_univ_elem_cumu_max_right.
-  assert (i <= max i j) by lia.
-  eapply glu_univ_elem_exp_cumu_ge; mauto.
+  eapply glu_univ_elem_exp_cumu_max_left; [| | eassumption]; eassumption.
 Qed.
 
 Lemma glu_ctx_env_wf_ctx : forall {Γ Sb},
@@ -535,7 +676,7 @@ Proof.
   intros Δ σ p [].
   saturate_refl_for per_ctx_env.
   assert {{ Dom ρ ↯ ≈ ρ ↯ ∈ tail_rel }}
-    by (eapply glu_ctx_env_per_env; only 3: eassumption; eassumption).
+    by (eapply glu_ctx_env_per_env; [| | eassumption]; eassumption).
   assert {{ Δ0 ⊢s Wk∘σ0 ® ρ ↯ ∈ TSb' }} by intuition.
   assert (glu_rel_typ_sub j Δ0 A' {{{ Wk∘σ0 }}} d{{{ ρ ↯ }}}) as [] by mauto.
   destruct_rel_typ.
@@ -617,7 +758,7 @@ Proof.
   rename a0 into a'.
   rename P0 into P'.
   rename El0 into El'.
-  assert {{ Dom ρ ↯ ≈ ρ ↯ ∈ tail_rel }} by (eapply glu_ctx_env_per_env; only 3: eassumption; eassumption).
+  assert {{ Dom ρ ↯ ≈ ρ ↯ ∈ tail_rel }} by (eapply glu_ctx_env_per_env; [| | eassumption]; eassumption).
   assert {{ Sub a <: a' at j }} by mauto 4.
   assert {{ ⊢ Γ, A ⊆ Γ', A' }} by mauto 3.
   econstructor; mauto; intuition.
@@ -650,9 +791,11 @@ Proof.
     assert {{ Δ ⊢ A[Wk∘σ0] ≈ A[Wk][σ0] : Type@i }} by mauto 3.
     assert {{ Δ' ⊢ A[Wk∘σ0][σ] ≈ A[Wk][σ0][σ] : Type@i }} as <- by mauto 3.
     eassumption.
-  - assert {{ Δ' ⊢s (Wk ∘ σ0) ∘ σ ® ρ ↯ ∈ TSb }} by mauto.
-    admit. (* by rewriting *)
-Admitted.
+  - assert {{ Δ' ⊢s σ : Δ }} by mauto 3.
+    assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3.
+    assert {{ Δ' ⊢s (Wk ∘ σ0) ∘ σ ≈ Wk ∘ (σ0 ∘ σ) : Γ }} as <- by mauto 3.
+    mauto.
+Qed.
 
 Lemma destruct_glu_rel_exp : forall {Γ Sb M A},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -685,8 +828,16 @@ Proof.
   functional_eval_rewrite_clear.
   econstructor; mauto.
   - eapply realize_glu_elem_bot; mauto.
-    assert {{ Γ, A[Id] ⊢ #0 : A[Id][Wk] ® !(length Γ) ∈ glu_elem_bot i a }} as [] by (eapply var_glu_elem_bot; mauto).
-    admit. (* by some rewriting *)
-  - assert {{ Γ, A ⊢s Id∘Wk ® p ∈ TSb }} by (eapply glu_ctx_env_sub_monotone; mauto 4).
-    admit. (* by some rewriting *)
-Admitted.
+    assert {{ ⊢ Γ }} by mauto 3.
+    assert {{ Γ ⊢ A[Id] : Type@i }} by mauto 3.
+    assert {{ ⊢ Γ, A[Id] ≈ Γ, A }} as <- by mauto 4.
+    assert {{ Γ, A[Id] ⊢ A[Wk] : Type@i }} by mauto 4.
+    assert {{ Γ, A[Id] ⊢s Wk : Γ }} by mauto 4.
+    assert {{ Γ, A[Id] ⊢ A[Id][Wk] ≈ A[Wk∘Id] : Type@i }} as <- by (transitivity {{{ A[Wk] }}}; mauto 4).
+    assert {{ Γ, A[Id] ⊢ #0 ≈ #0[Id] : A[Id][Wk] }} as <- by mauto.
+    eapply var_glu_elem_bot; mauto.
+  - assert {{ Γ, A ⊢s Wk : Γ }} by mauto 4.
+    assert {{ Γ, A ⊢s Wk∘Id : Γ }} by mauto 4.
+    assert {{ Γ, A ⊢s Id∘Wk ≈ Wk∘Id : Γ }} as <- by (transitivity {{{ Wk }}}; mauto 3).
+    eapply glu_ctx_env_sub_monotone; mauto 4.
+Qed.

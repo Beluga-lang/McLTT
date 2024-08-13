@@ -786,7 +786,6 @@ Proof.
     mauto 3.
 Qed.
 
-
 Lemma glu_univ_elem_exp_monotone : forall i a P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Δ σ Γ M A m,
@@ -850,10 +849,89 @@ Proof.
       * mauto 3.
 Qed.
 
+Add Parametric Morphism i a : (glu_elem_bot i a)
+    with signature wf_ctx_eq ==> eq ==> eq ==> eq ==> iff as glu_elem_bot_morphism_iff1.
+Proof.
+  intros Γ Γ' HΓΓ' *.
+  split; intros []; econstructor; mauto 4; [rewrite <- HΓΓ' | rewrite -> HΓΓ']; eassumption.
+Qed.
+
+Add Parametric Morphism i a Γ : (glu_elem_bot i a Γ)
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> eq ==> iff as glu_elem_bot_morphism_iff2.
+Proof.
+  intros A A' HAA' *.
+  split; intros []; econstructor; mauto 3; [rewrite <- HAA' | | rewrite -> HAA' |];
+    try eassumption;
+    intros;
+    assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }} as HAσA'σ by mauto 4;
+    [rewrite <- HAσA'σ | rewrite -> HAσA'σ];
+    mauto.
+Qed.
+
+Add Parametric Morphism i a Γ A : (glu_elem_bot i a Γ A)
+    with signature wf_exp_eq Γ A ==> eq ==> iff as glu_elem_bot_morphism_iff3.
+Proof.
+  intros M M' HMM' *.
+  split; intros []; econstructor; mauto 3; try (gen_presup HMM'; eassumption);
+    intros;
+    assert {{ Δ ⊢ M[σ] ≈ M'[σ] : A[σ] }} as HMσM'σ by mauto 4;
+    [rewrite <- HMσM'σ | rewrite -> HMσM'σ];
+    mauto.
+Qed.
+
+Add Parametric Morphism i a : (glu_elem_top i a)
+    with signature wf_ctx_eq ==> eq ==> eq ==> eq ==> iff as glu_elem_top_morphism_iff1.
+Proof.
+  intros Γ Γ' HΓΓ' *.
+  split; intros []; econstructor; mauto 4; [rewrite <- HΓΓ' | rewrite -> HΓΓ']; eassumption.
+Qed.
+
+Add Parametric Morphism i a Γ : (glu_elem_top i a Γ)
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> eq ==> iff as glu_elem_top_morphism_iff2.
+Proof.
+  intros A A' HAA' *.
+  split; intros []; econstructor; mauto 3; [rewrite <- HAA' | | rewrite -> HAA' |];
+    try eassumption;
+    intros;
+    assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }} as HAσA'σ by mauto 4;
+    [rewrite <- HAσA'σ | rewrite -> HAσA'σ];
+    mauto.
+Qed.
+
+Add Parametric Morphism i a Γ A : (glu_elem_top i a Γ A)
+    with signature wf_exp_eq Γ A ==> eq ==> iff as glu_elem_top_morphism_iff3.
+Proof.
+  intros M M' HMM' *.
+  split; intros []; econstructor; mauto 3; try (gen_presup HMM'; eassumption);
+    intros;
+    assert {{ Δ ⊢ M[σ] ≈ M'[σ] : A[σ] }} as HMσM'σ by mauto 4;
+    [rewrite <- HMσM'σ | rewrite -> HMσM'σ];
+    mauto.
+Qed.
+
+Add Parametric Morphism i a : (glu_typ_top i a)
+    with signature wf_ctx_eq ==> eq ==> iff as glu_typ_top_morphism_iff1.
+Proof.
+  intros Γ Γ' HΓΓ' *.
+  split; intros []; econstructor; mauto 4.
+Qed.
+
+Add Parametric Morphism i a Γ : (glu_typ_top i a Γ)
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> iff as glu_typ_top_morphism_iff2.
+Proof.
+  intros A A' HAA' *.
+  split; intros []; econstructor; mauto 3;
+    try (gen_presup HAA'; eassumption);
+    intros;
+    assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }} as HAσA'σ by mauto 4;
+    [rewrite <- HAσA'σ | rewrite -> HAσA'σ];
+    mauto.
+Qed.
+
 (* Simple Morphism instance for "glu_ctx_env" *)
 Add Parametric Morphism : glu_ctx_env
     with signature glu_sub_pred_equivalence ==> eq ==> iff as simple_glu_ctx_env_morphism_iff.
-Proof with mautosolve.
+Proof.
   intros Sb Sb' HSbSb' a.
   split; intro Horig; [gen Sb' | gen Sb];
     induction Horig; econstructor;
