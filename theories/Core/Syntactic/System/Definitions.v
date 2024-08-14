@@ -82,6 +82,7 @@ with wf_exp : ctx -> typ -> exp -> Prop :=
      {{ Γ ⊢ M[σ] : A[σ] }} )
 | wf_exp_subtyp :
   `( {{ Γ ⊢ M : A }} ->
+     {{ Γ ⊢ A' : Type@i }} ->
      {{ Γ ⊢ A ⊆ A' }} ->
      {{ Γ ⊢ M : A' }} )
 where "Γ ⊢ M : A" := (wf_exp Γ A M) (in custom judg) : type_scope
@@ -104,6 +105,7 @@ with wf_sub : ctx -> ctx -> sub -> Prop :=
      {{ Γ ⊢s (σ ,, M) : Δ , A }} )
 | wf_sub_subtyp :
   `( {{ Γ ⊢s σ : Δ }} ->
+     {{ ⊢ Δ' }} ->
      {{ ⊢ Δ ⊆ Δ' }} ->
      {{ Γ ⊢s σ : Δ' }} )
 where "Γ ⊢s σ : Δ" := (wf_sub Γ Δ σ) (in custom judg) : type_scope
@@ -227,6 +229,7 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
      {{ Γ ⊢ M[σ ∘ τ] ≈ M[σ][τ] : A[σ ∘ τ] }} )
 | wf_exp_eq_subtyp :
   `( {{ Γ ⊢ M ≈ M' : A }} ->
+     {{ Γ ⊢ A' : Type@i }} ->
      {{ Γ ⊢ A ⊆ A' }} ->
      {{ Γ ⊢ M ≈ M' : A' }} )
 | wf_exp_eq_sym :
@@ -288,13 +291,15 @@ with wf_sub_eq : ctx -> ctx -> sub -> sub -> Prop :=
      {{ Γ ⊢s σ ≈ σ'' : Δ }} )
 | wf_sub_eq_subtyp :
   `( {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+     {{ ⊢ Δ' }} ->
      {{ ⊢ Δ ⊆ Δ' }} ->
      {{ Γ ⊢s σ ≈ σ' : Δ' }} )
 where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ Δ S1 S2) (in custom judg) : type_scope
 
 with wf_subtyp : ctx -> typ -> typ -> Prop :=
 | wf_subtyp_refl :
-  `( {{ Γ ⊢ M ≈ M' : Type@i }} ->
+  `( {{ Γ ⊢ M' : Type@i }} ->
+     {{ Γ ⊢ M ≈ M' : Type@i }} ->
      {{ Γ ⊢ M ⊆ M' }} )
 | wf_subtyp_trans :
   `( {{ Γ ⊢ M ⊆ M' }} ->
@@ -343,6 +348,8 @@ Inductive wf_ctx_eq : ctx -> ctx -> Prop :=
 | wf_ctx_eq_extend :
   `( {{ ⊢ Γ ≈ Δ }} ->
      {{ Γ ⊢ A : Type@i }} ->
+     {{ Γ ⊢ A' : Type@i }} ->
+     {{ Δ ⊢ A : Type@i }} ->
      {{ Δ ⊢ A' : Type@i }} ->
      {{ Γ ⊢ A ≈ A' : Type@i }} ->
      {{ Δ ⊢ A ≈ A' : Type@i }} ->
@@ -380,40 +387,102 @@ Proof.
   hnf; mauto.
 Qed.
 
-Add Parametric Morphism i Γ : (wf_exp Γ)
-    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> iff as wf_exp_morph.
+Lemma presup_right_ctx_subtyp : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Δ }}.
 Proof with mautosolve.
-  intros; split...
+  induction 1...
 Qed.
 
-Add Parametric Morphism i Γ : (wf_exp_eq Γ)
-    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> eq ==> iff as wf_exp_eq_morph.
+#[export]
+Hint Resolve presup_right_ctx_subtyp : mcltt.
+
+Lemma presup_right_subtyp : forall {Γ A B}, {{ Γ ⊢ A ⊆ B }} -> exists i, {{ Γ ⊢ B : Type@i }}.
 Proof with mautosolve.
-  intros; split...
+  induction 1...
 Qed.
+
+#[export]
+Hint Resolve presup_right_subtyp : mcltt.
+
+Lemma wf_exp_subtyp' : forall Γ A A' M,
+    {{ Γ ⊢ M : A }} ->
+    {{ Γ ⊢ A ⊆ A' }} ->
+    {{ Γ ⊢ M : A' }}.
+Proof.
+  intros.
+  assert (exists i, {{ Γ ⊢ A' : Type@i }}) as [] by mauto.
+  econstructor; mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_exp_subtyp' : mcltt.
+#[export]
+Remove Hints wf_exp_subtyp : mcltt.
+
+Lemma wf_sub_subtyp' : forall Γ Δ Δ' σ,
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ ⊢ Δ ⊆ Δ' }} ->
+    {{ Γ ⊢s σ : Δ' }}.
+Proof.
+  intros.
+  econstructor; mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_sub_subtyp' : mcltt.
+#[export]
+Remove Hints wf_sub_subtyp : mcltt.
+
+Lemma wf_exp_eq_subtyp' : forall Γ A A' M M',
+    {{ Γ ⊢ M ≈ M' : A }} ->
+    {{ Γ ⊢ A ⊆ A' }} ->
+    {{ Γ ⊢ M ≈ M' : A' }}.
+Proof.
+  intros.
+  assert (exists i, {{ Γ ⊢ A' : Type@i }}) as [] by mauto.
+  econstructor; mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_exp_eq_subtyp' : mcltt.
+#[export]
+Remove Hints wf_exp_eq_subtyp : mcltt.
+
+Lemma wf_sub_eq_subtyp' : forall Γ Δ Δ' σ σ',
+    {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+    {{ ⊢ Δ ⊆ Δ' }} ->
+    {{ Γ ⊢s σ ≈ σ' : Δ' }}.
+Proof.
+  intros.
+  econstructor; mauto.
+Qed.
+
+#[export]
+Hint Resolve wf_sub_eq_subtyp' : mcltt.
+#[export]
+Remove Hints wf_sub_eq_subtyp : mcltt.
 
 Add Parametric Morphism Γ T : (wf_exp_eq Γ T)
     with signature wf_exp_eq Γ T ==> eq ==> iff as wf_exp_eq_morphism_iff1.
 Proof.
-  intros; split; mauto.
+  split; mauto.
 Qed.
 
 Add Parametric Morphism Γ T : (wf_exp_eq Γ T)
     with signature eq ==> wf_exp_eq Γ T ==> iff as wf_exp_eq_morphism_iff2.
 Proof.
-  intros; split; mauto.
+  split; mauto.
 Qed.
 
 Add Parametric Morphism Γ Δ : (wf_sub_eq Γ Δ)
     with signature wf_sub_eq Γ Δ ==> eq ==> iff as wf_sub_eq_morphism_iff1.
 Proof.
-  intros; split; mauto.
+  split; mauto.
 Qed.
 
 Add Parametric Morphism Γ Δ : (wf_sub_eq Γ Δ)
     with signature eq ==> wf_sub_eq Γ Δ ==> iff as wf_sub_eq_morphism_iff2.
 Proof.
-  intros; split; mauto.
+  split; mauto.
 Qed.
 
 #[export]
@@ -438,18 +507,4 @@ Qed.
 Instance wf_sub_eq_per_elem Γ Δ : PERElem _ (wf_sub Γ Δ) (wf_sub_eq Γ Δ).
 Proof.
   intros a Ha. mauto.
-Qed.
-
-Add Parametric Morphism Γ j : (wf_subtyp Γ)
-    with signature eq ==> (wf_exp_eq Γ {{{Type@j}}}) ==> iff as wf_subtyp_resp_exp_eq_morphism1.
-Proof.
-  split; intros;
-    etransitivity; mauto 3.
-Qed.
-
-Add Parametric Morphism Γ i : (wf_subtyp Γ)
-    with signature (wf_exp_eq Γ {{{Type@i}}}) ==> eq ==> iff as wf_subtyp_resp_exp_eq_morphism2.
-Proof.
-  split; intros;
-    etransitivity; mauto 3.
 Qed.

@@ -402,7 +402,7 @@ Proof.
     assert {{ Γ ⊢ A[Id] ≈ A : Type@i }} as <- by mauto 4.
     assert {{ Γ ⊢ A'[Id] ≈ A' : Type@i }} as <- by mauto 4.
     assert {{ Γ ⊢ A'[Id] ≈ V : Type@i }} as -> by mauto 4.
-    econstructor.
+    eapply wf_subtyp_refl'.
     mauto 4.
   - bulky_rewrite.
     mauto 3.

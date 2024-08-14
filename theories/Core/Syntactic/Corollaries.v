@@ -90,7 +90,8 @@ Lemma wf_subtyp_subst_eq : forall Δ A B,
       {{ Γ ⊢ A [σ] ⊆ B[σ'] }}.
 Proof.
   induction 1; intros * Hσσ'; gen_presup Hσσ'.
-  - econstructor. eapply wf_exp_eq_conv; mauto 4.
+  - eapply wf_subtyp_refl'.
+    eapply wf_exp_eq_conv; mauto 4.
   - etransitivity; mauto 4.
   - autorewrite with mcltt.
     mauto 2.

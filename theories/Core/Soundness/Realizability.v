@@ -70,10 +70,10 @@ Proof.
 
     etransitivity.
     + eapply wf_exp_eq_sub_cong; [ |mauto 3].
-      eapply wf_exp_eq_subtyp.
+      eapply wf_exp_eq_subtyp'.
       * eapply wf_exp_eq_var_weaken; [mauto 3|]; eauto.
       * mauto 4.
-    + eapply wf_exp_eq_subtyp.
+    + eapply wf_exp_eq_subtyp'.
       * eapply IHweakening with (Γ1 := T :: _).
         reflexivity.
       * eapply wf_subtyp_subst; [ |mauto 3].

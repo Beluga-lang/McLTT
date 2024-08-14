@@ -14,21 +14,13 @@ From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Domain_Notations.
 
 Section soundness_fundamental.
-
   Theorem soundness_fundamental :
     (forall Γ, {{ ⊢ Γ }} -> {{ ⊩ Γ }}) /\
       (forall Γ A M, {{ Γ ⊢ M : A }} -> {{ Γ ⊩ M : A }}) /\
       (forall Γ Δ σ, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊩s σ : Δ }}).
   Proof.
     apply syntactic_wf_mut_ind'; mauto 3.
-
-    - intros.
-      assert (exists i, {{ Γ ⊩ A' : Type@i }}) as [] by admit. (* this should be added to the syntactic judgement *)
-      mauto.
-    - intros.
-      assert {{ ⊩ Δ' }} by admit. (* this should be added to the syntactic judgement *)
-      mauto.
-  Admitted.
+  Qed.
 
   #[local]
   Ltac solve_it := pose proof soundness_fundamental; firstorder.
@@ -41,5 +33,4 @@ Section soundness_fundamental.
 
   Theorem soundness_fundamental_sub : forall Γ σ Δ, {{ Γ ⊢s σ : Δ }} -> {{ Γ ⊩s σ : Δ }}.
   Proof. solve_it. Qed.
-
 End soundness_fundamental.

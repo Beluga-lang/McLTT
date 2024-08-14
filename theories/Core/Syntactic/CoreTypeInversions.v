@@ -32,7 +32,7 @@ Lemma wf_pi_inversion : forall {Γ A B C},
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
-    try specialize (IHwf_exp _ _ eq_refl);
+    try specialize (IHwf_exp1 _ _ eq_refl);
     destruct_conjs;
     assert {{ ⊢ Γ }} by mauto 3;
     eexists; split...
@@ -47,9 +47,9 @@ Corollary wf_pi_inversion' : forall {Γ A B i},
 Proof with mautosolve 4.
   intros * [j [? []]]%wf_pi_inversion.
   assert {{ Γ, A ⊢s Wk : Γ }} by mauto 4.
-  assert {{ Γ, A ⊢ Type@j ⊆ Type@j[Wk] }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@j ⊆ Type@j[Wk] }} by (econstructor; mauto 4).
   assert {{ Γ, A ⊢ Type@j[Wk] ⊆ Type@i[Wk] }} by mauto 4.
-  assert {{ Γ, A ⊢ Type@i[Wk] ⊆ Type@i }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@i[Wk] ⊆ Type@i }} by (econstructor; mauto 4).
   enough {{ Γ, A ⊢ Type@j ⊆ Type@i }}...
 Qed.
 
