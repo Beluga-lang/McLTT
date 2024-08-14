@@ -33,6 +33,8 @@ Proof.
                fail_if_dup
            end.
     apply_subtyping.
+    assert {{ Γ, ~(nf_to_exp A') ⊢ B : Type@(max x x0) }} by mauto using lift_exp_max_right.
+    assert {{ Γ, ~(nf_to_exp A') ⊢ B' : Type@(max x x0) }} by mauto using lift_exp_max_left.
     deepexec IHalg_subtyping_nf ltac:(fun H => pose proof H).
     mauto 3.
 Qed.

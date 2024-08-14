@@ -3,13 +3,13 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.FunctionCases Evaluation.
 Import Domain_Notations.
 
-Lemma sub_typ_subtyp_refl : forall Γ M M' i,
+Lemma subtyp_refl : forall Γ M M' i,
     {{ Γ ⊨ M ≈ M' : Type@i }} ->
     {{ Γ ⊨ M ⊆ M' }}.
 Proof.
   intros * [env_relΓ].
   destruct_conjs.
-  eexists_sub_typ.
+  eexists_subtyp.
   intros.
   saturate_refl.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
@@ -23,7 +23,7 @@ Proof.
     etransitivity; try eassumption; symmetry; eassumption.
 Qed.
 
-Lemma sub_typ_subtyp_trans : forall Γ M M' M'',
+Lemma subtyp_trans : forall Γ M M' M'',
     {{ Γ ⊨ M ⊆ M' }} ->
     {{ Γ ⊨ M' ⊆ M'' }} ->
     {{ Γ ⊨ M ⊆ M'' }}.
@@ -32,7 +32,7 @@ Proof.
   destruct_conjs.
   pose env_relΓ.
   handle_per_ctx_env_irrel.
-  eexists_sub_typ_with (max i j).
+  eexists_subtyp_with (max i j).
   intros.
   saturate_refl.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
@@ -48,16 +48,16 @@ Proof.
 Qed.
 
 #[export]
-Instance sub_typ_trans Γ : Transitive (sub_typ_under_ctx Γ).
-Proof. eauto using sub_typ_subtyp_trans. Qed.
+Instance trans Γ : Transitive (subtyp_under_ctx Γ).
+Proof. eauto using subtyp_trans. Qed.
 
-Lemma sub_typ_subtyp_univ : forall Γ i j,
+Lemma subtyp_univ : forall Γ i j,
     {{ ⊨ Γ }} ->
     i < j ->
     {{ Γ ⊨ Type@i ⊆ Type@j }}.
 Proof.
   intros * [env_relΓ] ?.
-  eexists_sub_typ.
+  eexists_subtyp.
   intros.
   assert (i < S (max i j)) by lia.
   assert (j < S (max i j)) by lia.
@@ -68,7 +68,7 @@ Proof.
   econstructor; lia.
 Qed.
 
-Lemma sub_typ_subtyp_pi : forall Γ A A' B B' i,
+Lemma subtyp_pi : forall Γ A A' B B' i,
   {{ Γ ⊨ A ≈ A' : Type@i }} ->
   {{ Γ , A' ⊨ B ⊆ B' }} ->
   {{ Γ ⊨ Π A B ⊆ Π A' B' }}.
@@ -79,7 +79,7 @@ Proof.
   pose env_relΓA'.
   match_by_head (per_ctx_env env_relΓA') invert_per_ctx_env.
   handle_per_ctx_env_irrel.
-  eexists_sub_typ.
+  eexists_subtyp.
   intros.
   saturate_refl.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
@@ -140,4 +140,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve sub_typ_subtyp_refl sub_typ_subtyp_trans sub_typ_subtyp_univ sub_typ_subtyp_pi : mcltt.
+Hint Resolve subtyp_refl subtyp_trans subtyp_univ subtyp_pi : mcltt.

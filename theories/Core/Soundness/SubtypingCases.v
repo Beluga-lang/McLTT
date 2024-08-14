@@ -8,12 +8,12 @@ From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
 Lemma glu_rel_exp_subtyp : forall {Γ M A A' i},
-    {{ Γ ⊩ A' : Type@i }} ->
     {{ Γ ⊩ M : A }} ->
+    {{ Γ ⊩ A' : Type@i }} ->
     {{ Γ ⊢ A ⊆ A' }} ->
     {{ Γ ⊩ M : A' }}.
 Proof.
-  intros * HA' [Sb [? [i]]] [env_relΓ [? [j]]]%completeness_fundamental_subtyp.
+  intros * [Sb [? [i]]] HA' [env_relΓ [? [j]]]%completeness_fundamental_subtyp.
   destruct_conjs.
   eapply destruct_glu_rel_exp in HA'; try eassumption.
   destruct_conjs.
@@ -53,21 +53,20 @@ Proof.
   eapply glu_univ_elem_per_subtyp_trm_if; mauto.
   - assert (k <= max i (max j k)) by lia.
     eapply glu_univ_elem_typ_cumu_ge; revgoals; mauto.
-  - assert (i <= max i (max j k)) by lia.
-    eapply glu_univ_elem_exp_cumu_ge; mauto.
+  - eapply glu_univ_elem_exp_cumu_max_left; revgoals; mauto.
 Qed.
 
 #[export]
 Hint Resolve glu_rel_exp_subtyp : mcltt.
 
 Lemma glu_rel_sub_subtyp : forall {Γ σ Δ Δ'},
-    {{ ⊩ Δ' }} ->
     {{ Γ ⊩s σ : Δ }} ->
+    {{ ⊩ Δ' }} ->
     {{ ⊢ Δ ⊆ Δ' }} ->
     {{ Γ ⊩s σ : Δ' }}.
 Proof.
-  intros * [SbΔ'] [SbΓ [SbΔ]] Hsubtyp.
-  pose proof (completeness_fundamental_ctx_sub _ _ Hsubtyp).
+  intros * [SbΓ [SbΔ]] [SbΔ'] Hsubtyp.
+  pose proof (completeness_fundamental_ctx_subtyp _ _ Hsubtyp).
   destruct_conjs.
   econstructor; eexists; repeat split; [eassumption | eassumption |].
   intros.

@@ -20,7 +20,7 @@ Ltac gen_presup_ctx H :=
   end.
 
 #[local]
-Ltac gen_presup_IH presup_exp presup_exp_eq presup_sub_eq presup_subtyping H :=
+Ltac gen_presup_IH presup_exp presup_exp_eq presup_sub_eq presup_subtyp H :=
   match type of H with
   | {{ ~?Γ ⊢ ~?M : ~?A }} =>
       let HΓ := fresh "HΓ" in
@@ -45,18 +45,18 @@ Ltac gen_presup_IH presup_exp presup_exp_eq presup_sub_eq presup_subtyping H :=
       let i := fresh "i" in
       let HM := fresh "HM" in
       let HN := fresh "HN" in
-      pose proof presup_subtyping _ _ _ H as [HΓ [i [HM HN]]]
+      pose proof presup_subtyp _ _ _ H as [HΓ [i [HM HN]]]
   | _ => gen_presup_ctx H
   end.
 
 Lemma presup_exp : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}
 with presup_exp_eq : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢ M : A }} /\ {{ Γ ⊢ M' : A }} /\ exists i, {{ Γ ⊢ A : Type@i }}
 with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢s σ : Δ }} /\ {{ Γ ⊢s σ' : Δ }} /\ {{ ⊢ Δ }}
-with presup_subtyping : forall {Γ M M'}, {{ Γ ⊢ M ⊆ M' }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ M : Type@i }} /\ {{ Γ ⊢ M' : Type@i }}.
+with presup_subtyp : forall {Γ M M'}, {{ Γ ⊢ M ⊆ M' }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ M : Type@i }} /\ {{ Γ ⊢ M' : Type@i }}.
 Proof with mautosolve 4.
   2: set (WkWksucc := {{{ Wk∘Wk ,, succ #1 }}}).
-  all: inversion_clear 1; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq presup_subtyping);
-    clear presup_exp presup_exp_eq presup_sub_eq presup_subtyping;
+  all: inversion_clear 1; (on_all_hyp: gen_presup_IH presup_exp presup_exp_eq presup_sub_eq presup_subtyp);
+    clear presup_exp presup_exp_eq presup_sub_eq presup_subtyp;
     repeat split; mauto 4;
     try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B');
     try (rename N into L); try (rename N' into L');
@@ -169,7 +169,7 @@ Proof with mautosolve 4.
     assert {{ Γ ⊢s Id ,, L ≈ Id ,, L' : Γ, B }} by mauto.
     enough {{ Γ ⊢ C[Id ,, L] ≈ C[Id ,, L'] : Type@i }}...
 
-  - assert {{ Γ ⊢ N[σ] : Π B[σ] C[q σ] }} by mauto 4.
+  - assert {{ Γ ⊢ N[σ] : Π B[σ] C[q σ] }} by mauto.
     assert {{ Δ ⊢ L : B[Id] }} by mauto 4.
     assert {{ Γ ⊢s (Id ,, L)∘σ ≈ Id∘σ ,, L[σ] : Δ, B }} by mauto.
     assert {{ Γ ⊢s (Id ,, L)∘σ ≈ σ ,, L[σ] : Δ, B }} by mauto.
@@ -258,18 +258,18 @@ Proof with mautosolve 4.
 
   - econstructor...
 
-  - assert {{ ⊢ Δ, A }}...
+  - econstructor...
 
   - assert (exists i, {{ Γ0 ⊢ A : Type@i }}) as [] by mauto.
-    assert {{ Γ ⊢ #0[σ] : A[Wk][σ] }} by mauto.
+    assert {{ Γ ⊢ #0[σ] : A[Wk][σ] }} by mauto 4.
     enough {{ Γ ⊢ #0[σ] : A[Wk∘σ] }}...
 
-    (* presup_subtyping cases *)
+    (* presup_subtyp cases *)
   - exists (max i i0); split; mauto 3 using lift_exp_max_left, lift_exp_max_right.
   - exists (max (S i) (S j)); split; mauto 3 using lift_exp_max_left, lift_exp_max_right.
   - mauto.
 Qed.
 
-Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq @presup_subtyping H.
+Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq @presup_subtyp H.
 
 Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; clear_dups.

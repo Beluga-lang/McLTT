@@ -37,7 +37,7 @@ Section completeness_fundamental.
   Theorem completeness_fundamental_ctx : forall Γ, {{ ⊢ Γ }} -> {{ ⊨ Γ }}.
   Proof. solve_it. Qed.
 
-  Theorem completeness_fundamental_ctx_sub : forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}.
+  Theorem completeness_fundamental_ctx_subtyp : forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}.
   Proof. solve_it. Qed.
 
   Theorem completeness_fundamental_exp : forall Γ M A, {{ Γ ⊢ M : A }} -> {{ Γ ⊨ M : A }}.

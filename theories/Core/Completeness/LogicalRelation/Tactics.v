@@ -18,12 +18,12 @@ Ltac eexists_rel_sub :=
   eexists;
   eexists; [eassumption |].
 
-Ltac eexists_sub_typ :=
+Ltac eexists_subtyp :=
   eexists;
   eexists; [eassumption |];
   eexists.
 
-Ltac eexists_sub_typ_with i :=
+Ltac eexists_subtyp_with i :=
   eexists;
   eexists; [eassumption |];
   exists i.
