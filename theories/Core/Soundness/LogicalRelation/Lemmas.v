@@ -524,6 +524,8 @@ Ltac apply_functional_glu_univ_elem :=
 
 Ltac handle_functional_glu_univ_elem :=
   functional_eval_rewrite_clear;
+  fold glu_typ_pred in *;
+  fold glu_exp_pred in *;
   apply_functional_glu_univ_elem;
   apply_predicate_equivalence;
   clear_dups.

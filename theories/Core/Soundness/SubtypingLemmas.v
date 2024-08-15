@@ -54,7 +54,7 @@ Proof.
       autorewrite with mcltt in *; mauto.
     }
     do 2 bulky_rewrite1.
-    assert {{ Γ ⊢ IT ≈ IT' : Type@i }} by mauto 4 using glu_univ_elem_per_univ_typ_escape.
+    assert {{ Γ ⊢ IT ≈ IT' : Type@i }} by mauto 4.
     enough {{ Γ, IT' ⊢ OT ⊆ OT' }} by mauto 3.
     assert {{ Dom ⇑! a (length Γ) ≈ ⇑! a' (length Γ) ∈ in_rel }} as equiv_len_len' by (eapply per_bot_then_per_elem; mauto).
     assert {{ Dom ⇑! a (length Γ) ≈ ⇑! a (length Γ) ∈ in_rel }} as equiv_len_len by (eapply per_bot_then_per_elem; mauto).
@@ -86,6 +86,9 @@ Proof.
     }
     mauto 3.
 Qed.
+
+#[export]
+Hint Resolve glu_univ_elem_per_subtyp_typ_escape : mcltt.
 
 Lemma glu_univ_elem_per_subtyp_trm_if : forall {i a a' P P' El El' Γ A A' M m},
     {{ Sub a <: a' at i }} ->
@@ -165,10 +168,10 @@ Proof.
       handle_per_univ_elem_irrel.
       rename a1 into b.
       rename a2 into b'.
-      eapply H1 with (M := {{{ M[σ] m' }}}) (m := H30); mauto 3.
-      assert {{ Δ ⊢ OT[σ,,m'] ® OP c equiv_c }} by (eapply glu_univ_elem_trm_typ; mauto).
       assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv_c ↘ OEl c equiv_c }} by mauto.
       assert {{ DG b' ∈ glu_univ_elem i ↘ OP' c equiv_c ↘ OEl' c equiv_c }} by mauto.
-      enough {{ Sub b <: b' at i }} by mauto 3 using glu_univ_elem_per_subtyp_typ_escape.
-      mauto.
+      assert {{ Δ ⊢ OT[σ,,m'] ® OP c equiv_c }} by (eapply glu_univ_elem_trm_typ; mauto).
+      assert {{ Sub b <: b' at i }} by mauto 3.
+      assert {{ Δ ⊢ OT[σ,,m'] ⊆ OT'[σ,,m'] }} by mauto 3.
+      eapply H1; mauto 2.
 Qed.
