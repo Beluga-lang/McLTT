@@ -59,6 +59,8 @@
 ./Core/Soundness/LogicalRelation/Definitions.v
 ./Core/Soundness/LogicalRelation/Lemmas.v
 ./Core/Soundness/Realizability.v
+./Core/Soundness/SubtypingCases.v
+./Core/Soundness/SubtypingLemmas.v
 ./Core/Soundness/Weakening.v
 ./Core/Soundness/Weakening/Definition.v
 ./Core/Soundness/Weakening/Lemmas.v

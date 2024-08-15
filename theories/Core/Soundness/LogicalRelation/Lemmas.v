@@ -260,6 +260,9 @@ Proof.
     mauto.
 Qed.
 
+#[export]
+Hint Resolve glu_univ_elem_per_univ : mcltt.
+
 Lemma glu_univ_elem_per_elem : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ t T a R,
@@ -272,7 +275,7 @@ Proof.
     try do 2 match_by_head1 per_univ_elem invert_per_univ_elem;
     simpl_glu_rel;
     try fold (per_univ j a a);
-    mauto 4 using glu_univ_elem_per_univ.
+    mauto 4.
 
   intros.
   destruct_rel_mod_app.
@@ -521,6 +524,8 @@ Ltac apply_functional_glu_univ_elem :=
 
 Ltac handle_functional_glu_univ_elem :=
   functional_eval_rewrite_clear;
+  fold glu_typ_pred in *;
+  fold glu_exp_pred in *;
   apply_functional_glu_univ_elem;
   apply_predicate_equivalence;
   clear_dups.
@@ -727,6 +732,20 @@ Proof.
   - do 2 eexists.
     glu_univ_elem_econstructor; try reflexivity; mauto.
 Qed.
+
+#[export]
+Hint Resolve per_univ_glu_univ_elem : mcltt.
+
+Corollary per_univ_elem_glu_univ_elem : forall i a R,
+    {{ DF a ≈ a ∈ per_univ_elem i ↘ R }} ->
+    exists P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }}.
+Proof.
+  intros.
+  apply per_univ_glu_univ_elem; mauto.
+Qed.
+
+#[export]
+Hint Resolve per_univ_elem_glu_univ_elem : mcltt.
 
 Ltac saturate_glu_info1 :=
   match goal with

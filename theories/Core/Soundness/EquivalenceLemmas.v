@@ -7,6 +7,73 @@ From Mcltt.Core.Soundness Require Import Realizability.
 From Mcltt.Core.Soundness Require Export LogicalRelation.
 Import Domain_Notations.
 
+Lemma glu_univ_elem_typ_escape : forall {i j a P P' El El' Γ A A'},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A' ® P' }} ->
+    {{ Γ ⊢ A ≈ A' : Type@(max i j) }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ ⊢ A ® glu_typ_top i a }} as [] by mauto 3.
+  assert {{ Γ ⊢ A' ® glu_typ_top j a }} as [] by mauto 3.
+  match_by_head per_top_typ ltac:(fun H => destruct (H (length Γ)) as [V []]).
+  clear_dups.
+  functional_read_rewrite_clear.
+  assert {{ Γ ⊢ A : Type@(max i j) }} by mauto 4 using lift_exp_max_left.
+  assert {{ Γ ⊢ A' : Type@(max i j) }} by mauto 4 using lift_exp_max_right.
+  assert {{ Γ ⊢ A[Id] ≈ V : Type@i }} by mauto 4.
+  assert {{ Γ ⊢ A[Id] ≈ V : Type@(max i j) }} by mauto 4 using lift_exp_eq_max_left.
+  assert {{ Γ ⊢ A'[Id] ≈ V : Type@j }} by mauto 4.
+  assert {{ Γ ⊢ A'[Id] ≈ V : Type@(max i j) }} by mauto 4 using lift_exp_eq_max_right.
+  autorewrite with mcltt in *...
+Qed.
+
+#[export]
+Hint Resolve glu_univ_elem_typ_escape : mcltt.
+
+Lemma glu_univ_elem_typ_escape_ge : forall {i j a P P' El El' Γ A A'},
+    i <= j ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A' ® P' }} ->
+    {{ Γ ⊢ A ≈ A' : Type@j }}.
+Proof with mautosolve 4.
+  intros.
+  replace j with (max i j) by lia...
+Qed.
+
+#[export]
+Hint Resolve glu_univ_elem_typ_escape_ge : mcltt.
+
+Lemma glu_univ_elem_typ_escape' : forall {i a P El Γ A A'},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A' ® P }} ->
+    {{ Γ ⊢ A ≈ A' : Type@i }}.
+Proof. mautosolve 4. Qed.
+
+#[export]
+Hint Resolve glu_univ_elem_typ_escape' : mcltt.
+
+Lemma glu_univ_elem_per_univ_elem_typ_escape : forall {i a a' elem_rel P P' El El' Γ A A'},
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ elem_rel }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ ⊢ A' ® P' }} ->
+    {{ Γ ⊢ A ≈ A' : Type@i }}.
+Proof with mautosolve 4.
+  simpl in *.
+  intros * Hper Hglu Hglu' HA HA'.
+  assert {{ DG a ∈ glu_univ_elem i ↘ P' ↘ El' }} by (setoid_rewrite Hper; eassumption).
+  handle_functional_glu_univ_elem...
+Qed.
+
+#[export]
+Hint Resolve glu_univ_elem_per_univ_elem_typ_escape : mcltt.
+
 Lemma glu_univ_elem_per_univ_typ_escape : forall {i a a' P P' El El' Γ A A'},
     {{ Dom a ≈ a' ∈ per_univ i }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -15,68 +82,18 @@ Lemma glu_univ_elem_per_univ_typ_escape : forall {i a a' P P' El El' Γ A A'},
     {{ Γ ⊢ A' ® P' }} ->
     {{ Γ ⊢ A ≈ A' : Type@i }}.
 Proof.
-  intros * [? Hper] Hglu Hglu' HA HA'.
-  gen A' A Γ. gen El' El P' P.
-  induction Hper using per_univ_elem_ind; intros; subst;
-    saturate_refl_for per_univ_elem;
-    invert_glu_univ_elem Hglu;
-    handle_functional_glu_univ_elem;
-    handle_per_univ_elem_irrel;
-    destruct_by_head pi_glu_typ_pred;
-    saturate_glu_by_per;
-    invert_glu_univ_elem Hglu';
-    handle_functional_glu_univ_elem;
-    try solve [simpl in *; mauto 4].
-  - destruct_by_head pi_glu_typ_pred.
-    rename x into IP. rename x0 into IEl. rename x1 into OP. rename x2 into OEl.
-    rename M0 into M'. rename IT0 into IT'. rename OT0 into OT'.
-    rename x4 into OP'. rename x5 into OEl'.
-    assert {{ Γ ⊢ IT ® IP }}.
-    {
-      assert {{ Γ ⊢ IT[Id] ® IP }} by mauto.
-      simpl in *.
-      autorewrite with mcltt in *; mauto.
-    }
-    assert {{ Γ ⊢ IT' ® IP }}.
-    {
-      assert {{ Γ ⊢ IT'[Id] ® IP }} by mauto.
-      simpl in *.
-      autorewrite with mcltt in *; mauto.
-    }
-    do 2 bulky_rewrite1.
-    assert {{ Γ ⊢ IT ≈ IT' : Type@i }} by mauto.
-    enough {{ Γ, IT ⊢ OT ≈ OT' : Type@i }} by mauto 3.
-    assert {{ Dom ⇑! A (length Γ) ≈ ⇑! A' (length Γ) ∈ in_rel }} as equiv_len_len' by (eapply per_bot_then_per_elem; mauto).
-    assert {{ Dom ⇑! A (length Γ) ≈ ⇑! A (length Γ) ∈ in_rel }} as equiv_len_len by (eapply per_bot_then_per_elem; mauto).
-    assert {{ Dom ⇑! A' (length Γ) ≈ ⇑! A' (length Γ) ∈ in_rel }} as equiv_len'_len' by (eapply per_bot_then_per_elem; mauto).
-    destruct_rel_mod_eval.
-    handle_per_univ_elem_irrel.
-    rename a0 into b.
-    rename a' into b'.
-    assert {{ DG b ∈ glu_univ_elem i ↘ OP d{{{ ⇑! A (length Γ) }}} equiv_len_len ↘ OEl d{{{ ⇑! A (length Γ) }}} equiv_len_len }} by mauto.
-    assert {{ DG b' ∈ glu_univ_elem i ↘ OP' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' ↘ OEl' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' }} by mauto.
-    assert {{ Γ, IT ⊢ OT ® OP d{{{ ⇑! A (length Γ) }}} equiv_len_len }}.
-    {
-      assert {{ Γ, IT ⊢ #0 : IT[Wk] ® !(length Γ) ∈ glu_elem_bot i A }} by eauto using var_glu_elem_bot.
-      assert {{ Γ, IT ⊢ #0 : IT[Wk] ® ⇑! A (length Γ) ∈ IEl }} by (eapply realize_glu_elem_bot; mauto).
-      assert {{ Γ, IT ⊢ OT[Wk,,#0] ≈ OT : Type@i }} as <- by (bulky_rewrite1; mauto 3).
-      mauto.
-    }
-    assert {{ Γ, IT ⊢ OT' ® OP' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' }}.
-    {
-      assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® !(length Γ) ∈ glu_elem_bot i A' }} by eauto using var_glu_elem_bot.
-      assert {{ Γ, IT' ⊢ #0 : IT'[Wk] ® ⇑! A' (length Γ) ∈ IEl }} by (eapply realize_glu_elem_bot; mauto).
-      assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ® OP' d{{{ ⇑! A' (length Γ) }}} equiv_len'_len' }} by mauto.
-      assert {{ ⊢ Γ, IT' ≈ Γ, IT }} as <- by mauto.
-      assert {{ Γ, IT' ⊢ OT'[Wk,,#0] ≈ OT' : Type@i }} as <- by (bulky_rewrite1; mauto 3).
-      mauto.
-    }
-    mauto 3.
-  - match_by_head (per_bot b b') ltac:(fun H => specialize (H (length Γ)) as [V []]).
-    simpl in *.
-    destruct_conjs.
-    assert {{ Γ ⊢ A[Id] ≈ A : Type@i }} as <- by mauto 4.
-    assert {{ Γ ⊢ A'[Id] ≈ A' : Type@i }} as <- by mauto 4.
-    assert {{ Γ ⊢ A'[Id] ≈ V : Type@i }} as -> by mauto 4.
-    mauto 4.
+  intros * [] **...
+  mauto 4.
+Qed.
+
+Lemma glu_univ_elem_per_univ_typ_iff : forall {i a a' P P' El El'},
+    {{ Dom a ≈ a' ∈ per_univ i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
+    (P <∙> P') /\ (El <∙> El').
+Proof.
+  intros * Hper **.
+  eapply functional_glu_univ_elem;
+    [eassumption | rewrite Hper];
+    eassumption.
 Qed.
