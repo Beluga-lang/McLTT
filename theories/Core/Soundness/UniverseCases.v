@@ -10,7 +10,17 @@ Import Domain_Notations.
 Lemma glu_rel_exp_typ : forall {Γ i},
     {{ ⊩ Γ }} ->
     {{ Γ ⊩ Type@i : Type@(S i) }}.
-Admitted.
+Proof.
+  intros * [Sb].
+  eexists; split; [eassumption |].
+  eexists.
+  intros.
+  econstructor; mauto.
+  repeat split; mauto.
+  do 2 eexists; split; mauto.
+  cbv.
+  mauto.
+Qed.
 
 #[export]
 Hint Resolve glu_rel_exp_typ : mcltt.

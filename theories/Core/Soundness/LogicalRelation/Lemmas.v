@@ -4,8 +4,7 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import PER Syntactic.Corollaries.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import NbE Realizability.
-From Mcltt.Core.Soundness Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation.Core.
+From Mcltt.Core.Soundness Require Import LogicalRelation.Core Realizability.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
@@ -648,6 +647,33 @@ Proof.
   induction 1; intros; mauto.
 Qed.
 
+Lemma glu_ctx_env_sub_escape : forall {Γ Sb},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    forall Δ σ p,
+      {{ Δ ⊢s σ ® p ∈ Sb }} ->
+      {{ Δ ⊢s σ : Γ }}.
+Proof.
+  induction 1; intros;
+    handle_functional_glu_univ_elem;
+    destruct_by_head cons_glu_sub_pred;
+    eassumption.
+Qed.
+
+#[export]
+Hint Resolve glu_ctx_env_wf_ctx glu_ctx_env_sub_escape : mcltt.
+
+Lemma glu_ctx_env_per_ctx_env : forall {Γ Sb},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    exists env_rel, {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}.
+Proof.
+  intros.
+  enough {{ ⊨ Γ }} by eassumption.
+  mauto using completeness_fundamental_ctx.
+Qed.
+
+#[export]
+Hint Resolve glu_ctx_env_per_ctx_env : mcltt.
+
 Lemma glu_ctx_env_resp_per_ctx_helper : forall {Γ Γ' Sb Sb'},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ EG Γ' ∈ glu_ctx_env ↘ Sb' }} ->
@@ -694,8 +720,7 @@ Proof.
     assert {{ Δ0 ⊢ A'[Wk∘σ0] ≈ A[Wk∘σ0] : Type@(max i l) }} as -> by mauto 4 using lift_exp_eq_max_right.
     eapply glu_univ_elem_exp_cumu_ge; mauto.
   }
-  eapply glu_univ_elem_exp_conv; intuition.
-  eexists; mauto.
+  eapply glu_univ_elem_exp_conv; [eexists | | | |]; intuition.
 Qed.
 
 Corollary functional_glu_ctx_env : forall {Γ Sb Sb'},
@@ -797,7 +822,7 @@ Proof.
     mauto.
 Qed.
 
-Lemma destruct_glu_rel_exp : forall {Γ Sb M A},
+Lemma invert_glu_rel_exp : forall {Γ Sb M A},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩ M : A }} ->
     exists i,
@@ -809,6 +834,21 @@ Proof.
   destruct_conjs.
   eexists; intros.
   handle_functional_glu_ctx_env.
+  mauto.
+Qed.
+
+Lemma invert_glu_rel_sub1 : forall {Γ Sb τ Γ'},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    {{ Γ ⊩s τ : Γ' }} ->
+    exists Sb' : glu_sub_pred,
+      glu_ctx_env Sb' Γ' /\ (forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_sub Δ τ Sb' σ ρ).
+Proof.
+  intros * ? [Sb0 [Sb']].
+  destruct_conjs.
+  handle_functional_glu_ctx_env.
+  eexists; split; mauto.
+  intros.
+  rewrite_predicate_equivalence_right.
   mauto.
 Qed.
 
@@ -841,3 +881,55 @@ Proof.
     assert {{ Γ, A ⊢s Id∘Wk ≈ Wk∘Id : Γ }} as <- by (transitivity {{{ Wk }}}; mauto 3).
     eapply glu_ctx_env_sub_monotone; mauto 4.
 Qed.
+
+Lemma glu_rel_exp_to_wf_exp : forall {Γ A M},
+    {{ Γ ⊩ M : A }} ->
+    {{ Γ ⊢ M : A }}.
+Proof.
+  intros * [Sb].
+  destruct_conjs.
+  assert (exists env_rel, {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) as [env_rel] by mauto.
+  assert (exists p p', initial_env Γ p /\ initial_env Γ p' /\ {{ Dom p ≈ p' ∈ env_rel }}) as [p] by mauto using per_ctx_then_per_env_initial_env.
+  destruct_conjs.
+  functional_initial_env_rewrite_clear.
+  assert {{ Γ ⊢s Id ® p ∈ Sb }} by (eapply initial_env_glu_rel_exp; mauto).
+  (* TODO: extract this as a tactic *)
+  repeat match goal with
+         | H: context[glu_rel_exp_sub _ _ _ _ _ _] |- _ =>
+             match type of H with
+             | __mark__ _ _ => fail 1
+             | _ => edestruct H; try eassumption; mark H
+             end
+         end; unmark_all.
+  enough {{ Γ ⊢ M[Id] : A[Id] }} as HId by mauto.
+  mauto using glu_univ_elem_trm_escape.
+Qed.
+
+#[export]
+Hint Resolve glu_rel_exp_to_wf_exp : mcltt.
+
+Lemma glu_rel_sub_wf_sub : forall {Γ σ Δ},
+    {{ Γ ⊩s σ : Δ }} ->
+    {{ Γ ⊢s σ : Δ }}.
+Proof.
+  intros * [SbΓ [SbΔ]].
+  destruct_conjs.
+  assert (exists env_relΓ, {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }}) as [env_relΓ] by mauto.
+  assert (exists p p', initial_env Γ p /\ initial_env Γ p' /\ {{ Dom p ≈ p' ∈ env_relΓ }}) as [p] by mauto using per_ctx_then_per_env_initial_env.
+  destruct_conjs.
+  functional_initial_env_rewrite_clear.
+  assert {{ Γ ⊢s Id ® p ∈ SbΓ }} by (eapply initial_env_glu_rel_exp; mauto).
+  (* TODO: extract this as a tactic *)
+  repeat match goal with
+         | H: context[glu_rel_sub_sub _ _ _ _ _] |- _ =>
+             match type of H with
+             | __mark__ _ _ => fail 1
+             | _ => edestruct H; try eassumption; mark H
+             end
+         end; unmark_all.
+  assert {{ Γ ⊢s σ ∘ Id : Δ }} by mauto.
+  econstructor; mauto.
+Qed.
+
+#[export]
+Hint Resolve glu_rel_sub_wf_sub : mcltt.

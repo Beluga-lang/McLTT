@@ -15,7 +15,7 @@ Lemma glu_rel_exp_subtyp : forall {Γ M A A' i},
 Proof.
   intros * [Sb [? [i]]] HA' [env_relΓ [? [j]]]%completeness_fundamental_subtyp.
   destruct_conjs.
-  eapply destruct_glu_rel_exp in HA'; try eassumption.
+  eapply invert_glu_rel_exp in HA'; try eassumption.
   destruct_conjs.
   rename i0 into k.
   econstructor; split; [eassumption |].
