@@ -240,10 +240,12 @@ Ltac predicate_resolve :=
       simple apply @Equivalence_Symmetric
   | |- @Transitive _ (@predicate_equivalence _) =>
       simple apply @Equivalence_Transitive
+  | |- @Transitive _ (@predicate_implication _) =>
+      simple apply @PreOrder_Transitive
   end.
 
 #[export]
- Hint Extern 1 => predicate_resolve : typeclass_instances.
+Hint Extern 1 => predicate_resolve : typeclass_instances.
 
 
 (* intuition tactic default setting *)
@@ -421,6 +423,34 @@ Hint Extern 1 (subrelation iff (Basics.flip Basics.impl)) => exact iff_flip_impl
 
 #[export]
 Hint Extern 1 (subrelation (@relation_equivalence ?A) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
+
+#[export]
+Hint Extern 1 (subrelation (@predicate_implication ?Ts) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
+
+#[export]
+Hint Extern 1 (subrelation (@subrelation ?A) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
+
+#[export]
+Instance predicate_implication_equivalence Ts : subrelation (@predicate_equivalence Ts) (@predicate_implication Ts).
+Proof.
+  induction Ts; gintuition.
+
+  intros ? ? H v.
+  apply IHTs.
+  exact (H v).
+Qed.
+
+Add Parametric Morphism Ts : (@predicate_implication Ts)
+    with signature (@predicate_equivalence Ts) ==> (@predicate_equivalence Ts) ==> iff as predicate_implication_morphism.
+Proof.
+  induction Ts; split; intros; gintuition.
+  - rewrite <- H.
+    transitivity x0; try eassumption.
+    rewrite H0; reflexivity.
+  - rewrite H.
+    transitivity y0; try eassumption.
+    rewrite <- H0; reflexivity.
+Qed.
 
 Add Parametric Morphism A : PER
     with signature (@relation_equivalence A) ==> iff as PER_morphism.

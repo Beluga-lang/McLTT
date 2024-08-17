@@ -52,15 +52,14 @@
 ./Core/Syntactic/System/Tactics.v
 ./Core/Syntactic/SystemOpt.v
 ./Core/Soundness.v
-./Core/Soundness/Cumulativity.v
-./Core/Soundness/EquivalenceLemmas.v
 ./Core/Soundness/LogicalRelation.v
+./Core/Soundness/LogicalRelation/Core.v
+./Core/Soundness/LogicalRelation/CoreLemmas.v
 ./Core/Soundness/LogicalRelation/CoreTactics.v
 ./Core/Soundness/LogicalRelation/Definitions.v
 ./Core/Soundness/LogicalRelation/Lemmas.v
 ./Core/Soundness/Realizability.v
 ./Core/Soundness/SubtypingCases.v
-./Core/Soundness/SubtypingLemmas.v
 ./Core/Soundness/Weakening.v
 ./Core/Soundness/Weakening/Definition.v
 ./Core/Soundness/Weakening/Lemmas.v

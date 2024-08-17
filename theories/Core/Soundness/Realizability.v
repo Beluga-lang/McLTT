@@ -3,7 +3,7 @@ From Coq Require Import Nat.
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core.Syntactic Require Import CtxSub Corollaries.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Export LogicalRelation Weakening.
+From Mcltt.Core.Soundness Require Export LogicalRelation.Core Weakening.
 Import Domain_Notations.
 
 Open Scope list_scope.
