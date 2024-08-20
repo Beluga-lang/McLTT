@@ -43,25 +43,9 @@ Theorem subtyping_nf_impl_complete : forall A B,
     {{ ⊢anf A ⊆ B }} ->
     exists H, subtyping_nf_impl A B = left H.
 Proof.
-  induction 1; subst;
-    simp subtyping_nf_impl.
-  - destruct (nf_eq_dec N N) eqn:Heq;
-      [| congruence].
-    destruct N; try contradiction;
-      simp subtyping_nf_impl;
-      rewrite Heq;
-      simpl; eauto.
-  - destruct (Compare_dec.le_lt_dec i j);
-      simp subtyping_nf_impl;
-      eauto.
-    lia.
-  - destruct_all.
-    destruct (nf_eq_dec A' A');
-      [ |congruence].
-    simp subtyping_nf_impl.
-    bulky_rewrite.
-    simp subtyping_nf_impl.
-    eauto.
+  intros.
+  destruct (subtyping_nf_impl A B) eqn:Heq; eauto.
+  contradiction.
 Qed.
 
 
@@ -116,14 +100,9 @@ Theorem subtyping_impl_complete' : forall G A B,
     forall (H : subtyping_order G A B),
       exists H', subtyping_impl G A B H = left H'.
 Proof.
-  intros * Hsub H.
-  dependent destruction Hsub.
-  simp subtyping_impl.
-  pose proof nbe_ty_impl_complete';
-    repeat complete_tac;
-    eauto.
-  edes_rewrite subtyping_nf_impl_complete;
-    eauto.
+  intros.
+  destruct (subtyping_impl G A B H0) eqn:Heq; eauto.
+  contradiction.
 Qed.
 
 #[local]
