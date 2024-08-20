@@ -1,7 +1,7 @@
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Algorithmic Require Import Subtyping.Definitions.
 From Mcltt.Core Require Import NbE.
-From Mcltt.Extraction Require Import NbE.
+From Mcltt.Extraction Require Import Evaluation NbE.
 From Equations Require Import Equations.
 Import Domain_Notations.
 
@@ -39,6 +39,31 @@ Equations subtyping_nf_impl A B : { {{ ⊢anf A ⊆ B }} } + {~ {{ ⊢anf A ⊆ 
   | right _ => right _
   }.
 
+Theorem subtyping_nf_impl_complete : forall A B,
+    {{ ⊢anf A ⊆ B }} ->
+    exists H, subtyping_nf_impl A B = left H.
+Proof.
+  induction 1; subst;
+    simp subtyping_nf_impl.
+  - destruct (nf_eq_dec N N) eqn:Heq;
+      [| congruence].
+    destruct N; try contradiction;
+      simp subtyping_nf_impl;
+      rewrite Heq;
+      simpl; eauto.
+  - destruct (Compare_dec.le_lt_dec i j);
+      simp subtyping_nf_impl;
+      eauto.
+    lia.
+  - destruct_all.
+    destruct (nf_eq_dec A' A');
+      [ |congruence].
+    simp subtyping_nf_impl.
+    bulky_rewrite.
+    simp subtyping_nf_impl.
+    eauto.
+Qed.
+
 
 Inductive subtyping_order G A B :=
 | subtyping_order_run :
@@ -47,6 +72,16 @@ Inductive subtyping_order G A B :=
   subtyping_order G A B.
 #[local]
   Hint Constructors subtyping_order : mcltt.
+
+
+Lemma subtyping_order_sound : forall G A B,
+    {{ G ⊢a A ⊆ B }} ->
+    subtyping_order G A B.
+Proof.
+  intros * H.
+  dependent destruction H.
+  mauto using nbe_ty_order_sound.
+Qed.
 
 #[local]
   Ltac subtyping_impl_tac1 :=
@@ -59,19 +94,44 @@ Inductive subtyping_order G A B :=
   Ltac subtyping_impl_tac :=
   repeat subtyping_impl_tac1; try econstructor; mauto.
 
+
 #[tactic="subtyping_impl_tac"]
 Equations subtyping_impl G A B (H : subtyping_order G A B) :
   { {{G ⊢a A ⊆ B}} } + { ~ {{ G ⊢a A ⊆ B }} } :=
-| G, A, B, H with nbe_ty_impl G A _ => {
-  | @exist a _ with nbe_ty_impl G B _ => {
-    | @exist b _ with subtyping_nf_impl a b => {
-      | left _ => left _;
-      | right _ => right _
-      }
-    }
-  }.
+| G, A, B, H =>
+    let (a, Ha) := nbe_ty_impl G A _ in
+    let (b, Hb) := nbe_ty_impl G B _ in
+    match subtyping_nf_impl a b with
+    | left _ => left _
+    | right _ => right _
+    end.
 Next Obligation.
   progressive_inversion.
   functional_nbe_rewrite_clear.
   contradiction.
+Qed.
+
+Theorem subtyping_impl_complete' : forall G A B,
+    {{G ⊢a A ⊆ B}} ->
+    forall (H : subtyping_order G A B),
+      exists H', subtyping_impl G A B H = left H'.
+Proof.
+  intros * Hsub H.
+  dependent destruction Hsub.
+  simp subtyping_impl.
+  pose proof nbe_ty_impl_complete';
+    repeat complete_tac;
+    eauto.
+  edes_rewrite subtyping_nf_impl_complete;
+    eauto.
+Qed.
+
+#[local]
+ Hint Resolve subtyping_order_sound subtyping_impl_complete' : mcltt.
+
+Theorem subtyping_impl_complete : forall G A B,
+    {{G ⊢a A ⊆ B}} ->
+    exists H H', subtyping_impl G A B H = left H'.
+Proof.
+  repeat unshelve mauto.
 Qed.
