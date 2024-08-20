@@ -61,7 +61,7 @@ Proof.
     etransitivity; [eapply wf_exp_eq_sub_compose; mauto 3 |].
     pose proof (wf_ctx_sub_length _ _ H0).
 
-    rewrite <- exp_eq_sub_compose_typ; mauto 2.
+    rewrite <- @exp_eq_sub_compose_typ; mauto 2.
     deepexec wf_ctx_sub_ctx_lookup ltac:(fun H => destruct H as [? [? [? [? [-> [? [-> []]]]]]]]).
     repeat rewrite List.app_length in *.
     rewrite H6 in *.
@@ -70,14 +70,14 @@ Proof.
 
     etransitivity.
     + eapply wf_exp_eq_sub_cong; [ |mauto 3].
-      eapply wf_exp_eq_subtyp.
+      eapply wf_exp_eq_subtyp'.
       * eapply wf_exp_eq_var_weaken; [mauto 3|]; eauto.
       * mauto 4.
-    + eapply wf_exp_eq_subtyp.
+    + eapply wf_exp_eq_subtyp'.
       * eapply IHweakening with (Γ1 := T :: _).
         reflexivity.
-      * eapply wf_subtyping_subst; [ |mauto 3].
-        simpl. eapply wf_subtyping_subst; mauto 3.
+      * eapply wf_subtyp_subst; [ |mauto 3].
+        simpl. eapply wf_subtyp_subst; mauto 3.
 Qed.
 
 Lemma var_glu_elem_bot : forall A i P El Γ T,
@@ -226,16 +226,16 @@ Proof.
       etransitivity.
       * rewrite sub_decompose_q_typ; mauto 4.
       * simpl.
-        rewrite <- sub_eq_q_sigma_id_extend; mauto 4.
-        rewrite <- exp_eq_sub_compose_typ; mauto 3;
+        rewrite <- @sub_eq_q_sigma_id_extend; mauto 4.
+        rewrite <- @exp_eq_sub_compose_typ; mauto 3;
           [eapply wf_exp_eq_app_cong' |].
         -- specialize (H12 _ {{{σ ∘ σ0}}} _ ltac:(mauto 3) ltac:(eassumption)).
            rewrite wf_exp_eq_sub_compose with (M := t) in H12; mauto 3.
            bulky_rewrite_in H12.
-        -- rewrite <- exp_eq_sub_compose_typ; mauto 3.
+        -- rewrite <- @exp_eq_sub_compose_typ; mauto 3.
         -- econstructor; mauto 3.
            autorewrite with mcltt.
-           rewrite <- exp_eq_sub_compose_typ; mauto 3.
+           rewrite <- @exp_eq_sub_compose_typ; mauto 3.
 
   - handle_functional_glu_univ_elem.
     handle_per_univ_elem_irrel.
@@ -280,9 +280,9 @@ Proof.
       do 2 (rewrite wf_exp_eq_sub_id in H40; mauto 4).
       etransitivity; [|eassumption].
       simpl.
-      assert {{ Δ, IT[σ] ⊢ # 0 : IT[σ ∘ Wk] }} by (rewrite <- exp_eq_sub_compose_typ; mauto 3).
-      rewrite <- sub_eq_q_sigma_id_extend; mauto 4.
-      rewrite <- exp_eq_sub_compose_typ; mauto 2.
+      assert {{ Δ, IT[σ] ⊢ # 0 : IT[σ ∘ Wk] }} by (rewrite <- @exp_eq_sub_compose_typ; mauto 3).
+      rewrite <- @sub_eq_q_sigma_id_extend; mauto 4.
+      rewrite <- @exp_eq_sub_compose_typ; mauto 2.
       2:eapply sub_q; mauto 4.
       2:gen_presup H41; econstructor; mauto 3.
       eapply wf_exp_eq_app_cong'; [| mauto 3].

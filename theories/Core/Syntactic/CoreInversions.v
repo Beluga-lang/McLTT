@@ -21,7 +21,7 @@ Corollary wf_succ_inversion : forall Γ A M,
 Proof with mautosolve.
   intros * H.
   dependent induction H;
-    try specialize (IHwf_exp _ eq_refl);
+    try specialize (IHwf_exp1 _ eq_refl);
     destruct_conjs...
 Qed.
 
@@ -31,11 +31,11 @@ Hint Resolve wf_succ_inversion : mcltt.
 Lemma wf_natrec_inversion : forall Γ A M A' MZ MS,
     {{ Γ ⊢ rec M return A' | zero -> MZ | succ -> MS end : A }} ->
     {{ Γ ⊢ MZ : A'[Id,,zero] }} /\ {{ Γ, ℕ, A' ⊢ MS : A'[Wk∘Wk,,succ(#1)] }} /\ {{ Γ ⊢ M : ℕ }} /\ {{ Γ ⊢ A'[Id,,M] ⊆ A }}.
-Proof with mautosolve 4.
+Proof with mautosolve.
   intros * H.
   pose (A0 := A).
   dependent induction H;
-    try (specialize (IHwf_exp _ _ _ _ eq_refl));
+    try (specialize (IHwf_exp1 _ _ _ _ eq_refl));
     destruct_conjs;
     assert {{ Γ ⊢s Id : Γ }} by mauto 3;
     repeat split...
@@ -50,7 +50,7 @@ Corollary wf_fn_inversion : forall {Γ A M C},
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
-    try specialize (IHwf_exp _ _ eq_refl);
+    try specialize (IHwf_exp1 _ _ eq_refl);
     destruct_conjs;
     gen_presups;
     eexists; split...
@@ -62,10 +62,10 @@ Hint Resolve wf_fn_inversion : mcltt.
 Lemma wf_app_inversion : forall {Γ M N C},
     {{ Γ ⊢ M N : C }} ->
     exists A B, {{ Γ ⊢ M : Π A B }} /\ {{ Γ ⊢ N : A }} /\ {{ Γ ⊢ B[Id,,N] ⊆ C }}.
-Proof with mautosolve 4.
+Proof with mautosolve.
   intros * H.
   dependent induction H;
-    try specialize (IHwf_exp _ _ eq_refl);
+    try specialize (IHwf_exp1 _ _ eq_refl);
     destruct_conjs;
     do 2 eexists; repeat split...
 Qed.
@@ -80,7 +80,7 @@ Proof with mautosolve 4.
   intros * H.
   dependent induction H;
     [assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by mauto 4 |];
-    try (specialize (IHwf_exp _ eq_refl));
+    try (specialize (IHwf_exp1 _ eq_refl));
     destruct_conjs;
     eexists; split...
 Qed.
@@ -91,10 +91,10 @@ Hint Resolve wf_vlookup_inversion : mcltt.
 Lemma wf_exp_sub_inversion : forall {Γ M σ A},
     {{ Γ ⊢ M[σ] : A }} ->
     exists Δ A', {{ Γ ⊢s σ : Δ }} /\ {{ Δ ⊢ M : A' }} /\ {{ Γ ⊢ A'[σ] ⊆ A }}.
-Proof with mautosolve 4.
+Proof with mautosolve.
   intros * H.
   dependent induction H;
-    try (specialize (IHwf_exp _ _ eq_refl));
+    try (specialize (IHwf_exp1 _ _ eq_refl));
     destruct_conjs;
     gen_presups;
     do 2 eexists; split...

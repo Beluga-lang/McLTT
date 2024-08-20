@@ -13,7 +13,6 @@ From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Domain_Notations.
 
 Section completeness_fundamental.
-
   Theorem completeness_fundamental :
     (forall Γ, {{ ⊢ Γ }} -> {{ ⊨ Γ }}) /\
       (forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}) /\
@@ -37,7 +36,7 @@ Section completeness_fundamental.
   Theorem completeness_fundamental_ctx : forall Γ, {{ ⊢ Γ }} -> {{ ⊨ Γ }}.
   Proof. solve_it. Qed.
 
-  Theorem completeness_fundamental_ctx_sub : forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}.
+  Theorem completeness_fundamental_ctx_subtyp : forall Γ Γ', {{ ⊢ Γ ⊆ Γ' }} -> {{ SubE Γ <: Γ' }}.
   Proof. solve_it. Qed.
 
   Theorem completeness_fundamental_exp : forall Γ M A, {{ Γ ⊢ M : A }} -> {{ Γ ⊨ M : A }}.
@@ -59,8 +58,7 @@ Section completeness_fundamental.
   Proof.
     induction 1.
     - apply valid_ctx_empty.
-    - apply completeness_fundamental_exp_eq in H2.
+    - assert {{ Γ ⊨ A ≈ A' : Type@i }} by mauto using completeness_fundamental_exp_eq.
       mauto.
   Qed.
-
 End completeness_fundamental.

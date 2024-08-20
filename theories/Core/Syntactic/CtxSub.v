@@ -2,7 +2,9 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt Require Export System.
 Import Syntax_Notations.
 
-Lemma ctx_sub_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ⊆ Γ }}.
+Lemma ctx_sub_refl : forall {Γ},
+    {{ ⊢ Γ }} ->
+    {{ ⊢ Γ ⊆ Γ }}.
 Proof with mautosolve.
   induction 1...
 Qed.
@@ -12,13 +14,13 @@ Hint Resolve ctx_sub_refl : mcltt.
 
 Module ctxsub_judg.
   #[local]
-  Ltac gen_ctxsub_helper_IH ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyping_helper H :=
+  Ltac gen_ctxsub_helper_IH ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyp_helper H :=
   match type of H with
   | {{ ~?Γ ⊢ ~?M : ~?A }} => pose proof ctxsub_exp_helper _ _ _ H
   | {{ ~?Γ ⊢ ~?M ≈ ~?N : ~?A }} => pose proof ctxsub_exp_eq_helper _ _ _ _ H
   | {{ ~?Γ ⊢s ~?σ : ~?Δ }} => pose proof ctxsub_sub_helper _ _ _ H
   | {{ ~?Γ ⊢s ~?σ ≈ ~?τ : ~?Δ }} => pose proof ctxsub_sub_eq_helper _ _ _ _ H
-  | {{ ~?Γ ⊢ ~?M ⊆ ~?M' }} => pose proof ctxsub_subtyping_helper _ _ _ H
+  | {{ ~?Γ ⊢ ~?M ⊆ ~?M' }} => pose proof ctxsub_subtyp_helper _ _ _ H
   end.
 
   #[local]
@@ -30,11 +32,11 @@ Module ctxsub_judg.
   with
   ctxsub_sub_eq_helper : forall {Γ Γ' σ σ'}, {{ Γ ⊢s σ ≈ σ' : Γ' }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}
   with
-  ctxsub_subtyping_helper : forall {Γ M M'}, {{ Γ ⊢ M ⊆ M' }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢ M ⊆ M' }}.
+  ctxsub_subtyp_helper : forall {Γ M M'}, {{ Γ ⊢ M ⊆ M' }} -> forall {Δ}, {{ ⊢ Δ ⊆ Γ }} -> {{ Δ ⊢ M ⊆ M' }}.
   Proof with mautosolve.
     all: inversion_clear 1;
-      (on_all_hyp: gen_ctxsub_helper_IH ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyping_helper);
-      clear ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyping_helper;
+      (on_all_hyp: gen_ctxsub_helper_IH ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyp_helper);
+      clear ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyp_helper;
       intros * HΓΔ; destruct (presup_ctx_sub HΓΔ); mauto 4;
       try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
     (* ctxsub_exp_helper & ctxsub_exp_eq_helper recursion cases *)
@@ -42,9 +44,9 @@ Module ctxsub_judg.
     assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
     (* ctxsub_exp_helper & ctxsub_exp_eq_helper function cases *)
     1-3,5-9: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
-      try econstructor...
+    try econstructor...
     (* ctxsub_exp_helper & ctxsub_exp_eq_helper variable cases *)
-    1-2: assert (exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢  B ⊆ A }}); destruct_conjs; mautosolve 4.
+    1-2: assert (exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢ B ⊆ A }}); destruct_conjs; mautosolve 4.
     (* ctxsub_sub_helper & ctxsub_sub_eq_helper weakening cases *)
     2-3: inversion_clear HΓΔ; econstructor; mautosolve 4.
 
@@ -77,13 +79,13 @@ Module ctxsub_judg.
     eauto using ctxsub_sub_eq_helper.
   Qed.
 
-  Corollary ctxsub_subtyping : forall {Γ Δ A B}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢ A ⊆ B }} -> {{ Δ ⊢ A ⊆ B }}.
+  Corollary ctxsub_subtyp : forall {Γ Δ A B}, {{ ⊢ Δ ⊆ Γ }} -> {{ Γ ⊢ A ⊆ B }} -> {{ Δ ⊢ A ⊆ B }}.
   Proof.
-    eauto using ctxsub_subtyping_helper.
+    eauto using ctxsub_subtyp_helper.
   Qed.
 
   #[export]
-  Hint Resolve ctxsub_exp ctxsub_exp_eq ctxsub_sub ctxsub_sub_eq ctxsub_subtyping : mcltt.
+  Hint Resolve ctxsub_exp ctxsub_exp_eq ctxsub_sub ctxsub_sub_eq ctxsub_subtyp : mcltt.
 End ctxsub_judg.
 
 Export ctxsub_judg.
@@ -103,9 +105,8 @@ Qed.
  Hint Resolve wf_ctx_sub_trans : mcltt.
 
 #[export]
-  Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.
+Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.
 Proof. eauto using wf_ctx_sub_trans. Qed.
-
 
 Add Parametric Morphism : wf_exp
   with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_exp_morphism.
@@ -113,13 +114,11 @@ Proof.
   cbv. intros. mauto 3.
 Qed.
 
-
 Add Parametric Morphism : wf_exp_eq
   with signature wf_ctx_sub --> eq ==> eq ==> eq ==> Basics.impl as ctxsub_exp_eq_morphism.
 Proof.
   cbv. intros. mauto 3.
 Qed.
-
 
 Add Parametric Morphism : wf_sub
   with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_sub_morphism.
@@ -127,16 +126,14 @@ Proof.
   cbv. intros. mauto 3.
 Qed.
 
-
 Add Parametric Morphism : wf_sub_eq
   with signature wf_ctx_sub --> eq ==> eq ==> eq ==> Basics.impl as ctxsub_sub_eq_morphism.
 Proof.
   cbv. intros. mauto 3.
 Qed.
 
-
-Add Parametric Morphism : wf_subtyping
-  with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_subtyping_morphism.
+Add Parametric Morphism : wf_subtyp
+  with signature wf_ctx_sub --> eq ==> eq ==> Basics.impl as ctxsub_subtyp_morphism.
 Proof.
   cbv. intros. mauto 3.
 Qed.

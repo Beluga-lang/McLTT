@@ -821,19 +821,20 @@ Proof.
         bulky_rewrite.
       }
       assert {{Δ0 ⊢ (m [σ][σ0]) m' ≈ (m [σ ∘ σ0]) m' : OT [σ ∘ σ0,, m']}}. {
-        rewrite <- sub_eq_q_sigma_id_extend; mauto 4.
-        rewrite <- exp_eq_sub_compose_typ; mauto 3;
+        rewrite <- @sub_eq_q_sigma_id_extend; mauto 4.
+        rewrite <- @exp_eq_sub_compose_typ; mauto 3;
           [eapply wf_exp_eq_app_cong' |];
           mauto 4.
         symmetry.
         bulky_rewrite_in H4.
-        eapply wf_exp_eq_conv; mauto 3.
+        assert {{ Δ0 ⊢ Π IT[σ ∘ σ0] (OT[q (σ ∘ σ0)]) ≈ (Π IT OT)[σ ∘ σ0] : Type@(S (max i4 i)) }} by mauto.
+        eapply wf_exp_eq_conv'; mauto 4.
       }
 
       bulky_rewrite.
       edestruct H10 with (b := b) as [? []];
         simplify_evals; [| | eassumption];
-      mauto.
+        mauto.
 
   - simpl_glu_rel.
     econstructor; repeat split; mauto 3;

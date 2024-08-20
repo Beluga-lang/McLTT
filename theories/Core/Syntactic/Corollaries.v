@@ -78,19 +78,20 @@ Proof.
   intros. gen_presup H0.
   econstructor; mauto 3.
   - econstructor; mauto 4.
-  - rewrite <- exp_eq_sub_compose_typ; mauto 4.
+  - rewrite <- @exp_eq_sub_compose_typ; mauto 4.
 Qed.
 #[export]
  Hint Resolve sub_q_eq : mcltt.
 
-Lemma wf_subtyping_subst_eq : forall Δ A B,
+Lemma wf_subtyp_subst_eq : forall Δ A B,
     {{ Δ ⊢ A ⊆ B }} ->
     forall Γ σ σ',
       {{ Γ ⊢s σ ≈ σ' : Δ }} ->
       {{ Γ ⊢ A [σ] ⊆ B[σ'] }}.
 Proof.
   induction 1; intros * Hσσ'; gen_presup Hσσ'.
-  - econstructor. mauto 4.
+  - eapply wf_subtyp_refl'.
+    eapply wf_exp_eq_conv; mauto 4.
   - etransitivity; mauto 4.
   - autorewrite with mcltt.
     mauto 2.
@@ -98,17 +99,16 @@ Proof.
     eapply wf_subtyp_pi'; mauto.
 Qed.
 
-
-Lemma wf_subtyping_subst : forall Δ A B,
+Lemma wf_subtyp_subst : forall Δ A B,
     {{ Δ ⊢ A ⊆ B }} ->
     forall Γ σ,
       {{ Γ ⊢s σ : Δ }} ->
       {{ Γ ⊢ A [σ] ⊆ B[σ] }}.
 Proof.
-  intros; mauto 2 using wf_subtyping_subst_eq.
+  intros; mauto 2 using wf_subtyp_subst_eq.
 Qed.
 #[export]
- Hint Resolve wf_subtyping_subst_eq wf_subtyping_subst : mcltt.
+ Hint Resolve wf_subtyp_subst_eq wf_subtyp_subst : mcltt.
 
 Lemma sub_decompose_q : forall Γ S i σ Δ Δ' τ t,
   {{Γ ⊢ S : Type@i}} ->
@@ -122,13 +122,12 @@ Proof.
   symmetry.
   rewrite wf_sub_eq_extend_compose; mauto 3;
     [| mauto
-    | rewrite <- exp_eq_sub_compose_typ; mauto 4].
+    | rewrite <- @exp_eq_sub_compose_typ; mauto 4].
   eapply wf_sub_eq_extend_cong; eauto.
   - rewrite wf_sub_eq_compose_assoc; mauto 3; mauto 4.
     rewrite wf_sub_eq_p_extend; eauto; mauto 4.
-  - rewrite <- exp_eq_sub_compose_typ; mauto 4.
+  - rewrite <- @exp_eq_sub_compose_typ; mauto 4.
 Qed.
-
 
 Lemma sub_decompose_q_typ : forall Γ S T i σ Δ Δ' τ t,
   {{Γ, S ⊢ T : Type@i}} ->
@@ -139,6 +138,6 @@ Lemma sub_decompose_q_typ : forall Γ S T i σ Δ Δ' τ t,
 Proof.
   intros. gen_presups.
   autorewrite with mcltt.
-  eapply exp_eq_sub_cong_typ2'; [mauto 2 | mauto |].
+  eapply exp_eq_sub_cong_typ2'; [mauto 2 | econstructor; mauto 4 |].
   symmetry. mauto using sub_decompose_q.
 Qed.

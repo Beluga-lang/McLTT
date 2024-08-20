@@ -3,18 +3,85 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Export CtxEq Presup System CoreTypeInversions.
 Import Syntax_Notations.
 
+Add Parametric Morphism i Γ : (wf_exp Γ)
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> iff as wf_exp_morphism_iff3.
+Proof with mautosolve.
+  split; intros; gen_presups...
+Qed.
+
+Add Parametric Morphism i Γ : (wf_exp_eq Γ)
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> eq ==> iff as wf_exp_eq_morphism_iff3.
+Proof with mautosolve.
+  split; intros; gen_presups...
+Qed.
+
+Add Parametric Morphism Γ i : (wf_subtyp Γ)
+    with signature (wf_exp_eq Γ {{{Type@i}}}) ==> eq ==> iff as wf_subtyp_morphism_iff1.
+Proof.
+  split; intros; gen_presups;
+    etransitivity; mauto 4.
+Qed.
+
+Add Parametric Morphism Γ j : (wf_subtyp Γ)
+    with signature eq ==> (wf_exp_eq Γ {{{Type@j}}}) ==> iff as wf_subtyp_morphism_iff2.
+Proof.
+  split; intros; gen_presups;
+    etransitivity; mauto 3.
+Qed.
+
 #[local]
 Ltac impl_opt_constructor :=
   intros;
   gen_presups;
   mautosolve 4.
 
+Corollary wf_subtyp_refl' : forall Γ M M' i,
+    {{ Γ ⊢ M ≈ M' : Type@i }} ->
+    {{ Γ ⊢ M ⊆ M' }}.
+Proof.
+  impl_opt_constructor.
+Qed.
+
+#[export]
+Hint Resolve wf_subtyp_refl' : mcltt.
+#[export]
+Remove Hints wf_subtyp_refl : mcltt.
+
+Corollary wf_conv' : forall Γ M A i A',
+    {{ Γ ⊢ M : A }} ->
+    {{ Γ ⊢ A ≈ A' : Type@i }} ->
+    {{ Γ ⊢ M : A' }}.
+Proof.
+  impl_opt_constructor.
+Qed.
+
+#[export]
+Hint Resolve wf_conv' : mcltt.
+#[export]
+Remove Hints wf_conv : mcltt.
+
+Corollary wf_exp_eq_conv' : forall Γ M M' A A' i,
+   {{ Γ ⊢ M ≈ M' : A }} ->
+   {{ Γ ⊢ A ≈ A' : Type@i }} ->
+   {{ Γ ⊢ M ≈ M' : A' }}.
+Proof.
+  impl_opt_constructor.
+Qed.
+
+#[export]
+Hint Resolve wf_exp_eq_conv' : mcltt.
+#[export]
+Remove Hints wf_exp_eq_conv : mcltt.
+
 Corollary wf_ctx_eq_extend' : forall {Γ Δ A A' i},
     {{ ⊢ Γ ≈ Δ }} ->
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
     {{ ⊢ Γ , A ≈ Δ , A' }}.
 Proof.
-  impl_opt_constructor.
+  intros.
+  assert {{ Δ ⊢ A ≈ A' : Type@i }} by mauto.
+  gen_presups.
+  mautosolve 4.
 Qed.
 
 #[export]

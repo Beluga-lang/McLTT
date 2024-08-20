@@ -11,8 +11,10 @@ Qed.
 Hint Resolve ctx_eq_refl : mcltt.
 
 Lemma ctx_eq_sym : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ ≈ Γ }}.
-Proof with mautosolve.
-  induction 1...
+Proof.
+  intros.
+  symmetry.
+  eassumption.
 Qed.
 
 #[export]
@@ -30,11 +32,11 @@ Proof. mauto. Qed.
 Lemma ctxeq_sub_eq : forall {Γ Δ σ σ' Γ'}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢s σ ≈ σ' : Γ' }} -> {{ Δ ⊢s σ ≈ σ' : Γ' }}.
 Proof. mauto. Qed.
 
-Lemma ctxeq_subtyping : forall {Γ Δ A B}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ A ⊆ B }} -> {{ Δ ⊢ A ⊆ B }}.
+Lemma ctxeq_subtyp : forall {Γ Δ A B}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ A ⊆ B }} -> {{ Δ ⊢ A ⊆ B }}.
 Proof. mauto. Qed.
 
 #[export]
-  Hint Resolve ctxeq_exp ctxeq_exp_eq ctxeq_sub ctxeq_sub_eq ctxeq_subtyping : mcltt.
+Hint Resolve ctxeq_exp ctxeq_exp_eq ctxeq_sub ctxeq_sub_eq ctxeq_subtyp : mcltt.
 
 
 Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, {{ ⊢ Γ0 ≈ Γ1 }} -> {{ ⊢ Γ1 ≈ Γ2 }} -> {{ ⊢ Γ0 ≈ Γ2 }}.
@@ -95,8 +97,8 @@ Proof.
 Qed.
 
 
-Add Parametric Morphism : wf_subtyping
-  with signature wf_ctx_eq ==> eq ==> eq ==> iff as ctxeq_subtyping_morphism.
+Add Parametric Morphism : wf_subtyp
+  with signature wf_ctx_eq ==> eq ==> eq ==> iff as ctxeq_subtyp_morphism.
 Proof.
   intros. split; mauto 3.
 Qed.

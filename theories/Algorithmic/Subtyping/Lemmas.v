@@ -21,7 +21,7 @@ Lemma alg_subtyping_nf_sound : forall M N,
       {{ Γ ⊢ M ⊆ N }}.
 Proof.
   induction 1; intros; subst; simpl in *.
-  - econstructor. mauto.
+  - eapply wf_subtyp_refl'; mauto.
   - assert (i < j \/ i = j) as H2 by lia.
     destruct H2; mauto 3.
   - on_all_hyp: fun H => (apply wf_pi_inversion in H; destruct H as [? ?]).
@@ -33,6 +33,8 @@ Proof.
                fail_if_dup
            end.
     apply_subtyping.
+    assert {{ Γ, ~(nf_to_exp A') ⊢ B : Type@(max x x0) }} by mauto using lift_exp_max_right.
+    assert {{ Γ, ~(nf_to_exp A') ⊢ B' : Type@(max x x0) }} by mauto using lift_exp_max_left.
     deepexec IHalg_subtyping_nf ltac:(fun H => pose proof H).
     mauto 3.
 Qed.
@@ -80,8 +82,8 @@ Lemma alg_subtyping_complete : forall Γ M N,
     {{ Γ ⊢a M ⊆ N }}.
 Proof.
   induction 1; mauto.
-  - apply completeness in H.
-    destruct H as [W [? ?]].
+  - apply completeness in H0.
+    destruct H0 as [W [? ?]].
     econstructor; mauto.
   - assert {{ Γ ⊢ Type@i : Type@(S i) }} by mauto.
     assert {{ Γ ⊢ Type@j : Type@(S j) }} by mauto.
