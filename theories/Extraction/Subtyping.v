@@ -52,19 +52,26 @@ Inductive subtyping_order G A B :=
   Ltac subtyping_impl_tac1 :=
   match goal with
   | H : subtyping_order _ _ _ |- _ => progressive_invert H
+  | H : nbe_ty_order _ _ |- _ => progressive_invert H
   end.
 
 #[local]
   Ltac subtyping_impl_tac :=
   repeat subtyping_impl_tac1; try econstructor; mauto.
 
-Equations? subtyping_impl G A B (H1 : nbe_ty_order G A) (H2 : nbe_ty_order G B) :
+#[tactic="subtyping_impl_tac"]
+Equations subtyping_impl G A B (H : subtyping_order G A B) :
   { {{G ⊢a A ⊆ B}} } + { ~ {{ G ⊢a A ⊆ B }} } :=
-| G, A, B with nbe_ty_impl G A H1 => {
-  | @exist a _ with nbe_ty_impl G B H2 => {
+| G, A, B, H with nbe_ty_impl G A _ => {
+  | @exist a _ with nbe_ty_impl G B _ => {
     | @exist b _ with subtyping_nf_impl a b => {
-      | left _ => _;
-      | right _ => _
+      | left _ => left _;
+      | right _ => right _
       }
     }
   }.
+Next Obligation.
+  progressive_inversion.
+  functional_nbe_rewrite_clear.
+  contradiction.
+Qed.
