@@ -486,3 +486,16 @@ Ltac bulky_rewrite_in1 HT :=
   end.
 
 Ltac bulky_rewrite_in HT := repeat (bulky_rewrite_in1 HT; mauto 2).
+
+
+(** This tactic provides a trivial proof for the completeness of a decision procedure. *)
+Ltac dec_complete :=
+  lazymatch goal with
+  | |- exists _, ?L = _ =>
+      lazymatch type of L with
+      | sumbool _ _ =>
+          let Heq := fresh "Heq" in
+          destruct L eqn:Heq; eauto;
+          contradiction
+      end
+  end.
