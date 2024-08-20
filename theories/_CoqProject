@@ -77,4 +77,5 @@
 ./Extraction/NbE.v
 ./Extraction/Readback.v
 ./Extraction/TypeCheck.v
+./Extraction/Subtyping.v
 ./LibTactics.v
