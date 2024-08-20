@@ -333,6 +333,14 @@ Combined Scheme syntactic_wf_mut_ind from
   wf_sub_eq_mut_ind,
   wf_subtyping_mut_ind.
 
+Scheme wf_ctx_mut_ind' := Induction for wf_ctx Sort Prop
+with wf_exp_mut_ind' := Induction for wf_exp Sort Prop
+with wf_sub_mut_ind' := Induction for wf_sub Sort Prop.
+Combined Scheme syntactic_wf_mut_ind' from
+  wf_ctx_mut_ind',
+  wf_exp_mut_ind',
+  wf_sub_mut_ind'.
+
 Inductive wf_ctx_eq : ctx -> ctx -> Prop :=
 | wf_ctx_eq_empty : {{ ⊢ ⋅ ≈ ⋅ }}
 | wf_ctx_eq_extend :
@@ -343,7 +351,6 @@ Inductive wf_ctx_eq : ctx -> ctx -> Prop :=
      {{ Δ ⊢ A ≈ A' : Type@i }} ->
      {{ ⊢ Γ , A ≈ Δ , A' }} )
 where "⊢ Γ ≈ Γ'" := (wf_ctx_eq Γ Γ') (in custom judg) : type_scope.
-
 
 #[export]
 Hint Constructors wf_ctx wf_ctx_eq wf_ctx_sub wf_exp wf_sub wf_exp_eq wf_sub_eq wf_subtyping ctx_lookup : mcltt.

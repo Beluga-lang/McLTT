@@ -347,3 +347,13 @@ Qed.
 
 #[export]
 Hint Resolve realize_glu_typ_top realize_glu_elem_top : mcltt.
+
+Corollary var0_glu_elem : forall {i a P El Γ A},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Γ, A ⊢ #0 : A[Wk] ® ⇑! a (length Γ) ∈ El }}.
+Proof.
+  intros.
+  eapply realize_glu_elem_bot; mauto 4.
+  eauto using var_glu_elem_bot.
+Qed.
