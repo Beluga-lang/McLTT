@@ -1,7 +1,7 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem LogicalRelation.
+From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import NbE Realizability.
-From Mcltt.Core.Soundness Require Import FundamentalTheorem LogicalRelation Realizability.
+From Mcltt.Core.Soundness Require Import FundamentalTheorem Realizability.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
