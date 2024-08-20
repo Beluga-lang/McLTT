@@ -41,24 +41,6 @@ Qed.
 #[export]
 Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mcltt.
 
-Lemma presup_ctx_sub : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
-Proof with mautosolve.
-  induction 1; destruct_pairs...
-Qed.
-
-Corollary presup_ctx_sub_left : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Γ }}.
-Proof with easy.
-  intros * ?%presup_ctx_sub...
-Qed.
-
-Corollary presup_ctx_sub_right : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Δ }}.
-Proof with easy.
-  intros * ?%presup_ctx_sub...
-Qed.
-
-#[export]
-Hint Resolve presup_ctx_sub presup_ctx_sub_left presup_ctx_sub_right : mcltt.
-
 Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with mautosolve.
   induction 1; destruct_pairs...
@@ -1075,23 +1057,6 @@ Proof.
 Qed.
 
 Lemma ctx_sub_ctx_lookup : forall {Γ Δ},
-    {{ ⊢ Δ ⊆ Γ }} ->
-    forall {A x},
-      {{ #x : A ∈ Γ }} ->
-      exists B,
-        {{ #x : B ∈ Δ }} /\
-          {{ Δ ⊢ B ⊆ A }}.
-Proof with (do 2 eexists; repeat split; mautosolve).
-  induction 1; intros * Hx; progressive_inversion.
-  dependent destruction Hx.
-  - idtac...
-  - edestruct IHwf_ctx_sub as [? []]; try eassumption...
-Qed.
-
-#[export]
-Hint Resolve ctx_sub_ctx_lookup : mcltt.
-
-Lemma ctx_eq_ctx_lookup : forall {Γ Δ},
     {{ ⊢ Δ ⊆ Γ }} ->
     forall {A x},
       {{ #x : A ∈ Γ }} ->

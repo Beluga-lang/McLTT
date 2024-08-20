@@ -82,6 +82,15 @@ with wf_exp : ctx -> typ -> exp -> Prop :=
      {{ Γ ⊢ M[σ] : A[σ] }} )
 | wf_exp_subtyp :
   `( {{ Γ ⊢ M : A }} ->
+     (** We have this extra argument for soundness.
+         Note that we need to keep it asymmetric:
+         only [A'] is checked. If we check A as well,
+         we cannot even construct something like
+         [{{ Γ ⊢ Type@0[Wk] : Type@1 }}] with the current
+         rules. Under the symmetric rule, the example requires
+         [{{ Γ ⊢ Type@1[Wk] : Type@2 }}] to apply [wf_exp_sub],
+         which requires [{{ Γ ⊢ Type@2[Wk] : Type@3 }}], and so on.
+      *)
      {{ Γ ⊢ A' : Type@i }} ->
      {{ Γ ⊢ A ⊆ A' }} ->
      {{ Γ ⊢ M : A' }} )
@@ -105,6 +114,10 @@ with wf_sub : ctx -> ctx -> sub -> Prop :=
      {{ Γ ⊢s (σ ,, M) : Δ , A }} )
 | wf_sub_subtyp :
   `( {{ Γ ⊢s σ : Δ }} ->
+     (** As in [wf_exp_subtyp], this extra argument is
+         for soundness. We don't need to keep it asymmetric,
+         but do so to match with [wf_exp_subtyp].
+      *)
      {{ ⊢ Δ' }} ->
      {{ ⊢ Δ ⊆ Δ' }} ->
      {{ Γ ⊢s σ : Δ' }} )
@@ -230,6 +243,9 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
 | wf_exp_eq_subtyp :
   `( {{ Γ ⊢ M ≈ M' : A }} ->
      {{ Γ ⊢ A' : Type@i }} ->
+     (** This extra argument is here to be consistent with
+         [wf_exp_subtyp].
+      *)
      {{ Γ ⊢ A ⊆ A' }} ->
      {{ Γ ⊢ M ≈ M' : A' }} )
 | wf_exp_eq_sym :
@@ -291,6 +307,9 @@ with wf_sub_eq : ctx -> ctx -> sub -> sub -> Prop :=
      {{ Γ ⊢s σ ≈ σ'' : Δ }} )
 | wf_sub_eq_subtyp :
   `( {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+     (** This extra argument is here to be consistent with
+         [wf_sub_subtyp].
+      *)
      {{ ⊢ Δ' }} ->
      {{ ⊢ Δ ⊆ Δ' }} ->
      {{ Γ ⊢s σ ≈ σ' : Δ' }} )
@@ -298,6 +317,15 @@ where "Γ ⊢s S1 ≈ S2 : Δ" := (wf_sub_eq Γ Δ S1 S2) (in custom judg) : typ
 
 with wf_subtyp : ctx -> typ -> typ -> Prop :=
 | wf_subtyp_refl :
+  (** We need this extra argument in order to prove the lemmas
+      in CtxSub.v independently. We can prove those and
+      presupposition lemmas mutually dependently, but that would
+      be more messy.
+
+      The main point of this assumption gives presupposition for
+      RHS directly so that we can remove the extra arguments in
+      type checking rules immediately.
+   *)
   `( {{ Γ ⊢ M' : Type@i }} ->
      {{ Γ ⊢ M ≈ M' : Type@i }} ->
      {{ Γ ⊢ M ⊆ M' }} )
@@ -387,21 +415,41 @@ Proof.
   hnf; mauto.
 Qed.
 
-Lemma presup_right_ctx_subtyp : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Δ }}.
+(** Immediate & Independent Presuppositions *)
+
+Lemma presup_ctx_sub : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
+Proof with mautosolve.
+  induction 1; destruct_pairs...
+Qed.
+
+#[export]
+Hint Resolve presup_ctx_sub : mcltt.
+
+Lemma presup_ctx_sub_left : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Γ }}.
+Proof with easy.
+  intros * ?%presup_ctx_sub...
+Qed.
+
+#[export]
+Hint Resolve presup_ctx_sub_left : mcltt.
+
+Lemma presup_ctx_sub_right : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Δ }}.
+Proof with easy.
+  intros * ?%presup_ctx_sub...
+Qed.
+
+#[export]
+Hint Resolve presup_ctx_sub_right : mcltt.
+
+Lemma presup_subtyp_right : forall {Γ A B}, {{ Γ ⊢ A ⊆ B }} -> exists i, {{ Γ ⊢ B : Type@i }}.
 Proof with mautosolve.
   induction 1...
 Qed.
 
 #[export]
-Hint Resolve presup_right_ctx_subtyp : mcltt.
+Hint Resolve presup_subtyp_right : mcltt.
 
-Lemma presup_right_subtyp : forall {Γ A B}, {{ Γ ⊢ A ⊆ B }} -> exists i, {{ Γ ⊢ B : Type@i }}.
-Proof with mautosolve.
-  induction 1...
-Qed.
-
-#[export]
-Hint Resolve presup_right_subtyp : mcltt.
+(** Subtyping Rules without Extra Arguments *)
 
 Lemma wf_exp_subtyp' : forall Γ A A' M,
     {{ Γ ⊢ M : A }} ->
