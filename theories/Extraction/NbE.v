@@ -107,38 +107,42 @@ Qed.
 #[local]
   Hint Resolve nbe_order_sound : mcltt.
 
-#[local]
-  Ltac impl_obl_tac1 :=
+Section NbEDef.
+
+  #[local]
+    Ltac impl_obl_tac1 :=
   match goal with
   | H : nbe_order _ _ _ |- _ => progressive_invert H
   end.
 
-#[local]
-  Ltac impl_obl_tac :=
-  repeat impl_obl_tac1; try econstructor; mauto.
+  #[local]
+    Ltac impl_obl_tac :=
+    repeat impl_obl_tac1; try econstructor; mauto.
 
-#[tactic="impl_obl_tac"]
-  Equations nbe_impl G M A (H : nbe_order G M A) : { w | nbe G M A w } by struct H :=
-| G, M, A, H =>
-    let (p, Hp) := initial_env_impl G _ in
-    let (a, Ha) := eval_exp_impl A p _ in
-    let (m, Hm) := eval_exp_impl M p _ in
-    let (w, Hw) := read_nf_impl (length G) d{{{ ⇓ a m }}} _ in
-    exist _ w _.
+  #[tactic="impl_obl_tac"]
+    Equations nbe_impl G M A (H : nbe_order G M A) : { w | nbe G M A w } by struct H :=
+  | G, M, A, H =>
+      let (p, Hp) := initial_env_impl G _ in
+      let (a, Ha) := eval_exp_impl A p _ in
+      let (m, Hm) := eval_exp_impl M p _ in
+      let (w, Hw) := read_nf_impl (length G) d{{{ ⇓ a m }}} _ in
+      exist _ w _.
 
-Lemma nbe_impl_complete' : forall G M A w,
-    nbe G M A w ->
-    forall (H : nbe_order G M A),
+  Lemma nbe_impl_complete' : forall G M A w,
+      nbe G M A w ->
+      forall (H : nbe_order G M A),
       exists H', nbe_impl G M A H = exist _ w H'.
-Proof.
-  induction 1;
-    pose proof initial_env_impl_complete';
-    pose proof eval_exp_impl_complete';
-    pose proof read_nf_impl_complete';
-    intros; simp nbe_impl;
-    repeat complete_tac;
-    eauto.
-Qed.
+  Proof.
+    induction 1;
+      pose proof initial_env_impl_complete';
+      pose proof eval_exp_impl_complete';
+      pose proof read_nf_impl_complete';
+      intros; simp nbe_impl;
+      repeat complete_tac;
+      eauto.
+  Qed.
+
+End NbEDef.
 
 #[local]
   Hint Resolve nbe_impl_complete' : mcltt.
@@ -146,6 +150,82 @@ Qed.
 Lemma nbe_impl_complete : forall G M A w,
     nbe G M A w ->
       exists H H', nbe_impl G M A H = exist _ w H'.
+Proof.
+  repeat unshelve mauto.
+Qed.
+
+
+Inductive nbe_ty_order G A : Prop :=
+| nbe_ty_order_run :
+  `( initial_env_order G ->
+     (forall p, initial_env G p ->
+           eval_exp_order A p) ->
+     (forall p a,
+         initial_env G p ->
+         {{ ⟦ A ⟧ p ↘ a }} ->
+         read_typ_order (length G) a) ->
+     nbe_ty_order G A ).
+
+#[local]
+  Hint Constructors nbe_ty_order : mcltt.
+
+
+Lemma nbe_ty_order_sound : forall G A w,
+    nbe_ty G A w ->
+    nbe_ty_order G A.
+Proof with (econstructor; intros;
+            functional_initial_env_rewrite_clear;
+            functional_eval_rewrite_clear;
+            functional_read_rewrite_clear;
+            mauto).
+  induction 1...
+Qed.
+
+#[local]
+  Hint Resolve nbe_ty_order_sound : mcltt.
+
+Section NbETyDef.
+
+  #[local]
+    Ltac impl_obl_tac1 :=
+  match goal with
+  | H : nbe_ty_order _ _ |- _ => progressive_invert H
+  end.
+
+  #[local]
+    Ltac impl_obl_tac :=
+    repeat impl_obl_tac1; try econstructor; mauto.
+
+  #[tactic="impl_obl_tac"]
+    Equations nbe_ty_impl G A (H : nbe_ty_order G A) : { w | nbe_ty G A w } by struct H :=
+  | G, A, H =>
+      let (p, Hp) := initial_env_impl G _ in
+      let (a, Ha) := eval_exp_impl A p _ in
+      let (w, Hw) := read_typ_impl (length G) a _ in
+      exist _ w _.
+
+End NbETyDef.
+
+Lemma nbe_ty_impl_complete' : forall G A w,
+    nbe_ty G A w ->
+    forall (H : nbe_ty_order G A),
+      exists H', nbe_ty_impl G A H = exist _ w H'.
+Proof.
+  induction 1;
+    pose proof initial_env_impl_complete';
+    pose proof eval_exp_impl_complete';
+    pose proof read_typ_impl_complete';
+    intros; simp nbe_ty_impl;
+    repeat complete_tac;
+    eauto.
+Qed.
+
+#[local]
+  Hint Resolve nbe_ty_impl_complete' : mcltt.
+
+Lemma nbe_ty_impl_complete : forall G A w,
+    nbe_ty G A w ->
+      exists H H', nbe_ty_impl G A H = exist _ w H'.
 Proof.
   repeat unshelve mauto.
 Qed.
