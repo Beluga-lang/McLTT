@@ -26,6 +26,30 @@ Qed.
 #[export]
 Hint Resolve invert_sub_id : mcltt.
 
+Corollary invert_sub_id_typ : forall Γ M A,
+    {{ Γ ⊢ M : A[Id] }} ->
+    {{ Γ ⊢ M : A }}.
+Proof.
+  intros.
+  gen_presups.
+  assert {{ Γ ⊢ A : Type@i }} by mauto.
+  autorewrite with mcltt in *; eassumption.
+Qed.
+
+#[export]
+Hint Resolve invert_sub_id_typ : mcltt.
+
+Lemma invert_compose_id : forall {Γ σ Δ},
+    {{ Γ ⊢s σ ∘ Id : Δ }} ->
+    {{ Γ ⊢s σ : Δ }}.
+Proof.
+  intros * [? []]%wf_sub_compose_inversion.
+  mauto 4.
+Qed.
+
+#[export]
+Hint Resolve invert_compose_id : mcltt.
+
 Add Parametric Morphism i Γ Δ : a_sub
     with signature wf_exp_eq Δ {{{ Type@i }}} ==> wf_sub_eq Γ Δ ==> wf_exp_eq Γ {{{ Type@i }}} as sub_typ_cong.
 Proof.

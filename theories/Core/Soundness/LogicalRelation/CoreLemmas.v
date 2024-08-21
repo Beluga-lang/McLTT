@@ -361,6 +361,16 @@ Hint Resolve glu_univ_elem_core_univ' : mcltt.
 Ltac glu_univ_elem_econstructor :=
   eapply glu_univ_elem_core_univ' + basic_glu_univ_elem_econstructor.
 
+Lemma glu_univ_elem_univ_simple_constructor : forall {i},
+    glu_univ_elem (S i) (univ_glu_typ_pred i (S i)) (univ_glu_exp_pred i (S i)) d{{{ 𝕌@i }}}.
+Proof.
+  intros.
+  glu_univ_elem_econstructor; mauto; reflexivity.
+Qed.
+
+#[export]
+Hint Resolve glu_univ_elem_univ_simple_constructor : mcltt.
+
 Ltac rewrite_predicate_equivalence_left :=
   repeat match goal with
     | H : ?R1 <∙> ?R2 |- _ =>
