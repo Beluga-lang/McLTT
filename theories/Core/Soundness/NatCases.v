@@ -3,7 +3,7 @@ From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_De
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation Realizability.
+From Mcltt.Core.Soundness Require Import LogicalRelation Realizability UniverseCases.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
@@ -13,32 +13,45 @@ Lemma glu_rel_exp_nat : forall {Γ i},
 Proof.
   intros * [Sb].
   assert {{ ⊢ Γ }} by mauto.
-  eexists; split; mauto.
-  exists (S i).
+  eapply glu_rel_exp_of_typ; mauto 3.
   intros.
-  econstructor; mauto.
-  repeat split; mauto 4.
-  do 2 eexists; split.
-  - glu_univ_elem_econstructor; mauto; reflexivity.
-  - simpl. mauto.
+  assert {{ Δ ⊢s σ : Γ }} by mauto 3.
+  split; mauto 3.
+  eexists; repeat split; mauto 3.
+  - eexists; per_univ_elem_econstructor; reflexivity.
+  - intros.
+    match_by_head1 glu_univ_elem invert_glu_univ_elem.
+    apply_predicate_equivalence.
+    cbv.
+    mauto.
 Qed.
 
 #[export]
 Hint Resolve glu_rel_exp_nat : mcltt.
+
+Lemma glu_rel_exp_of_nat : forall {Γ Sb M},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ Sb }} -> exists m, {{ ⟦ M ⟧ ρ ↘ m }} /\ glu_nat Δ {{{ M[σ] }}} m) ->
+    {{ Γ ⊩ M : ℕ }}.
+Proof.
+  intros * ? Hbody.
+  eexists; split; mauto.
+  exists 0.
+  intros.
+  edestruct Hbody as [? []]; mauto.
+  econstructor; mauto.
+  - glu_univ_elem_econstructor; mauto; reflexivity.
+  - simpl; split; mauto 3.
+Qed.
 
 Lemma glu_rel_exp_zero : forall {Γ},
     {{ ⊩ Γ }} ->
     {{ Γ ⊩ zero : ℕ }}.
 Proof.
   intros * [Sb].
-  assert {{ ⊢ Γ }} by mauto.
-  eexists; split; mauto.
-  exists 1.
+  eapply glu_rel_exp_of_nat; mauto.
   intros.
-  econstructor; mauto.
-  - glu_univ_elem_econstructor; mauto; reflexivity.
-  - split; mauto.
-    simpl. mauto.
+  eexists; split; mauto.
 Qed.
 
 #[export]
@@ -50,25 +63,18 @@ Lemma glu_rel_exp_succ : forall {Γ M},
 Proof.
   intros * HM.
   assert {{ Γ ⊢ M : ℕ }} by mauto.
-  destruct HM as [Sb [? [i]]].
+  cbv in HM.
   destruct_conjs.
-  eexists; split; mauto.
-  exists i.
+  eapply glu_rel_exp_of_nat; mauto.
   intros.
-  repeat match goal with
-         | H: context[glu_rel_exp_sub _ _ _ _ _ _] |- _ =>
-             match type of H with
-             | __mark__ _ _ => fail 1
-             | _ => edestruct H; [eassumption |]; mark H
-             end
-         end; unmark_all.
+  destruct_glu_rel_exp_sub.
   simplify_evals.
   match_by_head1 glu_univ_elem invert_glu_univ_elem.
   apply_predicate_equivalence.
-  simpl in *.
+  cbv in *.
   destruct_conjs.
+  eexists; split; mauto 3.
   econstructor; mauto.
-  split; mauto 4.
 Qed.
 
 #[export]

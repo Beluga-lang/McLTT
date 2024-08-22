@@ -508,6 +508,7 @@ Ltac apply_functional_glu_univ_elem1 :=
   match goal with
   | H1 : {{ DG ~?A ∈ glu_univ_elem ?i ↘ ?P1 ↘ ?El1 }},
       H2 : {{ DG ~?A ∈ glu_univ_elem ?i' ↘ ?P2 ↘ ?El2 }} |- _ =>
+      unify i i';
       assert_fails (unify P1 P2; unify El1 El2);
       match goal with
       | H : P1 <∙> P2, H0 : El1 <∙> El2 |- _ => fail 1

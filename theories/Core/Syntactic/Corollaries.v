@@ -165,3 +165,27 @@ Proof.
   eapply exp_eq_sub_cong_typ2'; [mauto 2 | econstructor; mauto 4 |].
   symmetry. mauto using sub_decompose_q.
 Qed.
+
+Lemma sub_eq_p_q_sigma_compose_tau_extend : forall {Δ' τ Δ M A i σ Γ},
+    {{ Δ ⊢s σ : Γ }} ->
+    {{ Δ' ⊢s τ : Δ }} ->
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Δ' ⊢ M : A[σ][τ] }} ->
+    {{ Δ' ⊢s Wk∘(q σ∘(τ,,M)) ≈ σ∘τ : Γ }}.
+Proof.
+  intros.
+  assert {{ Γ, A ⊢s Wk : Γ }} by mauto 4.
+  assert {{ Δ, A[σ] ⊢s q σ : Γ, A }} by mauto 4.
+  assert {{ Δ, A[σ] ⊢s Wk∘q σ ≈ σ∘Wk : Γ }} by mauto 4.
+  assert {{ Δ' ⊢s τ,,M : Δ, A[σ] }} by mauto 4.
+  assert {{ Δ, A[σ] ⊢s Wk : Δ }} by mauto 4.
+  assert {{ Δ' ⊢s Wk∘(τ,,M) ≈ τ : Δ }} by mauto 4.
+  assert {{ Δ' ⊢s Wk∘(q σ∘(τ,,M)) ≈ (Wk∘q σ)∘(τ,,M) : Γ }} by mauto 4.
+  assert {{ Δ' ⊢s Wk∘(q σ∘(τ,,M)) ≈ (σ∘Wk)∘(τ,,M) : Γ }} by mauto 4.
+  assert {{ Δ' ⊢s (σ∘Wk)∘(τ,,M) ≈ σ∘(Wk∘(τ,,M)) : Γ }} by mauto 4.
+  assert {{ Δ' ⊢s (σ∘Wk)∘(τ,,M) ≈ σ∘τ : Γ }} by mauto 4.
+  mauto 4.
+Qed.
+
+#[export]
+Hint Resolve sub_eq_p_q_sigma_compose_tau_extend : mcltt.

@@ -300,7 +300,7 @@ Ltac invert_glu_rel1 :=
   end.
 
 Variant glu_rel_typ_sub i Δ A σ ρ : Prop :=
-| mk_glu_typ_sub :
+| mk_glu_rel_typ_sub :
   `{ forall P El,
         {{ ⟦ A ⟧ ρ ↘ a }} ->
         {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -339,7 +339,7 @@ Inductive glu_ctx_env : glu_sub_pred -> ctx -> Prop :=
         {{ EG Γ, A ∈ glu_ctx_env ↘ Sb }} }.
 
 Variant glu_rel_exp_sub i Δ M A σ ρ : Prop :=
-| mk_glu_exp_sub :
+| mk_glu_rel_exp_sub :
   `{ forall P El,
         {{ ⟦ A ⟧ ρ ↘ a }} ->
         {{ ⟦ M ⟧ ρ ↘ m }} ->
@@ -348,7 +348,7 @@ Variant glu_rel_exp_sub i Δ M A σ ρ : Prop :=
         glu_rel_exp_sub i Δ M A σ ρ }.
 
 Variant glu_rel_sub_sub Δ τ (Sb : glu_sub_pred) σ ρ : Prop :=
-| mk_glu_sub_sub :
+| mk_glu_rel_sub_sub :
   `{ {{ ⟦ τ ⟧s ρ ↘ ρ' }} ->
      {{ Δ ⊢s τ ∘ σ ® ρ' ∈ Sb }} ->
      glu_rel_sub_sub Δ τ Sb σ ρ}.
