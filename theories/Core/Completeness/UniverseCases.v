@@ -1,6 +1,7 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
+
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation.
+From Mcltt.Core.Completeness Require Import LogicalRelation.
 Import Domain_Notations.
 
 Lemma rel_exp_of_typ_inversion : forall {Γ A A' i},

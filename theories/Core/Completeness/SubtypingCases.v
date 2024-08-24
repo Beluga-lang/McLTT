@@ -1,6 +1,7 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
+
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.FunctionCases Evaluation.
+From Mcltt.Core.Completeness Require Import LogicalRelation FunctionCases.
 Import Domain_Notations.
 
 Lemma subtyp_refl : forall Γ M M' i,
