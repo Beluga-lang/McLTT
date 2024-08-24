@@ -299,13 +299,13 @@ Ltac invert_glu_rel1 :=
       progressive_invert H
   end.
 
-Variant glu_rel_typ_sub i Δ A σ ρ : Prop :=
-| mk_glu_rel_typ_sub :
+Variant glu_rel_typ_with_sub i Δ A σ ρ : Prop :=
+| mk_glu_rel_typ_with_sub :
   `{ forall P El,
         {{ ⟦ A ⟧ ρ ↘ a }} ->
         {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
         {{ Δ ⊢ A[σ] ® P }} ->
-        glu_rel_typ_sub i Δ A σ ρ }.
+        glu_rel_typ_with_sub i Δ A σ ρ }.
 
 Definition nil_glu_sub_pred : glu_sub_pred :=
   fun Δ σ ρ => {{ Δ ⊢s σ : ⋅ }}.
@@ -334,24 +334,24 @@ Inductive glu_ctx_env : glu_sub_pred -> ctx -> Prop :=
         {{ Γ ⊢ A : Type@i }} ->
         (forall Δ σ ρ,
             {{ Δ ⊢s σ ® ρ ∈ TSb }} ->
-            glu_rel_typ_sub i Δ A σ ρ) ->
+            glu_rel_typ_with_sub i Δ A σ ρ) ->
         Sb <∙> cons_glu_sub_pred i Γ A TSb ->
         {{ EG Γ, A ∈ glu_ctx_env ↘ Sb }} }.
 
-Variant glu_rel_exp_sub i Δ M A σ ρ : Prop :=
-| mk_glu_rel_exp_sub :
+Variant glu_rel_exp_with_sub i Δ M A σ ρ : Prop :=
+| mk_glu_rel_exp_with_sub :
   `{ forall P El,
         {{ ⟦ A ⟧ ρ ↘ a }} ->
         {{ ⟦ M ⟧ ρ ↘ m }} ->
         {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
         {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }} ->
-        glu_rel_exp_sub i Δ M A σ ρ }.
+        glu_rel_exp_with_sub i Δ M A σ ρ }.
 
-Variant glu_rel_sub_sub Δ τ (Sb : glu_sub_pred) σ ρ : Prop :=
-| mk_glu_rel_sub_sub :
+Variant glu_rel_sub_with_sub Δ τ (Sb : glu_sub_pred) σ ρ : Prop :=
+| mk_glu_rel_sub_with_sub :
   `{ {{ ⟦ τ ⟧s ρ ↘ ρ' }} ->
      {{ Δ ⊢s τ ∘ σ ® ρ' ∈ Sb }} ->
-     glu_rel_sub_sub Δ τ Sb σ ρ}.
+     glu_rel_sub_with_sub Δ τ Sb σ ρ}.
 
 Definition glu_rel_ctx Γ : Prop := exists Sb, {{ EG Γ ∈ glu_ctx_env ↘ Sb }}.
 Arguments glu_rel_ctx Γ/.
@@ -362,7 +362,7 @@ Definition glu_rel_exp Γ M A : Prop :=
       exists i,
       forall Δ σ ρ,
         {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
-        glu_rel_exp_sub i Δ M A σ ρ.
+        glu_rel_exp_with_sub i Δ M A σ ρ.
 Arguments glu_rel_exp Γ M A/.
 
 Definition glu_rel_sub Γ τ Γ' : Prop :=
@@ -371,7 +371,7 @@ Definition glu_rel_sub Γ τ Γ' : Prop :=
     {{ EG Γ' ∈ glu_ctx_env ↘ Sb' }} /\
       forall Δ σ ρ,
         {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
-        glu_rel_sub_sub Δ τ Sb' σ ρ.
+        glu_rel_sub_with_sub Δ τ Sb' σ ρ.
 Arguments glu_rel_sub Γ τ Γ'/.
 
 Notation "⊩ Γ" := (glu_rel_ctx Γ) (in custom judg at level 80, Γ custom exp).

@@ -3,7 +3,7 @@ From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_De
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation Realizability.
+From Mcltt.Core.Soundness Require Import LogicalRelation Realizability SubtypingCases TermStructureCases UniverseCases.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
@@ -26,7 +26,7 @@ Lemma glu_rel_sub_weaken : forall {Γ A},
     {{ Γ, A ⊩s Wk : Γ }}.
 Proof.
   intros * [SbΓA].
-  match_by_head1 glu_ctx_env invert_per_ctx_env.
+  match_by_head1 glu_ctx_env invert_glu_ctx_env.
   handle_functional_glu_ctx_env.
   do 2 eexists; repeat split; mauto.
   intros.
@@ -50,8 +50,8 @@ Proof.
   invert_glu_rel_sub Hσ1.
   do 2 eexists; repeat split; mauto.
   intros.
-  destruct_glu_rel_sub_sub.
-  destruct_glu_rel_sub_sub.
+  destruct_glu_rel_sub_with_sub.
+  destruct_glu_rel_sub_with_sub.
   handle_functional_glu_ctx_env.
   econstructor; mauto.
   enough {{ Δ ⊢s (σ1 ∘ σ2) ∘ σ ≈ σ1 ∘ (σ2 ∘ σ) : Γ3 }} as -> by eassumption.
@@ -71,39 +71,26 @@ Proof.
   assert {{ Γ ⊢s σ : Δ }} by mauto 3.
   assert {{ Δ ⊢ A : Type@i }} by mauto 3.
   assert {{ Γ ⊢ M : A[σ] }} by mauto 3.
+  assert {{ Γ ⊩ Type@i : Type@(S i) }} by mauto 3.
+  assert {{ Γ ⊢ Type@i[σ] ⊆ Type@i }} by mauto 3.
+  assert {{ Γ ⊩ A[σ] : Type@i }} by mauto 3.
   destruct Hσ as [SbΓ [SbΔ]].
+  assert {{ Δ ⊩ Type@i : Type@(S i) }} by mauto 3.
   destruct_conjs.
   invert_glu_rel_exp HA.
-  rename x into j.
   invert_glu_rel_exp HM.
-  rename x into k.
   do 2 eexists; repeat split; mauto.
-  - assert {{ Δ ⊢ A : Type@(max i k) }} by mauto 2 using lift_exp_max_left.
-    econstructor; mauto 3; try reflexivity.
-    intros.
-    destruct_glu_rel_exp_sub.
-    simplify_evals.
-    match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
-    apply_predicate_equivalence.
-    unfold univ_glu_exp_pred' in *.
-    destruct_conjs.
-    rename m into a.
-    assert {{ Dom a ≈ a ∈ per_univ i }} as [] by mauto.
-    eapply mk_glu_rel_typ_sub''; mauto using per_univ_elem_cumu_max_left.
-    intros.
-    eapply glu_univ_elem_typ_cumu_max_left; revgoals; mautosolve.
+  - econstructor; mauto 3; try reflexivity.
   - intros.
-    destruct_glu_rel_sub_sub.
-    destruct_glu_rel_exp_sub.
+    destruct_glu_rel_sub_with_sub.
+    destruct_glu_rel_exp_with_sub.
     simplify_evals.
     match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
     apply_predicate_equivalence.
     unfold univ_glu_exp_pred' in *.
     destruct_conjs.
+    handle_functional_glu_univ_elem.
     rename m0 into a.
-    assert {{ Γ ⊢ M : A[σ] }} by mauto 3.
-    assert {{ Δ ⊢ A : Type@i }} by mauto 3.
-    assert {{ Γ ⊢s σ : Δ }} by mauto 3.
     assert {{ Δ0 ⊢s σ0 : Γ }} by mauto 4.
     econstructor; mauto 3.
     assert {{ Δ0 ⊢s (σ,,M)∘σ0 : Δ, A }} by mauto 3.
@@ -114,19 +101,18 @@ Proof.
     assert {{ Δ0 ⊢ M[σ0] : A[σ∘σ0] }} by mauto 3.
     assert {{ Δ0 ⊢s Wk∘((σ∘σ0),,M[σ0]) ≈ σ∘σ0 : Δ }} by mauto 3.
     assert {{ Δ0 ⊢s Wk∘((σ,,M)∘σ0) ≈ σ∘σ0 : Δ }} by mauto 3.
-    assert (exists P El, {{ DG a ∈ glu_univ_elem (max i k) ↘ P ↘ El }}) as [Pmax [Elmax]] by mauto 3 using glu_univ_elem_cumu_max_left.
     econstructor; mauto 4.
     + assert {{ Δ, A ⊢s Wk : Δ }} by mauto 4.
       assert {{ Δ0 ⊢ A[Wk][(σ,,M)∘σ0] ≈ A[Wk∘((σ,,M)∘σ0)] : Type@i }} by mauto 4.
       assert {{ Δ0 ⊢ A[Wk∘((σ,,M)∘σ0)] ≈ A[σ∘σ0] : Type@i }} by mauto 3.
       assert {{ Δ0 ⊢ A[σ∘σ0] ≈ A[σ][σ0] : Type@i }} by mauto 4.
-      assert {{ Δ0 ⊢ A[Wk∘((σ,,M)∘σ0)] ≈ A[σ][σ0] : Type@(max i k) }} as -> by mauto 3 using lift_exp_eq_max_left.
+      assert {{ Δ0 ⊢ A[Wk∘((σ,,M)∘σ0)] ≈ A[σ][σ0] : Type@i }} as -> by mauto 3.
       assert {{ Δ, A ⊢ #0 : A[Wk] }} by mauto 3.
       assert {{ Δ0 ⊢ #0[(σ,,M)∘σ0] ≈ #0[(σ∘σ0),,M[σ0]] : A[Wk][(σ,,M)∘σ0] }} by mauto 3.
       assert {{ Δ0 ⊢ #0[(σ,,M)∘σ0] ≈ #0[(σ∘σ0),,M[σ0]] : A[σ][σ0] }} as -> by mauto 3.
       assert {{ Δ0 ⊢ #0[(σ∘σ0),,M[σ0]] ≈ M[σ0] : A[σ∘σ0] }} by mauto.
       assert {{ Δ0 ⊢ #0[(σ∘σ0),,M[σ0]] ≈ M[σ0] : A[σ][σ0] }} as -> by (eapply wf_exp_eq_conv; mauto 3).
-      eapply glu_univ_elem_exp_cumu_max_right; revgoals; mautosolve.
+      mautosolve 3.
     + enough {{ Δ0 ⊢s Wk∘((σ,,M)∘σ0) ≈ σ∘σ0 : Δ }} as ->; eassumption.
 Qed.
 

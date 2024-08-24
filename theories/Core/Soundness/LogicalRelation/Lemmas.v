@@ -565,13 +565,13 @@ Proof.
   eapply glu_univ_elem_exp_lower; mauto.
 Qed.
 
-(** Lemmas for [glu_rel_typ_sub] and [glu_rel_exp_sub] *)
+(** Lemmas for [glu_rel_typ_with_sub] and [glu_rel_exp_with_sub] *)
 
-Lemma mk_glu_rel_typ_sub' : forall {i Δ A σ ρ a},
+Lemma mk_glu_rel_typ_with_sub' : forall {i Δ A σ ρ a},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
     (exists P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }}) ->
     (forall P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} -> {{ Δ ⊢ A[σ] ® P }}) ->
-    glu_rel_typ_sub i Δ A σ ρ.
+    glu_rel_typ_with_sub i Δ A σ ρ.
 Proof.
   intros * ? [? []] HEl.
   econstructor; mauto.
@@ -579,28 +579,28 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_typ_sub' : mcltt.
+Hint Resolve mk_glu_rel_typ_with_sub' : mcltt.
 
-Lemma mk_glu_rel_typ_sub'' : forall {i Δ A σ ρ a},
+Lemma mk_glu_rel_typ_with_sub'' : forall {i Δ A σ ρ a},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
     {{ Dom a ≈ a ∈ per_univ i }} ->
     (forall P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} -> {{ Δ ⊢ A[σ] ® P }}) ->
-    glu_rel_typ_sub i Δ A σ ρ.
+    glu_rel_typ_with_sub i Δ A σ ρ.
 Proof.
   intros * ? [] ?.
   assert (exists P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }}) as [? []] by mauto.
-  eapply mk_glu_rel_typ_sub'; mauto.
+  eapply mk_glu_rel_typ_with_sub'; mauto.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_typ_sub'' : mcltt.
+Hint Resolve mk_glu_rel_typ_with_sub'' : mcltt.
 
-Lemma mk_glu_rel_exp_sub' : forall {i Δ A M σ ρ a m},
+Lemma mk_glu_rel_exp_with_sub' : forall {i Δ A M σ ρ a m},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
     {{ ⟦ M ⟧ ρ ↘ m }} ->
     (exists P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }}) ->
     (forall P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} -> {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}) ->
-    glu_rel_exp_sub i Δ M A σ ρ.
+    glu_rel_exp_with_sub i Δ M A σ ρ.
 Proof.
   intros * ? ? [? []] HEl.
   econstructor; mauto.
@@ -608,27 +608,27 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_exp_sub' : mcltt.
+Hint Resolve mk_glu_rel_exp_with_sub' : mcltt.
 
-Lemma mk_glu_rel_exp_sub'' : forall {i Δ A M σ ρ a m},
+Lemma mk_glu_rel_exp_with_sub'' : forall {i Δ A M σ ρ a m},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
     {{ ⟦ M ⟧ ρ ↘ m }} ->
     {{ Dom a ≈ a ∈ per_univ i }} ->
     (forall P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} -> {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}) ->
-    glu_rel_exp_sub i Δ M A σ ρ.
+    glu_rel_exp_with_sub i Δ M A σ ρ.
 Proof.
   intros * ? ? [] ?.
   assert (exists P El, {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }}) as [? []] by mauto.
-  eapply mk_glu_rel_exp_sub'; mauto.
+  eapply mk_glu_rel_exp_with_sub'; mauto.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_exp_sub'' : mcltt.
+Hint Resolve mk_glu_rel_exp_with_sub'' : mcltt.
 
-Lemma glu_rel_exp_sub_implies_glu_rel_exp_sub_typ : forall {i Δ A M σ Γ ρ},
+Lemma glu_rel_exp_with_sub_implies_glu_rel_exp_sub_with_typ : forall {i Δ A M σ Γ ρ},
   {{ Δ ⊢s σ : Γ }} ->
-  glu_rel_exp_sub i Δ M A σ ρ ->
-  glu_rel_exp_sub (S i) Δ A {{{ Type@i }}} σ ρ.
+  glu_rel_exp_with_sub i Δ M A σ ρ ->
+  glu_rel_exp_with_sub (S i) Δ A {{{ Type@i }}} σ ρ.
 Proof.
   intros * ? [].
   econstructor; mauto.
@@ -639,11 +639,11 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_sub_implies_glu_rel_exp_sub_typ : mcltt.
+Hint Resolve glu_rel_exp_with_sub_implies_glu_rel_exp_sub_with_typ : mcltt.
 
-Lemma glu_rel_exp_sub_implies_glu_rel_typ_sub : forall {i Δ A j σ ρ},
-  glu_rel_exp_sub i Δ A {{{ Type@j }}} σ ρ ->
-  glu_rel_typ_sub j Δ A σ ρ.
+Lemma glu_rel_exp_with_sub_implies_glu_rel_typ_with_sub : forall {i Δ A j σ ρ},
+  glu_rel_exp_with_sub i Δ A {{{ Type@j }}} σ ρ ->
+  glu_rel_typ_with_sub j Δ A σ ρ.
 Proof.
   intros * [].
   simplify_evals.
@@ -655,12 +655,12 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_sub_implies_glu_rel_typ_sub : mcltt.
+Hint Resolve glu_rel_exp_with_sub_implies_glu_rel_typ_with_sub : mcltt.
 
-Lemma glu_rel_typ_sub_implies_glu_rel_exp_sub : forall {Δ A j σ Γ ρ},
+Lemma glu_rel_typ_with_sub_implies_glu_rel_exp_with_sub : forall {Δ A j σ Γ ρ},
   {{ Δ ⊢s σ : Γ }} ->
-  glu_rel_typ_sub j Δ A σ ρ ->
-  glu_rel_exp_sub (S j) Δ A {{{ Type@j }}} σ ρ.
+  glu_rel_typ_with_sub j Δ A σ ρ ->
+  glu_rel_exp_with_sub (S j) Δ A {{{ Type@j }}} σ ρ.
 Proof.
   intros * ? [].
   simplify_evals.
@@ -670,7 +670,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_typ_sub_implies_glu_rel_exp_sub : mcltt.
+Hint Resolve glu_rel_typ_with_sub_implies_glu_rel_exp_with_sub : mcltt.
 
 (** Lemmas for [glu_ctx_env] *)
 
@@ -843,7 +843,7 @@ Proof.
   assert {{ Dom ρ ↯ ≈ ρ ↯ ∈ tail_rel }}
     by (eapply glu_ctx_env_per_env; [| | eassumption]; eassumption).
   assert {{ Δ0 ⊢s Wk∘σ0 ® ρ ↯ ∈ TSb' }} by intuition.
-  assert (glu_rel_typ_sub j Δ0 A' {{{ Wk∘σ0 }}} d{{{ ρ ↯ }}}) as [] by mauto.
+  assert (glu_rel_typ_with_sub j Δ0 A' {{{ Wk∘σ0 }}} d{{{ ρ ↯ }}}) as [] by mauto.
   destruct_rel_typ.
   handle_functional_glu_univ_elem.
   rename a0 into a'.
@@ -902,7 +902,7 @@ Lemma glu_ctx_env_cons_clean_inversion : forall {Γ TSb A Sb},
     {{ Γ ⊢ A : Type@i }} /\
       (forall Δ σ ρ,
           {{ Δ ⊢s σ ® ρ ∈ TSb }} ->
-          glu_rel_typ_sub i Δ A σ ρ) /\
+          glu_rel_typ_with_sub i Δ A σ ρ) /\
       (Sb <∙> cons_glu_sub_pred i Γ A TSb).
 Proof.
   intros.
@@ -941,7 +941,7 @@ Proof.
   rename i1 into k.
   rename TSb0 into TSb'.
   destruct_by_head cons_glu_sub_pred.
-  assert (glu_rel_typ_sub k Δ A' {{{ Wk∘σ }}} d{{{ ρ ↯ }}}) as [] by intuition.
+  assert (glu_rel_typ_with_sub k Δ A' {{{ Wk∘σ }}} d{{{ ρ ↯ }}}) as [] by intuition.
   rename a0 into a'.
   rename P0 into P'.
   rename El0 into El'.
@@ -1002,7 +1002,7 @@ Proof.
     apply_predicate_equivalence;
     try solve [econstructor; mauto].
 
-  assert (glu_rel_typ_sub i Γ A {{{ Id }}} p) as [] by mauto.
+  assert (glu_rel_typ_with_sub i Γ A {{{ Id }}} p) as [] by mauto.
   functional_eval_rewrite_clear.
   econstructor; mauto.
   - eapply realize_glu_elem_bot; mauto.
@@ -1032,43 +1032,43 @@ Ltac destruct_glu_rel_by_assumption sub_glu_rel H :=
         mark_with H' 1
     end;
   unmark_all_with 1.
-Ltac destruct_glu_rel_exp_sub :=
+Ltac destruct_glu_rel_exp_with_sub :=
   repeat
     match goal with
-    | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_exp_sub _ _ _ _ _ _) |- _ =>
+    | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_exp_with_sub _ _ _ _ _ _) |- _ =>
         destruct_glu_rel_by_assumption sub_glu_rel H; mark H
-    | H : glu_rel_exp_sub _ _ _ _ _ _ |- _ =>
+    | H : glu_rel_exp_with_sub _ _ _ _ _ _ |- _ =>
         dependent destruction H
     end;
   unmark_all.
-Ltac destruct_glu_rel_sub_sub :=
+Ltac destruct_glu_rel_sub_with_sub :=
   repeat
     match goal with
-    | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_sub_sub _ _ _ _ _) |- _ =>
+    | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_sub_with_sub _ _ _ _ _) |- _ =>
         destruct_glu_rel_by_assumption sub_glu_rel H; mark H
-    | H : glu_rel_exp_sub _ _ _ _ _ _ |- _ =>
+    | H : glu_rel_exp_with_sub _ _ _ _ _ _ |- _ =>
         dependent destruction H
     end;
   unmark_all.
-Ltac destruct_glu_rel_typ_sub :=
+Ltac destruct_glu_rel_typ_with_sub :=
   repeat
     match goal with
-    | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_typ_sub _ _ _ _ _) |- _ =>
+    | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_typ_with_sub _ _ _ _ _) |- _ =>
         destruct_glu_rel_by_assumption sub_glu_rel H; mark H
-    | H : glu_rel_exp_sub _ _ _ _ _ _ |- _ =>
+    | H : glu_rel_exp_with_sub _ _ _ _ _ _ |- _ =>
         dependent destruction H
     end;
   unmark_all.
 
 (** Lemmas about [glu_rel_exp] *)
 
-Lemma glu_rel_exp_clean_inversion : forall {Γ Sb M A},
+Lemma glu_rel_exp_clean_inversion1 : forall {Γ Sb M A},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩ M : A }} ->
     exists i,
     forall Δ σ ρ,
       {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
-      glu_rel_exp_sub i Δ M A σ ρ.
+      glu_rel_exp_with_sub i Δ M A σ ρ.
 Proof.
   intros * ? [].
   destruct_conjs.
@@ -1077,8 +1077,37 @@ Proof.
   mauto.
 Qed.
 
+Definition glu_rel_exp_clean_inversion2_result i Sb M A :=
+  forall Δ σ ρ,
+    {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
+    glu_rel_exp_with_sub i Δ M A σ ρ.
+
+Lemma glu_rel_exp_clean_inversion2 : forall {i Γ Sb M A},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    {{ Γ ⊩ A : Type@i }} ->
+    {{ Γ ⊩ M : A }} ->
+    glu_rel_exp_clean_inversion2_result i Sb M A.
+Proof.
+  unfold glu_rel_exp_clean_inversion2_result.
+  intros * ? HA HM.
+  eapply glu_rel_exp_clean_inversion1 in HA; [| eassumption].
+  eapply glu_rel_exp_clean_inversion1 in HM; [| eassumption].
+  destruct_conjs.
+  intros.
+  destruct_glu_rel_exp_with_sub.
+  simplify_evals.
+  match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
+  apply_predicate_equivalence.
+  unfold univ_glu_exp_pred' in *.
+  destruct_conjs.
+  econstructor; mauto.
+  eapply glu_univ_elem_exp_conv; revgoals; mauto.
+Qed.
+
 Ltac invert_glu_rel_exp H :=
-  (unshelve eapply (glu_rel_exp_clean_inversion _) in H; shelve_unifiable; [eassumption |];
+  (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
+   unfold glu_rel_exp_clean_inversion2_result in H)
+  + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
    destruct H as [])
   + (inversion H; subst).
 
@@ -1093,7 +1122,7 @@ Proof.
   destruct_conjs.
   functional_initial_env_rewrite_clear.
   assert {{ Γ ⊢s Id ® p ∈ Sb }} by (eapply initial_env_glu_rel_exp; mauto).
-  destruct_glu_rel_exp_sub.
+  destruct_glu_rel_exp_with_sub.
   enough {{ Γ ⊢ M[Id] : A[Id] }} as HId by mauto.
   mauto using glu_univ_elem_trm_escape.
 Qed.
@@ -1107,7 +1136,7 @@ Lemma glu_rel_sub_clean_inversion1 : forall {Γ Sb τ Γ'},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩s τ : Γ' }} ->
     exists Sb' : glu_sub_pred,
-      glu_ctx_env Sb' Γ' /\ (forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_sub Δ τ Sb' σ ρ).
+      glu_ctx_env Sb' Γ' /\ (forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_with_sub Δ τ Sb' σ ρ).
 Proof.
   intros * ? [? []].
   destruct_conjs.
@@ -1122,14 +1151,14 @@ Lemma glu_rel_sub_clean_inversion2 : forall {Γ τ Γ' Sb'},
     {{ EG Γ' ∈ glu_ctx_env ↘ Sb' }} ->
     {{ Γ ⊩s τ : Γ' }} ->
     exists Sb : glu_sub_pred,
-      glu_ctx_env Sb Γ /\ (forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_sub Δ τ Sb' σ ρ).
+      glu_ctx_env Sb Γ /\ (forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_with_sub Δ τ Sb' σ ρ).
 Proof.
   intros * ? [? [Sb'0]].
   destruct_conjs.
   handle_functional_glu_ctx_env.
   eexists; split; mauto.
   intros.
-  assert (glu_rel_sub_sub Δ τ Sb'0 σ ρ) as [] by mauto.
+  assert (glu_rel_sub_with_sub Δ τ Sb'0 σ ρ) as [] by mauto.
   econstructor; mauto.
   rewrite_predicate_equivalence_right.
   mauto.
@@ -1139,7 +1168,7 @@ Lemma glu_rel_sub_clean_inversion3 : forall {Γ Sb τ Γ' Sb'},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ EG Γ' ∈ glu_ctx_env ↘ Sb' }} ->
     {{ Γ ⊩s τ : Γ' }} ->
-    forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_sub Δ τ Sb' σ ρ.
+    forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_with_sub Δ τ Sb' σ ρ.
 Proof.
   intros * ? ? Hglu.
   eapply glu_rel_sub_clean_inversion2 in Hglu; [| eassumption].
@@ -1169,7 +1198,7 @@ Proof.
   destruct_conjs.
   functional_initial_env_rewrite_clear.
   assert {{ Γ ⊢s Id ® p ∈ SbΓ }} by (eapply initial_env_glu_rel_exp; mauto).
-  destruct_glu_rel_sub_sub.
+  destruct_glu_rel_sub_with_sub.
   assert {{ Γ ⊢s σ ∘ Id : Δ }} by mauto.
   econstructor; mauto.
 Qed.

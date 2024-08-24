@@ -29,7 +29,7 @@ Lemma glu_rel_exp_typ : forall {Γ i},
     {{ ⊩ Γ }} ->
     {{ Γ ⊩ Type@i : Type@(S i) }}.
 Proof.
-  intros * [Sb].
+  intros * [].
   eapply glu_rel_exp_of_typ; mauto 3.
   intros.
   assert {{ Δ ⊢s σ : Γ }} by mauto 3.
