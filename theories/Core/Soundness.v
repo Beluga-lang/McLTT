@@ -1,7 +1,9 @@
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import NbE Realizability.
+From Mcltt.Core.Semantic Require Import Realizability.
+From Mcltt.Core.Semantic Require Export NbE.
 From Mcltt.Core.Soundness Require Import FundamentalTheorem Realizability.
+From Mcltt.Core.Soundness Require Export LogicalRelation.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
@@ -18,10 +20,7 @@ Proof.
   functional_initial_env_rewrite_clear.
   assert {{ Γ ⊢s Id ® p ∈ Sb }} by (eapply initial_env_glu_rel_exp; mauto).
   (* TODO: extract a tactic from this *)
-  match goal with
-  | H: context[glu_rel_exp_sub _ _ _ _ _ _] |- _ =>
-      edestruct H; try eassumption
-  end.
+  destruct_glu_rel_exp_with_sub.
   assert {{ Γ ⊢ M[Id] : A[Id] ® m ∈ glu_elem_top i a }} as [] by (eapply realize_glu_elem_top; mauto).
   match_by_head per_top ltac:(fun H => destruct (H (length Γ)) as [W []]).
   eexists.

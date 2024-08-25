@@ -7,6 +7,38 @@ From Mcltt.Core.Soundness Require Import LogicalRelation Realizability.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
+Lemma presup_glu_rel_exp : forall {Γ M A},
+    {{ Γ ⊩ M : A }} ->
+    {{ ⊩ Γ }} /\ (exists i, {{ Γ ⊩ A : Type@i }}).
+Proof.
+  intros * [? [? []]].
+  split; [eexists; eassumption |].
+  do 2 eexists; intuition.
+  eexists; mauto 4.
+Qed.
+
+Lemma presup_ctx_glu_rel_exp : forall {Γ M A},
+    {{ Γ ⊩ M : A }} ->
+    {{ ⊩ Γ }}.
+Proof.
+  intros * []%presup_glu_rel_exp.
+  eassumption.
+Qed.
+
+#[export]
+Hint Resolve presup_ctx_glu_rel_exp : mcltt.
+
+Lemma presup_typ_glu_rel_exp : forall {Γ M A},
+    {{ Γ ⊩ M : A }} ->
+    exists i, {{ Γ ⊩ A : Type@i }}.
+Proof.
+  intros * []%presup_glu_rel_exp.
+  eassumption.
+Qed.
+
+#[export]
+Hint Resolve presup_typ_glu_rel_exp : mcltt.
+
 Lemma glu_rel_exp_vlookup : forall {Γ x A},
     {{ ⊩ Γ }} ->
     {{ #x : A ∈ Γ }} ->
@@ -14,7 +46,7 @@ Lemma glu_rel_exp_vlookup : forall {Γ x A},
 Proof.
   intros * [Sb] Hx. gen Sb.
   induction Hx; intros;
-    match_by_head1 glu_ctx_env ltac:(fun H => dependent destruction H).
+    match_by_head1 glu_ctx_env ltac:(fun H => invert_glu_ctx_env H).
   - eexists.
     split; [econstructor |]; try reflexivity; mauto.
     eexists.
@@ -22,28 +54,23 @@ Proof.
     destruct_by_head cons_glu_sub_pred.
     econstructor; mauto.
     enough {{ Δ ⊢ A[Wk][σ] ≈ A[Wk∘σ] : Type@i }} as -> by eassumption.
-    mauto 4.
+    assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3.
+    mauto 3.
   - assert {{ Γ ⊩ #n : A }} as Hn by mauto.
-    assert {{ Γ ⊢ #n : A }} by mauto.
-    assert (exists i, {{ Γ ⊢ A : Type@i }}) as [j] by (gen_presups; mauto).
-    destruct (invert_glu_rel_exp ltac:(eassumption) Hn) as [k].
+    assert (exists i, {{ Γ ⊢ A : Type@i }}) as [j] by (gen_presups; mauto 3).
+    invert_glu_rel_exp Hn.
+    rename x into k.
     eexists.
     split; [econstructor |]; try reflexivity; mauto.
     eexists (max j k).
     intros.
     destruct_by_head cons_glu_sub_pred.
-    repeat match goal with
-           | H: context[glu_rel_exp_sub _ _ _ _ _ _] |- _ =>
-               match type of H with
-               | __mark__ _ _ => fail 1
-               | _ => edestruct H; [eassumption |]; mark H
-               end
-           end; unmark_all.
+    destruct_glu_rel_exp_with_sub.
     simplify_evals.
     rename a into b.
     rename a0 into a.
-    assert (exists Pmax Elmax, {{ DG a ∈ glu_univ_elem (max j k) ↘ Pmax ↘ Elmax }}) as [Pmax [Elmax]] by mauto using glu_univ_elem_cumu_max_right.
-    econstructor; mauto.
+    assert {{ Dom a ≈ a ∈ per_univ k }} as [] by mauto.
+    eapply mk_glu_rel_exp_with_sub''; gintuition mauto using per_univ_elem_cumu_max_right.
     assert {{ ⊢ Γ, B }} by mauto 3.
     assert {{ Δ ⊢ A[Wk][σ] ≈ A[Wk∘σ] : Type@j }} by mauto 3.
     assert {{ Δ ⊢ A[Wk][σ] ≈ A[Wk∘σ] : Type@(max j k) }} as -> by mauto 3 using lift_exp_eq_max_left.
@@ -64,33 +91,23 @@ Lemma glu_rel_exp_sub : forall {Γ σ Δ M A},
     {{ Γ ⊩ M[σ] : A[σ] }}.
 Proof.
   intros * Hσ HM.
-  pose proof Hσ as [SbΓ [SbΔ]].
-  destruct_conjs.
-  destruct (invert_glu_rel_exp ltac:(eassumption) HM) as [i].
   assert {{ Γ ⊢s σ : Δ }} by mauto 3.
   assert {{ Δ ⊢ M : A }} by mauto 3.
-  assert (exists i, {{ Δ ⊢ A : Type@i }}) as [j] by (gen_presups; firstorder).
+  assert (exists i, {{ Δ ⊩ A : Type@i }}) as [i] by mauto 3.
+  destruct Hσ as [SbΓ [SbΔ]].
+  destruct_conjs.
+  invert_glu_rel_exp HM.
+  assert {{ Δ ⊢ A : Type@i }} by mauto 3.
   eexists; split; mauto.
-  exists (max i j).
-  intros.
-  repeat match reverse goal with
-         | H: context[glu_rel_sub_sub _ _ _ _ _] |- _ =>
-             match type of H with
-             | __mark__ _ _ => fail 1
-             | _ => edestruct H; [eassumption |]; mark H
-             end
-         | H: context[glu_rel_exp_sub _ _ _ _ _ _] |- _ =>
-             match type of H with
-             | __mark__ _ _ => fail 1
-             | _ => edestruct H; [eassumption |]; mark H
-             end
-         end; unmark_all.
-  assert (exists Pmax Elmax, {{ DG a ∈ glu_univ_elem (max i j) ↘ Pmax ↘ Elmax }}) as [Pmax [Elmax]] by mauto using glu_univ_elem_cumu_max_left.
+  eexists.
+  intros Δ' τ ρ ?.
+  destruct_glu_rel_sub_with_sub.
+  destruct_glu_rel_exp_with_sub.
+  assert {{ Dom a ≈ a ∈ per_univ i }} as [] by mauto.
   econstructor; mauto.
-  assert {{ Δ0 ⊢s σ0 : Γ }} by mauto 3.
-  assert {{ Δ0 ⊢ A[σ][σ0] ≈ A[σ∘σ0] : Type@(max i j) }} as -> by mauto 3 using lift_exp_eq_max_right.
-  assert {{ Δ0 ⊢ M[σ][σ0] ≈ M[σ∘σ0] : A[σ∘σ0] }} as -> by mauto 3.
-  eapply glu_univ_elem_exp_cumu_max_left; revgoals; mautosolve 4.
+  assert {{ Δ' ⊢s τ : Γ }} by mauto 3.
+  assert {{ Δ' ⊢ A[σ][τ] ≈ A[σ∘τ] : Type@i }} as -> by mauto 3.
+  assert {{ Δ' ⊢ M[σ][τ] ≈ M[σ∘τ] : A[σ∘τ] }} as ->; mauto 3.
 Qed.
 
 #[export]

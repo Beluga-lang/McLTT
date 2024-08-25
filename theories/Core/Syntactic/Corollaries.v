@@ -153,6 +153,9 @@ Proof.
   - rewrite <- @exp_eq_sub_compose_typ; mauto 4.
 Qed.
 
+#[local]
+Hint Rewrite -> @sub_decompose_q using mauto 4 : mcltt.
+
 Lemma sub_decompose_q_typ : forall Γ S T i σ Δ Δ' τ t,
   {{Γ, S ⊢ T : Type@i}} ->
   {{Δ ⊢s σ : Γ}} ->
@@ -163,5 +166,26 @@ Proof.
   intros. gen_presups.
   autorewrite with mcltt.
   eapply exp_eq_sub_cong_typ2'; [mauto 2 | econstructor; mauto 4 |].
-  symmetry. mauto using sub_decompose_q.
+  eapply sub_eq_refl; econstructor; mauto 3.
 Qed.
+
+Lemma sub_eq_p_q_sigma_compose_tau_extend : forall {Δ' τ Δ M A i σ Γ},
+    {{ Δ ⊢s σ : Γ }} ->
+    {{ Δ' ⊢s τ : Δ }} ->
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Δ' ⊢ M : A[σ][τ] }} ->
+    {{ Δ' ⊢s Wk∘(q σ∘(τ,,M)) ≈ σ∘τ : Γ }}.
+Proof.
+  intros.
+  assert {{ ⊢ Γ, A }} by mauto 3.
+  assert {{ Δ, A[σ] ⊢s q σ : Γ, A }} by mauto 2.
+  assert {{ Δ' ⊢s τ,,M : Δ, A[σ] }} by mauto 3.
+  assert {{ Δ, A[σ] ⊢s Wk∘q σ ≈ σ∘Wk : Γ }} by mauto 2.
+  assert {{ Δ' ⊢s Wk∘(q σ∘(τ,,M)) ≈ (Wk∘q σ)∘(τ,,M) : Γ }} by (symmetry; mauto 3).
+  bulky_rewrite; mauto 3.
+Qed.
+
+#[export]
+Hint Resolve sub_eq_p_q_sigma_compose_tau_extend : mcltt.
+#[export]
+Hint Rewrite -> @sub_eq_p_q_sigma_compose_tau_extend using mauto 4 : mcltt.

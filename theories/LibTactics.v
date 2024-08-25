@@ -88,10 +88,9 @@ Ltac find_dup_hyp tac non :=
   | [ H : ?X, H' : ?X |- _ ] =>
     not_let_bind H;
     not_let_bind H';
-    lazymatch type of X with
-    | Prop => tac H H' X
-    | _ => fail
-    end
+    let T := type of X in
+    unify T Prop;
+    tac H H' X
   | _ => non
   end.
 

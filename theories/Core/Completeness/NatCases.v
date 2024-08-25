@@ -1,6 +1,8 @@
 From Coq Require Import Morphisms_Relations.
+
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.SubstitutionCases Completeness.TermStructureCases Completeness.UniverseCases Semantic.Realizability.
+From Mcltt.Core.Completeness Require Import LogicalRelation SubstitutionCases TermStructureCases UniverseCases.
+From Mcltt.Core.Semantic Require Import Realizability.
 Import Domain_Notations.
 
 Lemma rel_exp_of_nat_inversion : forall {Γ M M'},

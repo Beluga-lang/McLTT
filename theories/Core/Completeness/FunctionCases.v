@@ -1,6 +1,7 @@
 From Coq Require Import Morphisms_Relations Relation_Definitions.
+
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness.LogicalRelation Completeness.TermStructureCases Completeness.UniverseCases.
+From Mcltt.Core.Completeness Require Import LogicalRelation TermStructureCases UniverseCases.
 Import Domain_Notations.
 
 Lemma rel_exp_of_pi_inversion : forall {Γ M M' A B},
