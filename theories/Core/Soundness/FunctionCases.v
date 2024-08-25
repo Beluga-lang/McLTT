@@ -235,26 +235,26 @@ Lemma glu_rel_exp_app : forall {Γ M N A B i},
     {{ Γ ⊩ M N : B[Id,,N] }}.
 Proof.
   intros * HB HM HN.
-  assert {{ Γ, A ⊢ B : Type@i }} by mauto 3.
-  assert {{ Γ ⊢ M : Π A B }} by mauto 3.
-  assert {{ Γ ⊢ N : A }} by mauto 3.
   assert {{ ⊩ Γ, A }} as [SbΓA] by mauto 3.
   match_by_head (glu_ctx_env SbΓA) invert_glu_ctx_env.
   apply_predicate_equivalence.
   rename i0 into j.
   rename TSb into SbΓ.
   assert {{ Γ, A ⊩ Type@i : Type@(S i) }} by mauto 3.
-  pose proof HB.
+  assert {{ Γ, A ⊩ B : Type@i }} by mauto 4.
   invert_glu_rel_exp HB.
   destruct_conjs.
   assert {{ Γ ⊩ A : Type@j }} by (eexists; intuition; eexists; mauto 4).
+  assert {{ Γ ⊩ Type@(max i j) : Type@(S (max i j)) }} by mauto 3.
+  assert {{ Γ, A ⊩ Type@(max i j) : Type@(S (max i j)) }} by mauto 3.
   assert (j <= max i j) by lia.
-  assert {{ Γ ⊢ Type@j ⊆ Type@(max i j) }} by mauto 3.
   assert {{ Γ ⊩ A : Type@(max i j) }} by mauto 4.
   assert (i <= max i j) by lia.
-  assert {{ Γ, A ⊢ Type@i ⊆ Type@(max i j) }} by mauto 3.
   assert {{ Γ, A ⊩ B : Type@(max i j) }} by mauto 4.
   assert {{ Γ ⊩ Π A B : Type@(max i j) }} by mauto 3.
+  assert {{ Γ, A ⊢ B : Type@(max i j) }} by mauto 2.
+  assert {{ Γ ⊢ M : Π A B }} by mauto 3.
+  assert {{ Γ ⊢ N : A }} by mauto 3.
   invert_glu_rel_exp HM.
   invert_glu_rel_exp HN.
   eexists; split; [eassumption |].
@@ -300,30 +300,32 @@ Proof.
   unfold univ_glu_exp_pred' in *.
   destruct_conjs.
   handle_functional_glu_univ_elem.
-  assert {{ Δ ⊢s σ : Γ }} by mauto 3.
+  assert {{ Δ ⊢s σ : Γ }} by mauto 2.
+  assert {{ Δ, A[σ] ⊢s q σ : Γ, A }} by mauto 2.
   assert {{ Γ ⊢s Id,,N : Γ, A }} by mauto 2.
   assert {{ Δ ⊢ N[σ] : A[σ] }} by mauto 3.
+  assert {{ Δ ⊢s Id,,N[σ] : Δ, A[σ] }} by mauto 3.
   assert {{ Δ ⊢s σ ≈ σ∘Id : Γ }} by mauto 3.
   assert {{ Δ ⊢s σ,,N[σ] ≈ (σ∘Id),,N[σ] : Γ, A }} by mauto 3.
   assert {{ Δ ⊢s (Id,,N)∘σ ≈ σ,,N[σ] : Γ, A }} by mauto 2.
-  assert {{ Δ ⊢s (Id,,N)∘σ ≈ (σ∘Id),,N[σ] : Γ, A }} by mauto 2.
-  assert {{ Δ ⊢ B[(Id,,N)][σ] ≈ B[(Id,,N)∘σ] : Type@i }} by mauto 2.
-  assert {{ Δ ⊢ B[(Id,,N)∘σ] ≈ B[(σ∘Id),,N[σ]] : Type@i }} by mauto 3.
-  assert {{ Δ ⊢ N[σ] : A[σ][Id] }} by mauto 2.
-  assert {{ Δ ⊢ B[(σ∘Id),,N[σ]] ≈ B[q σ][Id,,N[σ]] : Type@i }} by mauto 3 using sub_decompose_q_typ.
-  assert {{ Δ ⊢ B[(Id,,N)][σ] ≈ B[q σ][Id,,N[σ]] : Type@i }} by mauto 3.
-  assert {{ Δ ⊢ B[(σ∘Id),,N[σ]] ≈ B[σ,,N[σ]] : Type@i }} by (symmetry; mauto 3).
-  assert {{ Δ ⊢ B[(Id,,N)][σ] ≈ B[σ,,N[σ]] : Type@i }} by mauto 3.
-  assert {{ Δ ⊢ (M N)[σ] ≈ M[σ] N[σ] : B[σ,,N[σ]] }} by mauto 3.
-  assert {{ Δ ⊢ (M N)[σ] ≈ M[σ] N[σ] : B[Id,,N][σ] }} as -> by mauto 3.
-  assert {{ Δ ⊢ M[σ][Id] ≈ M[σ] : (Π A B)[σ] }} by mauto 2.
-  assert {{ Δ ⊢ M[σ][Id] ≈ M[σ] : Π A[σ] B[q σ] }} by mauto 3.
-  assert {{ Δ ⊢ M[σ][Id] N[σ] ≈ M[σ] N[σ] : B[q σ][Id,,N[σ]] }} by mauto 3.
-  assert {{ Δ ⊢ M[σ][Id] N[σ] ≈ M[σ] N[σ] : B[Id,,N][σ] }} as <- by mauto 3.
-  assert {{ Δ ⊢ B[(Id,,N)][σ] ≈ B[(σ∘Id),,N[σ]] : Type@(max i j) }} as -> by mauto 3 using lift_exp_eq_max_left.
-  assert {{ Δ ⊢ OT[Id,,N[σ]] ® OP n equiv_n }} by (eapply glu_univ_elem_trm_typ; eassumption).
-  assert {{ Δ ⊢ B[(σ∘Id),,N[σ]] ≈ OT[Id,,N[σ]] : Type@(max i j) }} as ->
-      by (replace (max i j) with (max i (max i j)) by lia; eapply glu_univ_elem_typ_unique_upto_exp_eq; revgoals; eassumption).
+  autorewrite with mcltt.
+  assert {{ Δ ⊢ B[(Id,,N)∘σ] ≈ B[σ,,N[σ]] : Type@(max i j) }} as -> by mauto 3.
+  assert {{ Δ ⊢ (M N)[σ] ≈ M[σ] N[σ] : B[σ,,N[σ]] }} as -> by mauto 3.
+  assert {{ Δ ⊢ M[σ][Id] N[σ] ≈ M[σ] N[σ] : B[σ,,N[σ]] }} as <-.
+  {
+    assert {{ Δ ⊢ M[σ][Id] ≈ M[σ] : (Π A B)[σ] }} by mauto 2.
+    assert {{ Δ ⊢ M[σ][Id] ≈ M[σ] : Π A[σ] B[q σ] }} by mauto 3.
+    let H := fresh "H" in
+    assert {{ Δ ⊢ M[σ][Id] N[σ] ≈ M[σ] N[σ] : B[q σ][Id,,N[σ]] }} as H by mauto 3;
+    autorewrite with mcltt in H; mauto 3.
+  }
+  assert {{ Δ ⊢ B[σ,,N[σ]] ≈ B[(σ∘Id),,N[σ]] : Type@(max i j) }} as -> by mauto 3.
+  assert {{ Δ ⊢ B[(σ∘Id),,N[σ]] ≈ OT[Id,,N[σ]] : Type@(max i j) }} as ->.
+  {
+    assert {{ Δ ⊢ OT[Id,,N[σ]] ® OP n equiv_n }} by (eapply glu_univ_elem_trm_typ; eassumption).
+    replace (max i j) with (max i (max i j)) by lia.
+    eapply glu_univ_elem_typ_unique_upto_exp_eq; revgoals; eassumption.
+  }
   eassumption.
 Qed.
 

@@ -38,7 +38,7 @@ Proof.
   intros.
   match_by_head1 glu_univ_elem invert_glu_univ_elem.
   apply_predicate_equivalence.
-  cbv.
+  cbn.
   mauto 4.
 Qed.
 

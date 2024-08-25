@@ -22,7 +22,7 @@ Proof.
   - intros.
     match_by_head1 glu_univ_elem invert_glu_univ_elem.
     apply_predicate_equivalence.
-    cbv.
+    cbn.
     mauto.
 Qed.
 
@@ -63,7 +63,7 @@ Lemma glu_rel_exp_succ : forall {Γ M},
 Proof.
   intros * HM.
   assert {{ Γ ⊢ M : ℕ }} by mauto.
-  cbv in HM.
+  cbn in HM.
   destruct_conjs.
   eapply glu_rel_exp_of_nat; mauto.
   intros.
@@ -71,7 +71,7 @@ Proof.
   simplify_evals.
   match_by_head1 glu_univ_elem invert_glu_univ_elem.
   apply_predicate_equivalence.
-  cbv in *.
+  cbn in *.
   destruct_conjs.
   eexists; split; mauto 3.
   econstructor; mauto.
