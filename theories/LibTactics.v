@@ -89,10 +89,8 @@ Ltac find_dup_hyp tac non :=
     not_let_bind H;
     not_let_bind H';
     let T := type of X in
-    lazymatch eval cbv in T with
-    | Prop => tac H H' X
-    | _ => fail
-    end
+    unify T Prop;
+    tac H H' X
   | _ => non
   end.
 
