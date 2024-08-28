@@ -22,8 +22,8 @@ Proof.
   - intros.
     match_by_head1 glu_univ_elem invert_glu_univ_elem.
     apply_predicate_equivalence.
-    cbn.
-    mauto.
+    unfold nat_glu_typ_pred.
+    mauto 3.
 Qed.
 
 #[export]
@@ -107,8 +107,7 @@ Proof.
   simplify_evals.
   match_by_head1 glu_univ_elem invert_glu_univ_elem.
   apply_predicate_equivalence.
-  cbn in *.
-  destruct_conjs.
+  inversion_clear_by_head nat_glu_exp_pred.
   eexists; split; mauto 3.
   econstructor; mauto.
 Qed.
@@ -196,27 +195,20 @@ Proof.
   bulky_rewrite.
 Qed.
 
-Lemma cons_glu_ctx_env_sub_nat_helper : forall {Γ SbΓ Δ σ ρ i M m},
+Lemma cons_glu_sub_pred_nat_helper : forall {Γ SbΓ Δ σ ρ i M m},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
     glu_nat Δ M m ->
     {{ Δ ⊢s σ,,M ® ρ ↦ m ∈ cons_glu_sub_pred i Γ {{{ ℕ }}} SbΓ }}.
 Proof.
   intros * ? HM ?.
-  assert {{ Δ ⊢s σ : Γ }} by mauto 2.
-  assert {{ ⊢ Δ }} by mauto 2.
-  assert {{ Δ ⊢ M : ℕ }} by mauto 2 using glu_nat_escape.
   assert {{ DG ℕ ∈ glu_univ_elem i ↘ nat_glu_typ_pred i ↘ nat_glu_exp_pred i }} by (glu_univ_elem_econstructor; reflexivity).
-  econstructor; mauto 3; [| assert {{ Δ ⊢s Wk∘(σ,,M) ≈ σ : Γ }} as ->; mauto 3].
-
-  assert {{ Δ ⊢s σ,,M : Γ, ℕ }} by mauto 3.
-  assert {{ Δ ⊢s Wk∘(σ,,M) : Γ }} by mauto 4.
-  econstructor; [unfold nat_glu_typ_pred; mauto 3 |].
-  eapply glu_nat_resp_exp_eq; mauto 3.
+  eapply cons_glu_sub_pred_helper; mauto 3.
+  econstructor; [unfold nat_glu_typ_pred |]; mauto 3.
 Qed.
 
-#[export]
-Hint Resolve cons_glu_ctx_env_sub_nat_helper : mcltt.
+#[local]
+Hint Resolve cons_glu_sub_pred_nat_helper : mcltt.
 
 Lemma glu_rel_exp_natrec_succ_helper : forall {i Γ SbΓ A MZ MS Δ M M' m' σ p am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
@@ -299,15 +291,7 @@ Proof.
   pose (R := {{{ rec M' return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}}).
   assert (exists r, {{ rec m' ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\ {{ Δ ⊢ R : A[σ,,M'] ® r ∈ El' }}) as [r' []] by mauto 3.
   assert {{ Δ ⊢ R : A[σ,,M'] }} by (erewrite <- @exp_eq_elim_sub_rhs_typ; mauto 3).
-  assert {{ Δ ⊢s σ,,M',,R ® p ↦ m' ↦ r' ∈ SbΓℕA }}.
-  {
-    unfold SbΓℕA.
-    assert {{ Δ ⊢s Wk ∘ (σ,,M',,R) ≈ σ,,M' : Γ, ℕ }} by mauto 3.
-    econstructor; mauto 4;
-      setoid_replace {{{ Wk ∘ (σ,,M',,R) }}} with {{{ σ,,M' }}} using relation (wf_sub_eq Δ {{{ Γ, ℕ }}}) by eassumption.
-    - assert {{ Δ ⊢ #0[σ,,M',,R] ≈ R : A[σ,,M'] }} as ->; mauto 3.
-    - eassumption.
-  }
+  assert {{ Δ ⊢s σ,,M',,R ® p ↦ m' ↦ r' ∈ SbΓℕA }} by (unfold SbΓℕA; mauto 3).
   destruct_glu_rel_exp_with_sub.
   simplify_evals.
   match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -335,7 +319,7 @@ Proof.
   eassumption.
 Qed.
 
-Lemma cons_glu_ctx_env_sub_q_helper : forall {Γ SbΓ Δ σ ρ i A a},
+Lemma cons_glu_sub_pred_q_helper : forall {Γ SbΓ Δ σ ρ i A a},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
     {{ Γ ⊩ A : Type@i }} ->
@@ -354,23 +338,18 @@ Proof.
   assert {{ Δ ⊢s σ : Γ }} by mauto 2.
   assert {{ Δ, A[σ] ⊢s q σ : Γ, A }} by mauto 2.
   assert {{ Δ, A[σ] ⊢w Wk : Δ }} by mauto 3.
-  econstructor; mauto 3;
-    assert {{ Δ, A[σ] ⊢s Wk∘(q σ) ≈ σ∘Wk : Γ }} as ->; mauto 3.
-  - assert {{ Δ, A[σ] ⊢s Wk : Δ }} by mauto 2.
-    assert {{ Δ, A[σ] ⊢s σ∘Wk : Γ }} by mauto 2.
-    assert {{ Δ, A[σ] ⊢ #0 : A[σ][Wk] }} by mauto 3.
-    assert {{ Δ, A[σ] ⊢ A[σ∘Wk] ≈ A[σ][Wk] : Type@i }} by mauto 3.
-    assert {{ Δ, A[σ] ⊢ #0 : A[σ∘Wk] }} by mauto 3.
-    assert {{ Δ, A[σ] ⊢ #0[q σ] ≈ #0 : A[σ∘Wk] }} as -> by mauto 3.
-    assert {{ Δ, A[σ] ⊢ A[σ∘Wk] ≈ A[σ][Wk] : Type@i }} as -> by eassumption.
-    eapply var0_glu_elem; eassumption.
+  eapply cons_glu_sub_pred_helper; mauto 2.
   - eapply glu_ctx_env_sub_monotone; eassumption.
+  - assert {{ Δ, A[σ] ⊢ #0 : A[σ][Wk] }} by mauto 3.
+    assert {{ Δ, A[σ] ⊢s Wk : Δ }} by mauto 2.
+    assert {{ Δ, A[σ] ⊢ A[σ∘Wk] ≈ A[σ][Wk] : Type@i }} as -> by mauto 3.
+    eapply var0_glu_elem; eassumption.
 Qed.
 
-#[export]
-Hint Resolve cons_glu_ctx_env_sub_q_helper : mcltt.
+#[local]
+Hint Resolve cons_glu_sub_pred_q_helper : mcltt.
 
-Lemma cons_glu_ctx_env_sub_q_nat_helper : forall {Γ SbΓ Δ σ ρ i},
+Lemma cons_glu_sub_pred_q_nat_helper : forall {Γ SbΓ Δ σ ρ i},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
     {{ Δ, ℕ ⊢s q σ ® ρ ↦ ⇑! ℕ (length Δ) ∈ cons_glu_sub_pred i Γ {{{ ℕ }}} SbΓ }}.
@@ -383,12 +362,14 @@ Proof.
   assert {{ Δ ⊢ ℕ[σ] ≈ ℕ : Type@i }} by mauto 4.
   assert {{ EG Γ, ℕ ∈ glu_ctx_env ↘ cons_glu_sub_pred i Γ {{{ ℕ }}} SbΓ }}
     by (invert_glu_rel_exp Hℕ; econstructor; mauto 3; reflexivity).
-  assert {{ ⊢ Δ, ℕ[σ] ≈ Δ, ℕ }} by mauto 4.
-  rewrite glu_ctx_env_sub_morphism_iff1; try reflexivity; mauto 3.
+  assert {{ ⊢ Δ }} by mauto 3.
+  cbn.
+  assert {{ ⊢ Δ, ℕ[σ] ≈ Δ, ℕ }} as <- by mauto 3.
+  eassumption.
 Qed.
 
-#[export]
-Hint Resolve cons_glu_ctx_env_sub_q_nat_helper : mcltt.
+#[local]
+Hint Resolve cons_glu_sub_pred_q_nat_helper : mcltt.
 
 Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M m σ p am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
@@ -519,7 +500,7 @@ Proof.
     assert {{ Δ' ⊢s τ : Δ }} by mauto 3.
     assert {{ Δ' ⊢s σ∘τ : Γ }} by mauto 3.
     assert {{ Δ' ⊢s σ∘τ ® p ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption).
-    assert {{ Δ', ℕ ⊢s q (σ∘τ) ® p ↦ ⇑! ℕ (length Δ') ∈ SbΓℕ }} by (eapply cons_glu_ctx_env_sub_q_nat_helper; eassumption).
+    assert {{ Δ', ℕ ⊢s q (σ∘τ) ® p ↦ ⇑! ℕ (length Δ') ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
     destruct_glu_rel_exp_with_sub.
     simplify_evals.
     match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -535,7 +516,7 @@ Proof.
         rename a into aΔ'
     end.
     assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢s q (q (σ∘τ)) ® p ↦ ⇑! ℕ (length Δ') ↦ ⇑! aΔ' (length {{{ Δ', ℕ }}}) ∈ SbΓℕA }}
-      by (eapply cons_glu_ctx_env_sub_q_helper; eassumption).
+      by (unfold SbΓℕA; mauto 3).
     destruct_glu_rel_exp_with_sub.
     simplify_evals.
     match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -638,7 +619,6 @@ Lemma glu_rel_exp_natrec_helper : forall {i Γ SbΓ A MZ MS},
             {{ Δ ⊢ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M] ® r ∈ El }}.
 Proof.
   intros * ? HA ? ?.
-  Set Info Eauto.
   assert {{ ⊩ Γ }} by mauto 2.
   assert {{ Γ ⊩ ℕ : Type@i }} as Hℕ by mauto 3.
   assert {{ Γ ⊩ A[Id,,zero] : Type@i }}.
@@ -690,8 +670,8 @@ Proof.
   invert_glu_rel_exp HM.
   pose proof HA.
   invert_glu_rel_exp HA.
-  eexists; split; mauto.
-  exists i.
+  eexists; split; [eassumption |].
+  eexists.
   intros.
   destruct_glu_rel_exp_with_sub.
   simplify_evals.
@@ -716,18 +696,12 @@ Proof.
       rename P' into P;
       rename El' into El
   end.
-  enough (exists r, {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ~ r }} /\ El Δ {{{ A[Id,, M][σ] }}} {{{ rec M return A | zero -> MZ | succ -> MS end[σ] }}} r) as [? []] by (eapply mk_glu_rel_exp_with_sub; mauto 3).
   assert (exists r, {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ~ r }} /\ El Δ {{{ A[σ,, M[σ]] }}} {{{ rec M[σ] return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}} r) as [? []] by (eapply glu_rel_exp_natrec_helper; revgoals; mauto 4).
-  eexists; split; mauto 3.
+  econstructor; mauto 3.
   assert {{ Δ ⊢s σ : Γ }} by mauto 2.
-  assert {{ Δ, ℕ ⊢s q σ : Γ, ℕ }} by mauto 2.
-  assert {{ Γ ⊢s Id,,M : Γ, ℕ }} by mauto 4.
-  assert {{ Δ ⊢ M[σ] : ℕ }} by mauto 3.
-  assert {{ Δ ⊢s Id,,M[σ] : Δ, ℕ }} by mauto 4.
-  assert {{ Δ ⊢s σ ≈ σ∘Id : Γ }} by mauto 3.
-  assert {{ Δ ⊢s σ,,M[σ] ≈ (σ∘Id),,M[σ] : Γ, ℕ }} by mauto 3.
-  assert {{ Δ ⊢s σ,,M[σ] ≈ (Id,,M)∘σ : Γ, ℕ }} by mauto 4.
-  assert {{ Δ ⊢ A[σ,,M[σ]] ≈ A[Id,,M][σ] : Type@i }} as <- by (autorewrite with mcltt; mauto 4).
+  assert {{ Γ ⊢ M : ℕ }} by mauto 2.
+  assert {{ Γ, ℕ ⊢ A : Type@i }} by mauto 3.
+  assert {{ Δ ⊢ A[σ,,M[σ]] ≈ A[Id,,M][σ] : Type@i }} as <- by (symmetry; mauto 2).
   assert {{ Δ ⊢ rec M return A | zero -> MZ | succ -> MS end[σ] ≈ rec M[σ] return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M[σ]] }} as -> by (econstructor; mauto 3).
   eassumption.
 Qed.

@@ -18,16 +18,11 @@ Lemma cons_glu_sub_pred_pi_helper : forall {Γ Sb Γ' σ ρ A a i P El Γ'' τ M
     {{ Γ'' ⊢s σ∘τ,,M ® ρ ↦ c ∈ cons_glu_sub_pred i Γ A Sb }}.
 Proof.
   intros.
+  assert {{ Γ'' ⊢s σ∘τ ® ρ ∈ Sb }} by (eapply glu_ctx_env_sub_monotone; mauto 3).
+  eapply cons_glu_sub_pred_helper; try eassumption.
   assert {{ Γ' ⊢s σ : Γ }} by mauto 2.
   assert {{ Γ'' ⊢s τ : Γ' }} by mauto 2.
-  assert {{ Γ'' ⊢ M : A[σ][τ] }} by mauto 2 using glu_univ_elem_trm_escape.
-  assert {{ Γ'' ⊢ M : A[σ∘τ] }} by mauto 3.
-  econstructor; mauto 3;
-    assert {{ Γ'' ⊢s Wk∘(σ∘τ,,M) ≈ σ∘τ : Γ }} as -> by mauto 3.
-  - assert {{ Γ'' ⊢ #0[σ∘τ,,M] ≈ M : A[σ∘τ] }} as -> by mauto 3.
-    assert {{ Γ'' ⊢ A[σ∘τ] ≈ A[σ][τ] : Type@i }} as -> by mauto 3.
-    eassumption.
-  - eapply glu_ctx_env_sub_monotone; mauto 3.
+  enough {{ Γ'' ⊢ A[σ∘τ] ≈ A[σ][τ] : Type@i }} as ->; mauto 3.
 Qed.
 
 #[local]
@@ -189,16 +184,22 @@ Proof.
     handle_per_univ_elem_irrel.
     econstructor; mauto 3.
   - eapply glu_univ_elem_typ_monotone; mauto 3.
-  - rename b into c.
-    rename m' into N.
-    rename equiv_b into equiv_c.
+  - match goal with
+    | H: {{ Dom ~?a ≈ ~?a ∈ in_rel }}, _: {{ ~_ ⊢ ~?M : ~_ ® ~?a ∈ Ela }} |- _ =>
+        rename a into c;
+        rename H into equiv_c;
+        rename M into N
+    end.
     assert {{ Dom ρ ↦ c ≈ ρ ↦ c ∈ env_relΓA }} as HrelΓA by (apply_relation_equivalence; mautosolve 2).
     destruct_rel_mod_eval.
     apply_relation_equivalence.
     (on_all_hyp: fun H => destruct (H _ _ HrelΓA) as [? [[] []]]).
     handle_per_univ_elem_irrel.
     eexists; split; mauto 3.
-    rename a0 into b.
+    match goal with
+    | _: {{ ⟦ B ⟧ ρ ↦ c ↘ ~?a }} |- _ =>
+        rename a into b
+    end.
     assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv_c ↘ OEl c equiv_c }} by mauto 3.
     assert {{ Δ0 ⊢s σ0 : Δ }} by mauto 3.
     assert {{ Δ0 ⊢ N : A[σ][σ0] }} by mauto 2 using glu_univ_elem_trm_escape.
@@ -213,11 +214,11 @@ Proof.
       assert {{ Δ0 ⊢ N : A[σ∘σ0] }} by mauto 3.
       assert {{ Δ0 ⊢ (λ A M)[σ][σ0] N ≈ (λ A[σ∘σ0] M[q (σ∘σ0)]) N : B[q (σ∘σ0)][Id,,N] }} by mauto 3.
       assert {{ Δ0 ⊢ (λ A M)[σ][σ0] N ≈ M[q (σ∘σ0)][Id,,N] : B[q (σ∘σ0)][Id,,N] }} by mauto 3.
+      transitivity {{{ M[q (σ∘σ0)][Id,,N] }}}; [mauto 3 |].
       assert {{ Δ0 ⊢s Id,,N : Δ0, A[σ∘σ0] }} by mauto 3.
       assert {{ Δ0, A[σ∘σ0] ⊢s q (σ∘σ0) : Γ, A }} by mauto 2.
       assert {{ Δ0 ⊢s q (σ∘σ0)∘(Id,,N) ≈ σ∘σ0,,N : Γ, A }} by mauto 2.
       assert {{ Δ0 ⊢ B[q (σ∘σ0)∘(Id,,N)] ≈ B[σ∘σ0,,N] : Type@i }} as <- by mauto 2.
-      transitivity {{{ M[q (σ∘σ0)][Id,,N] }}}; [mauto 3 |].
       transitivity {{{ M[q (σ∘σ0)∘(Id,,N)] }}}; mauto 3.
     }
     assert {{ Δ0 ⊢ N : A[σ][σ0] ® c ∈ Ela }} by mauto 3.
@@ -236,11 +237,11 @@ Lemma glu_rel_exp_fn : forall {Γ M A B i},
 Proof.
   intros * HA HM.
   assert (exists j, {{ Γ, A ⊩ B : Type@j }}) as [j] by mauto 3.
-  assert {{ Γ ⊩ Type@(max i j) : Type@(S (max i j)) }} by mauto 3.
+  assert {{ ⊩ Γ }} by mauto 3.
   assert (i <= max i j) by lia.
   assert {{ Γ ⊢ Type@i ⊆ Type@(max i j) }} by mauto 4.
   assert {{ Γ ⊩ A : Type@(max i j) }} by mauto 3.
-  assert {{ Γ, A ⊩ Type@(max i j) : Type@(S (max i j)) }} by mauto 3.
+  assert {{ ⊩ Γ, A }} by mauto 3.
   assert (j <= max i j) by lia.
   assert {{ Γ, A ⊢ Type@j ⊆ Type@(max i j) }} by mauto 4.
   assert {{ Γ, A ⊩ B : Type@(max i j) }} by mauto 3.
@@ -315,7 +316,6 @@ Proof.
   unfold univ_glu_exp_pred' in *.
   destruct_conjs.
   handle_functional_glu_univ_elem.
-  Set Info Eauto.
   assert {{ Δ ⊢s σ : Γ }} by mauto 2.
   assert {{ Δ ⊢ N[σ] : A[σ] }} by mauto 2.
   assert {{ Δ ⊢ B[(Id,,N)][σ] ≈ B[σ,,N[σ]] : Type@i }} as -> by mauto 2.
@@ -352,13 +352,13 @@ Proof.
   rename TSb into SbΓ.
   assert {{ Γ, A ⊩ B : Type@i }} by mauto 4.
   assert {{ Γ ⊩ A : Type@j }} by (eexists; intuition; eexists; mauto 4).
-  assert {{ Γ ⊩ Type@(max i j) : Type@(S (max i j)) }} by mauto 3.
+  assert {{ ⊩ Γ }} by mauto 2.
   assert (j <= max i j) by lia.
-  assert {{ Γ ⊢ Type@j ⊆ Type@(max i j) }} by mauto 4.
+  assert {{ Γ ⊢ Type@j ⊆ Type@(max i j) }} by mauto 3.
   assert {{ Γ ⊩ A : Type@(max i j) }} by mauto 3.
-  assert {{ Γ, A ⊩ Type@(max i j) : Type@(S (max i j)) }} by mauto 3.
+  assert {{ ⊩ Γ, A }} by mauto 2.
   assert (i <= max i j) by lia.
-  assert {{ Γ, A ⊢ Type@i ⊆ Type@(max i j) }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@i ⊆ Type@(max i j) }} by mauto 3.
   assert {{ Γ, A ⊩ B : Type@(max i j) }} by mauto 3.
   mauto 2 using glu_rel_exp_app_helper.
 Qed.

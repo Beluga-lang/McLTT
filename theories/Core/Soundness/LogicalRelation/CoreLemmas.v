@@ -36,6 +36,23 @@ Qed.
 #[export]
 Hint Resolve glu_nat_escape : mcltt.
 
+Lemma glu_nat_resp_ctx_eq : forall Γ m a Δ,
+    glu_nat Γ m a ->
+    {{ ⊢ Γ ≈ Δ }} ->
+    glu_nat Δ m a.
+Proof.
+  induction 1; intros; mauto.
+Qed.
+
+#[local]
+Hint Resolve glu_nat_resp_ctx_eq : mcltt.
+
+Add Parametric Morphism : glu_nat
+    with signature wf_ctx_eq ==> eq ==> eq ==> iff as glu_ctx_env_sub_morphism_iff1.
+Proof.
+  split; mauto using glu_nat_resp_ctx_eq.
+Qed.
+
 Lemma glu_nat_resp_exp_eq : forall Γ m a,
     glu_nat Γ m a ->
     forall m',
@@ -51,16 +68,11 @@ Qed.
 #[local]
 Hint Resolve glu_nat_resp_exp_eq : mcltt.
 
-Lemma glu_nat_resp_ctx_eq : forall Γ m a Δ,
-    glu_nat Γ m a ->
-    {{ ⊢ Γ ≈ Δ }} ->
-    glu_nat Δ m a.
+Add Parametric Morphism Γ : (glu_nat Γ)
+    with signature wf_exp_eq Γ {{{ ℕ }}} ==> eq ==> iff as glu_ctx_env_sub_morphism_iff2.
 Proof.
-  induction 1; intros; mauto.
+  split; mauto using glu_nat_resp_exp_eq.
 Qed.
-
-#[local]
-Hint Resolve glu_nat_resp_ctx_eq : mcltt.
 
 Lemma glu_nat_readback : forall Γ m a,
     glu_nat Γ m a ->
@@ -112,15 +124,11 @@ Proof.
   assert {{ Δ ⊢ T[σ] ≈ V : Type@i }}; mauto.
 Qed.
 
-
 Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (P Γ)
     with signature wf_exp_eq Γ {{{Type@i}}} ==> iff as glu_univ_elem_typ_morphism_iff1.
 Proof.
-  intros. split; intros;
-    eapply glu_univ_elem_typ_resp_exp_eq;
-    mauto 2.
+  split; intros; eapply glu_univ_elem_typ_resp_exp_eq; mauto 2.
 Qed.
-
 
 Lemma glu_univ_elem_trm_resp_typ_exp_eq : forall i P El A,
     {{ DG A ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -131,10 +139,8 @@ Lemma glu_univ_elem_trm_resp_typ_exp_eq : forall i P El A,
 Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
-    simpl_glu_rel; repeat split; mauto.
-
-  intros.
-  assert {{ Δ ⊢ M[σ] ≈ V : Type@i }}; mauto.
+    simpl_glu_rel; repeat split; intros; mauto 3;
+    [firstorder | | assert {{ Δ ⊢ M[σ] ≈ V : Type@i }} by mauto 3 |]; mauto.
 Qed.
 
 Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) Γ : (El Γ)
@@ -155,7 +161,7 @@ Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 2;
-    econstructor; mauto.
+    econstructor; mauto 4.
 Qed.
 
 Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) : P
@@ -176,13 +182,13 @@ Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 2;
-    econstructor; mauto using glu_nat_resp_ctx_eq.
+    econstructor; mauto 4 using glu_nat_resp_ctx_eq.
 
   - split; mauto.
     do 2 eexists.
     split; mauto.
     eapply glu_univ_elem_typ_resp_ctx_eq; mauto.
-  - split; mauto.
+  - split; mauto 4.
 Qed.
 
 Add Parametric Morphism i P El A (H : glu_univ_elem i P El A) : El
@@ -635,7 +641,7 @@ Ltac invert_glu_univ_elem H :=
    destruct H as [? [? [? [? [? [? [? [? []]]]]]]]])
   + basic_invert_glu_univ_elem H.
 
-Lemma glu_univ_elem_morphism_helper : forall i a a' P El,
+Lemma glu_univ_elem_resp_per_univ : forall i a a' P El,
     {{ Dom a ≈ a' ∈ per_univ i }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a' ∈ glu_univ_elem i ↘ P ↘ El }}.
@@ -667,7 +673,7 @@ Add Parametric Morphism i : (glu_univ_elem i)
 Proof with mautosolve.
   intros P P' HPP' El El' HElEl' a a' Haa'.
   rewrite HPP', HElEl'.
-  split; intros; eapply glu_univ_elem_morphism_helper; mauto.
+  split; intros; eapply glu_univ_elem_resp_per_univ; mauto.
   symmetry; eassumption.
 Qed.
 
@@ -676,7 +682,7 @@ Add Parametric Morphism i R : (glu_univ_elem i)
 Proof with mautosolve.
   intros P P' HPP' El El' HElEl' a a' Haa'.
   rewrite HPP', HElEl'.
-  split; intros; eapply glu_univ_elem_morphism_helper; mauto.
+  split; intros; eapply glu_univ_elem_resp_per_univ; mauto.
   symmetry; mauto.
 Qed.
 
