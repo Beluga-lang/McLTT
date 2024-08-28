@@ -7,6 +7,37 @@ From Mcltt.Core.Soundness Require Import LogicalRelation Realizability Subtyping
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
+Lemma presup_glu_rel_sub : forall {Γ σ Δ},
+    {{ Γ ⊩s σ : Δ }} ->
+    {{ ⊩ Γ }} /\ {{ ⊩ Δ }}.
+Proof.
+  intros * [].
+  destruct_conjs.
+  split; eexists; eassumption.
+Qed.
+
+Lemma presup_left_glu_rel_sub : forall {Γ σ Δ},
+    {{ Γ ⊩s σ : Δ }} ->
+    {{ ⊩ Γ }}.
+Proof.
+  intros * []%presup_glu_rel_sub.
+  eassumption.
+Qed.
+
+#[export]
+Hint Resolve presup_left_glu_rel_sub : mcltt.
+
+Lemma presup_right_glu_rel_sub : forall {Γ σ Δ},
+    {{ Γ ⊩s σ : Δ }} ->
+    {{ ⊩ Δ }}.
+Proof.
+  intros * []%presup_glu_rel_sub.
+  eassumption.
+Qed.
+
+#[export]
+Hint Resolve presup_right_glu_rel_sub : mcltt.
+
 Lemma glu_rel_sub_id : forall {Γ},
     {{ ⊩ Γ }} ->
     {{ Γ ⊩s Id : Γ }}.

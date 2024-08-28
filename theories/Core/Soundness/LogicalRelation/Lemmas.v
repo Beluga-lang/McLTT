@@ -1108,7 +1108,7 @@ Ltac invert_glu_rel_exp H :=
   (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
    unfold glu_rel_exp_clean_inversion2_result in H)
   + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
-   destruct H as [])
+     destruct H as [])
   + (inversion H; subst).
 
 Lemma glu_rel_exp_to_wf_exp : forall {Γ A M},
