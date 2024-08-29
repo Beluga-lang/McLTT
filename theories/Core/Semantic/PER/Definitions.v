@@ -222,10 +222,6 @@ Section Per_univ_elem_ind_def.
         (fun _ _ _ _ _ => case_ne i)
         R a b H.
 
-  Search "per_univ_elem".
-
-  Print Assumptions per_univ_elem_graph_equation_1.
-
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations per_univ_elem_ind i a b R (H : per_univ_elem i a b R) : motive i a b R :=
   | i, a, b, R, H := per_univ_elem_ind' i a b R _.
