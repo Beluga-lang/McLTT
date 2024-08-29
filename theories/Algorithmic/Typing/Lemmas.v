@@ -1,5 +1,3 @@
-From Coq Require Import FunInd.
-
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Algorithmic Require Import Typing.Definitions.
 From Mcltt.Algorithmic Require Export Subtyping.Lemmas.
@@ -284,19 +282,4 @@ Proof.
   - assert (exists i, {{ Γ ⊢ A : Type@i }}) as [i] by mauto 3.
     assert (exists W, nbe_ty Γ A W /\ {{ Γ ⊢ A ≈ W : Type@i }}) as [W []] by (eapply soundness_ty; mauto 3).
     econstructor; mauto 4 using alg_subtyping_complete.
-Qed.
-
-(* There might be a better file for this. *)
-Functional Scheme elaborate_fun_ind := Induction for elaborate Sort Prop.
-
-(* There might be a better file for this. *)
-Lemma elaborator_gives_user_exp : forall O vs M,
-    elaborate O vs = Some M ->
-    user_exp M.
-Proof.
-  intros * Heq. gen M.
-  functional induction (elaborate O vs) using elaborate_fun_ind;
-    intros; inversion_clear Heq; mauto 4.
-
-  econstructor; mauto 3.
 Qed.

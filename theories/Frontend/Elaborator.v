@@ -1,6 +1,7 @@
-From Coq Require Import Lia List MSets PeanoNat String.
+From Coq Require Import Lia List MSets PeanoNat String FunInd.
 
-From Mcltt Require Import Syntax.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core.Syntactic Require Import Syntax.
 
 Open Scope string_scope.
 
@@ -65,6 +66,62 @@ Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : option exp :=
       end
   end
 .
+
+Functional Scheme elaborate_fun_ind := Induction for elaborate Sort Prop.
+
+Generalizable All Variables.
+
+Inductive user_exp : exp -> Prop :=
+| user_exp_typ :
+  `( user_exp (a_typ i) )
+| user_exp_nat :
+  `( user_exp a_nat )
+| user_exp_zero :
+  `( user_exp a_zero )
+| user_exp_succ :
+  `( user_exp M ->
+     user_exp (a_succ M) )
+| user_exp_natrec :
+  `( user_exp A ->
+     user_exp MZ ->
+     user_exp MS ->
+     user_exp M ->
+     user_exp (a_natrec A MZ MS M) )
+| user_exp_pi :
+  `( user_exp A ->
+     user_exp B ->
+     user_exp (a_pi A B) )
+| user_exp_fn :
+  `( user_exp A ->
+     user_exp M ->
+     user_exp (a_fn A M) )
+| user_exp_app :
+  `( user_exp M ->
+     user_exp N ->
+     user_exp (a_app M N) )
+| user_exp_vlookup :
+  `( user_exp (a_var x) ).
+
+#[export]
+Hint Constructors user_exp : mcltt.
+
+Lemma user_exp_nf : forall M, user_exp (nf_to_exp M)
+with user_exp_ne : forall M, user_exp (ne_to_exp M).
+Proof.
+  - clear user_exp_nf; induction M; mauto 3.
+  - clear user_exp_ne; induction M; mauto 3.
+Qed.
+
+Lemma elaborator_gives_user_exp : forall O vs M,
+    elaborate O vs = Some M ->
+    user_exp M.
+Proof.
+  intros * Heq. gen M.
+  functional induction (elaborate O vs) using elaborate_fun_ind;
+    intros; inversion_clear Heq; mauto 4.
+
+  econstructor; mauto 3.
+Qed.
 
 Fixpoint cst_variables (cst : Cst.obj) : StrSet.t :=
  match cst with
