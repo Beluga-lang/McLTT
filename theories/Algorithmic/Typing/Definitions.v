@@ -6,7 +6,7 @@ From Mcltt.Core.Syntactic Require Import System.Definitions.
 From Mcltt.Core.Syntactic Require Export Syntax.
 Import Domain_Notations.
 
-Reserved Notation "Γ '⊢a' M ⟹ A" (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp).
+Reserved Notation "Γ '⊢a' M ⟹ A" (in custom judg at level 80, Γ custom exp, M custom exp, A custom nf).
 Reserved Notation "Γ '⊢a' M ⟸ A" (in custom judg at level 80, Γ custom exp, M custom exp, A custom exp).
 (* Reserved Notation "Γ '⊢a' A @ i" (in custom judg at level 80, Γ custom exp, A custom exp, i constr). *)
 
@@ -18,7 +18,7 @@ Inductive alg_type_check : ctx -> typ -> exp -> Prop :=
      {{ Γ ⊢a A ⊆ B }} ->
      {{ Γ ⊢a M ⟸ B }} )
 where "Γ '⊢a' M ⟸ A" := (alg_type_check Γ A M) (in custom judg) : type_scope
-with alg_type_infer : ctx -> typ -> exp -> Prop :=
+with alg_type_infer : ctx -> nf -> exp -> Prop :=
 | ati_typ :
   `( {{ Γ ⊢a Type@i ⟹ Type@(S i) }} )
 | ati_nat :
@@ -69,3 +69,37 @@ with alg_type_infer_mut_ind := Induction for alg_type_infer Sort Prop.
 Combined Scheme alg_type_mut_ind from
   alg_type_check_mut_ind,
   alg_type_infer_mut_ind.
+
+Inductive user_exp : exp -> Prop :=
+| user_exp_typ :
+  `( user_exp {{{ Type@i }}} )
+| user_exp_nat :
+  `( user_exp {{{ ℕ }}} )
+| user_exp_zero :
+  `( user_exp {{{ zero }}} )
+| user_exp_succ :
+  `( user_exp {{{ M }}} ->
+     user_exp {{{ succ M }}} )
+| user_exp_natrec :
+  `( user_exp {{{ A }}} ->
+     user_exp {{{ MZ }}} ->
+     user_exp {{{ MS }}} ->
+     user_exp {{{ M }}} ->
+     user_exp {{{ rec M return A | zero -> MZ | succ -> MS end }}} )
+| user_exp_pi :
+  `( user_exp {{{ A }}} ->
+     user_exp {{{ B }}} ->
+     user_exp {{{ Π A B }}} )
+| user_exp_fn :
+  `( user_exp {{{ A }}} ->
+     user_exp {{{ M }}} ->
+     user_exp {{{ λ A M }}} )
+| user_exp_app :
+  `( user_exp {{{ M }}} ->
+     user_exp {{{ N }}} ->
+     user_exp {{{ M N }}} )
+| user_exp_vlookup :
+  `( user_exp {{{ #x }}} ).
+
+#[export]
+Hint Constructors user_exp : mcltt.
