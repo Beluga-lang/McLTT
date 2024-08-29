@@ -22,7 +22,7 @@ Proof.
   induction 1; intros; progressive_inversion.
   - exists nil.
     repeat eexists; mauto 4.
-  - edestruct IHctx_lookup as [Δ1 [? [? [? [? [? [? []]]]]]]]; eauto.
+  - edestruct IHctx_lookup as [Δ1 [? [? [? [? [? [? []]]]]]]]; eauto 3.
     exists (A0 :: Δ1). subst.
     repeat eexists; mauto 4.
 Qed.
@@ -43,30 +43,32 @@ Lemma var_weaken_gen : forall Δ σ Γ,
       {{Δ ⊢ (# (length Γ1)) [σ] ≈ # (length Δ - length Γ2 - 1) : ~(iter (S (length Γ1)) (fun T => {{{T [ Wk ]}}}) T) [ σ ] }}.
 Proof.
   induction 1; intros; subst; gen_presups.
-  - pose proof (app_ctx_vlookup _ _ _ _ HΔ eq_refl).
-    gen_presup H0.
+  - pose proof (app_ctx_vlookup _ _ _ _ HΔ eq_refl) as Hvar.
+    gen_presup Hvar.
     clear_dups.
     apply wf_sub_id_inversion in Hτ.
     pose proof (wf_ctx_sub_length _ _ Hτ).
     transitivity {{{#(length Γ1) [Id]}}}; [mauto 3 |].
-    rewrite H1, var_arith, H.
+    replace (length Γ) with (length (Γ1 ++ {{{ Γ2, T }}})) by eassumption.
+    rewrite var_arith, H.
     bulky_rewrite.
-  - pose proof (app_ctx_vlookup _ _ _ _ HΔ0 eq_refl).
+  - pose proof (app_ctx_vlookup _ _ _ _ HΔ0 eq_refl) as Hvar.
     pose proof (app_ctx_lookup Γ1 T0 Γ2 _ eq_refl).
-    gen_presup H2.
+    gen_presup Hvar.
     clear_dups.
-    assert {{ Δ', T ⊢s Wk : ~ (Γ1 ++ {{{ Γ2, T0 }}}) }} by mauto.
-    transitivity {{{#(length Γ1) [Wk ∘ τ]}}}; [mauto 3 |].
+    assert {{ ⊢ Δ', T }} by mauto 3.
+    assert {{ Δ', T ⊢s Wk : ~ (Γ1 ++ {{{ Γ2, T0 }}}) }} by mauto 3.
+    transitivity {{{ #(length Γ1)[Wk∘τ] }}}; [mauto 3 |].
     rewrite H1.
     etransitivity; [eapply wf_exp_eq_sub_compose; mauto 3 |].
     pose proof (wf_ctx_sub_length _ _ H0).
 
     rewrite <- @exp_eq_sub_compose_typ; mauto 2.
-    deepexec wf_ctx_sub_ctx_lookup ltac:(fun H => destruct H as [? [? [? [? [-> [? [-> []]]]]]]]).
+    deepexec wf_ctx_sub_ctx_lookup ltac:(fun H => destruct H as [Γ1' [? [Γ2' [? [-> [? [-> []]]]]]]]).
     repeat rewrite List.app_length in *.
-    rewrite H6 in *.
-    assert (length x1 = length Γ2) by (simpl in *; lia).
-    rewrite <- H9.
+    replace (length Γ1) with (length Γ1') in * by eassumption.
+    clear_refl_eqs.
+    replace (length Γ2) with (length Γ2') by (simpl in *; lia).
 
     etransitivity.
     + eapply wf_exp_eq_sub_cong; [ |mauto 3].
@@ -277,7 +279,7 @@ Proof.
       deepexec H1 ltac:(fun H => pose proof H).
       specialize (H33 _ _ _ _ _ ltac:(eassumption) ltac:(eassumption) ltac:(eassumption) ltac:(eassumption)) as [].
       specialize (H40 _ {{{Id}}} _ ltac:(mauto 3) ltac:(eassumption)).
-      do 2 (rewrite wf_exp_eq_sub_id in H40; mauto 4).
+      do 2 (rewrite wf_exp_eq_sub_id in H40; mauto 3).
       etransitivity; [|eassumption].
       simpl.
       assert {{ Δ, IT[σ] ⊢ # 0 : IT[σ ∘ Wk] }} by (rewrite <- @exp_eq_sub_compose_typ; mauto 3).

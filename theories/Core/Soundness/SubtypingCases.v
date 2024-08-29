@@ -55,3 +55,27 @@ Qed.
 
 #[export]
 Hint Resolve glu_rel_sub_subtyp : mcltt.
+
+Lemma glu_rel_exp_conv : forall {Γ M A A' i},
+    {{ Γ ⊩ M : A }} ->
+    {{ Γ ⊩ A' : Type@i }} ->
+    {{ Γ ⊢ A ≈ A' : Type@i }} ->
+    {{ Γ ⊩ M : A' }}.
+Proof.
+  mauto 3.
+Qed.
+
+#[export]
+Hint Resolve glu_rel_exp_conv : mcltt.
+
+Lemma glu_rel_sub_conv : forall {Γ σ Δ Δ'},
+    {{ Γ ⊩s σ : Δ }} ->
+    {{ ⊩ Δ' }} ->
+    {{ ⊢ Δ ≈ Δ' }} ->
+    {{ Γ ⊩s σ : Δ' }}.
+Proof.
+  mauto 3.
+Qed.
+
+#[export]
+Hint Resolve glu_rel_sub_conv : mcltt.

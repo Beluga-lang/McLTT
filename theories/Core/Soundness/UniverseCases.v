@@ -3,7 +3,7 @@ From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_De
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation Realizability.
+From Mcltt.Core.Soundness Require Import LogicalRelation Realizability SubtypingCases TermStructureCases.
 From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
@@ -44,3 +44,37 @@ Qed.
 
 #[export]
 Hint Resolve glu_rel_exp_typ : mcltt.
+
+Lemma glu_rel_exp_clean_inversion2' : forall {i Γ Sb M},
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    {{ Γ ⊩ M : Type@i }} ->
+    glu_rel_exp_clean_inversion2_result (S i) Sb M {{{ Type@i }}}.
+Proof.
+  intros * ? HM.
+  assert {{ Γ ⊩ Type@i : Type@(S i) }} by mauto 3.
+  eapply glu_rel_exp_clean_inversion2 in HM; mauto 3.
+Qed.
+
+Ltac invert_glu_rel_exp H ::=
+  (unshelve eapply (glu_rel_exp_clean_inversion2' _) in H; shelve_unifiable; [eassumption |];
+   unfold glu_rel_exp_clean_inversion2_result in H)
+  + (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
+     unfold glu_rel_exp_clean_inversion2_result in H)
+  + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
+     destruct H as [])
+  + (inversion H; subst).
+
+Lemma glu_rel_exp_sub_typ : forall {Γ σ Δ i A},
+    {{ Γ ⊩s σ : Δ }} ->
+    {{ Δ ⊩ A : Type@i }} ->
+    {{ Γ ⊩ A[σ] : Type@i }}.
+Proof.
+  intros.
+  assert {{ Γ ⊢s σ : Δ }} by mauto 3.
+  assert {{ Γ ⊢ Type@i[σ] ⊆ Type@i }} by mauto 3.
+  assert {{ Γ ⊩ A[σ] : Type@i[σ] }} by mauto 4.
+  mauto 4.
+Qed.
+
+#[export]
+Hint Resolve glu_rel_exp_sub_typ : mcltt.
