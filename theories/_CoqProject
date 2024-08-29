@@ -4,7 +4,6 @@
 
 ./Algorithmic/Subtyping/Definitions.v
 ./Algorithmic/Subtyping/Lemmas.v
-./Core/Axioms.v
 ./Core/Base.v
 ./Core/Completeness/Consequences/Rules.v
 ./Core/Completeness/Consequences/Types.v

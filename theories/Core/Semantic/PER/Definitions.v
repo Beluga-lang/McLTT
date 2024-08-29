@@ -173,9 +173,9 @@ Lemma per_univ_elem_core_univ' : forall j i elem_rel,
 Proof.
   intros.
   simp per_univ_elem.
-  apply per_univ_elem_core_univ; try assumption.
-  reflexivity.
+  econstructor; mauto 3.
 Qed.
+
 #[export]
 Hint Resolve per_univ_elem_core_univ' : mcltt.
 
@@ -221,6 +221,10 @@ Section Per_univ_elem_ind_def.
         (fun _ _ _ _ _ _ _ out_rel _ _ IHA per _ => case_Pi i out_rel _ IHA per _)
         (fun _ _ _ _ _ => case_ne i)
         R a b H.
+
+  Search "per_univ_elem".
+
+  Print Assumptions per_univ_elem_graph_equation_1.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations per_univ_elem_ind i a b R (H : per_univ_elem i a b R) : motive i a b R :=
