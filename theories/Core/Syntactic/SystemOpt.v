@@ -47,27 +47,6 @@ Hint Resolve wf_subtyp_refl' : mcltt.
 #[export]
 Remove Hints wf_subtyp_refl : mcltt.
 
-Lemma wf_subtyp_pi' : forall Γ i A A' B B',
-    {{ Γ ⊢ A ≈ A' : Type@i }} ->
-    {{ Γ , A' ⊢ B ⊆ B' }} ->
-    {{ Γ ⊢ Π A B ⊆ Π A' B' }}.
-Proof.
-  intros.
-  gen_presups.
-  assert {{ ⊢ Γ, A ≈ Γ, A' }} by mauto 3.
-  assert {{ Γ ⊢ A : Type@(max i i0) }} by mauto 3 using lift_exp_max_left.
-  assert {{ Γ ⊢ A' : Type@(max i i0) }} by mauto 3 using lift_exp_max_left.
-  assert {{ Γ ⊢ A ≈ A' : Type@(max i i0) }} by mauto 3 using lift_exp_eq_max_left.
-  assert {{ Γ, A ⊢ B : Type@(max i i0) }} by mauto 4 using lift_exp_max_right.
-  assert {{ Γ, A' ⊢ B' : Type@(max i i0) }} by mauto 4 using lift_exp_max_right.
-  mauto 2.
-Qed.
-
-#[export]
-Hint Resolve wf_subtyp_pi' : mcltt.
-#[export]
-Remove Hints wf_subtyp_pi : mcltt.
-
 Corollary wf_conv' : forall Γ M A i A',
     {{ Γ ⊢ M : A }} ->
     {{ Γ ⊢ A ≈ A' : Type@i }} ->

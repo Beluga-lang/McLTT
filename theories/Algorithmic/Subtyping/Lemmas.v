@@ -6,7 +6,7 @@ From Mcltt.Algorithmic Require Import Subtyping.Definitions.
 Import Syntax_Notations.
 
 #[local]
-  Ltac apply_subtyping :=
+Ltac apply_subtyping :=
   repeat match goal with
     | H : {{ ~?Γ ⊢ ~?A : ~?M }},
         H1 : {{ ~?Γ ⊢ ~?M ⊆ ~?N }} |- _ =>
@@ -22,9 +22,8 @@ Lemma alg_subtyping_nf_sound : forall M N,
 Proof.
   induction 1; intros; subst; simpl in *.
   - eapply wf_subtyp_refl'; mauto.
-  - assert (i < j \/ i = j) as H2 by lia.
-    destruct H2; mauto 3.
-  - on_all_hyp: fun H => (apply wf_pi_inversion in H; destruct H as [? ?]).
+  - assert (i < j \/ i = j) as [] by lia; mauto 3.
+  - on_all_hyp: fun H => apply wf_pi_inversion in H; destruct H as [? ?].
     destruct_all.
     gen_presups.
     repeat match goal with
@@ -44,13 +43,14 @@ Lemma alg_subtyping_nf_trans : forall M1 M0 M2,
     {{ ⊢anf M1 ⊆ M2 }} ->
     {{ ⊢anf M0 ⊆ M2 }}.
 Proof.
-  intro M1; induction M1; intros ? ? H1 H2;
-    dependent destruction H1;
+  intros * H1; gen M2.
+  induction H1; subst; intros ? H2;
     dependent destruction H2;
     simpl in *;
     try contradiction;
-    mauto.
-  apply asnf_univ. lia.
+    mauto 3.
+
+  constructor; lia.
 Qed.
 
 Lemma alg_subtyping_nf_refl : forall M,
@@ -61,7 +61,7 @@ Proof.
 Qed.
 
 #[local]
- Hint Resolve alg_subtyping_nf_trans alg_subtyping_nf_refl : mcltt.
+Hint Resolve alg_subtyping_nf_trans alg_subtyping_nf_refl : mcltt.
 
 Lemma alg_subtyping_trans : forall Γ M0 M1 M2,
     {{ Γ ⊢a M0 ⊆ M1 }} ->
@@ -74,16 +74,14 @@ Proof.
 Qed.
 
 #[local]
- Hint Resolve alg_subtyping_trans : mcltt.
-
+Hint Resolve alg_subtyping_trans : mcltt.
 
 Lemma alg_subtyping_complete : forall Γ M N,
     {{ Γ ⊢ M ⊆ N }} ->
     {{ Γ ⊢a M ⊆ N }}.
 Proof.
   induction 1; mauto.
-  - apply completeness in H0.
-    destruct H0 as [W [? ?]].
+  - apply completeness in H0 as [W [? ?]].
     econstructor; mauto.
   - assert {{ Γ ⊢ Type@i : Type@(S i) }} by mauto.
     assert {{ Γ ⊢ Type@j : Type@(S j) }} by mauto.
@@ -92,23 +90,20 @@ Proof.
     econstructor; mauto 2.
     progressive_inversion.
     mauto.
-  - assert {{ Γ ⊢ Π A B : Type@i }} as HΠ1 by mauto.
-    assert {{ Γ ⊢ Π A' B' : Type@i }} as HΠ2 by mauto.
-    assert {{ ⊢ Γ , A ≈ Γ , A' }} by mauto.
+  - assert {{ ⊢ Γ , A ≈ Γ , A' }} by mauto.
     eapply ctxeq_nbe_eq in H5; [ |eassumption].
     match goal with
     | H : _ |- _ => apply completeness in H
     end.
-    apply soundness in HΠ1.
-    apply soundness in HΠ2.
+    assert {{ Γ ⊢ Π A B : Type@i }} as ?%soundness by mauto.
+    assert {{ Γ ⊢ Π A' B' : Type@i }} as ?%soundness by mauto.
     destruct_all.
     econstructor; mauto 2.
     progressive_inversion.
-    simpl in *.
     functional_initial_env_rewrite_clear.
     simplify_evals.
     functional_read_rewrite_clear.
-    eapply asnf_pi; trivial.
+    mauto 2.
 Qed.
 
 Lemma alg_subtyping_sound : forall Γ M N i,
