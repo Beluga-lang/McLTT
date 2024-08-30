@@ -55,6 +55,8 @@ Section type_check.
   | _              => inright _
   .
 
+  Extraction Inline get_level_of_type_nf get_subterms_of_pi_nf.
+
   Inductive type_check_order : exp -> Prop :=
   | tc_ti : forall {A}, type_infer_order A -> type_check_order A
   with type_infer_order : exp -> Prop :=
@@ -158,7 +160,7 @@ Section type_check.
         progressive_inversion;
         functional_alg_type_infer_rewrite_clear;
         solve [congruence | mautosolve 3]
-    | _ => show_hyps; show_goal
+    | _ => idtac
     end.
 
   #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
@@ -184,9 +186,8 @@ Section type_check.
         let*o (exist _ i _) :=  get_level_of_type_nf UA' while _ in
         let*b->o _ := type_check G {{{ A'[Id,,zero] }}} _ MZ _ while _ in
         let*b->o _ := type_check {{{ G, ℕ, A' }}} {{{ A'[Wk∘Wk,,succ #1] }}} _ MS _ while _ in
-        match nbe_ty_impl G {{{ A'[Id,,M'] }}} _ with
-        | exist _ A'' _ => pureo (exist _ A'' _)
-        end
+        let (A'', _) := nbe_ty_impl G {{{ A'[Id,,M'] }}} _ in
+        pureo (exist _ A'' _)
     | {{{ Π B C }}} =>
         let*o (exist _ UB _) := type_infer G _ B _ while _ in
         let*o (exist _ i _) :=  get_level_of_type_nf UB while _ in
@@ -197,31 +198,28 @@ Section type_check.
         let*o (exist _ UA' _) := type_infer G _ A' _ while _ in
         let*o (exist _ i _) :=  get_level_of_type_nf UA' while _ in
         let*o (exist _ B' _) := type_infer {{{ G, A' }}} _ M' _ while _ in
-        match nbe_ty_impl G A' _ with
-        | exist _ A'' _ => pureo (exist _ n{{{ Π A'' B' }}} _)
-        end
+        let (A'', _) := nbe_ty_impl G A' _ in
+        pureo (exist _ n{{{ Π A'' B' }}} _)
     | {{{ M' N' }}} =>
         let*o (exist _ C _) := type_infer G _ M' _ while _ in
         let*o (exist _ AB _) := get_subterms_of_pi_nf C while _ in
         let*b->o _ := type_check G (fst AB) _ N' _ while _ in
-        match nbe_ty_impl G {{{ ~(snd AB)[Id,,N'] }}} _ with
-        | exist _ B' _ => pureo (exist _ B' _)
-        end
+        let (B', _) := nbe_ty_impl G {{{ ~(snd AB)[Id,,N'] }}} _ in
+        pureo (exist _ B' _)
     | {{{ #x }}} =>
         let*o (exist _ A _) := lookup G _ x while _ in
-        match nbe_ty_impl G A _ with
-        | exist _ A' _ => pureo (exist _ A' _)
-        end
+        let (A', _) := nbe_ty_impl G A _ in
+        pureo (exist _ A' _)
     | _ => inright _
     }
   .
 
-  Next Obligation.
+  Next Obligation (* {{ G ⊢a succ M' ⟹ ℕ }} /\ (exists i, {{ G ⊢a ℕ ⟹ Type@i }}) *).
     clear_defs.
     mautosolve 4.
   Qed.
-
-  Next Obligation.
+  
+  Next Obligation (* exists j, {{ G ⊢ A'[Id,,zero] : Type@j }} *).
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     eexists.
@@ -229,7 +227,7 @@ Section type_check.
     mauto 3.
   Qed.
 
-  Next Obligation.
+  Next Obligation (* exists j, {{ G, ℕ, A' ⊢ A'[Wk∘Wk,,succ #1] : Type@i }} *).
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     eexists.
@@ -237,7 +235,7 @@ Section type_check.
     mauto 3.
   Qed.
 
-  Next Obligation.
+  Next Obligation (* nbe_ty_order G {{{ A'[Id,,M'] }}} *).
     clear_defs.
     enough (exists i, {{ G ⊢ A'[Id,,M'] : ~n{{{ Type@i }}} }}) as [? [? []]%exp_eq_refl%completeness_ty]
         by eauto 3 using nbe_ty_order_sound.
@@ -247,7 +245,7 @@ Section type_check.
     mauto 4 using alg_type_check_sound.
   Qed.
 
-  Next Obligation.
+  Next Obligation (* {{ G ⊢a rec M' return A' | zero -> MZ | succ -> MS end ⟹ A'' }} /\ (exists j, {{ G ⊢a A'' ⟹ Type@j }}) *).
     clear_defs.
     split; [mauto 3 |].
     assert {{ G, ℕ ⊢ A' : ~n{{{ Type@i }}} }} by mauto 4 using alg_type_infer_sound.
@@ -257,13 +255,13 @@ Section type_check.
     assert (exists j, {{ G ⊢a A'' ⟹ Type@j }} /\ j <= i) as [? []] by (gen_presups; mauto 3); firstorder.
   Qed.
 
-  Next Obligation.
+  Next Obligation (* nbe_ty_order G A *).
     clear_defs.
     assert (exists i, {{ G ⊢ A : Type@i }}) as [? [? []]%soundness_ty] by mauto 3.
     mauto 3 using nbe_ty_order_sound.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* {{ G ⊢a #x ⟹ A' }} /\ (exists i, {{ G ⊢a A' ⟹ Type@i }}) *)
     clear_defs.
     assert (exists i, {{ G ⊢ A : Type@i }}) as [i] by mauto 3.
     assert {{ G ⊢ A ≈ A' : Type@i }} by (eapply soundness_ty'; mauto 4 using alg_type_check_sound).
@@ -271,21 +269,19 @@ Section type_check.
     assert (exists j, {{ G ⊢a A' ⟹ Type@j }} /\ j <= i) as [? []] by (gen_presups; mauto 4); firstorder mauto 3.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* {{ ⊢ G, A' }} *)
     clear_defs.
-    functional_alg_type_infer_rewrite_clear.
-    progressive_inversion.
     assert {{ G ⊢ A' : Type@i }} by mauto 4 using alg_type_infer_sound.
     mauto 3.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* nbe_ty_order G A' *)
     clear_defs.
     assert {{ G ⊢ A' : Type@i }} as [? []]%soundness_ty by mauto 4 using alg_type_infer_sound.
     mauto 3 using nbe_ty_order_sound.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* {{ G ⊢a λ A' M' ⟹ Π A'' B' }} /\ (exists j, {{ G ⊢a Π A'' B' ⟹ Type@j }}) *)
     clear_defs.
     assert {{ G ⊢ A' : Type@i }} by mauto 4 using alg_type_infer_sound.
     assert {{ G ⊢ A' ≈ A'' : Type@i }} by (eapply soundness_ty'; mauto 4 using alg_type_check_sound).
@@ -301,14 +297,14 @@ Section type_check.
     firstorder mauto 3.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* exists i : nat, {{ G ⊢ n : Type@i }} *)
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     progressive_inversion.
     eexists; mauto 4 using alg_type_infer_sound.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* False *)
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     progressive_inversion.
@@ -317,7 +313,7 @@ Section type_check.
     congruence.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* nbe_ty_order G {{{ n0[Id,,N'] }}} *)
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     progressive_inversion.
@@ -328,7 +324,7 @@ Section type_check.
     mauto 3 using nbe_ty_order_sound.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* {{ G ⊢a M' N' ⟹ B' }} /\ (exists i, {{ G ⊢a B' ⟹ Type@i }}) *)
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     progressive_inversion.
@@ -341,16 +337,18 @@ Section type_check.
     firstorder.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* {{ ⊢ G, B }} *)
     clear_defs.
     assert {{ G ⊢ B : Type@i }} by mauto 4 using alg_type_infer_sound.
     mauto 3.
   Qed.
 
-  Next Obligation.
+  Next Obligation. (* {{ G ⊢a Π B C ⟹ Type@(max i j) }} /\ (exists k, {{ G ⊢a Type@(max i j) ⟹ Type@k }}) *)
     clear_defs.
-    split; mauto 3.
+    mautosolve 4.
   Qed.
+
+  Extraction Inline type_check_functional type_infer_functional.
 End type_check.
 
 Section type_check_closed.
@@ -365,25 +363,25 @@ Section type_check_closed.
       let*b _ := type_check {{{ ⋅ }}} A _ M _ while _ in
       pureb _
   .
-  Next Obligation.
+  Next Obligation. (* False *)
     assert {{ ⊢ ⋅ }} by mauto 2.
     assert (exists i, {{ ⋅ ⊢ A : Type@i }}) as [i] by (gen_presups; eauto 2).
     assert (exists j, {{ ⋅ ⊢a A ⟹ Type@j }} /\ j <= i) as [j []] by mauto 3.
     firstorder.
   Qed.
-  Next Obligation.
+  Next Obligation. (* False *)
     assert (exists i, {{ ⋅ ⊢ A : Type@i }}) as [i] by (gen_presups; eauto 2).
     assert (exists j, {{ ⋅ ⊢a A ⟹ Type@j }} /\ j <= i) as [j []] by mauto 3.
     functional_alg_type_infer_rewrite_clear.
     intuition.
   Qed.
-  Next Obligation.
+  Next Obligation. (* exists i, {{ ⋅ ⊢ A : Type@i }} *)
     assert {{ ⊢ ⋅ }} by mauto 2.
     assert {{ ⋅ ⊢ A : ~n{{{ Type@i }}} }} by mauto 2 using alg_type_infer_sound.
     simpl in *.
     firstorder.
   Qed.
-  Next Obligation.
+  Next Obligation. (* {{ ⋅ ⊢ M : A }} *)
     assert {{ ⊢ ⋅ }} by mauto 2.
     assert {{ ⋅ ⊢ A : ~n{{{ Type@i }}} }} by mauto 3 using alg_type_infer_sound.
     simpl in *.
