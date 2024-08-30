@@ -305,6 +305,17 @@ Hint Resolve exp_eq_typ_sub_sub : mcltt.
 #[export]
 Hint Rewrite -> @exp_eq_sub_compose_typ @exp_eq_typ_sub_sub using mauto 4 : mcltt.
 
+Lemma functional_ctx_lookup : forall {Γ A A' x},
+    {{ #x : A ∈ Γ }} ->
+    {{ #x : A' ∈ Γ }} ->
+    A = A'.
+Proof with mautosolve.
+  intros * Hx Hx'; gen A'.
+  induction Hx as [|* ? IHHx]; intros; inversion_clear Hx';
+    f_equal;
+    intuition.
+Qed.
+
 Lemma vlookup_0_typ : forall {Γ i},
     {{ ⊢ Γ }} ->
     {{ Γ, Type@i ⊢ # 0 : Type@i }}.

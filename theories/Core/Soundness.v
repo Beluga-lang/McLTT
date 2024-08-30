@@ -8,8 +8,8 @@ From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
 Theorem soundness : forall {Γ M A},
-  {{ Γ ⊢ M : A }} ->
-  exists W, nbe Γ M A W /\ {{ Γ ⊢ M ≈ W : A }}.
+    {{ Γ ⊢ M : A }} ->
+    exists W, nbe Γ M A W /\ {{ Γ ⊢ M ≈ W : A }}.
 Proof.
   intros * H.
   assert {{ ⊢ Γ }} by mauto.
@@ -31,4 +31,34 @@ Proof.
   assert {{ Γ ⊢ M ≈ M[Id] : A[Id][Id] }} by mauto.
   assert {{ Γ ⊢ M ≈ M[Id][Id] : A[Id][Id] }} as -> by mauto.
   mauto.
+Qed.
+
+Theorem soundness' : forall {Γ M A W},
+    {{ Γ ⊢ M : A }} ->
+    nbe Γ M A W ->
+    {{ Γ ⊢ M ≈ W : A }}.
+Proof.
+  intros * [? []]%soundness ?.
+  functional_nbe_rewrite_clear.
+  eassumption.
+Qed.
+
+Lemma soundness_ty : forall {Γ i A},
+    {{ Γ ⊢ A : Type@i }} ->
+    exists W, nbe_ty Γ A W /\ {{ Γ ⊢ A ≈ W : Type@i }}.
+Proof.
+  intros.
+  assert (exists W', nbe Γ A {{{ Type@i }}} W' /\ {{ Γ ⊢ A ≈ W' : Type@i }}) as [? [?%nbe_type_to_nbe_ty Heq]] by mauto using soundness.
+  firstorder.
+Qed.
+
+Lemma soundness_ty' : forall {Γ i A B},
+    {{ Γ ⊢ A : Type@i }} ->
+    nbe_ty Γ A B ->
+    {{ Γ ⊢ A ≈ B : Type@i }}.
+Proof.
+  intros.
+  assert (exists B', nbe_ty Γ A B' /\ {{ Γ ⊢ A ≈ B' : Type@i }}) as [? [? Heq]] by mauto using soundness_ty.
+  functional_nbe_rewrite_clear.
+  eassumption.
 Qed.

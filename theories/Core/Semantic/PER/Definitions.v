@@ -173,9 +173,9 @@ Lemma per_univ_elem_core_univ' : forall j i elem_rel,
 Proof.
   intros.
   simp per_univ_elem.
-  apply per_univ_elem_core_univ; try assumption.
-  reflexivity.
+  econstructor; mauto 3.
 Qed.
+
 #[export]
 Hint Resolve per_univ_elem_core_univ' : mcltt.
 
