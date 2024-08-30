@@ -131,6 +131,19 @@ Qed.
 #[export]
 Hint Resolve glu_rel_sub_extend_nat : mcltt.
 
+Lemma exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1 : forall {Δ σ Γ i A},
+    {{ Δ ⊢s σ : Γ }} ->
+    {{ Γ, ℕ ⊢ A : Type@i }} ->
+    {{ Δ, ℕ, A[q σ] ⊢ A[q σ][Wk∘Wk,,succ #1] ≈ A[Wk∘Wk,,succ #1][q (q σ)] : Type@i }}.
+Proof.
+  intros.
+  autorewrite with mcltt.
+  rewrite -> @sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1; mauto 2.
+  eapply exp_eq_refl.
+  eapply exp_sub_typ; mauto 2.
+  econstructor; mauto 3.
+Qed.
+
 Lemma glu_rel_exp_natrec_zero_helper : forall {i Γ SbΓ A MZ MS Δ M σ p am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Γ, ℕ ⊢ A : Type@i }} ->
@@ -160,6 +173,7 @@ Proof.
   assert {{ Δ ⊢s σ : Γ }} by mauto 2.
   assert {{ ⊢ Δ }} by mauto 2.
   assert {{ ⊢ Δ, ℕ }} by mauto 3.
+  assert {{ Δ, ℕ ⊢s q σ : Γ, ℕ }} by mauto 3.
   assert {{ ⊢ Δ, ℕ, A[q σ] }} by mauto 3.
   assert {{ Δ ⊢s Id : Δ }} by mauto 2.
   assert {{ Δ ⊢s σ,,M ≈ σ,,zero : Γ, ℕ }} as -> by mauto 3.
@@ -173,18 +187,8 @@ Proof.
   assert {{ Δ ⊢ A[σ,,zero[σ]] ≈ A[Id,,zero][σ] : Type@i }} by mauto 3.
   assert {{ Δ ⊢ A[q σ][Id,,zero] ≈ A[σ,,zero] : Type@i }} as <- by mauto 2.
   assert {{ Δ ⊢ MZ[σ] : A[q σ][Id,,zero] }} by bulky_rewrite.
-  assert {{ Δ, ℕ, A[q σ] ⊢ succ #1 : ℕ[σ][Wk∘Wk] }}.
-  {
-    assert {{ Δ, ℕ, A[q σ] ⊢ #1 : ℕ[Wk][Wk] }} by mauto 3.
-    assert {{ Δ, ℕ, A[q σ] ⊢ #1 : ℕ }} by mauto 3.
-    assert {{ Δ, ℕ, A[q σ] ⊢ ℕ[σ][Wk∘Wk] ≈ ℕ : Type@0 }}; mauto 4.
-  }
-  assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }}.
-  {
-    autorewrite with mcltt.
-    rewrite -> @sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1; mauto 3.
-    rewrite <- @exp_eq_sub_compose_typ; mauto 4.
-  }
+  assert {{ Δ, ℕ, A[q σ] ⊢s Wk∘Wk,,succ #1 : Δ, ℕ }} by mauto 4.
+  assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }} by (rewrite @exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1; mauto 3).
   pose (R := {{{ rec zero return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}}).
   assert
     {{ Δ ⊢ R ≈ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[q σ][Id,,zero] }} as <-
@@ -274,20 +278,8 @@ Proof.
   assert {{ Γ ⊢ zero : ℕ }} by mauto 3.
   assert {{ Δ ⊢ A[σ,,zero[σ]] ≈ A[Id,,zero][σ] : Type@i }} by mauto 4.
   assert {{ Δ ⊢ MZ[σ] : A[q σ][Id,,zero] }} by bulky_rewrite.
-  assert {{ Δ, ℕ, A[q σ] ⊢ succ #1 : ℕ[σ][Wk∘Wk] }}.
-  {
-    assert {{ Δ, ℕ ⊢s Wk : Δ }} by mauto 2.
-    assert {{ Δ, ℕ, A[q σ] ⊢s Wk : Δ, ℕ }} by mauto 2.
-    assert {{ Δ, ℕ, A[q σ] ⊢ #1 : ℕ[Wk][Wk] }} by mauto 4.
-    assert {{ Δ, ℕ, A[q σ] ⊢ #1 : ℕ }} by mauto 3.
-    assert {{ Δ, ℕ, A[q σ] ⊢ ℕ[σ][Wk∘Wk] ≈ ℕ : Type@0 }}; mauto 4.
-  }
-  assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }}.
-  {
-    autorewrite with mcltt.
-    rewrite -> @sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1; mauto 3.
-    rewrite <- @exp_eq_sub_compose_typ; mauto 4.
-  }
+  assert {{ Δ, ℕ, A[q σ] ⊢s Wk∘Wk,,succ #1 : Δ, ℕ }} by mauto 3.
+  assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }} by (rewrite @exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1; mauto 3).
   pose (R := {{{ rec M' return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}}).
   assert (exists r, {{ rec m' ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\ {{ Δ ⊢ R : A[σ,,M'] ® r ∈ El' }}) as [r' []] by mauto 3.
   assert {{ Δ ⊢ R : A[σ,,M'] }} by (erewrite <- @exp_eq_elim_sub_rhs_typ; mauto 3).
@@ -336,12 +328,11 @@ Proof.
   unfold univ_glu_exp_pred' in *.
   destruct_conjs.
   assert {{ Δ ⊢s σ : Γ }} by mauto 2.
-  assert {{ Δ, A[σ] ⊢s q σ : Γ, A }} by mauto 2.
-  assert {{ Δ, A[σ] ⊢w Wk : Δ }} by mauto 3.
+  assert {{ ⊢ Δ, A[σ] }} by mauto 3.
+  assert {{ Δ, A[σ] ⊢w Wk : Δ }} by mauto 2.
   eapply cons_glu_sub_pred_helper; mauto 2.
   - eapply glu_ctx_env_sub_monotone; eassumption.
-  - assert {{ Δ, A[σ] ⊢ #0 : A[σ][Wk] }} by mauto 3.
-    assert {{ Δ, A[σ] ⊢s Wk : Δ }} by mauto 2.
+  - assert {{ Δ, A[σ] ⊢s Wk : Δ }} by mauto 2.
     assert {{ Δ, A[σ] ⊢ A[σ∘Wk] ≈ A[σ][Wk] : Type@i }} as -> by mauto 3.
     eapply var0_glu_elem; eassumption.
 Qed.
@@ -362,7 +353,7 @@ Proof.
   assert {{ Δ ⊢ ℕ[σ] ≈ ℕ : Type@i }} by mauto 4.
   assert {{ EG Γ, ℕ ∈ glu_ctx_env ↘ cons_glu_sub_pred i Γ {{{ ℕ }}} SbΓ }}
     by (invert_glu_rel_exp Hℕ; econstructor; mauto 3; reflexivity).
-  assert {{ ⊢ Δ }} by mauto 3.
+  assert {{ ⊢ Δ }} by mauto 2.
   cbn.
   assert {{ ⊢ Δ, ℕ[σ] ≈ Δ, ℕ }} as <- by mauto 3.
   eassumption.
@@ -433,20 +424,8 @@ Proof.
   assert {{ Γ ⊢ zero : ℕ }} by mauto 3.
   assert {{ Δ ⊢ A[σ,,zero[σ]] ≈ A[Id,,zero][σ] : Type@i }} by mauto 4.
   assert {{ Δ ⊢ MZ[σ] : A[q σ][Id,,zero] }} by bulky_rewrite.
-  assert {{ Δ, ℕ, A[q σ] ⊢ succ #1 : ℕ[σ][Wk∘Wk] }}.
-  {
-    assert {{ Δ, ℕ ⊢s Wk : Δ }} by mauto 2.
-    assert {{ Δ, ℕ, A[q σ] ⊢s Wk : Δ, ℕ }} by mauto 2.
-    assert {{ Δ, ℕ, A[q σ] ⊢ #1 : ℕ[Wk][Wk] }} by mauto 3.
-    assert {{ Δ, ℕ, A[q σ] ⊢ #1 : ℕ }} by mauto 3.
-    assert {{ Δ, ℕ, A[q σ] ⊢ ℕ[σ][Wk∘Wk] ≈ ℕ : Type@0 }}; mauto 4.
-  }
-  assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }}.
-  {
-    autorewrite with mcltt.
-    rewrite -> @sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1; mauto 3.
-    rewrite <- @exp_eq_sub_compose_typ; mauto 4.
-  }
+  assert {{ Δ, ℕ, A[q σ] ⊢s Wk∘Wk,,succ #1 : Δ, ℕ }} by mauto 3.
+  assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }} by (rewrite @exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1; mauto 3).
   pose (R := {{{ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}}).
   enough {{ Δ ⊢ R : A[σ,,M] ® rec m under p return A | zero -> mz | succ -> MS end ∈ glu_elem_bot i am }} by (eapply realize_glu_elem_bot; mauto 3).
   econstructor; mauto 3.
@@ -580,12 +559,10 @@ Proof.
       assert {{ ⊢ Δ', ℕ, A[q σ][q τ] ≈ Δ', ℕ, A[q (σ∘τ)] }} as -> by eassumption.
       assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢s Wk∘Wk,,succ #1 : Δ', ℕ }} by mauto 2.
       assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢ A[q σ][q τ][Wk∘Wk,,succ #1] ≈ A[q (σ∘τ)][Wk∘Wk,,succ #1] : Type@i }} as -> by mauto 3.
-      assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢ A[q (σ∘τ)][Wk∘Wk,,succ #1] ≈ A[q (σ∘τ)∘(Wk∘Wk,,succ #1)] : Type@i }} as -> by mauto 3.
-      assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢ A[q (σ∘τ)∘(Wk∘Wk,,succ #1)] ≈ A[(Wk∘Wk,,succ #1)∘q (q (σ∘τ))] : Type@i }} as -> by mauto 3.
+      assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢ A[q (σ∘τ)][Wk∘Wk,,succ #1] ≈ A[Wk∘Wk,,succ #1][q (q (σ∘τ))] : Type@i }} as -> by mauto 3 using exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1.
       assert {{ Δ', ℕ ⊢s q (σ∘τ) : Γ, ℕ }} by mauto 2.
       assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢s q (q (σ∘τ)) : Γ, ℕ, A }} by mauto 2.
       assert {{ Γ, ℕ, A ⊢s Wk∘Wk,,succ #1 : Γ, ℕ }} by mauto 2.
-      assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢ A[(Wk∘Wk,,succ #1)∘q (q (σ∘τ))] ≈ A[Wk∘Wk,,succ #1][q (q (σ∘τ))] : Type@i }} as -> by mauto 3.
       assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢s q (q τ) : Δ, ℕ, A[q σ] }} by mauto 2.
       assert {{ Δ', ℕ, A[q σ][q τ] ⊢ MS[q (q σ)][q (q τ)] ≈ MS[q (q σ)∘q (q τ)] : A[Wk∘Wk,,succ #1][q (q σ)∘q (q τ)] }} by mauto 3.
       assert {{ Δ', ℕ, A[q σ∘q τ] ⊢s q (q σ)∘q (q τ) ≈ q (q σ∘q τ) : Γ, ℕ, A }} by mauto 2.
@@ -633,8 +610,7 @@ Proof.
   invert_glu_rel_exp HA.
   assert {{ Γ, ℕ, A ⊩ A[Wk∘Wk,,succ #1] : Type@i }}.
   {
-    assert {{ ⊩ Γ, ℕ }} by mauto 2.
-    assert {{ ⊩ Γ, ℕ, A }} by mauto 2.
+    assert {{ ⊩ Γ, ℕ, A }} by mauto 3.
     assert {{ Γ, ℕ ⊩s Wk : Γ }} by mauto 3.
     assert {{ Γ, ℕ, A ⊩s Wk : Γ, ℕ }} by mauto 3.
     assert {{ Γ, ℕ ⊢s Wk : Γ }} by mauto 3.
