@@ -65,7 +65,7 @@ Proof.
 Qed.
 
 #[local]
-  Hint Resolve initial_env_impl_complete' : mcltt.
+Hint Resolve initial_env_impl_complete' : mcltt.
 
 
 Lemma initial_env_impl_complete : forall G p,
