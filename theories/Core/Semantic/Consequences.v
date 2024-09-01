@@ -1,6 +1,8 @@
 From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness Completeness.Consequences.Inversions Completeness.Consequences.Types Completeness.LogicalRelation Readback Soundness.
-From Mcltt.Core Require Export SystemOpt.
+From Mcltt.Core Require Import Completeness Soundness.
+From Mcltt.Core.Completeness Require Import Consequences.Types LogicalRelation.
+From Mcltt.Core.Semantic Require Import NbE.
+From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Domain_Notations.
 
 Lemma adjust_exp_eq_level : forall {Γ A A' i j},
@@ -55,3 +57,18 @@ Proof.
   match_by_head1 read_nf ltac:(fun H => inversion_clear H).
   do 2 eexists; mauto.
 Qed.
+
+Lemma idempotent_nbe_ty : forall {Γ i A B C},
+    {{ Γ ⊢ A : Type@i }} ->
+    nbe_ty Γ A B ->
+    nbe_ty Γ B C ->
+    B = C.
+Proof.
+  intros.
+  assert {{ Γ ⊢ A ≈ B : Type@i }} as [? []]%completeness_ty by mauto 2 using soundness_ty'.
+  functional_nbe_rewrite_clear.
+  reflexivity.
+Qed.
+
+#[export]
+Hint Resolve idempotent_nbe_ty : mcltt.

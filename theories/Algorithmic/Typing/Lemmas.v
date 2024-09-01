@@ -3,25 +3,10 @@ From Mcltt.Algorithmic Require Import Typing.Definitions.
 From Mcltt.Algorithmic Require Export Subtyping.Lemmas.
 From Mcltt.Core Require Import Soundness Completeness.
 From Mcltt.Core.Completeness Require Import Consequences.Rules.
+From Mcltt.Core.Semantic Require Import Consequences.
 From Mcltt.Core.Syntactic Require Export SystemOpt.
 From Mcltt.Frontend Require Import Elaborator.
 Import Domain_Notations.
-
-(* There might be a better file for this. *)
-Lemma idempotent_nbe_ty : forall {Γ i A B C},
-    {{ Γ ⊢ A : Type@i }} ->
-    nbe_ty Γ A B ->
-    nbe_ty Γ B C ->
-    B = C.
-Proof.
-  intros.
-  assert {{ Γ ⊢ A ≈ B : Type@i }} as [? []]%completeness_ty by mauto 2 using soundness_ty'.
-  functional_nbe_rewrite_clear.
-  reflexivity.
-Qed.
-
-#[local]
-Hint Resolve idempotent_nbe_ty : mcltt.
 
 Lemma functional_alg_type_infer : forall {Γ A A' M},
     {{ Γ ⊢a M ⟹ A }} ->

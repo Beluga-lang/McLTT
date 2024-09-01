@@ -485,3 +485,23 @@ Qed.
 Hint Resolve sub_eq_q_compose_nat : mcltt.
 #[export]
 Hint Rewrite -> @sub_eq_q_compose_nat using mauto 4 : mcltt.
+
+Lemma exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1 : forall {Δ σ Γ i A},
+    {{ Δ ⊢s σ : Γ }} ->
+    {{ Γ, ℕ ⊢ A : Type@i }} ->
+    {{ Δ, ℕ, A[q σ] ⊢ A[q σ][Wk∘Wk,,succ #1] ≈ A[Wk∘Wk,,succ #1][q (q σ)] : Type@i }}.
+Proof.
+  intros.
+  assert {{ Δ, ℕ ⊢s q σ : Γ, ℕ }} by mauto 3.
+  assert {{ Δ, ℕ, A[q σ] ⊢s Wk∘Wk,,succ #1 : Δ, ℕ }} by mauto 3.
+  assert {{ Δ, ℕ, A[q σ] ⊢ A[q σ][Wk∘Wk,,succ #1] ≈ A[q σ∘(Wk∘Wk,,succ #1)] : Type@i }} as -> by mauto 3.
+  assert {{ Δ, ℕ, A[q σ] ⊢s q (q σ) : Γ, ℕ, A }} by mauto 3.
+  assert {{ Δ, ℕ, A[q σ] ⊢ A[Wk∘Wk,,succ #1][q (q σ)] ≈ A[(Wk∘Wk,,succ #1)∘q (q σ)] : Type@i }} as -> by mauto 3.
+  rewrite -> @sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1; mauto 2.
+  eapply exp_eq_refl.
+  eapply exp_sub_typ; mauto 2.
+  econstructor; mauto 3.
+Qed.
+
+#[export]
+Hint Resolve exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1 : mcltt.
