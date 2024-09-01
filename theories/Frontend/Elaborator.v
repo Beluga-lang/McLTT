@@ -149,9 +149,8 @@ Inductive closed_at : exp -> nat -> Prop :=
  | ca_succ : forall a n, closed_at a n -> closed_at (a_succ a) n
  | ca_natrec : forall n m z s l, closed_at n l -> closed_at m (1+l) -> closed_at z l -> closed_at s (2+l) -> closed_at (a_natrec m z s n) l
 .
-(* TODO: JH: create our own hint database. *)
 #[local]
-Hint Constructors closed_at: core.
+Hint Constructors closed_at: mcltt.
 
 (*Lemma for the well_scoped proof, lookup succeeds if var is in context*)
 Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n /\ n < List.length ctx).
@@ -217,8 +216,8 @@ Qed.
 Lemma well_scoped (cst : Cst.obj) : forall ctx,  cst_variables cst [<=] StrSProp.of_list ctx  ->
 exists a : exp, (elaborate cst ctx = Some a) /\ (closed_at a (List.length ctx)).
 Proof.
-  induction cst; intros; simpl in *; eauto.
-  - destruct (IHcst _ H) as [ast [-> ?]]; eauto.
+  induction cst; intros; simpl in *; mauto.
+  - destruct (IHcst _ H) as [ast [-> ?]]; mauto.
   - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
     assert (cst_variables cst3 [<=] StrSProp.of_list ctx) by fsetdec.
@@ -226,24 +225,24 @@ Proof.
     destruct (IHcst1 _ H0) as [ast [-> ?]];
       destruct (IHcst2 _ H1) as [ast' [-> ?]];
       destruct (IHcst3 _ H2) as [ast'' [-> ?]];
-      destruct (IHcst4 _ H3) as [ast''' [-> ?]]; eauto.
+      destruct (IHcst4 _ H3) as [ast''' [-> ?]]; mauto.
   - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list ctx) by fsetdec.
     destruct (IHcst1 _ H0) as [ast [-> ?]];
-      destruct (IHcst2 _ H1) as [ast' [-> ?]]; eauto.
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
   - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
     destruct (IHcst1 _ H0) as [ast [-> ?]];
-      destruct (IHcst2 _ H1) as [ast' [-> ?]]; eauto.
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
   - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
     destruct (IHcst1 _ H0) as [ast [-> ?]];
-      destruct (IHcst2 _ H1) as [ast' [-> ?]]; eauto.
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
   - apply Subset_to_In in H.
     edestruct lookup_known as [? [-> ?]]; [auto |].
     apply (In_nth _ _ s)  in H.
     destruct H as [? [? ?]].
-    eauto.
+    mauto.
 Qed.
 
 

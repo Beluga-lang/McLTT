@@ -131,19 +131,6 @@ Qed.
 #[export]
 Hint Resolve glu_rel_sub_extend_nat : mcltt.
 
-Lemma exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1 : forall {Δ σ Γ i A},
-    {{ Δ ⊢s σ : Γ }} ->
-    {{ Γ, ℕ ⊢ A : Type@i }} ->
-    {{ Δ, ℕ, A[q σ] ⊢ A[q σ][Wk∘Wk,,succ #1] ≈ A[Wk∘Wk,,succ #1][q (q σ)] : Type@i }}.
-Proof.
-  intros.
-  autorewrite with mcltt.
-  rewrite -> @sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1; mauto 2.
-  eapply exp_eq_refl.
-  eapply exp_sub_typ; mauto 2.
-  econstructor; mauto 3.
-Qed.
-
 Lemma glu_rel_exp_natrec_zero_helper : forall {i Γ SbΓ A MZ MS Δ M σ p am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Γ, ℕ ⊢ A : Type@i }} ->
