@@ -4,7 +4,7 @@ From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Import PER.Definitions PER.CoreTactics.
 Import Domain_Notations.
 
-Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A p A' p' : (rel_mod_eval R0 A p A' p')
+Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A ρ A' ρ' : (rel_mod_eval R0 A ρ A' ρ')
     with signature (@relation_equivalence domain) ==> iff as rel_mod_eval_morphism.
 Proof.
   split; intros []; econstructor; try eassumption;
@@ -227,7 +227,7 @@ Proof with mautosolve.
   reflexivity.
 Qed.
 
-Add Parametric Morphism i A p A' p' : (rel_typ i A p A' p')
+Add Parametric Morphism i A ρ A' ρ' : (rel_typ i A ρ A' ρ')
     with signature (@relation_equivalence domain) ==> iff as rel_typ_morphism.
 Proof.
   intros * HRR'.
@@ -401,24 +401,24 @@ Qed.
 Ltac do_per_univ_elem_irrel_assert1 :=
   let tactic_error o1 o2 := fail 2 "per_univ_elem_irrel biconditional between" o1 "and" o2 "cannot be solved" in
   match goal with
-  | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-      H2 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+  | H1 : {{ DF ~?a ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ~?a ≈ ~_ ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
       assert_fails (unify R1 R2);
       match goal with
       | H : R1 <~> R2 |- _ => fail 1
       | H : R2 <~> R1 |- _ => fail 1
       | _ => assert (R1 <~> R2) by (eapply per_univ_elem_right_irrel; [apply H1 | apply H2]) || tactic_error R1 R2
       end
-  | H1 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i ↘ ?R1 }},
-      H2 : {{ DF ~_ ≈ ~?B ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+  | H1 : {{ DF ~_ ≈ ~?b ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ~_ ≈ ~?b ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
       assert_fails (unify R1 R2);
       match goal with
       | H : R1 <~> R2 |- _ => fail 1
       | H : R2 <~> R1 |- _ => fail 1
       | _ => assert (R1 <~> R2) by (eapply per_univ_elem_left_irrel; [apply H1 | apply H2]) || tactic_error R1 R2
       end
-  | H1 : {{ DF ~?A ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-      H2 : {{ DF ~_ ≈ ~?A ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+  | H1 : {{ DF ~?a ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ~_ ≈ ~?a ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
       (* Order matters less here as H1 and H2 cannot be exchanged *)
       assert_fails (unify R1 R2);
       match goal with
@@ -437,15 +437,15 @@ Ltac handle_per_univ_elem_irrel :=
   apply_relation_equivalence;
   clear_dups.
 
-Lemma per_univ_elem_trans : forall i R A1 A2,
-    per_univ_elem i R A1 A2 ->
-    (forall j A3,
-        per_univ_elem j R A2 A3 ->
-        per_univ_elem i R A1 A3) /\
-      (forall a1 a2 a3,
-          R a1 a2 ->
-          R a2 a3 ->
-          R a1 a3).
+Lemma per_univ_elem_trans : forall i R a1 a2,
+    per_univ_elem i R a1 a2 ->
+    (forall j a3,
+        per_univ_elem j R a2 a3 ->
+        per_univ_elem i R a1 a3) /\
+      (forall m1 m2 m3,
+          R m1 m2 ->
+          R m2 m3 ->
+          R m1 m3).
 Proof with (basic_per_univ_elem_econstructor; mautosolve).
   induction 1 using per_univ_elem_ind;
     [> split;
@@ -486,30 +486,30 @@ Proof with (basic_per_univ_elem_econstructor; mautosolve).
     idtac...
 Qed.
 
-Corollary per_univ_trans : forall i j R A1 A2 A3,
-    per_univ_elem i R A1 A2 ->
-    per_univ_elem j R A2 A3 ->
-    per_univ_elem i R A1 A3.
+Corollary per_univ_trans : forall i j R a1 a2 a3,
+    per_univ_elem i R a1 a2 ->
+    per_univ_elem j R a2 a3 ->
+    per_univ_elem i R a1 a3.
 Proof.
   intros * ?%per_univ_elem_trans.
   firstorder.
 Qed.
 
-Corollary per_univ_trans' : forall i j A1 A2 A3,
-    {{ Dom A1 ≈ A2 ∈ per_univ i }} ->
-    {{ Dom A2 ≈ A3 ∈ per_univ j }} ->
-    {{ Dom A1 ≈ A3 ∈ per_univ i }}.
+Corollary per_univ_trans' : forall i j a1 a2 a3,
+    {{ Dom a1 ≈ a2 ∈ per_univ i }} ->
+    {{ Dom a2 ≈ a3 ∈ per_univ j }} ->
+    {{ Dom a1 ≈ a3 ∈ per_univ i }}.
 Proof.
   intros * [? ?] [? ?].
   handle_per_univ_elem_irrel.
   firstorder mauto using per_univ_trans.
 Qed.
 
-Corollary per_elem_trans : forall i R A1 A2 a1 a2 a3,
-    per_univ_elem i R A1 A2 ->
-    R a1 a2 ->
-    R a2 a3 ->
-    R a1 a3.
+Corollary per_elem_trans : forall i R a1 a2 m1 m2 m3,
+    per_univ_elem i R a1 a2 ->
+    R m1 m2 ->
+    R m2 m3 ->
+    R m1 m3.
 Proof.
   intros * ?% per_univ_elem_trans.
   firstorder.
@@ -532,7 +532,7 @@ Proof.
 Qed.
 
 #[export]
-Instance per_elem_PER {i R A B} `(H : per_univ_elem i R A B) : PER R.
+Instance per_elem_PER {i R a b} `(H : per_univ_elem i R a b) : PER R.
 Proof.
   split.
   - eauto using (per_elem_sym _ _ _ _ _ _ H).
@@ -541,15 +541,15 @@ Qed.
 
 (* This lemma gets rid of the unnecessary PER premise. *)
 Lemma per_univ_elem_pi' :
-  forall i a a' p B p' B'
+  forall i a a' ρ B ρ' B'
     (in_rel : relation domain)
     (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain)
     elem_rel,
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ in_rel}} ->
     (forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-        rel_mod_eval (per_univ_elem i) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) ->
+        rel_mod_eval (per_univ_elem i) B d{{{ ρ ↦ c }}} B' d{{{ ρ' ↦ c' }}} (out_rel equiv_c_c')) ->
     (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app f c f' c' (out_rel equiv_c_c')) ->
-    {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem i ↘ elem_rel }}.
+    {{ DF Π a ρ B ≈ Π a' ρ' B' ∈ per_univ_elem i ↘ elem_rel }}.
 Proof.
   intros.
   basic_per_univ_elem_econstructor; eauto.
@@ -562,12 +562,12 @@ Ltac per_univ_elem_econstructor :=
 #[export]
 Hint Resolve per_univ_elem_pi' : mcltt.
 
-Lemma per_univ_elem_pi_clean_inversion : forall {i j a a' in_rel p p' B B' elem_rel},
+Lemma per_univ_elem_pi_clean_inversion : forall {i j a a' in_rel ρ ρ' B B' elem_rel},
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ in_rel }} ->
-    {{ DF Π a p B ≈ Π a' p' B' ∈ per_univ_elem j ↘ elem_rel }} ->
+    {{ DF Π a ρ B ≈ Π a' ρ' B' ∈ per_univ_elem j ↘ elem_rel }} ->
     exists (out_rel : forall {c c'} (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), relation domain),
       (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}),
-          rel_mod_eval (per_univ_elem j) B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} (out_rel equiv_c_c')) /\
+          rel_mod_eval (per_univ_elem j) B d{{{ ρ ↦ c }}} B' d{{{ ρ' ↦ c' }}} (out_rel equiv_c_c')) /\
         (elem_rel <~> fun f f' => forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_mod_app f c f' c' (out_rel equiv_c_c')).
 Proof.
   intros * Ha HΠ.
@@ -577,7 +577,7 @@ Proof.
   split.
   - instantiate (1 := fun c c' (equiv_c_c' : in_rel c c') m m' =>
                         forall R,
-                          rel_typ j B d{{{ p ↦ c }}} B' d{{{ p' ↦ c' }}} R ->
+                          rel_typ j B d{{{ ρ ↦ c }}} B' d{{{ ρ' ↦ c' }}} R ->
                           R m m').
     intros.
     assert (in_rel0 c c') by intuition.
@@ -682,12 +682,12 @@ Proof.
     intuition.
 Qed.
 
-Lemma per_elem_subtyping_gen : forall A B i A' B' R R' a b,
-    {{ Sub A <: B at i }} ->
-    {{ DF A ≈ A' ∈ per_univ_elem i ↘ R }} ->
-    {{ DF B ≈ B' ∈ per_univ_elem i ↘ R' }} ->
-    R a b ->
-    R' a b.
+Lemma per_elem_subtyping_gen : forall a b i a' b' R R' m n,
+    {{ Sub a <: b at i }} ->
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+    {{ DF b ≈ b' ∈ per_univ_elem i ↘ R' }} ->
+    R m n ->
+    R' m n.
 Proof.
   intros.
   eapply per_elem_subtyping; saturate_refl; try eassumption.
@@ -701,7 +701,7 @@ Proof.
     subst;
     mauto;
     destruct_all.
-  assert ({{ DF Π A p B ≈ Π A' p' B' ∈ per_univ_elem i ↘ elem_rel }})
+  assert ({{ DF Π a ρ B ≈ Π a' ρ' B' ∈ per_univ_elem i ↘ elem_rel }})
     by (eapply per_univ_elem_pi'; eauto; intros; destruct_rel_mod_eval; mauto).
   saturate_refl.
   econstructor; eauto.
@@ -726,11 +726,11 @@ Qed.
 #[export]
 Hint Resolve per_subtyp_refl2 : mcltt.
 
-Lemma per_subtyp_trans : forall A1 A2 i,
-    {{ Sub A1 <: A2 at i }} ->
-    forall A3,
-      {{ Sub A2 <: A3 at i }} ->
-      {{ Sub A1 <: A3 at i }}.
+Lemma per_subtyp_trans : forall a1 a2 i,
+    {{ Sub a1 <: a2 at i }} ->
+    forall a3,
+      {{ Sub a2 <: a3 at i }} ->
+      {{ Sub a1 <: a3 at i }}.
 Proof.
   induction 1; intros ? Hsub; simpl in *.
   1-3: progressive_inversion; mauto.
@@ -756,39 +756,39 @@ Proof.
   eauto using per_subtyp_trans.
 Qed.
 
-Lemma per_subtyp_transp : forall A B i A' B' R R',
-    {{ Sub A <: B at i }} ->
-    {{ DF A ≈ A' ∈ per_univ_elem i ↘ R }} ->
-    {{ DF B ≈ B' ∈ per_univ_elem i ↘ R' }} ->
-    {{ Sub A' <: B' at i }}.
+Lemma per_subtyp_transp : forall a b i a' b' R R',
+    {{ Sub a <: b at i }} ->
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+    {{ DF b ≈ b' ∈ per_univ_elem i ↘ R' }} ->
+    {{ Sub a' <: b' at i }}.
 Proof.
   mauto using per_subtyp_refl1, per_subtyp_refl2.
 Qed.
 
-Lemma per_subtyp_cumu : forall A1 A2 i,
-    {{ Sub A1 <: A2 at i }} ->
+Lemma per_subtyp_cumu : forall a1 a2 i,
+    {{ Sub a1 <: a2 at i }} ->
     forall j,
       i <= j ->
-      {{ Sub A1 <: A2 at j }}.
+      {{ Sub a1 <: a2 at j }}.
 Proof.
   induction 1; intros; econstructor; mauto.
   lia.
 Qed.
 
 #[export]
- Hint Resolve per_subtyp_cumu : mcltt.
+Hint Resolve per_subtyp_cumu : mcltt.
 
-Lemma per_subtyp_cumu_left : forall A1 A2 i j,
-    {{ Sub A1 <: A2 at i }} ->
-    {{ Sub A1 <: A2 at max i j }}.
+Lemma per_subtyp_cumu_left : forall a1 a2 i j,
+    {{ Sub a1 <: a2 at i }} ->
+    {{ Sub a1 <: a2 at max i j }}.
 Proof.
   intros. eapply per_subtyp_cumu; try eassumption.
   lia.
 Qed.
 
-Lemma per_subtyp_cumu_right : forall A1 A2 i j,
-    {{ Sub A1 <: A2 at i }} ->
-    {{ Sub A1 <: A2 at max j i }}.
+Lemma per_subtyp_cumu_right : forall a1 a2 i j,
+    {{ Sub a1 <: a2 at i }} ->
+    {{ Sub a1 <: a2 at max j i }}.
 Proof.
   intros. eapply per_subtyp_cumu; try eassumption.
   lia.
@@ -823,35 +823,34 @@ Proof with (destruct_rel_typ; handle_per_univ_elem_irrel; eexists; intuition).
     apply_relation_equivalence;
     try reflexivity.
   specialize (IHHorig _ _ equiv_Γ_Γ'0).
-  intros p p'.
+  intros ρ ρ'.
   split; intros [].
-  - assert (equiv0_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel0 }}) by intuition...
-  - assert (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel }}) by intuition...
+  - assert {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel0 }} by intuition...
+  - assert {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel }} by intuition...
 Qed.
 
 Lemma per_ctx_env_sym : forall Γ Δ R,
     {{ DF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
     {{ DF Δ ≈ Γ ∈ per_ctx_env ↘ R }} /\
-      (forall o p,
-          {{ Dom o ≈ p ∈ R }} ->
-          {{ Dom p ≈ o ∈ R }}).
+      (forall ρ ρ',
+          {{ Dom ρ ≈ ρ' ∈ R }} ->
+          {{ Dom ρ' ≈ ρ ∈ R }}).
 Proof with solve [intuition].
   simpl.
   induction 1; split; simpl in *; destruct_conjs; try econstructor; intuition;
     pose proof (@relation_equivalence_pointwise env).
-  - assert (tail_rel p' p) by eauto.
-    assert (tail_rel p p) by (etransitivity; eassumption).
+  - assert (tail_rel ρ' ρ) by eauto.
+    assert (tail_rel ρ ρ) by (etransitivity; eassumption).
     destruct_rel_mod_eval.
     handle_per_univ_elem_irrel.
     econstructor; eauto.
     symmetry...
   - apply_relation_equivalence.
     destruct_conjs.
-    assert (tail_rel d{{{ p ↯ }}} d{{{ o ↯ }}}) by eauto.
-    assert (tail_rel d{{{ p ↯ }}} d{{{ p ↯ }}}) by (etransitivity; eassumption).
+    assert (tail_rel d{{{ ρ' ↯ }}} d{{{ ρ ↯ }}}) by eauto.
+    assert (tail_rel d{{{ ρ ↯ }}} d{{{ ρ ↯ }}}) by (etransitivity; eassumption).
     destruct_rel_mod_eval.
-    eexists.
-    handle_per_univ_elem_irrel; symmetry; intuition.
+    eexists; symmetry; handle_per_univ_elem_irrel; intuition.
 Qed.
 
 Corollary per_ctx_sym : forall Γ Δ R,
@@ -862,10 +861,10 @@ Proof.
   firstorder.
 Qed.
 
-Corollary per_env_sym : forall Γ Δ R o p,
+Corollary per_env_sym : forall Γ Δ R ρ ρ',
     {{ DF Γ ≈ Δ ∈ per_ctx_env ↘ R }} ->
-    {{ Dom o ≈ p ∈ R }} ->
-    {{ Dom p ≈ o ∈ R }}.
+    {{ Dom ρ ≈ ρ' ∈ R }} ->
+    {{ Dom ρ' ≈ ρ ∈ R }}.
 Proof.
   intros * ?%per_ctx_env_sym.
   firstorder.
@@ -933,10 +932,10 @@ Lemma per_ctx_env_trans : forall Γ1 Γ2 R,
     (forall Γ3,
         {{ DF Γ2 ≈ Γ3 ∈ per_ctx_env ↘ R }} ->
         {{ DF Γ1 ≈ Γ3 ∈ per_ctx_env ↘ R }}) /\
-      (forall p1 p2 p3,
-          {{ Dom p1 ≈ p2 ∈ R }} ->
-          {{ Dom p2 ≈ p3 ∈ R }} ->
-          {{ Dom p1 ≈ p3 ∈ R }}).
+      (forall ρ1 ρ2 ρ3,
+          {{ Dom ρ1 ≈ ρ2 ∈ R }} ->
+          {{ Dom ρ2 ≈ ρ3 ∈ R }} ->
+          {{ Dom ρ1 ≈ ρ3 ∈ R }}).
 Proof with solve [eauto using per_univ_trans].
   simpl.
   induction 1; subst;
@@ -949,15 +948,15 @@ Proof with solve [eauto using per_univ_trans].
   - econstructor; only 4: reflexivity; eauto.
     + apply_relation_equivalence. intuition.
     + intros.
-      assert (tail_rel p p) by intuition.
-      assert (tail_rel0 p p') by intuition.
+      assert (tail_rel ρ ρ) by intuition.
+      assert (tail_rel0 ρ ρ') by intuition.
       destruct_rel_typ.
       handle_per_univ_elem_irrel.
       econstructor; intuition.
       (* This one cannot be replaced with `etransitivity` as we need different `i`s. *)
       eapply per_univ_trans; [| eassumption]; eassumption.
   - destruct_conjs.
-    assert (tail_rel d{{{ p1 ↯ }}} d{{{ p3 ↯ }}}) by eauto.
+    assert (tail_rel d{{{ ρ1 ↯ }}} d{{{ ρ3 ↯ }}}) by eauto.
     destruct_rel_typ.
     handle_per_univ_elem_irrel.
     eexists.
@@ -974,11 +973,11 @@ Proof.
   firstorder.
 Qed.
 
-Corollary per_env_trans : forall Γ1 Γ2 R p1 p2 p3,
+Corollary per_env_trans : forall Γ1 Γ2 R ρ1 ρ2 ρ3,
     {{ DF Γ1 ≈ Γ2 ∈ per_ctx_env ↘ R }} ->
-    {{ Dom p1 ≈ p2 ∈ R }} ->
-    {{ Dom p2 ≈ p3 ∈ R }} ->
-    {{ Dom p1 ≈ p3 ∈ R }}.
+    {{ Dom ρ1 ≈ ρ2 ∈ R }} ->
+    {{ Dom ρ2 ≈ ρ3 ∈ R }} ->
+    {{ Dom ρ1 ≈ ρ3 ∈ R }}.
 Proof.
   intros * ?% per_ctx_env_trans.
   firstorder.
@@ -1002,14 +1001,14 @@ Qed.
 
 (* This lemma removes the PER argument *)
 Lemma per_ctx_env_cons' : forall {Γ Γ' i A A' tail_rel}
-                             (head_rel : forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}), relation domain)
+                             (head_rel : forall {ρ ρ'} (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ tail_rel }}), relation domain)
                              env_rel,
     {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ tail_rel }} ->
-    (forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ tail_rel }}),
-        rel_typ i A p A' p' (head_rel equiv_p_p')) ->
-    (env_rel <~> fun p p' =>
-         exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel }}),
-           {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}) ->
+    (forall {ρ ρ'} (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ tail_rel }}),
+        rel_typ i A ρ A' ρ' (head_rel equiv_ρ_ρ')) ->
+    (env_rel <~> fun ρ ρ' =>
+         exists (equiv_ρ_drop_ρ'_drop : {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel }}),
+           {{ Dom ~(ρ 0) ≈ ~(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}) ->
     {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_rel }}.
 Proof.
   intros.
@@ -1026,12 +1025,12 @@ Ltac per_ctx_env_econstructor :=
 Lemma per_ctx_env_cons_clean_inversion : forall {Γ Γ' env_relΓ A A' env_relΓA},
     {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ env_relΓ }} ->
     {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_relΓA }} -> 
-    exists i (head_rel : forall {p p'} (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}), relation domain),
-      (forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
-          rel_typ i A p A' p' (head_rel equiv_p_p')) /\
-        (env_relΓA <~> fun p p' =>
-             exists (equiv_p_drop_p'_drop : {{ Dom p ↯ ≈ p' ↯ ∈ env_relΓ }}),
-               {{ Dom ~(p 0) ≈ ~(p' 0) ∈ head_rel equiv_p_drop_p'_drop }}).
+    exists i (head_rel : forall {ρ ρ'} (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}), relation domain),
+      (forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}),
+          rel_typ i A ρ A' ρ' (head_rel equiv_ρ_ρ')) /\
+        (env_relΓA <~> fun ρ ρ' =>
+             exists (equiv_ρ_drop_ρ'_drop : {{ Dom ρ ↯ ≈ ρ' ↯ ∈ env_relΓ }}),
+               {{ Dom ~(ρ 0) ≈ ~(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}).
 Proof with intuition.
   intros * HΓ HΓA.
   inversion HΓA; subst.
@@ -1039,20 +1038,20 @@ Proof with intuition.
   eexists.
   eexists.
   split; intros.
-  - instantiate (1 := fun p p' (equiv_p_p' : env_relΓ p p') m m' =>
+  - instantiate (1 := fun ρ ρ' (equiv_ρ_ρ' : env_relΓ ρ ρ') m m' =>
                         forall R,
-                          rel_typ i A p A' p' R ->
+                          rel_typ i A ρ A' ρ' R ->
                           {{ Dom m ≈ m' ∈ R }}).
-    assert (tail_rel p p') by intuition.
+    assert (tail_rel ρ ρ') by intuition.
     (on_all_hyp: destruct_rel_by_assumption tail_rel).
     econstructor; eauto.
     apply -> per_univ_elem_morphism_iff; eauto.
     split; intros...
     destruct_by_head rel_typ.
     handle_per_univ_elem_irrel...
-  - intros o o'.
+  - intros ρ ρ'.
     split; intros; destruct_conjs;
-      assert {{ Dom o ↯ ≈ o' ↯ ∈ tail_rel }} by intuition;
+      assert {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel }} by intuition;
       (on_all_hyp: destruct_rel_by_assumption tail_rel);
       unshelve eexists; intros...
     destruct_by_head rel_typ.
@@ -1084,11 +1083,11 @@ Qed.
 
 Lemma per_ctx_env_subtyping : forall Γ Δ,
     {{ SubE Γ <: Δ }} ->
-    forall R R' p p',
+    forall R R' ρ ρ',
       {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ R }} ->
       {{ EF Δ ≈ Δ ∈ per_ctx_env ↘ R' }} ->
-      R p p' ->
-      R' p p'.
+      R ρ ρ' ->
+      R' ρ ρ'.
 Proof.
   induction 1; intros;
     handle_per_ctx_env_irrel;
@@ -1097,7 +1096,7 @@ Proof.
     trivial.
 
   destruct_all.
-  assert {{ Dom p ↯ ≈ p' ↯ ∈ tail_rel0 }} by intuition.
+  assert {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel0 }} by intuition.
   unshelve eexists; [eassumption |].
   destruct_rel_typ.
   eapply per_elem_subtyping with (i := max x (max i0 i)); try eassumption.
@@ -1147,7 +1146,7 @@ Proof.
   - firstorder.
   - instantiate (1 := max i i0).
     intros.
-    assert {{ Dom p ≈ p' ∈ tail_rel0 }} by (eapply per_ctx_env_subtyping; revgoals; eassumption).
+    assert {{ Dom ρ ≈ ρ' ∈ tail_rel0 }} by (eapply per_ctx_env_subtyping; revgoals; eassumption).
     saturate_refl_for tail_rel.
     destruct_rel_typ.
     handle_per_univ_elem_irrel.

@@ -1,1 +1,1 @@
-From Mcltt.Core.Soundness Require Export LogicalRelation.Core LogicalRelation.Lemmas.
+From Mcltt.Core.Soundness.LogicalRelation Require Export Core Lemmas.

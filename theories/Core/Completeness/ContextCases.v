@@ -25,9 +25,9 @@ Proof with intuition.
   handle_per_ctx_env_irrel.
   eexists.
   per_ctx_env_econstructor; eauto.
-  - instantiate (1 := fun p p' (equiv_p_p' : env_relΓ p p') m m' =>
+  - instantiate (1 := fun ρ ρ' (equiv_ρ_ρ' : env_relΓ ρ ρ') m m' =>
                         forall i R,
-                          rel_typ i A p A' p' R ->
+                          rel_typ i A ρ A' ρ' R ->
                           R m m').
     intros.
     (on_all_hyp: destruct_rel_by_assumption env_relΓ).

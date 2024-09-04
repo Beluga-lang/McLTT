@@ -89,38 +89,43 @@ Proof.
   destruct_by_head rel_exp.
   destruct_conjs.
   handle_per_univ_elem_irrel.
+  match goal with
+  | _: env_relΓ ρ ?ρ0 |- _ =>
+      assert_fails (unify ρ ρ0);
+      rename ρ0 into ρ'
+  end.
   rename x0 into head_rel.
 
-  assert (forall c c', head_rel p p' equiv_p_p' c c' -> env_relΓA' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as HΓA'
+  assert (forall c c', head_rel ρ ρ' equiv_ρ_ρ' c c' -> env_relΓA' d{{{ ρ ↦ c }}} d{{{ ρ' ↦ c' }}}) as HΓA'
       by (intros; apply_relation_equivalence; unshelve eexists; eassumption).
 
   (* The proofs for the next two assertions are basically the same *)
   exvar (relation domain)
-    ltac:(fun R => assert ({{ DF Π m0 p B ≈ Π m1 p' B ∈ per_univ_elem (Nat.max i k) ↘ R }})).
+    ltac:(fun R => assert ({{ DF Π m0 ρ B ≈ Π m1 ρ' B ∈ per_univ_elem (Nat.max i k) ↘ R }})).
   {
     intros.
     per_univ_elem_econstructor; [| | solve_refl].
     - etransitivity; [| symmetry]; mauto using per_univ_elem_cumu_max_left.
     - eapply rel_exp_pi_core; [| reflexivity].
       intros.
-      assert (env_relΓA' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as equiv_pc_p'c' by (apply HΓA'; intuition).
+      assert (env_relΓA' d{{{ ρ ↦ c }}} d{{{ ρ' ↦ c' }}}) as equiv_ρc_ρ'c' by (apply HΓA'; intuition).
       apply_relation_equivalence.
-      (on_all_hyp: fun H => destruct (H _ _ equiv_pc_p'c')).
+      (on_all_hyp: fun H => destruct (H _ _ equiv_ρc_ρ'c')).
       destruct_conjs.
       destruct_by_head rel_typ.
       econstructor; mauto using per_univ_elem_cumu_max_right.
   }
   exvar (relation domain)
-    ltac:(fun R => assert ({{ DF Π a0 p B' ≈ Π a p' B' ∈ per_univ_elem (Nat.max i k) ↘ R }})).
+    ltac:(fun R => assert ({{ DF Π a0 ρ B' ≈ Π a ρ' B' ∈ per_univ_elem (Nat.max i k) ↘ R }})).
   {
     intros.
     per_univ_elem_econstructor; [| | solve_refl].
     - etransitivity; [symmetry |]; mauto using per_univ_elem_cumu_max_left.
     - eapply rel_exp_pi_core; [| reflexivity].
       intros.
-      assert (env_relΓA' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as equiv_pc_p'c' by (apply HΓA'; intuition).
+      assert (env_relΓA' d{{{ ρ ↦ c }}} d{{{ ρ' ↦ c' }}}) as equiv_ρc_ρ'c' by (apply HΓA'; intuition).
       apply_relation_equivalence.
-      (on_all_hyp: fun H => destruct (H _ _ equiv_pc_p'c')).
+      (on_all_hyp: fun H => destruct (H _ _ equiv_ρc_ρ'c')).
       destruct_conjs.
       destruct_by_head rel_typ.
       econstructor; mauto using per_univ_elem_cumu_max_right.
@@ -131,9 +136,9 @@ Proof.
   econstructor; only 3-4: try (saturate_refl; mautosolve 2).
   - eauto using per_univ_elem_cumu_max_left.
   - intros.
-    assert (env_relΓA' d{{{ p ↦ c }}} d{{{ p' ↦ c' }}}) as equiv_pc_p'c' by (apply HΓA'; intuition).
+    assert (env_relΓA' d{{{ ρ ↦ c }}} d{{{ ρ' ↦ c' }}}) as equiv_ρc_ρ'c' by (apply HΓA'; intuition).
     apply_relation_equivalence.
-    (on_all_hyp: fun H => destruct (H _ _ equiv_pc_p'c')).
+    (on_all_hyp: fun H => destruct (H _ _ equiv_ρc_ρ'c')).
     destruct_conjs.
     destruct_by_head rel_exp.
     simplify_evals.

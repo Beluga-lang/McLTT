@@ -15,11 +15,17 @@ Proof with mautosolve.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  assert (env_relΓ p' p) by (symmetry; eassumption).
-  assert (env_relΓ p p) by (etransitivity; eassumption).
+  assert (env_relΓ ρ' ρ) by (symmetry; eassumption).
+  assert (env_relΓ ρ ρ) by (etransitivity; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   handle_per_univ_elem_irrel.
-  assert (env_relΔ o o0) by (etransitivity; [|symmetry; eassumption]; eassumption).
+  match goal with
+  | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ0 }},
+      _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ'0 }} |- _ =>
+      rename ρ0 into ρσ;
+      rename ρ'0 into ρ'σ
+  end.
+  assert (env_relΔ ρσ ρ'σ) by (etransitivity; [|symmetry; eassumption]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
@@ -62,8 +68,8 @@ Proof with mautosolve.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  assert (env_relΓ p' p) by (symmetry; eassumption).
-  assert (env_relΓ p p) by (etransitivity; eassumption).
+  assert (env_relΓ ρ' ρ) by (symmetry; eassumption).
+  assert (env_relΓ ρ ρ) by (etransitivity; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   handle_per_univ_elem_irrel.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ').
@@ -90,7 +96,7 @@ Proof with mautosolve.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  assert (env_relΓ p p) by (etransitivity; [| symmetry]; eassumption).
+  assert (env_relΓ ρ ρ) by (etransitivity; [| symmetry]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   destruct_by_head per_univ.
   destruct_by_head rel_typ.
@@ -112,7 +118,7 @@ Proof with mautosolve.
   destruct_conjs.
   eexists_rel_exp.
   intros.
-  assert (env_relΓ p' p) by (symmetry; eauto).
+  assert (env_relΓ ρ' ρ) by (symmetry; eauto).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ); destruct_conjs.
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.
@@ -136,8 +142,8 @@ Proof with mautosolve.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  assert (env_relΓ p' p) by (symmetry; eauto).
-  assert (env_relΓ p' p') by (etransitivity; eauto).
+  assert (env_relΓ ρ' ρ) by (symmetry; eauto).
+  assert (env_relΓ ρ' ρ') by (etransitivity; eauto).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ); destruct_conjs.
   destruct_by_head rel_typ.
   destruct_by_head rel_exp.

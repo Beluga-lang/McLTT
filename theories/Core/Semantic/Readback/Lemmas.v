@@ -4,44 +4,48 @@ From Mcltt.Core Require Import Evaluation Readback.Definitions.
 Import Domain_Notations.
 
 Section functional_read.
-  Let functional_read_nf_prop s m M1 (_ : {{ Rnf m in s ↘ M1 }}) : Prop := forall M2 (Hread2: {{ Rnf m in s ↘ M2 }}), M1 = M2.
-  Let functional_read_ne_prop s m M1 (_ : {{ Rne m in s ↘ M1 }}) : Prop := forall M2 (Hread2 : {{ Rne m in s ↘ M2 }}), M1 = M2.
-  Let functional_read_typ_prop s m M1 (_ : {{ Rtyp m in s ↘ M1 }}) : Prop := forall M2 (Hread2 : {{ Rtyp m in s ↘ M2 }}), M1 = M2.
-
-  #[local]
-  Ltac unfold_functional_read := unfold functional_read_nf_prop, functional_read_ne_prop, functional_read_typ_prop in *.
-
-  Lemma functional_read_nf : forall s m M1 (Hread1: {{ Rnf m in s ↘ M1 }}), functional_read_nf_prop s m M1 Hread1.
+  Lemma functional_read :
+    (forall s m M1,
+        {{ Rnf m in s ↘ M1 }} ->
+        forall M2,
+          {{ Rnf m in s ↘ M2 }} ->
+          M1 = M2) /\
+      (forall s m M1,
+          {{ Rne m in s ↘ M1 }} ->
+          forall M2,
+            {{ Rne m in s ↘ M2 }} ->
+            M1 = M2) /\
+      (forall s m M1,
+          {{ Rtyp m in s ↘ M1 }} ->
+          forall M2,
+            {{ Rtyp m in s ↘ M2 }} ->
+            M1 = M2).
   Proof with (functional_eval_rewrite_clear; f_equal; solve [eauto]) using.
-    intros *.
-    induction Hread1
-      using read_nf_mut_ind
-      with (P0 := functional_read_ne_prop)
-           (P1 := functional_read_typ_prop);
-      unfold_functional_read;
-      inversion_clear 1...
+    apply read_mut_ind; intros; progressive_inversion...
   Qed.
 
-  Lemma functional_read_ne : forall s m M1 (Hread1 : {{ Rne m in s ↘ M1 }}), functional_read_ne_prop s m M1 Hread1.
-  Proof with (functional_eval_rewrite_clear; f_equal; solve [eauto]) using.
-    intros *.
-    induction Hread1
-      using read_ne_mut_ind
-      with (P := functional_read_nf_prop)
-           (P1 := functional_read_typ_prop);
-      unfold_functional_read;
-      inversion_clear 1...
+  Corollary functional_read_nf : forall s m M1 M2,
+      {{ Rnf m in s ↘ M1 }} ->
+      {{ Rnf m in s ↘ M2 }} ->
+      M1 = M2.
+  Proof.
+    pose proof functional_read; firstorder.
   Qed.
 
-  Lemma functional_read_typ : forall s m M1 (Hread1 : {{ Rtyp m in s ↘ M1 }}), functional_read_typ_prop s m M1 Hread1.
-  Proof with (functional_eval_rewrite_clear; f_equal; solve [eauto]) using.
-    intros *.
-    induction Hread1
-      using read_typ_mut_ind
-      with (P := functional_read_nf_prop)
-           (P0 := functional_read_ne_prop);
-      unfold_functional_read;
-      inversion_clear 1...
+  Lemma functional_read_ne : forall s m M1 M2,
+      {{ Rne m in s ↘ M1 }} ->
+      {{ Rne m in s ↘ M2 }} ->
+      M1 = M2.
+  Proof.
+    pose proof functional_read; firstorder.
+  Qed.
+
+  Lemma functional_read_typ : forall s m M1 M2,
+      {{ Rtyp m in s ↘ M1 }} ->
+      {{ Rtyp m in s ↘ M2 }} ->
+      M1 = M2.
+  Proof.
+    pose proof functional_read; firstorder.
   Qed.
 End functional_read.
 

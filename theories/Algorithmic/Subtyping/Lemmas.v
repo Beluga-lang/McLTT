@@ -8,17 +8,17 @@ Import Syntax_Notations.
 #[local]
 Ltac apply_subtyping :=
   repeat match goal with
-    | H : {{ ~?Γ ⊢ ~?A : ~?M }},
-        H1 : {{ ~?Γ ⊢ ~?M ⊆ ~?N }} |- _ =>
-        assert {{ Γ ⊢ A : N }} by mauto; clear H
+    | H : {{ ~?Γ ⊢ ~?M : ~?A }},
+        H1 : {{ ~?Γ ⊢ ~?A ⊆ ~?B }} |- _ =>
+        assert {{ Γ ⊢ M : B }} by mauto; clear H
     end.
 
-Lemma alg_subtyping_nf_sound : forall M N,
-    {{ ⊢anf M ⊆ N }} ->
+Lemma alg_subtyping_nf_sound : forall A B,
+    {{ ⊢anf A ⊆ B }} ->
     forall Γ i,
-      {{ Γ ⊢ M : Type@i }} ->
-      {{ Γ ⊢ N : Type@i }} ->
-      {{ Γ ⊢ M ⊆ N }}.
+      {{ Γ ⊢ A : Type@i }} ->
+      {{ Γ ⊢ B : Type@i }} ->
+      {{ Γ ⊢ A ⊆ B }}.
 Proof.
   induction 1; intros; subst; simpl in *.
   - eapply wf_subtyp_refl'; mauto.
@@ -27,7 +27,7 @@ Proof.
     destruct_all.
     gen_presups.
     repeat match goal with
-           | H : {{ ~?Γ ⊢ ~?M ⊆ ~?N }}, H1: {{ ⊢ ~?Γ , ~_ }} |- _ =>
+           | H : {{ ~?Γ ⊢ ~?A ⊆ ~?B }}, H1: {{ ⊢ ~?Γ , ~_ }} |- _ =>
                pose proof (wf_subtyp_univ_weaken _ _ _ _ H H1);
                fail_if_dup
            end.
@@ -38,12 +38,12 @@ Proof.
     mauto 3.
 Qed.
 
-Lemma alg_subtyping_nf_trans : forall M1 M0 M2,
-    {{ ⊢anf M0 ⊆ M1 }} ->
-    {{ ⊢anf M1 ⊆ M2 }} ->
-    {{ ⊢anf M0 ⊆ M2 }}.
+Lemma alg_subtyping_nf_trans : forall A0 A1 A2,
+    {{ ⊢anf A0 ⊆ A1 }} ->
+    {{ ⊢anf A1 ⊆ A2 }} ->
+    {{ ⊢anf A0 ⊆ A2 }}.
 Proof.
-  intros * H1; gen M2.
+  intros * H1; gen A2.
   induction H1; subst; intros ? H2;
     dependent destruction H2;
     simpl in *;
@@ -53,20 +53,20 @@ Proof.
   constructor; lia.
 Qed.
 
-Lemma alg_subtyping_nf_refl : forall M,
-    {{ ⊢anf M ⊆ M }}.
+Lemma alg_subtyping_nf_refl : forall A,
+    {{ ⊢anf A ⊆ A }}.
 Proof.
-  intro M; induction M;
+  induction A;
     solve [constructor; simpl; trivial].
 Qed.
 
 #[local]
 Hint Resolve alg_subtyping_nf_trans alg_subtyping_nf_refl : mcltt.
 
-Lemma alg_subtyping_trans : forall Γ M0 M1 M2,
-    {{ Γ ⊢a M0 ⊆ M1 }} ->
-    {{ Γ ⊢a M1 ⊆ M2 }} ->
-    {{ Γ ⊢a M0 ⊆ M2 }}.
+Lemma alg_subtyping_trans : forall Γ A0 A1 A2,
+    {{ Γ ⊢a A0 ⊆ A1 }} ->
+    {{ Γ ⊢a A1 ⊆ A2 }} ->
+    {{ Γ ⊢a A0 ⊆ A2 }}.
 Proof.
   intros. progressive_inversion.
   functional_nbe_rewrite_clear.
@@ -76,9 +76,9 @@ Qed.
 #[local]
 Hint Resolve alg_subtyping_trans : mcltt.
 
-Lemma alg_subtyping_complete : forall Γ M N,
-    {{ Γ ⊢ M ⊆ N }} ->
-    {{ Γ ⊢a M ⊆ N }}.
+Lemma alg_subtyping_complete : forall Γ A B,
+    {{ Γ ⊢ A ⊆ B }} ->
+    {{ Γ ⊢a A ⊆ B }}.
 Proof.
   induction 1; mauto.
   - apply completeness in H0 as [W [? ?]].
@@ -106,11 +106,11 @@ Proof.
     mauto 2.
 Qed.
 
-Lemma alg_subtyping_sound : forall Γ M N i,
-    {{ Γ ⊢a M ⊆ N }} ->
-    {{ Γ ⊢ M : Type@i }} ->
-    {{ Γ ⊢ N : Type@i }} ->
-    {{ Γ ⊢ M ⊆ N }}.
+Lemma alg_subtyping_sound : forall Γ A B i,
+    {{ Γ ⊢a A ⊆ B }} ->
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ ⊢ B : Type@i }} ->
+    {{ Γ ⊢ A ⊆ B }}.
 Proof.
   intros. destruct H.
   on_all_hyp: fun H => apply soundness in H.
@@ -118,8 +118,8 @@ Proof.
   on_all_hyp: fun H => apply nbe_type_to_nbe_ty in H.
   functional_nbe_rewrite_clear.
   gen_presups.
-  assert {{ Γ ⊢ A ⊆ B }} by mauto 3 using alg_subtyping_nf_sound.
-  transitivity A; [mauto |].
-  transitivity B; [eassumption |].
+  assert {{ Γ ⊢ A' ⊆ B' }} by mauto 3 using alg_subtyping_nf_sound.
+  transitivity A'; [mauto |].
+  transitivity B'; [eassumption |].
   mauto.
 Qed.

@@ -1,1 +1,1 @@
-From Mcltt.Core.Soundness Require Export LogicalRelation.Definitions LogicalRelation.CoreLemmas.
+From Mcltt.Core.Soundness.LogicalRelation Require Export CoreLemmas CoreTactics Definitions.

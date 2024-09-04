@@ -28,16 +28,16 @@ Derive NoConfusion for domain domain_ne domain_nf.
 Definition empty_env : env := fun x => d_zero.
 Arguments empty_env _ /.
 
-Definition extend_env (p : env) (d : domain) : env :=
+Definition extend_env (ρ : env) (d : domain) : env :=
   fun n =>
     match n with
     | 0 => d
-    | S n' => p n'
+    | S n' => ρ n'
     end.
 Arguments extend_env _ _ _ /.
 Transparent extend_env.
 
-Definition drop_env (p : env) : env := fun n => p (S n).
+Definition drop_env (ρ : env) : env := fun n => ρ (S n).
 Arguments drop_env _ _ /.
 Transparent drop_env.
 
@@ -51,27 +51,27 @@ Module Domain_Notations.
   Notation "( x )" := x (in custom domain at level 0, x custom domain at level 60) : mcltt_scope.
   Notation "~ x" := x (in custom domain at level 0, x constr at level 0) : mcltt_scope.
   Notation "x" := x (in custom domain at level 0, x global) : mcltt_scope.
-  Notation "'λ' p M" := (d_fn p M) (in custom domain at level 0, p custom domain at level 30, M custom exp at level 30) : mcltt_scope.
+  Notation "'λ' ρ M" := (d_fn ρ M) (in custom domain at level 0, ρ custom domain at level 30, M custom exp at level 30) : mcltt_scope.
   Notation "f x .. y" := (d_app .. (d_app f x) .. y) (in custom domain at level 40, f custom domain, x custom domain at next level, y custom domain at next level) : mcltt_scope.
   Notation "'ℕ'" := d_nat (in custom domain) : mcltt_scope.
   Notation "'𝕌' @ n" := (d_univ n) (in custom domain at level 0, n constr at level 0) : mcltt_scope.
-  Notation "'Π' a p B" := (d_pi a p B) (in custom domain at level 0, a custom domain at level 30, p custom domain at level 0, B custom exp at level 30) : mcltt_scope.
+  Notation "'Π' a ρ B" := (d_pi a ρ B) (in custom domain at level 0, a custom domain at level 30, ρ custom domain at level 0, B custom exp at level 30) : mcltt_scope.
   Notation "'zero'" := d_zero (in custom domain at level 0) : mcltt_scope.
   Notation "'succ' m" := (d_succ m) (in custom domain at level 30, m custom domain at level 30) : mcltt_scope.
-  Notation "'rec' m 'under' p 'return' P | 'zero' -> mz | 'succ' -> MS 'end'" := (d_natrec p P mz MS m) (in custom domain at level 0, P custom exp at level 60, mz custom domain at level 60, MS custom exp at level 60, p custom domain at level 60, m custom domain at level 60) : mcltt_scope.
+  Notation "'rec' m 'under' ρ 'return' P | 'zero' -> mz | 'succ' -> MS 'end'" := (d_natrec ρ P mz MS m) (in custom domain at level 0, P custom exp at level 60, mz custom domain at level 60, MS custom exp at level 60, ρ custom domain at level 60, m custom domain at level 60) : mcltt_scope.
   Notation "'!' n" := (d_var n) (in custom domain at level 0, n constr at level 0) : mcltt_scope.
   Notation "'⇑' a m" := (d_neut a m) (in custom domain at level 0, a custom domain at level 30, m custom domain at level 30) : mcltt_scope.
   Notation "'⇓' a m" := (d_dom a m) (in custom domain at level 0, a custom domain at level 30, m custom domain at level 30) : mcltt_scope.
   Notation "'⇑!' a n" := (d_neut a (d_var n)) (in custom domain at level 0, a custom domain at level 30, n constr at level 0) : mcltt_scope.
 
-  Notation "p ↦ m" := (extend_env p m) (in custom domain at level 20, left associativity) : mcltt_scope.
-  Notation "p '↯'" := (drop_env p) (in custom domain at level 10, p custom domain) : mcltt_scope.
+  Notation "ρ ↦ m" := (extend_env ρ m) (in custom domain at level 20, left associativity) : mcltt_scope.
+  Notation "ρ '↯'" := (drop_env ρ) (in custom domain at level 10, ρ custom domain) : mcltt_scope.
 End Domain_Notations.
 
 Import Domain_Notations.
 
-Proposition drop_env_extend_env_cancel : forall p a,
-    d{{{ (p ↦ a) ↯ }}} = p.
+Proposition drop_env_extend_env_cancel : forall ρ a,
+    d{{{ (ρ ↦ a) ↯ }}} = ρ.
 Proof.
   reflexivity.
 Qed.

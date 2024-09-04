@@ -131,18 +131,18 @@ Qed.
 #[export]
 Hint Resolve glu_rel_sub_extend_nat : mcltt.
 
-Lemma glu_rel_exp_natrec_zero_helper : forall {i Γ SbΓ A MZ MS Δ M σ p am P El},
+Lemma glu_rel_exp_natrec_zero_helper : forall {i Γ SbΓ A MZ MS Δ M σ ρ am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Γ, ℕ ⊢ A : Type@i }} ->
     {{ Γ ⊩ A[Id,,zero] : Type@i }} ->
     {{ Γ ⊩ MZ : A[Id,,zero] }} ->
     {{ Γ, ℕ, A ⊢ MS : A[Wk∘Wk,,succ #1] }} ->
     {{ Δ ⊢ M ≈ zero : ℕ }} ->
-    {{ Δ ⊢s σ ® p ∈ SbΓ }} ->
-    {{ ⟦ A ⟧ p ↦ zero ↘ am }} ->
+    {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
+    {{ ⟦ A ⟧ ρ ↦ zero ↘ am }} ->
     {{ DG am ∈ glu_univ_elem i ↘ P ↘ El }} ->
     exists r,
-      {{ rec zero ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
+      {{ rec zero ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
         {{ Δ ⊢ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M] ® r ∈ El }}.
 Proof.
   intros * ? ? ? HMZ **.
@@ -153,7 +153,6 @@ Proof.
   assert {{ EG Γ, ℕ ∈ glu_ctx_env ↘ SbΓℕ }} by (invert_glu_rel_exp Hℕ; econstructor; mauto 3; reflexivity).
   destruct_glu_rel_exp_with_sub.
   simplify_evals.
-  rename p'0 into p.
   rename m into mz.
   eexists mz; split; mauto 3.
   handle_functional_glu_univ_elem.
@@ -201,7 +200,7 @@ Qed.
 #[local]
 Hint Resolve cons_glu_sub_pred_nat_helper : mcltt.
 
-Lemma glu_rel_exp_natrec_succ_helper : forall {i Γ SbΓ A MZ MS Δ M M' m' σ p am P El},
+Lemma glu_rel_exp_natrec_succ_helper : forall {i Γ SbΓ A MZ MS Δ M M' m' σ ρ am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Γ, ℕ ⊩ A : Type@i }} ->
     {{ Γ ⊢ MZ : A[Id,,zero] }} ->
@@ -209,18 +208,18 @@ Lemma glu_rel_exp_natrec_succ_helper : forall {i Γ SbΓ A MZ MS Δ M M' m' σ p
     {{ Γ, ℕ, A ⊩ MS : A[Wk∘Wk,,succ #1] }} ->
     {{ Δ ⊢ M ≈ succ M' : ℕ }} ->
     glu_nat Δ M' m' ->
-    (forall σ p am P El,
-        {{ Δ ⊢s σ ® p ∈ SbΓ }} ->
-        {{ ⟦ A ⟧ p ↦ m' ↘ am }} ->
+    (forall σ ρ am P El,
+        {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
+        {{ ⟦ A ⟧ ρ ↦ m' ↘ am }} ->
         {{ DG am ∈ glu_univ_elem i ↘ P ↘ El }} ->
         exists r,
-          {{ rec m' ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
+          {{ rec m' ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
             {{ Δ ⊢ rec M' return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M'] ® r ∈ El }}) ->
-    {{ Δ ⊢s σ ® p ∈ SbΓ }} ->
-    {{ ⟦ A ⟧ p ↦ succ m' ↘ am }} ->
+    {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
+    {{ ⟦ A ⟧ ρ ↦ succ m' ↘ am }} ->
     {{ DG am ∈ glu_univ_elem i ↘ P ↘ El }} ->
     exists r,
-      {{ rec succ m' ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
+      {{ rec succ m' ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
         {{ Δ ⊢ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M] ® r ∈ El }}.
 Proof.
   intros * ? HA ? ? HMS **.
@@ -234,7 +233,7 @@ Proof.
   assert {{ EG Γ, ℕ, A ∈ glu_ctx_env ↘ SbΓℕA }} by (econstructor; mauto 3; reflexivity).
   assert {{ Γ, ℕ, A ⊢ MS : A[Wk∘Wk,,succ #1] }} by mauto 2.
   invert_glu_rel_exp HMS.
-  assert {{ Δ ⊢s σ,,M' ® p ↦ m' ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
+  assert {{ Δ ⊢s σ,,M' ® ρ ↦ m' ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
   destruct_glu_rel_exp_with_sub.
   simplify_evals.
   match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -242,7 +241,7 @@ Proof.
   unfold univ_glu_exp_pred' in *.
   destruct_conjs.
   match goal with
-  | _: {{ ⟦ A ⟧ p ↦ m' ↘ ~?m }}, _: {{ DG ~?m ∈ glu_univ_elem i ↘ ?P ↘ ?El }} |- _ =>
+  | _: {{ ⟦ A ⟧ ρ ↦ m' ↘ ~?m }}, _: {{ DG ~?m ∈ glu_univ_elem i ↘ ?P ↘ ?El }} |- _ =>
       rename m into am';
       rename P into P';
       rename El into El'
@@ -268,9 +267,9 @@ Proof.
   assert {{ Δ, ℕ, A[q σ] ⊢s Wk∘Wk,,succ #1 : Δ, ℕ }} by mauto 3.
   assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }} by (rewrite @exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1; mauto 3).
   pose (R := {{{ rec M' return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}}).
-  assert (exists r, {{ rec m' ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\ {{ Δ ⊢ R : A[σ,,M'] ® r ∈ El' }}) as [r' []] by mauto 3.
+  assert (exists r, {{ rec m' ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\ {{ Δ ⊢ R : A[σ,,M'] ® r ∈ El' }}) as [r' []] by mauto 3.
   assert {{ Δ ⊢ R : A[σ,,M'] }} by (erewrite <- @exp_eq_elim_sub_rhs_typ; mauto 3).
-  assert {{ Δ ⊢s σ,,M',,R ® p ↦ m' ↦ r' ∈ SbΓℕA }} by (unfold SbΓℕA; mauto 3).
+  assert {{ Δ ⊢s σ,,M',,R ® ρ ↦ m' ↦ r' ∈ SbΓℕA }} by (unfold SbΓℕA; mauto 3).
   destruct_glu_rel_exp_with_sub.
   simplify_evals.
   match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -280,7 +279,7 @@ Proof.
   destruct_conjs.
   handle_functional_glu_univ_elem.
   match goal with
-  | _: {{ ⟦ MS ⟧ p ↦ m' ↦ r' ↘ ~?m }} |- _ =>
+  | _: {{ ⟦ MS ⟧ ρ ↦ m' ↦ r' ↘ ~?m }} |- _ =>
       rename m into ms
   end.
   exists ms; split; mauto 3.
@@ -349,7 +348,7 @@ Qed.
 #[local]
 Hint Resolve cons_glu_sub_pred_q_nat_helper : mcltt.
 
-Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M m σ p am P El},
+Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M m σ ρ am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Γ, ℕ ⊩ A : Type@i }} ->
     {{ Γ ⊩ A[Id,,zero] : Type@i }} ->
@@ -358,11 +357,11 @@ Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M m σ p am 
     {{ Γ, ℕ, A ⊩ MS : A[Wk∘Wk,,succ #1] }} ->
     {{ Dom m ≈ m ∈ per_bot }} ->
     (forall Δ' τ V, {{ Δ' ⊢w τ : Δ }} -> {{ Rne m in length Δ' ↘ V }} -> {{ Δ' ⊢ M[τ] ≈ V : ℕ }}) ->
-    {{ Δ ⊢s σ ® p ∈ SbΓ }} ->
-    {{ ⟦ A ⟧ p ↦ ⇑ ℕ m ↘ am }} ->
+    {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
+    {{ ⟦ A ⟧ ρ ↦ ⇑ ℕ m ↘ am }} ->
     {{ DG am ∈ glu_univ_elem i ↘ P ↘ El }} ->
     exists r,
-      {{ rec ⇑ ℕ m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
+      {{ rec ⇑ ℕ m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
         {{ Δ ⊢ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M] ® r ∈ El }}.
 Proof.
   intros * ? HA ? HMZ ? HMS **.
@@ -377,7 +376,7 @@ Proof.
   invert_glu_rel_exp HA.
   pose (SbΓℕA := cons_glu_sub_pred i {{{ Γ, ℕ }}} A SbΓℕ).
   assert {{ EG Γ, ℕ, A ∈ glu_ctx_env ↘ SbΓℕA }} by (econstructor; mauto 3; reflexivity).
-  assert {{ Δ ⊢s σ,,M ® p ↦ ⇑ ℕ m ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
+  assert {{ Δ ⊢s σ,,M ® ρ ↦ ⇑ ℕ m ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
   assert {{ Γ, ℕ, A ⊢ MS : A[Wk∘Wk,,succ #1] }} by mauto 2.
   invert_glu_rel_exp HMS.
   destruct_glu_rel_exp_with_sub.
@@ -388,8 +387,8 @@ Proof.
   destruct_conjs.
   handle_functional_glu_univ_elem.
   match goal with
-  | _: {{ ⟦ MZ ⟧ ~?p0 ↘ ~?m }}, _: {{ ⟦ A ⟧ ~?p0 ↦ zero ↘ ~?a }} |- _ =>
-      rename p0 into p;
+  | _: {{ ⟦ MZ ⟧ ~?ρ0 ↘ ~?m }}, _: {{ ⟦ A ⟧ ~?ρ0 ↦ zero ↘ ~?a }} |- _ =>
+      rename ρ0 into ρ;
       rename m into mz;
       rename a into az
   end.
@@ -414,7 +413,7 @@ Proof.
   assert {{ Δ, ℕ, A[q σ] ⊢s Wk∘Wk,,succ #1 : Δ, ℕ }} by mauto 3.
   assert {{ Δ, ℕ, A[q σ] ⊢ MS[q (q σ)] : A[q σ][Wk∘Wk,,succ #1] }} by (rewrite @exp_eq_typ_q_sigma_then_weak_weak_extend_succ_var_1; mauto 3).
   pose (R := {{{ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}}).
-  enough {{ Δ ⊢ R : A[σ,,M] ® rec m under p return A | zero -> mz | succ -> MS end ∈ glu_elem_bot i am }} by (eapply realize_glu_elem_bot; mauto 3).
+  enough {{ Δ ⊢ R : A[σ,,M] ® rec m under ρ return A | zero -> mz | succ -> MS end ∈ glu_elem_bot i am }} by (eapply realize_glu_elem_bot; mauto 3).
   econstructor; mauto 3.
   - erewrite <- @exp_eq_elim_sub_rhs_typ; mauto 3.
   - assert {{ Δ ⊢ MZ[σ] : A[Id,,zero][σ] ® mz ∈ glu_elem_top i az }} as [] by (eapply realize_glu_elem_top; eassumption).
@@ -427,21 +426,21 @@ Proof.
     match_by_head (per_ctx_env env_relΓℕA) ltac:(fun H => invert_per_ctx_env H).
     match_by_head (per_ctx_env env_relΓℕ) ltac:(fun H => invert_per_ctx_env H).
     intros s.
-    enough (exists r, {{ Rne rec m under p return A | zero -> mz | succ -> MS end in s ↘ r }}) as [] by (eexists; split; eassumption).
-    assert {{ Dom p ≈ p ∈ env_relΓ }} by (eapply glu_ctx_env_per_env; revgoals; eassumption).
+    enough (exists r, {{ Rne rec m under ρ return A | zero -> mz | succ -> MS end in s ↘ r }}) as [] by (eexists; split; eassumption).
+    assert {{ Dom ρ ≈ ρ ∈ env_relΓ }} by (eapply glu_ctx_env_per_env; revgoals; eassumption).
     destruct_rel_typ.
     invert_rel_typ_body.
     assert {{ Dom ! s ≈ ! s ∈ per_bot }} by mauto 3.
-    assert {{ Dom p ↦ ⇑! ℕ s ≈ p ↦ ⇑! ℕ s ∈ env_relΓℕ }} by (apply_relation_equivalence; unshelve eexists; simpl; intuition).
-    assert {{ Dom p ↦ succ ⇑! ℕ s ≈ p ↦ succ ⇑! ℕ s ∈ env_relΓℕ }} by (apply_relation_equivalence; unshelve eexists; simpl; intuition).
+    assert {{ Dom ρ ↦ ⇑! ℕ s ≈ ρ ↦ ⇑! ℕ s ∈ env_relΓℕ }} by (apply_relation_equivalence; unshelve eexists; simpl; intuition).
+    assert {{ Dom ρ ↦ succ ⇑! ℕ s ≈ ρ ↦ succ ⇑! ℕ s ∈ env_relΓℕ }} by (apply_relation_equivalence; unshelve eexists; simpl; intuition).
     destruct_rel_typ.
     invert_rel_typ_body.
     match goal with
-    | _: {{ ⟦ A ⟧ p ↦ ⇑! ℕ s ↘ ~?a }}, _: {{ ⟦ A ⟧ p ↦ (succ ⇑! ℕ s) ↘ ~?a' }} |- _ =>
+    | _: {{ ⟦ A ⟧ ρ ↦ ⇑! ℕ s ↘ ~?a }}, _: {{ ⟦ A ⟧ ρ ↦ (succ ⇑! ℕ s) ↘ ~?a' }} |- _ =>
         rename a into as'; (* We cannot use [as] as a name *)
         rename a' into asucc
     end.
-    assert {{ Dom p ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ≈ p ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ∈ env_relΓℕA }} as HΓℕA
+    assert {{ Dom ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ≈ ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ∈ env_relΓℕA }} as HΓℕA
         by (apply_relation_equivalence; unshelve eexists; simpl; intuition; eapply per_bot_then_per_elem; mauto 3).
     apply_relation_equivalence.
     (on_all_hyp_rev: fun H => destruct (H _ _ HΓℕA)).
@@ -451,7 +450,7 @@ Proof.
     destruct_by_head rel_exp.
     functional_eval_rewrite_clear.
     match goal with
-    | _: {{ ⟦ MS ⟧ p ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ↘ ~?m }} |- _ =>
+    | _: {{ ⟦ MS ⟧ ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ↘ ~?m }} |- _ =>
         rename m into ms
     end.
     assert {{ Dom as' ≈ as' ∈ per_top_typ }} as [? []]%(fun {a} (f : per_top_typ a a) => f (S s)) by mauto 3.
@@ -465,8 +464,8 @@ Proof.
     assert {{ ⊢ Δ', ℕ }} by mauto 3.
     assert {{ Δ' ⊢s τ : Δ }} by mauto 3.
     assert {{ Δ' ⊢s σ∘τ : Γ }} by mauto 3.
-    assert {{ Δ' ⊢s σ∘τ ® p ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption).
-    assert {{ Δ', ℕ ⊢s q (σ∘τ) ® p ↦ ⇑! ℕ (length Δ') ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
+    assert {{ Δ' ⊢s σ∘τ ® ρ ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption).
+    assert {{ Δ', ℕ ⊢s q (σ∘τ) ® ρ ↦ ⇑! ℕ (length Δ') ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
     destruct_glu_rel_exp_with_sub.
     simplify_evals.
     match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -477,11 +476,11 @@ Proof.
     match_by_head read_ne ltac:(fun H => directed inversion_clear H).
     handle_functional_glu_univ_elem.
     match goal with
-    | _: {{ ⟦ A ⟧ ~?p' ↦ ⇑! ℕ (length Δ') ↘ ~?a }} |- _ =>
-        rename p' into p;
+    | _: {{ ⟦ A ⟧ ~?ρ' ↦ ⇑! ℕ (length Δ') ↘ ~?a }} |- _ =>
+        rename ρ' into ρ;
         rename a into aΔ'
     end.
-    assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢s q (q (σ∘τ)) ® p ↦ ⇑! ℕ (length Δ') ↦ ⇑! aΔ' (length {{{ Δ', ℕ }}}) ∈ SbΓℕA }}
+    assert {{ Δ', ℕ, A[q (σ∘τ)] ⊢s q (q (σ∘τ)) ® ρ ↦ ⇑! ℕ (length Δ') ↦ ⇑! aΔ' (length {{{ Δ', ℕ }}}) ∈ SbΓℕA }}
       by (unfold SbΓℕA; mauto 3).
     destruct_glu_rel_exp_with_sub.
     simplify_evals.
@@ -492,12 +491,12 @@ Proof.
     clear_dups.
     handle_functional_glu_univ_elem.
     match goal with
-    | _: {{ ⟦ A ⟧ ~?p' ↦ succ (⇑! ℕ (length Δ')) ↘ ~?a }},
+    | _: {{ ⟦ A ⟧ ~?ρ' ↦ succ (⇑! ℕ (length Δ')) ↘ ~?a }},
         _: {{ Rtyp aΔ' in S (length Δ') ↘ ~?A }},
         _: {{ Rnf ⇓ az mz in length Δ' ↘ ~?MZ }},
             _: {{ Rne m in length Δ' ↘ ~?M }} |- _ =>
         rename A into A';
-        rename p' into p;
+        rename ρ' into ρ;
         rename a into asucc;
         rename MZ into MZ';
         rename M into M'
@@ -574,12 +573,12 @@ Lemma glu_rel_exp_natrec_helper : forall {i Γ SbΓ A MZ MS},
     {{ Γ, ℕ, A ⊩ MS : A[Wk∘Wk,,succ #1] }} ->
     forall {Δ M m},
       glu_nat Δ M m ->
-      forall {σ p am P El},
-        {{ Δ ⊢s σ ® p ∈ SbΓ }} ->
-        {{ ⟦ A ⟧ p ↦ m ↘ am }} ->
+      forall {σ ρ am P El},
+        {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
+        {{ ⟦ A ⟧ ρ ↦ m ↘ am }} ->
         {{ DG am ∈ glu_univ_elem i ↘ P ↘ El }} ->
         exists r,
-          {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
+          {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
             {{ Δ ⊢ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M] ® r ∈ El }}.
 Proof.
   intros * ? HA ? ?.
@@ -607,7 +606,7 @@ Proof.
     assert {{ Γ, ℕ, A ⊩ #1 : ℕ }} by mauto 3.
     mauto.
   }
-  induction 1; intros; rename m into M; rename Γ0 into Δ.
+  induction 1; intros; rename Γ0 into Δ.
   - (* glu_nat_zero *)
     mauto 4 using glu_rel_exp_natrec_zero_helper.
   - (* glu_nat_succ *)
