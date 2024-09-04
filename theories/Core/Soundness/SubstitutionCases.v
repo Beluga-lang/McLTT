@@ -134,10 +134,9 @@ Proof.
     assert {{ Δ0 ⊢s Wk∘((σ,,M)∘σ0) ≈ σ∘σ0 : Δ }} by mauto 3.
     econstructor; mauto 4.
     + assert {{ Δ, A ⊢s Wk : Δ }} by mauto 4.
-      assert {{ Δ0 ⊢ A[Wk][(σ,,M)∘σ0] ≈ A[Wk∘((σ,,M)∘σ0)] : Type@i }} by mauto 4.
-      assert {{ Δ0 ⊢ A[Wk∘((σ,,M)∘σ0)] ≈ A[σ∘σ0] : Type@i }} by mauto 3.
-      assert {{ Δ0 ⊢ A[σ∘σ0] ≈ A[σ][σ0] : Type@i }} by mauto 4.
-      assert {{ Δ0 ⊢ A[Wk∘((σ,,M)∘σ0)] ≈ A[σ][σ0] : Type@i }} as -> by mauto 3.
+      assert {{ Δ0 ⊢ A[Wk][(σ,,M)∘σ0] ≈ A[Wk][(σ∘σ0),,M[σ0]] : Type@i }} as -> by mauto 3.
+      assert {{ Δ0 ⊢ A[Wk][(σ∘σ0),,M[σ0]] ≈ A[σ∘σ0] : Type@i }} as -> by mauto 3.
+      assert {{ Δ0 ⊢ A[σ∘σ0] ≈ A[σ][σ0] : Type@i }} as -> by mauto 3.
       assert {{ Δ, A ⊢ #0 : A[Wk] }} by mauto 3.
       assert {{ Δ0 ⊢ #0[(σ,,M)∘σ0] ≈ #0[(σ∘σ0),,M[σ0]] : A[Wk][(σ,,M)∘σ0] }} by mauto 3.
       assert {{ Δ0 ⊢ #0[(σ,,M)∘σ0] ≈ #0[(σ∘σ0),,M[σ0]] : A[σ][σ0] }} as -> by mauto 3.

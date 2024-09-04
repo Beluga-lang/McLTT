@@ -53,9 +53,6 @@ Proof.
     intros.
     destruct_by_head cons_glu_sub_pred.
     econstructor; mauto.
-    enough {{ Δ ⊢ A[Wk][σ] ≈ A[Wk∘σ] : Type@i }} as -> by eassumption.
-    assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3.
-    mauto 3.
   - assert {{ Γ ⊩ #n : A }} as Hn by mauto.
     assert (exists i, {{ Γ ⊢ A : Type@i }}) as [j] by (gen_presups; mauto 3).
     invert_glu_rel_exp Hn.

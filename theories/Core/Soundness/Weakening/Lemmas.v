@@ -93,9 +93,9 @@ Proof.
   mauto.
 Qed.
 
-Lemma weakening_wk : forall Γ T,
-    {{ ⊢ Γ , T }} ->
-    {{ Γ , T ⊢w Wk : Γ }}.
+Lemma weakening_wk : forall Γ A,
+    {{ ⊢ Γ, A }} ->
+    {{ Γ, A ⊢w Wk : Γ }}.
 Proof.
   intros.
   econstructor; mautosolve.

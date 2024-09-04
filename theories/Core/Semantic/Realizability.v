@@ -37,7 +37,7 @@ Proof with (solve [try (try (eexists; split); econstructor); mauto]).
     specialize (H1 s) as [? []]...
   - destruct IHHunivelem as [? []].
     intro s.
-    assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
+    assert {{ Dom ⇑! a s ≈ ⇑! a' s ∈ in_rel }} by eauto using var_per_bot.
     destruct_rel_mod_eval.
     specialize (H9 (S s)) as [? []].
     specialize (H2 s) as [? []]...
@@ -45,16 +45,26 @@ Proof with (solve [try (try (eexists; split); econstructor); mauto]).
     destruct_conjs.
     destruct_rel_mod_eval.
     econstructor; try solve [econstructor; eauto].
-    enough ({{ Dom c ⇓ A c0 ≈ c' ⇓ A' c0' ∈ per_bot }}) by eauto.
+    enough ({{ Dom c ⇓ a c0 ≈ c' ⇓ a' c0' ∈ per_bot }}) by eauto.
     intro s.
     specialize (H3 s) as [? []].
     specialize (H5 _ _ equiv_c0_c0' s) as [? []]...
   - destruct_conjs.
     intro s.
-    assert {{ Dom ⇑! A s ≈ ⇑! A' s ∈ in_rel }} by eauto using var_per_bot.
+    assert {{ Dom ⇑! a s ≈ ⇑! a' s ∈ in_rel }} by eauto using var_per_bot.
     destruct_rel_mod_eval.
     destruct_rel_mod_app.
-    assert {{ Dom ⇓ a fa ≈ ⇓ a' f'a' ∈ per_top }} by eauto.
+    match goal with
+    | _: {{ $| ~?f0 & ⇑! a s |↘ ~_ }},
+        _: {{ $| ~?f0' & ⇑! a' s |↘ ~_ }},
+          _: {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↘ ~?b0 }},
+            _: {{ ⟦ B' ⟧ ρ' ↦ ⇑! a' s ↘ ~?b0' }} |- _ =>
+        rename f0 into f;
+        rename f0' into f';
+        rename b0 into b;
+        rename b0' into b'
+    end.
+    assert {{ Dom ⇓ b fa ≈ ⇓ b' f'a' ∈ per_top }} by eauto.
     specialize (H2 s) as [? []].
     specialize (H16 (S s)) as [? []]...
   - intro s.
@@ -97,7 +107,7 @@ Hint Resolve per_elem_then_per_top : mcltt.
 
 Lemma per_ctx_then_per_env_initial_env : forall {Γ Γ' env_rel},
     {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ env_rel }} ->
-    exists p p', initial_env Γ p /\ initial_env Γ' p' /\ {{ Dom p ≈ p' ∈ env_rel }}.
+    exists ρ ρ', initial_env Γ ρ /\ initial_env Γ' ρ' /\ {{ Dom ρ ≈ ρ' ∈ env_rel }}.
 Proof.
   induction 1.
   - do 2 eexists; intuition.
@@ -111,9 +121,9 @@ Proof.
     eexists; eauto.
 Qed.
 
-Lemma var_per_elem : forall {A B i R} n,
-    {{ DF A ≈ B ∈ per_univ_elem i ↘ R }} ->
-    {{ Dom ⇑! A n ≈ ⇑! B n ∈ R }}.
+Lemma var_per_elem : forall {a b i R} n,
+    {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
+    {{ Dom ⇑! a n ≈ ⇑! b n ∈ R }}.
 Proof.
   intros.
   eapply per_bot_then_per_elem; mauto.

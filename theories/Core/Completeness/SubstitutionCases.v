@@ -205,7 +205,7 @@ Proof with mautosolve.
   destruct_conjs.
   eexists_rel_sub.
   intros.
-  assert (env_relΓ p' p) by (symmetry; eassumption).
+  assert (env_relΓ ρ' ρ) by (symmetry; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   econstructor; mauto; symmetry...
 Qed.
@@ -224,7 +224,7 @@ Proof with mautosolve.
   handle_per_ctx_env_irrel.
   eexists_rel_sub.
   intros.
-  assert (env_relΓ p' p') by (etransitivity; [symmetry |]; eassumption).
+  assert (env_relΓ ρ' ρ') by (etransitivity; [symmetry |]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   functional_eval_rewrite_clear.
   econstructor; mauto; etransitivity...

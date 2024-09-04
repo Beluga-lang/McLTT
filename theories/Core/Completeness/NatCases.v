@@ -8,8 +8,8 @@ Import Domain_Notations.
 Lemma rel_exp_of_nat_inversion : forall {Γ M M'},
     {{ Γ ⊨ M ≈ M' : ℕ }} ->
     exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}),
-    forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
-      rel_exp M p M' p' per_nat.
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
+      rel_exp M ρ M' ρ' per_nat.
 Proof.
   intros * [env_relΓ].
   destruct_conjs.
@@ -24,8 +24,8 @@ Qed.
 
 Lemma rel_exp_of_nat : forall {Γ M M'},
     (exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}),
-      forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
-        rel_exp M p M' p' per_nat) ->
+      forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
+        rel_exp M ρ M' ρ' per_nat) ->
     {{ Γ ⊨ M ≈ M' : ℕ }}.
 Proof.
   intros * [env_relΓ].
@@ -145,8 +145,8 @@ Hint Resolve rel_exp_succ_cong : mcltt.
 Lemma rel_exp_of_sub_id_zero_inversion : forall {Γ M M' A},
     {{ Γ ⊨ M ≈ M' : A[Id,,zero] }} ->
     exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
-    forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
-    exists elem_rel, rel_typ i A d{{{ p ↦ zero }}} A d{{{ p' ↦ zero }}} elem_rel /\ rel_exp M p M' p' elem_rel.
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
+    exists elem_rel, rel_typ i A d{{{ ρ ↦ zero }}} A d{{{ ρ' ↦ zero }}} elem_rel /\ rel_exp M ρ M' ρ' elem_rel.
 Proof.
   intros * [env_relΓ].
   destruct_conjs.
@@ -160,8 +160,8 @@ Qed.
 
 Lemma rel_exp_of_sub_id_zero : forall {Γ M M' A},
     (exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
-      forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
-      exists elem_rel, rel_typ i A d{{{ p ↦ zero }}} A d{{{ p' ↦ zero }}} elem_rel /\ rel_exp M p M' p' elem_rel) ->
+      forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
+      exists elem_rel, rel_typ i A d{{{ ρ ↦ zero }}} A d{{{ ρ' ↦ zero }}} elem_rel /\ rel_exp M ρ M' ρ' elem_rel) ->
     {{ Γ ⊨ M ≈ M' : A[Id,,zero] }}.
 Proof.
   intros * [env_relΓ].
@@ -182,8 +182,8 @@ Ltac eexists_rel_exp_of_sub_id_zero :=
 Lemma rel_exp_of_sub_wkwk_succ_var1_inversion : forall {Γ M M' A},
     {{ Γ, ℕ, A ⊨ M ≈ M' : A[Wk∘Wk,,succ(#1)] }} ->
     exists env_rel (_ : {{ EF Γ, ℕ, A ≈ Γ, ℕ, A ∈ per_ctx_env ↘ env_rel }}) i,
-    forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
-    exists elem_rel, rel_typ i A d{{{ p ↯ ↯ ↦ succ ~(p 1) }}} A d{{{ p' ↯ ↯ ↦ succ ~(p' 1) }}} elem_rel /\ rel_exp M p M' p' elem_rel.
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
+    exists elem_rel, rel_typ i A d{{{ ρ ↯ ↯ ↦ succ ~(ρ 1) }}} A d{{{ ρ' ↯ ↯ ↦ succ ~(ρ' 1) }}} elem_rel /\ rel_exp M ρ M' ρ' elem_rel.
 Proof.
   intros * [env_relΓℕA].
   destruct_conjs.
@@ -198,11 +198,11 @@ Qed.
 Lemma rel_exp_of_sub_id_N : forall {Γ M M' N A},
     {{ Γ ⊨ N : ℕ }} ->
     (exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
-      forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
+      forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
       exists n n',
-        {{ ⟦ N ⟧ p ↘ n }} /\
-          {{ ⟦ N ⟧ p' ↘ n' }} /\
-          exists elem_rel, rel_typ i A d{{{ p ↦ n }}} A d{{{ p' ↦ n' }}} elem_rel /\ rel_exp M p M' p' elem_rel) ->
+        {{ ⟦ N ⟧ ρ ↘ n }} /\
+          {{ ⟦ N ⟧ ρ' ↘ n' }} /\
+          exists elem_rel, rel_typ i A d{{{ ρ ↦ n }}} A d{{{ ρ' ↦ n' }}} elem_rel /\ rel_exp M ρ M' ρ' elem_rel) ->
     {{ Γ ⊨ M ≈ M' : A[Id,,N] }}.
 Proof.
   intros * []%rel_exp_of_nat_inversion [env_relΓ].
@@ -230,13 +230,13 @@ Lemma eval_natrec_sub_neut : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' 
     {{ Δ ⊨ MZ ≈ MZ' : A[Id,,zero] }} ->
     {{ Δ, ℕ, A ⊨ MS ≈ MS' : A[Wk∘Wk,,succ(#1)] }} ->
     {{ Dom m ≈ m' ∈ per_bot }} ->
-    (forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}) o o' mz mz',
-        {{ ⟦ σ ⟧s p ↘ o }} ->
-        {{ ⟦ σ ⟧s p' ↘ o' }} ->
-        {{ Dom o ≈ o' ∈ env_relΔ }} ->
-        {{ ⟦ MZ ⟧ o ↘ mz }} ->
-        {{ ⟦ MZ' ⟧ o' ↘ mz' }} ->
-        {{ Dom rec m under o return A | zero -> mz | succ -> MS end ≈ rec m' under p' return A'[q σ] | zero -> mz' | succ -> MS'[q (q σ)] end ∈ per_bot }}).
+    (forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}) ρσ ρ'σ' mz mz',
+        {{ ⟦ σ ⟧s ρ ↘ ρσ }} ->
+        {{ ⟦ σ ⟧s ρ' ↘ ρ'σ' }} ->
+        {{ Dom ρσ ≈ ρ'σ' ∈ env_relΔ }} ->
+        {{ ⟦ MZ ⟧ ρσ ↘ mz }} ->
+        {{ ⟦ MZ' ⟧ ρ'σ' ↘ mz' }} ->
+        {{ Dom rec m under ρσ return A | zero -> mz | succ -> MS end ≈ rec m' under ρ' return A'[q σ] | zero -> mz' | succ -> MS'[q (q σ)] end ∈ per_bot }}).
 Proof.
   intros * equiv_Γ_Γ equiv_Δ_Δ
              [env_relΔℕ]%rel_exp_of_typ_inversion
@@ -258,17 +258,23 @@ Proof.
   destruct_by_head rel_exp.
   destruct_conjs.
   functional_eval_rewrite_clear.
+  match goal with
+  | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ1 }},
+      _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ2 }} |- _ =>
+      rename ρ1 into ρσ;
+      rename ρ2 into ρ'σ
+  end.
   intro s.
   assert {{ Dom ⇑! ℕ s ≈ ⇑! ℕ s ∈ per_nat }} by mauto.
-  assert {{ Dom o ↦ ⇑! ℕ s ≈ o' ↦ ⇑! ℕ s ∈ env_relΔℕ }} as HinΔℕs by (apply_relation_equivalence; mauto).
+  assert {{ Dom ρσ ↦ ⇑! ℕ s ≈ ρ'σ ↦ ⇑! ℕ s ∈ env_relΔℕ }} as HinΔℕs by (apply_relation_equivalence; mauto).
   (on_all_hyp: fun H => destruct (H _ _ HinΔℕs)).
   assert {{ Dom succ (⇑! ℕ s) ≈ succ (⇑! ℕ s) ∈ per_nat }} by mauto.
-  assert {{ Dom o ↦ succ (⇑! ℕ s) ≈ o' ↦ succ (⇑! ℕ s) ∈ env_relΔℕ }} as HinΔℕsuccs by (apply_relation_equivalence; mauto).
+  assert {{ Dom ρσ ↦ succ (⇑! ℕ s) ≈ ρ'σ ↦ succ (⇑! ℕ s) ∈ env_relΔℕ }} as HinΔℕsuccs by (apply_relation_equivalence; mauto).
   (on_all_hyp: fun H => destruct (H _ _ HinΔℕsuccs)).
-  assert {{ Dom o ↦ ⇑! ℕ s ≈ o' ↦ ⇑! ℕ s ∈ env_relΔℕ }} as HinΔℕs' by (apply_relation_equivalence; mauto).
-  assert {{ Dom o ↦ succ (⇑! ℕ s) ≈ o' ↦ succ (⇑! ℕ s) ∈ env_relΔℕ }} as HinΔℕsuccs' by (apply_relation_equivalence; mauto).
+  assert {{ Dom ρσ ↦ ⇑! ℕ s ≈ ρ'σ ↦ ⇑! ℕ s ∈ env_relΔℕ }} as HinΔℕs' by (apply_relation_equivalence; mauto).
+  assert {{ Dom ρσ ↦ succ (⇑! ℕ s) ≈ ρ'σ ↦ succ (⇑! ℕ s) ∈ env_relΔℕ }} as HinΔℕsuccs' by (apply_relation_equivalence; mauto).
   assert {{ Dom zero ≈ zero ∈ per_nat }} by econstructor.
-  assert {{ Dom o ↦ zero ≈ o' ↦ zero ∈ env_relΔℕ }} as HinΔℕz by (apply_relation_equivalence; mauto).
+  assert {{ Dom ρσ ↦ zero ≈ ρ'σ ↦ zero ∈ env_relΔℕ }} as HinΔℕz by (apply_relation_equivalence; mauto).
   apply_relation_equivalence.
   (on_all_hyp: fun H => destruct (H _ _ HinΔℕs')).
   (on_all_hyp: fun H => destruct (H _ _ HinΔℕsuccs')).
@@ -280,12 +286,12 @@ Proof.
   rename m'0 into a'.
   rename a1 into asucc.
   rename m'1 into asucc'.
-  assert {{ Dom o ↦ ⇑! ℕ s ↦ ⇑! a (S s) ≈ o' ↦ ⇑! ℕ s ↦ ⇑! a' (S s) ∈ env_relΔℕA }} as HinΔℕA.
+  assert {{ Dom ρσ ↦ ⇑! ℕ s ↦ ⇑! a (S s) ≈ ρ'σ ↦ ⇑! ℕ s ↦ ⇑! a' (S s) ∈ env_relΔℕA }} as HinΔℕA.
   {
     apply_relation_equivalence; eexists; eauto.
     unfold drop_env.
-    repeat change (fun n => d{{{ ~?p ↦ ~?x ↦ ~?y }}} (S n)) with (fun n => d{{{ p ↦ x }}} n).
-    repeat change (d{{{ ~?p ↦ ~?x ↦ ~?y }}} 0) with y.
+    repeat change (fun n => d{{{ ~?ρσ ↦ ~?x ↦ ~?y }}} (S n)) with (fun n => d{{{ ρ ↦ x }}} n).
+    repeat change (d{{{ ~?ρσ ↦ ~?x ↦ ~?y }}} 0) with y.
     eapply per_bot_then_per_elem; mauto.
   }
   apply_relation_equivalence.
@@ -310,13 +316,13 @@ Corollary eval_natrec_neut : forall {Γ env_relΓ MZ MZ' MS MS' A A' i m m'},
     {{ Γ ⊨ MZ ≈ MZ' : A[Id,,zero] }} ->
     {{ Γ, ℕ, A ⊨ MS ≈ MS' : A[Wk∘Wk,,succ(#1)] }} ->
     {{ Dom m ≈ m' ∈ per_bot }} ->
-    (forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}) mz mz',
-        {{ ⟦ MZ ⟧ p ↘ mz }} ->
-        {{ ⟦ MZ' ⟧ p' ↘ mz' }} ->
-        {{ Dom rec m under p return A | zero -> mz | succ -> MS end ≈ rec m' under p' return A' | zero -> mz' | succ -> MS' end ∈ per_bot }}).
+    (forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}) mz mz',
+        {{ ⟦ MZ ⟧ ρ ↘ mz }} ->
+        {{ ⟦ MZ' ⟧ ρ' ↘ mz' }} ->
+        {{ Dom rec m under ρ return A | zero -> mz | succ -> MS end ≈ rec m' under ρ' return A' | zero -> mz' | succ -> MS' end ∈ per_bot }}).
 Proof.
   intros.
-  assert {{ Dom rec m under p return A | zero -> mz | succ -> MS end ≈ rec m' under p' return A'[q Id] | zero -> mz' | succ -> MS'[q (q Id)] end ∈ per_bot }} by (mauto using eval_natrec_sub_neut).
+  assert {{ Dom rec m under ρ return A | zero -> mz | succ -> MS end ≈ rec m' under ρ' return A'[q Id] | zero -> mz' | succ -> MS'[q (q Id)] end ∈ per_bot }} by (mauto using eval_natrec_sub_neut).
   etransitivity; [eassumption |].
   intros s.
   match_by_head per_bot ltac:(fun H => specialize (H s) as [? []]).
@@ -332,12 +338,12 @@ Lemma eval_natrec_rel : forall {Γ env_relΓ MZ MZ' MS MS' A A' i m m'},
     {{ Γ ⊨ MZ ≈ MZ' : A[Id,,zero] }} ->
     {{ Γ, ℕ, A ⊨ MS ≈ MS' : A[Wk∘Wk,,succ(#1)] }} ->
     {{ Dom m ≈ m' ∈ per_nat }} ->
-    (forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
+    (forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}),
       forall elem_rel,
-        rel_typ i A d{{{ p ↦ m }}} A d{{{ p' ↦ m' }}} elem_rel ->
+        rel_typ i A d{{{ ρ ↦ m }}} A d{{{ ρ' ↦ m' }}} elem_rel ->
         exists r r',
-          {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
-            {{ rec m' ⟦return A' | zero -> MZ' | succ -> MS' end⟧ p' ↘ r' }} /\
+          {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
+            {{ rec m' ⟦return A' | zero -> MZ' | succ -> MS' end⟧ ρ' ↘ r' }} /\
             {{ Dom r ≈ r' ∈ elem_rel }}).
 Proof.
   intros * equiv_Γ_Γ HA HMZ HMS equiv_m_m'.
@@ -367,17 +373,25 @@ Proof.
     (on_all_hyp_rev: destruct_rel_by_assumption env_relΓ).
     destruct_by_head rel_typ.
     invert_rel_typ_body.
-    assert {{ Dom p ↦ m ≈ p' ↦ m' ∈ env_relΓℕ }} by (apply_relation_equivalence; mauto).
+    match goal with
+    | _: env_relΓ ρ ?ρ0 |- _ =>
+        rename ρ0 into ρ'
+    end.
+    assert {{ Dom ρ ↦ m ≈ ρ' ↦ m' ∈ env_relΓℕ }} by (apply_relation_equivalence; mauto).
     (on_all_hyp: destruct_rel_by_assumption env_relΓℕ).
-    assert {{ Dom p ↦ m ≈ p' ↦ m' ∈ env_relΓℕ }} as HinΓℕ by (apply_relation_equivalence; mauto).
+    assert {{ Dom ρ ↦ m ≈ ρ' ↦ m' ∈ env_relΓℕ }} as HinΓℕ by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΓℕ)).
     destruct_by_head per_univ.
-    unshelve epose proof (IHequiv_m_m' _ _ equiv_p_p' _ _) as [? [? [? []]]]; shelve_unifiable; [solve [mauto] |].
+    unshelve epose proof (IHequiv_m_m' _ _ equiv_ρ_ρ' _ _) as [? [? [? []]]]; shelve_unifiable; [solve [mauto] |].
     handle_per_univ_elem_irrel.
-    rename x5 into r1.
-    rename x6 into r1'.
-    assert {{ Dom p ↦ m ↦ r1 ≈ p' ↦ m' ↦ r1' ∈ env_relΓℕA }} as HinΓℕA by (apply_relation_equivalence; mauto).
+    match goal with
+    | _: {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ~?r0 }},
+        _: {{ rec m' ⟦return A' | zero -> MZ' | succ -> MS' end⟧ ρ' ↘ ~?r0' }} |- _ =>
+        rename r0 into rm;
+        rename r0' into rm'
+    end.
+    assert {{ Dom ρ ↦ m ↦ rm ≈ ρ' ↦ m' ↦ rm' ∈ env_relΓℕA }} as HinΓℕA by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΓℕA)).
     destruct_conjs.
@@ -385,15 +399,22 @@ Proof.
     destruct_by_head rel_exp.
     handle_per_univ_elem_irrel.
     do 2 eexists; mauto.
-  - rename n into m'.
+  - match goal with
+    | _: per_bot m ?n |- _ =>
+        rename n into m'
+    end.
     handle_per_ctx_env_irrel.
     match_by_head (per_ctx_env env_relΓℕ) invert_per_ctx_env.
     handle_per_ctx_env_irrel.
     (on_all_hyp: destruct_rel_by_assumption env_relΓ).
     (on_all_hyp_rev: destruct_rel_by_assumption env_relΓ).
     invert_rel_typ_body.
+    match goal with
+    | _: env_relΓ ρ ?ρ0 |- _ =>
+        rename ρ0 into ρ'
+    end.
     assert {{ Dom ⇑ ℕ m ≈ ⇑ ℕ m' ∈ per_nat }} by (econstructor; eassumption).
-    assert {{ Dom p ↦ ⇑ ℕ m ≈ p' ↦ ⇑ ℕ m' ∈ env_relΓℕ }} as HinΓℕ by (apply_relation_equivalence; mauto).
+    assert {{ Dom ρ ↦ ⇑ ℕ m ≈ ρ' ↦ ⇑ ℕ m' ∈ env_relΓℕ }} as HinΓℕ by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΓℕ)).
     destruct_by_head per_univ.
@@ -416,11 +437,11 @@ Lemma rel_exp_natrec_cong_rel_typ: forall {Γ A A' i M M' env_relΓ},
     {{ DF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }} ->
     {{ Γ, ℕ ⊨ A ≈ A' : Type@i }} ->
     {{ Γ ⊨ M ≈ M' : ℕ }} ->
-    forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}) n n',
-      {{ ⟦ M ⟧ p ↘ n }} ->
-      {{ ⟦ M' ⟧ p' ↘ n' }} ->
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}) n n',
+      {{ ⟦ M ⟧ ρ ↘ n }} ->
+      {{ ⟦ M' ⟧ ρ' ↘ n' }} ->
       exists elem_rel,
-        rel_typ i A d{{{ p ↦ n }}} A d{{{ p' ↦ n' }}} elem_rel.
+        rel_typ i A d{{{ ρ ↦ n }}} A d{{{ ρ' ↦ n' }}} elem_rel.
 Proof.
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
@@ -457,9 +478,9 @@ Proof.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   functional_eval_rewrite_clear.
-  assert (exists elem_rel, rel_typ i A d{{{ p ↦ m }}} A d{{{ p' ↦ m' }}} elem_rel) as [elem_rel]
+  assert (exists elem_rel, rel_typ i A d{{{ ρ ↦ m }}} A d{{{ ρ' ↦ m' }}} elem_rel) as [elem_rel]
       by mauto using rel_exp_natrec_cong_rel_typ.
-  assert (exists elem_rel, rel_typ i A d{{{ p ↦ m }}} A d{{{ p' ↦ m'0 }}} elem_rel) as []
+  assert (exists elem_rel, rel_typ i A d{{{ ρ ↦ m }}} A d{{{ ρ' ↦ m'0 }}} elem_rel) as []
       by mauto using rel_exp_natrec_cong_rel_typ.
   do 2 eexists.
   repeat split; [eassumption | eassumption |].
@@ -468,8 +489,8 @@ Proof.
   destruct_by_head rel_typ.
   handle_per_univ_elem_irrel.
   assert (exists r r',
-             {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
-               {{ rec m'0 ⟦return A' | zero -> MZ' | succ -> MS' end⟧ p' ↘ r' }} /\
+             {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
+               {{ rec m'0 ⟦return A' | zero -> MZ' | succ -> MS' end⟧ ρ' ↘ r' }} /\
                {{ Dom r ≈ r' ∈ elem_rel }})
     by mauto using eval_natrec_rel.
   destruct_conjs.
@@ -486,16 +507,16 @@ Lemma eval_natrec_sub_rel : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' A
     {{ Δ ⊨ MZ ≈ MZ' : A[Id,,zero] }} ->
     {{ Δ, ℕ, A ⊨ MS ≈ MS' : A[Wk∘Wk,,succ(#1)] }} ->
     {{ Dom m ≈ m' ∈ per_nat }} ->
-    (forall p p'
-        (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }})
+    (forall ρ ρ'
+        (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }})
         o o' elem_rel,
-        {{ ⟦ σ ⟧s p ↘ o }} ->
-        {{ ⟦ σ ⟧s p' ↘ o' }} ->
+        {{ ⟦ σ ⟧s ρ ↘ o }} ->
+        {{ ⟦ σ ⟧s ρ' ↘ o' }} ->
         {{ Dom o ≈ o' ∈ env_relΔ }} ->
         rel_typ i A d{{{ o ↦ m }}} A d{{{ o' ↦ m' }}} elem_rel ->
         exists r r',
           {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ o ↘ r }} /\
-            {{ rec m' ⟦return A'[q σ] | zero -> MZ'[σ] | succ -> MS'[q (q σ)] end⟧ p' ↘ r' }} /\
+            {{ rec m' ⟦return A'[q σ] | zero -> MZ'[σ] | succ -> MS'[q (q σ)] end⟧ ρ' ↘ r' }} /\
             {{ Dom r ≈ r' ∈ elem_rel }}).
 Proof.
   intros * equiv_Γ_Γ equiv_Δ_Δ HA HMZ HMS equiv_m_m'.
@@ -512,7 +533,10 @@ Proof.
     destruct_by_head rel_exp.
     handle_per_univ_elem_irrel.
     do 2 eexists; repeat split; only 1-2: econstructor; mauto.
-  - rename n into m'.
+  - match goal with
+    | _: per_nat m ?n |- _ =>
+        rename n into m'
+    end.
     assert {{ Δ, ℕ ⊨ A ≈ A : Type@i }} as []%rel_exp_of_typ_inversion by (etransitivity; mauto).
     apply rel_exp_of_sub_wkwk_succ_var1_inversion in HMS as [env_relΔℕA].
     destruct_conjs.
@@ -525,17 +549,27 @@ Proof.
     (on_all_hyp_rev: destruct_rel_by_assumption env_relΔ).
     destruct_by_head rel_typ.
     invert_rel_typ_body.
-    assert {{ Dom o ↦ m ≈ o' ↦ m' ∈ env_relΔℕ }} by (apply_relation_equivalence; mauto).
+    match goal with
+    | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ1 }},
+        _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ2 }} |- _ =>
+        rename ρ1 into ρσ;
+        rename ρ2 into ρ'σ
+    end.
+    assert {{ Dom ρσ ↦ m ≈ ρ'σ ↦ m' ∈ env_relΔℕ }} by (apply_relation_equivalence; mauto).
     (on_all_hyp: destruct_rel_by_assumption env_relΔℕ).
-    assert {{ Dom o ↦ m ≈ o' ↦ m' ∈ env_relΔℕ }} as HinΔℕ by (apply_relation_equivalence; mauto).
+    assert {{ Dom ρσ ↦ m ≈ ρ'σ ↦ m' ∈ env_relΔℕ }} as HinΔℕ by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΔℕ)).
     destruct_by_head per_univ.
-    unshelve epose proof (IHequiv_m_m' _ _ equiv_p_p' _ _) as [? [? [? []]]]; shelve_unifiable; only 4: solve [mauto]; eauto.
+    unshelve epose proof (IHequiv_m_m' _ _ equiv_ρ_ρ' _ _) as [? [? [? []]]]; shelve_unifiable; only 4: solve [mauto]; eauto.
     handle_per_univ_elem_irrel.
-    rename x5 into r1.
-    rename x6 into r1'.
-    assert {{ Dom o ↦ m ↦ r1 ≈ o' ↦ m' ↦ r1' ∈ env_relΔℕA }} as HinΔℕA by (apply_relation_equivalence; mauto).
+    match goal with
+    | _: {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ~_ ↘ ~?r0 }},
+        _: {{ rec m' ⟦return A'[q σ] | zero -> MZ'[σ] | succ -> MS'[q (q σ)] end⟧ ~_ ↘ ~?r0' }} |- _ =>
+        rename r0 into rm;
+        rename r0' into rm'
+    end.
+    assert {{ Dom ρσ ↦ m ↦ rm ≈ ρ'σ ↦ m' ↦ rm' ∈ env_relΔℕA }} as HinΔℕA by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΔℕA)).
     destruct_conjs.
@@ -543,15 +577,24 @@ Proof.
     destruct_by_head rel_exp.
     handle_per_univ_elem_irrel.
     do 2 eexists; repeat split; only 1-2: repeat econstructor; mauto.
-  - rename n into m'.
+  - match goal with
+    | _: per_bot m ?n |- _ =>
+        rename n into m'
+    end.
     handle_per_ctx_env_irrel.
     match_by_head (per_ctx_env env_relΔℕ) invert_per_ctx_env.
     handle_per_ctx_env_irrel.
     (on_all_hyp: destruct_rel_by_assumption env_relΔ).
     (on_all_hyp_rev: destruct_rel_by_assumption env_relΔ).
     invert_rel_typ_body.
+    match goal with
+    | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ1 }},
+        _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ2 }} |- _ =>
+        rename ρ1 into ρσ;
+        rename ρ2 into ρ'σ
+    end.
     assert {{ Dom ⇑ ℕ m ≈ ⇑ ℕ m' ∈ per_nat }} by (econstructor; eassumption).
-    assert {{ Dom o ↦ ⇑ ℕ m ≈ o' ↦ ⇑ ℕ m' ∈ env_relΔℕ }} as HinΔℕ by (apply_relation_equivalence; mauto).
+    assert {{ Dom ρσ ↦ ⇑ ℕ m ≈ ρ'σ ↦ ⇑ ℕ m' ∈ env_relΔℕ }} as HinΔℕ by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΔℕ)).
     destruct_by_head per_univ.
@@ -575,9 +618,9 @@ Lemma rel_exp_natrec_sub_rel_typ: forall {Γ σ Δ A i M env_relΓ},
     {{ Γ ⊨s σ : Δ }} ->
     {{ Δ, ℕ ⊨ A : Type@i }} ->
     {{ Δ ⊨ M : ℕ }} ->
-    forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}),
     exists elem_rel,
-      rel_typ i {{{ A[σ,,M[σ]] }}} p {{{ A[σ,,M[σ]] }}} p' elem_rel.
+      rel_typ i {{{ A[σ,,M[σ]] }}} ρ {{{ A[σ,,M[σ]] }}} ρ' elem_rel.
 Proof.
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
@@ -605,7 +648,7 @@ Proof.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  assert (exists elem_rel, rel_typ i {{{ A[σ,,M[σ]] }}} p {{{ A[σ,,M[σ]] }}} p' elem_rel) as [elem_rel]
+  assert (exists elem_rel, rel_typ i {{{ A[σ,,M[σ]] }}} ρ {{{ A[σ,,M[σ]] }}} ρ' elem_rel) as [elem_rel]
       by (eapply rel_exp_natrec_sub_rel_typ; only 5: eassumption; mauto; eexists; mauto).
   eexists.
   split; [eassumption |].
@@ -613,9 +656,20 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head rel_typ.
   invert_rel_typ_body.
+  match goal with
+  | _: {{ ⟦ σ ⟧s ~?ρ0 ↘ ~?ρσ0 }},
+      _: {{ ⟦ A ⟧ ρσ ↦ ~?m0 ↘ ~?a0 }},
+        _: {{ ⟦ A ⟧ ~?ρσ0 ↦ ~?m0' ↘ ~?a0' }} |- _ =>
+      rename ρ0 into ρ';
+      rename ρσ0 into ρ'σ;
+      rename a0 into a;
+      rename m0 into m;
+      rename a0' into a';
+      rename m0' into m'
+  end.
   enough (exists r r',
-             {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ o ↘ r }} /\
-               {{ rec m' ⟦return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end⟧ p' ↘ r' }} /\
+             {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρσ ↘ r }} /\
+               {{ rec m' ⟦return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end⟧ ρ' ↘ r' }} /\
                {{ Dom r ≈ r' ∈ elem_rel }})
     by (destruct_conjs; econstructor; mauto).
   mauto 4 using eval_natrec_sub_rel.
@@ -644,8 +698,12 @@ Proof.
   destruct_by_head rel_typ.
   invert_rel_typ_body.
   destruct_by_head rel_exp.
+  match goal with
+  | _: env_relΓ ρ ?ρ0 |- _ =>
+      rename ρ0 into ρ'
+  end.
   assert {{ Dom zero ≈ zero ∈ per_nat }} by econstructor.
-  assert {{ Dom p ↦ zero ≈ p' ↦ zero ∈ env_relΓℕ }} by (apply_relation_equivalence; eauto).
+  assert {{ Dom ρ ↦ zero ≈ ρ' ↦ zero ∈ env_relΓℕ }} by (apply_relation_equivalence; eauto).
   (on_all_hyp: destruct_rel_by_assumption env_relΓℕ).
   handle_per_univ_elem_irrel.
   eexists.
@@ -659,9 +717,9 @@ Lemma rel_exp_nat_beta_succ_rel_typ : forall {Γ env_relΓ A i M},
     {{ DF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }} ->
     {{ Γ, ℕ ⊨ A : Type@i }} ->
     {{ Γ ⊨ M : ℕ }} ->
-    forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_relΓ }}),
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_relΓ }}),
     exists elem_rel,
-      rel_typ i {{{ A[Id,,succ M] }}} p {{{ A[Id,,succ M] }}} p' elem_rel.
+      rel_typ i {{{ A[Id,,succ M] }}} ρ {{{ A[Id,,succ M] }}} ρ' elem_rel.
 Proof.
   intros.
   assert {{ ⊨ Γ }} by (eexists; eauto).
@@ -690,16 +748,18 @@ Proof.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   assert (exists elem_rel,
-             rel_typ i {{{ A[Id,,succ M] }}} p {{{ A[Id,,succ M] }}} p' elem_rel) as [elem_rel]
+             rel_typ i {{{ A[Id,,succ M] }}} ρ {{{ A[Id,,succ M] }}} ρ' elem_rel) as [elem_rel]
       by (eapply rel_exp_nat_beta_succ_rel_typ; mauto).
   eexists; split; [eassumption |].
   destruct_by_head rel_typ.
   invert_rel_typ_body.
-  rename p'2 into p.
-  rename p'1 into p'.
+  match goal with
+  | _: env_relΓ ρ ?ρ0 |- _ =>
+      rename ρ0 into ρ'
+  end.
   assert (exists r r',
-             {{ rec succ m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} /\
-               {{ rec succ m' ⟦return A | zero -> MZ | succ -> MS end⟧ p' ↘ r' }} /\
+             {{ rec succ m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
+               {{ rec succ m' ⟦return A | zero -> MZ | succ -> MS end⟧ ρ' ↘ r' }} /\
                {{ Dom r ≈ r' ∈ elem_rel }})
     by (eapply eval_natrec_rel; mauto).
   destruct_conjs.

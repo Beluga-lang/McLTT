@@ -50,7 +50,13 @@ Section type_check.
   | _               => inright _
   .
 
-  Extraction Inline get_level_of_type_nf.
+  (* Don't forget to use 9th bit of [Extraction Flag] (for example, [Set Extraction Flag 1007.]) *)
+  Equations get_subterms_of_type_pi (A : nf) : { B & { C | A = n{{{ Π B C }}} } } + { forall B C, A <> n{{{ Π B C }}} } :=
+  | n{{{ Π B C }}} => pureo (existT _ B (exist _ C _))
+  | _              => inright _
+  .
+
+  Extraction Inline get_level_of_type_nf get_subterms_of_type_pi.
 
   Inductive type_check_order : exp -> Prop :=
   | tc_ti : forall {A}, type_infer_order A -> type_check_order A
@@ -153,8 +159,6 @@ Section type_check.
     | _ => idtac
     end.
 
-  Definition inspect {A : Set} (a : A) : { b : A | a = b } := (exist _ a eq_refl).
-
   #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
   Equations type_check G A (HA : (exists i, {{ G ⊢ A : Type@i }})) M (H : type_check_order M) : { {{ G ⊢a M ⟸ A }} } + { ~ {{ G ⊢a M ⟸ A }} } by struct H :=
   | G, A, HA, M, H =>
@@ -192,13 +196,12 @@ Section type_check.
         let*o (exist _ B' _) := type_infer {{{ G, A' }}} _ M' _ while _ in
         let (A'', _) := nbe_ty_impl G A' _ in
         pureo (exist _ n{{{ Π A'' B' }}} _)
-    | {{{ M' N' }}} with type_infer G _ M' _ => {
-      | inleft (exist _ (nf_pi A B) _) =>
-          let*b->o _ := type_check G A _ N' _ while _ in
-          let (B', _) := nbe_ty_impl G {{{ B[Id,,N'] }}} _ in
-          pureo (exist _ B' _)
-      | _ => inright _
-      }
+    | {{{ M' N' }}} =>
+        let*o (exist _ C _) := type_infer G _ M' _ while _ in
+        let*o (existT _ A (exist _ B _)) := get_subterms_of_type_pi C while _ in
+        let*b->o _ := type_check G A _ N' _ while _ in
+        let (B', _) := nbe_ty_impl G {{{ B[Id,,N'] }}} _ in
+        pureo (exist _ B' _)
     | {{{ #x }}} =>
         let*o (exist _ A _) := lookup G _ x while _ in
         let (A', _) := nbe_ty_impl G A _ in
@@ -302,9 +305,9 @@ Section type_check.
     functional_alg_type_infer_rewrite_clear.
     progressive_inversion.
     assert {{ G ⊢ A : ~n{{{ Type@i }}} }} by mauto 4 using alg_type_infer_sound.
-    assert {{ G, ~(A : exp) ⊢ B : ~n{{{ Type@j }}} }} by mauto 4 using alg_type_infer_sound.
+    assert {{ G, ~(A : exp) ⊢ s : ~n{{{ Type@j }}} }} by mauto 4 using alg_type_infer_sound.
     assert {{ G ⊢ N' : A }} by mauto 3 using alg_type_check_sound.
-    assert {{ G ⊢ B[Id,,N'] : ~n{{{ Type@j }}} }} as [? []]%soundness_ty by mauto 3.
+    assert {{ G ⊢ s[Id,,N'] : ~n{{{ Type@j }}} }} as [? []]%soundness_ty by mauto 3.
     mauto 3 using nbe_ty_order_sound.
   Qed.
 
@@ -314,18 +317,11 @@ Section type_check.
     progressive_inversion.
     split; [mauto 3 |].
     assert {{ G ⊢ A : ~n{{{ Type@i }}} }} by mauto 4 using alg_type_infer_sound.
-    assert {{ G, ~(A : exp) ⊢ B : ~n{{{ Type@j }}} }} by mauto 4 using alg_type_infer_sound.
-    assert {{ G ⊢ B[Id,,N'] ≈ B' : Type@j }} by (eapply soundness_ty'; mauto 4 using alg_type_check_sound).
+    assert {{ G, ~(A : exp) ⊢ s : ~n{{{ Type@j }}} }} by mauto 4 using alg_type_infer_sound.
+    assert {{ G ⊢ s[Id,,N'] ≈ B' : Type@j }} by (eapply soundness_ty'; mauto 4 using alg_type_check_sound).
     assert (user_exp B') by trivial using user_exp_nf.
     assert (exists k, {{ G ⊢a B' ⟹ Type@k }} /\ k <= j) as [? []] by (gen_presups; mauto 3).
     firstorder.
-  Qed.
-
-  Next Obligation. (* False *)
-    clear_defs.
-    functional_alg_type_infer_rewrite_clear.
-    progressive_inversion.
-    intuition.
   Qed.
 
   Next Obligation. (* {{ ⊢ G, B }} *)

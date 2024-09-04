@@ -26,10 +26,10 @@ Inductive read_nf : nat -> domain_nf -> nf -> Prop :=
 
      (* Nf of eta-expanded body *)
      {{ $| m & ⇑! a s |↘ m' }} ->
-     {{ ⟦ B ⟧ p ↦ ⇑! a s ↘ b }} ->
+     {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↘ b }} ->
      {{ Rnf ⇓ b m' in S s ↘ M }} ->
 
-     {{ Rnf ⇓ (Π a p B) m in s ↘ λ A M }} )
+     {{ Rnf ⇓ (Π a ρ B) m in s ↘ λ A M }} )
 | read_nf_neut :
   `( {{ Rne m in s ↘ M }} ->
      {{ Rnf ⇓ (⇑ a b) (⇑ c m) in s ↘ ⇑ M }} )
@@ -43,22 +43,22 @@ with read_ne : nat -> domain_ne -> ne -> Prop :=
      {{ Rne m n in s ↘ M N }} )
 | read_ne_natrec :
   (* Nf of motive *)
-  `( {{ ⟦ B ⟧ p ↦ ⇑! ℕ s ↘ b }} ->
+  `( {{ ⟦ B ⟧ ρ ↦ ⇑! ℕ s ↘ b }} ->
      {{ Rtyp b in S s ↘ B' }} ->
 
      (* Nf of mz *)
-     {{ ⟦ B ⟧ p ↦ zero ↘ bz }} ->
+     {{ ⟦ B ⟧ ρ ↦ zero ↘ bz }} ->
      {{ Rnf ⇓ bz mz in s ↘ MZ }} ->
 
      (* Nf of MS *)
-     {{ ⟦ B ⟧ p ↦ succ (⇑! ℕ s) ↘ bs }} ->
-     {{ ⟦ MS ⟧ p ↦ ⇑! ℕ s ↦ ⇑! b (S s) ↘ ms }} ->
+     {{ ⟦ B ⟧ ρ ↦ succ (⇑! ℕ s) ↘ bs }} ->
+     {{ ⟦ MS ⟧ ρ ↦ ⇑! ℕ s ↦ ⇑! b (S s) ↘ ms }} ->
      {{ Rnf ⇓ bs ms in S (S s) ↘ MS' }} ->
 
      (* Ne of m *)
      {{ Rne m in s ↘ M }} ->
 
-     {{ Rne rec m under p return B | zero -> mz | succ -> MS end in s ↘ rec M return B' | zero -> MZ | succ -> MS' end }} )
+     {{ Rne rec m under ρ return B | zero -> mz | succ -> MS end in s ↘ rec M return B' | zero -> MZ | succ -> MS' end }} )
 where "'Rne' m 'in' s ↘ M" := (read_ne s m M) (in custom judg) : type_scope
 with read_typ : nat -> domain -> nf -> Prop :=
 | read_typ_univ :
@@ -70,10 +70,10 @@ with read_typ : nat -> domain -> nf -> Prop :=
   `( {{ Rtyp a in s ↘ A }} ->
 
      (* Nf of ret type *)
-     {{ ⟦ B ⟧ p ↦ ⇑! a s ↘ b }} ->
+     {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↘ b }} ->
      {{ Rtyp b in S s ↘ B' }} ->
 
-     {{ Rtyp Π a p B in s ↘ Π A B' }})
+     {{ Rtyp Π a ρ B in s ↘ Π A B' }})
 | read_typ_neut :
   `( {{ Rne b in s ↘ B }} ->
      {{ Rtyp ⇑ a b in s ↘ ⇑ B }})
@@ -83,6 +83,10 @@ where "'Rtyp' m 'in' s ↘ M" := (read_typ s m M) (in custom judg) : type_scope
 Scheme read_nf_mut_ind := Induction for read_nf Sort Prop
 with read_ne_mut_ind := Induction for read_ne Sort Prop
 with read_typ_mut_ind := Induction for read_typ Sort Prop.
+Combined Scheme read_mut_ind from
+  read_nf_mut_ind,
+  read_ne_mut_ind,
+  read_typ_mut_ind.
 
 #[export]
 Hint Constructors read_nf read_ne read_typ : mcltt.

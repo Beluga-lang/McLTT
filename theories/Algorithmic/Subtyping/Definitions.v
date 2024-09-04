@@ -13,10 +13,10 @@ Definition not_univ_pi (A : nf) : Prop :=
   end.
 
 Inductive alg_subtyping_nf : nf -> nf -> Prop :=
-| asnf_refl : forall M N,
-    not_univ_pi M ->
-    M = N ->
-    {{ ⊢anf M ⊆ N }}
+| asnf_refl : forall A A',
+    not_univ_pi A ->
+    A = A' ->
+    {{ ⊢anf A ⊆ A' }}
 | asnf_univ : forall i j,
     i <= j ->
     {{ ⊢anf Type@i ⊆ Type@j }}
@@ -24,16 +24,15 @@ Inductive alg_subtyping_nf : nf -> nf -> Prop :=
     A = A' ->
     {{ ⊢anf B ⊆ B' }} ->
     {{ ⊢anf Π A B ⊆ Π A' B' }}
-where "⊢anf M ⊆ N" := (alg_subtyping_nf M N) (in custom judg) : type_scope.
-
+where "⊢anf A ⊆ A'" := (alg_subtyping_nf A A') (in custom judg) : type_scope.
 
 Inductive alg_subtyping : ctx -> typ -> typ -> Prop :=
-| alg_subtyp_run : forall Γ M N A B,
-    nbe_ty Γ M A ->
-    nbe_ty Γ N B ->
-    {{ ⊢anf A ⊆ B }} ->
-    {{ Γ ⊢a M ⊆ N }}
-where "Γ ⊢a M ⊆ N" := (alg_subtyping Γ M N) (in custom judg) : type_scope.
+| alg_subtyp_run : forall Γ A B A' B',
+    nbe_ty Γ A A' ->
+    nbe_ty Γ B B' ->
+    {{ ⊢anf A' ⊆ B' }} ->
+    {{ Γ ⊢a A ⊆ B }}
+where "Γ ⊢a A ⊆ B" := (alg_subtyping Γ A B) (in custom judg) : type_scope.
 
 #[export]
-  Hint Constructors alg_subtyping_nf alg_subtyping: mcltt.
+Hint Constructors alg_subtyping_nf alg_subtyping: mcltt.

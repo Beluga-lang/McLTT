@@ -7,11 +7,11 @@ Import Domain_Notations.
 Lemma rel_exp_of_pi_inversion : forall {Γ M M' A B},
     {{ Γ ⊨ M ≈ M' : Π A B }} ->
     exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
-    forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
     exists in_rel out_rel,
-      rel_typ i A p A p' in_rel /\
-        (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_typ i B d{{{ p ↦ c }}} B d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) /\
-        rel_exp M p M' p'
+      rel_typ i A ρ A ρ' in_rel /\
+        (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_typ i B d{{{ ρ ↦ c }}} B d{{{ ρ' ↦ c' }}} (out_rel c c' equiv_c_c')) /\
+        rel_exp M ρ M' ρ'
           (fun f f' : domain => forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app f c f' c' (out_rel c c' equiv_c_c')).
 Proof.
   intros * [env_relΓ].
@@ -26,11 +26,11 @@ Qed.
 
 Lemma rel_exp_of_pi : forall {Γ M M' A B},
     (exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i j,
-      forall p p' (equiv_p_p' : {{ Dom p ≈ p' ∈ env_rel }}),
+      forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
       exists in_rel out_rel,
-        rel_typ i A p A p' in_rel /\
-          (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_typ j B d{{{ p ↦ c }}} B d{{{ p' ↦ c' }}} (out_rel c c' equiv_c_c')) /\
-          rel_exp M p M' p'
+        rel_typ i A ρ A ρ' in_rel /\
+          (forall c c' (equiv_c_c' : {{ Dom c ≈ c' ∈ in_rel }}), rel_typ j B d{{{ ρ ↦ c }}} B d{{{ ρ' ↦ c' }}} (out_rel c c' equiv_c_c')) /\
+          rel_exp M ρ M' ρ'
             (fun f f' : domain => forall (c c' : domain) (equiv_c_c' : in_rel c c'), rel_mod_app f c f' c' (out_rel c c' equiv_c_c'))) ->
     {{ Γ ⊨ M ≈ M' : Π A B }}.
 Proof.
@@ -57,9 +57,9 @@ Ltac eexists_rel_exp_of_pi :=
   eexists.
 
 #[local]
-Ltac extract_output_info_with p c p' c' env_rel :=
+Ltac extract_output_info_with ρ c ρ' c' env_rel :=
   let Hequiv := fresh "equiv" in
-  (assert (Hequiv : {{ Dom p ↦ c ≈ p' ↦ c' ∈ env_rel }}) by (apply_relation_equivalence; mauto 4);
+  (assert (Hequiv : {{ Dom ρ ↦ c ≈ ρ' ↦ c' ∈ env_rel }}) by (apply_relation_equivalence; mauto 4);
    apply_relation_equivalence;
    (on_all_hyp: fun H => destruct (H _ _ Hequiv));
    destruct_conjs;
@@ -130,7 +130,7 @@ Proof with mautosolve.
   eexists_rel_exp_of_typ.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  assert {{ Dom o' ≈ o' ∈ env_relΔ }} by (etransitivity; [symmetry |]; eassumption).
+  assert {{ Dom ρ'σ' ≈ ρ'σ' ∈ env_relΔ }} by (etransitivity; [symmetry |]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΔ).
   destruct_by_head per_univ.
   handle_per_univ_elem_irrel.
@@ -139,7 +139,7 @@ Proof with mautosolve.
   per_univ_elem_econstructor; eauto.
   - eapply rel_exp_pi_core; eauto; try reflexivity.
     intros.
-    extract_output_info_with o c o' c' env_relΔA...
+    extract_output_info_with ρσ c ρ'σ' c' env_relΔA...
   - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
     apply Equivalence_Reflexive.
 Qed.
@@ -166,11 +166,11 @@ Proof with mautosolve.
   repeat split; [econstructor | | econstructor]; mauto.
   - eapply rel_exp_pi_core; eauto; try reflexivity.
     intros.
-    extract_output_info_with p c p' c' env_relΓA.
+    extract_output_info_with ρ c ρ' c' env_relΓA.
     econstructor; eauto.
     eexists...
   - intros.
-    extract_output_info_with p c p' c' env_relΓA.
+    extract_output_info_with ρ c ρ' c' env_relΓA.
     econstructor; mauto.
     intros.
     destruct_by_head rel_typ.
@@ -202,12 +202,12 @@ Proof with mautosolve.
     clear dependent c.
     clear dependent c'.
     intros.
-    extract_output_info_with o c o' c' env_relΔA.
+    extract_output_info_with ρσ c ρ'σ' c' env_relΔA.
     econstructor; eauto.
     eexists.
     eapply per_univ_elem_cumu_max_left...
   - intros ? **.
-    extract_output_info_with o c o' c' env_relΔA.
+    extract_output_info_with ρσ c ρ'σ' c' env_relΔA.
     econstructor; mauto.
     intros.
     destruct_by_head rel_typ.
@@ -228,7 +228,7 @@ Proof with intuition.
   handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
-  assert (equiv_p'_p' : env_relΓ p' p') by (etransitivity; [symmetry |]; eassumption).
+  assert (equiv_p'_p' : env_relΓ ρ' ρ') by (etransitivity; [symmetry |]; eassumption).
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   rename x2 into in_rel.
   destruct_by_head rel_typ.
@@ -290,7 +290,7 @@ Proof with mautosolve.
   destruct_by_head rel_exp.
   rename m into n.
   rename m' into n'.
-  extract_output_info_with p n p' n' env_relΓA.
+  extract_output_info_with ρ n ρ' n' env_relΓA.
   eexists.
   split; econstructor...
 Qed.

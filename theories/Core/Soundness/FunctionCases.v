@@ -77,18 +77,19 @@ Proof.
     handle_functional_glu_univ_elem.
     autorewrite with mcltt.
     eassumption.
-  - rename a0 into c.
-    rename equiv_a into equiv_c.
-    assert {{ Dom ρ ↦ c ≈ ρ ↦ c ∈ env_relΓA }} as HrelΓA by (apply_relation_equivalence; mautosolve 2).
+  - assert {{ Dom ρ ↦ m ≈ ρ ↦ m ∈ env_relΓA }} as HrelΓA by (apply_relation_equivalence; mautosolve 2).
     apply_relation_equivalence.
     (on_all_hyp: fun H => destruct (H _ _ HrelΓA)).
     destruct_by_head per_univ.
     functional_eval_rewrite_clear.
-    rename m0 into b.
-    assert {{ Δ' ⊢ m : A[σ][τ] }} by mauto 3 using glu_univ_elem_trm_escape.
-    assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv_c ↘ OEl c equiv_c }} by mauto 2.
+    match goal with
+    | _: {{ ⟦ B ⟧ ρ ↦ m ↘ ~?a }} |- _ =>
+        rename a into b
+    end.
+    assert {{ Δ' ⊢ M : A[σ][τ] }} by mauto 3 using glu_univ_elem_trm_escape.
+    assert {{ DG b ∈ glu_univ_elem i ↘ OP m equiv_m ↘ OEl m equiv_m }} by mauto 2.
     erewrite <- @sub_decompose_q_typ; mauto 3.
-    assert {{ Δ' ⊢s (σ∘τ),,m ® ρ ↦ c ∈ cons_glu_sub_pred i Γ A SbΓ }} as Hconspred by mauto 2.
+    assert {{ Δ' ⊢s (σ∘τ),,M ® ρ ↦ m ∈ cons_glu_sub_pred i Γ A SbΓ }} as Hconspred by mauto 2.
     (on_all_hyp: fun H => destruct (H _ _ _ Hconspred)).
     simplify_evals.
     match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -184,23 +185,17 @@ Proof.
     handle_per_univ_elem_irrel.
     econstructor; mauto 3.
   - eapply glu_univ_elem_typ_monotone; mauto 3.
-  - match goal with
-    | H: {{ Dom ~?a ≈ ~?a ∈ in_rel }}, _: {{ ~_ ⊢ ~?M : ~_ ® ~?a ∈ Ela }} |- _ =>
-        rename a into c;
-        rename H into equiv_c;
-        rename M into N
-    end.
-    assert {{ Dom ρ ↦ c ≈ ρ ↦ c ∈ env_relΓA }} as HrelΓA by (apply_relation_equivalence; mautosolve 2).
+  - assert {{ Dom ρ ↦ n ≈ ρ ↦ n ∈ env_relΓA }} as HrelΓA by (apply_relation_equivalence; mautosolve 2).
     destruct_rel_mod_eval.
     apply_relation_equivalence.
     (on_all_hyp: fun H => destruct (H _ _ HrelΓA) as [? [[] []]]).
     handle_per_univ_elem_irrel.
     eexists; split; mauto 3.
     match goal with
-    | _: {{ ⟦ B ⟧ ρ ↦ c ↘ ~?a }} |- _ =>
+    | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ~?a }} |- _ =>
         rename a into b
     end.
-    assert {{ DG b ∈ glu_univ_elem i ↘ OP c equiv_c ↘ OEl c equiv_c }} by mauto 3.
+    assert {{ DG b ∈ glu_univ_elem i ↘ OP n equiv_n ↘ OEl n equiv_n }} by mauto 3.
     assert {{ Δ0 ⊢s σ0 : Δ }} by mauto 3.
     assert {{ Δ0 ⊢ N : A[σ][σ0] }} by mauto 2 using glu_univ_elem_trm_escape.
     erewrite <- @sub_decompose_q_typ; mauto 2.
@@ -221,8 +216,8 @@ Proof.
       assert {{ Δ0 ⊢ B[q (σ∘σ0)∘(Id,,N)] ≈ B[σ∘σ0,,N] : Type@i }} as <- by mauto 2.
       transitivity {{{ M[q (σ∘σ0)∘(Id,,N)] }}}; mauto 3.
     }
-    assert {{ Δ0 ⊢ N : A[σ][σ0] ® c ∈ Ela }} by mauto 3.
-    assert {{ Δ0 ⊢s (σ∘σ0),,N ® ρ ↦ c ∈ SbΓA }} as HSbΓA by (unfold SbΓA; mauto 2).
+    assert {{ Δ0 ⊢ N : A[σ][σ0] ® n ∈ Ela }} by mauto 3.
+    assert {{ Δ0 ⊢s (σ∘σ0),,N ® ρ ↦ n ∈ SbΓA }} as HSbΓA by (unfold SbΓA; mauto 2).
     (on_all_hyp: fun H => destruct (H _ _ _ HSbΓA)).
     simplify_evals.
     match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
@@ -284,15 +279,23 @@ Proof.
   handle_functional_glu_univ_elem.
   match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
   inversion_clear_by_head pi_glu_exp_pred.
-  rename m0 into a.
-  rename m1 into n.
+  match goal with
+  | _: {{ ⟦ A ⟧ ρ ↘ ~?a' }},
+      _: {{ ⟦ N ⟧ ρ ↘ ~?n' }} |- _ =>
+      rename a' into a;
+      rename n' into n
+  end.
   assert {{ Dom a ≈ a ∈ per_univ i }} as [] by mauto 3.
   handle_per_univ_elem_irrel.
   assert {{ Dom n ≈ n ∈ in_rel }} by (eapply glu_univ_elem_per_elem; revgoals; eassumption).
   (on_all_hyp: destruct_rel_by_assumption in_rel).
   simplify_evals.
-  rename a0 into b.
-  rename fa into mn.
+  match goal with
+  | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ~?b' }},
+      _: {{ $| m & n |↘ ~?mn' }} |- _ =>
+      rename b' into b;
+      rename mn' into mn
+  end.
   eapply mk_glu_rel_exp_with_sub''; mauto 3.
   intros.
   match_by_head1 (in_rel n n) ltac:(fun H => rename H into equiv_n).
