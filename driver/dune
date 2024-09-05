@@ -2,7 +2,7 @@
 
 (library
  (name Mcltt)
- (modules main lexer)
+ (modules Main Lexer PrettyPrinter)
  (libraries MclttExtracted)
  ; (inline_tests)
  ; (preprocess
@@ -14,4 +14,4 @@
   (flags
    (:standard -w -67 -w -32 -w -33 -w -39))))
 
-(ocamllex lexer)
+(ocamllex Lexer)

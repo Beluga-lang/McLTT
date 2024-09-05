@@ -34,4 +34,6 @@ let main ?(default_fp = "") () =
         with
         | Failure s -> prerr_string s; raise Exit) in
   let token_stream = loop (Lexing.from_channel chan) in
-  Entrypoint.main 50 token_stream
+  let res = Entrypoint.main 50 token_stream in
+  Format.printf "%a@."
+    PrettyPrinter.format_main_result res
