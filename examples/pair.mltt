@@ -1,0 +1,11 @@
+(
+  (fun (Pair : forall (A : Type@0) (B : Type@0) -> Type@1)
+       (fst : forall (A : Type@0) (B : Type@0) (p : Pair A B) -> A)
+       (snd : forall (A : Type@0) (B : Type@0) (p : Pair A B) -> B)
+       (p : Pair Nat (forall (x : Nat) -> Nat)) ->
+     snd Nat (forall (x : Nat) -> Nat) p (fst Nat (forall (x : Nat) -> Nat) p))
+  (fun (A : Type@0) (B : Type@0) -> forall (C : Type@0) (cons : forall (a : A) (b : B) -> C) -> C)
+  (fun (A : Type@0) (B : Type@0) (p : forall (C : Type@0) (cons : forall (a : A) (b : B) -> C) -> C) -> p A (fun (a : A) (b : B) -> a))
+  (fun (A : Type@0) (B : Type@0) (p : forall (C : Type@0) (cons : forall (a : A) (b : B) -> C) -> C) -> p B (fun (a : A) (b : B) -> b))
+  (fun (C : Type@0) (cons : forall (a : Nat) (b : forall (x : Nat) -> Nat) -> C) -> cons 3 (fun (x : Nat) -> succ x))
+) : Nat
