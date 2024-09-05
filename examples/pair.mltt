@@ -1,11 +1,23 @@
 (
-  (fun (Pair : forall (A : Type@0) (B : Type@0) -> Type@1)
-       (fst : forall (A : Type@0) (B : Type@0) (p : Pair A B) -> A)
-       (snd : forall (A : Type@0) (B : Type@0) (p : Pair A B) -> B)
-       (p : Pair Nat (forall (x : Nat) -> Nat)) ->
-     snd Nat (forall (x : Nat) -> Nat) p (fst Nat (forall (x : Nat) -> Nat) p))
-  (fun (A : Type@0) (B : Type@0) -> forall (C : Type@0) (cons : forall (a : A) (b : B) -> C) -> C)
-  (fun (A : Type@0) (B : Type@0) (p : forall (C : Type@0) (cons : forall (a : A) (b : B) -> C) -> C) -> p A (fun (a : A) (b : B) -> a))
-  (fun (A : Type@0) (B : Type@0) (p : forall (C : Type@0) (cons : forall (a : A) (b : B) -> C) -> C) -> p B (fun (a : A) (b : B) -> b))
-  (fun (C : Type@0) (cons : forall (a : Nat) (b : forall (x : Nat) -> Nat) -> C) -> cons 3 (fun (x : Nat) -> succ x))
+  (* Main example *)
+  (
+    fun (Pair : forall (A : Type@0) (B : Type@0) -> Type@1)
+        (pair : forall (A : Type@0) (B : Type@0) (a : A) (b : B) -> Pair A B)
+        (fst : forall (A : Type@0) (B : Type@0) (p : Pair A B) -> A)
+        (snd : forall (A : Type@0) (B : Type@0) (p : Pair A B) -> B) ->
+      (
+        fun (p : Pair Nat (forall (x : Nat) -> Nat)) ->
+          snd Nat (forall (x : Nat) -> Nat) p
+            (fst Nat (forall (x : Nat) -> Nat) p)
+      )
+      (pair Nat (forall (x : Nat) -> Nat) 3 (fun (x : Nat) -> succ (succ x)))
+  )
+  (* Church pair *)
+  (fun (A : Type@0) (B : Type@0) -> forall (C : Type@0) (pair : forall (a : A) (b : B) -> C) -> C)
+  (* Church pair constructor *)
+  (fun (A : Type@0) (B : Type@0) (a : A) (b : B) (C : Type@0) (pair : forall (a : A) (b : B) -> C) -> pair a b)
+  (* Church pair fst *)
+  (fun (A : Type@0) (B : Type@0) (p : forall (C : Type@0) (pair : forall (a : A) (b : B) -> C) -> C) -> p A (fun (a : A) (b : B) -> a))
+  (* Church pair snd *)
+  (fun (A : Type@0) (B : Type@0) (p : forall (C : Type@0) (pair : forall (a : A) (b : B) -> C) -> C) -> p B (fun (a : A) (b : B) -> b))
 ) : Nat
