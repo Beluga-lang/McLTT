@@ -3,15 +3,16 @@ From Coq Require Import ExtrOcamlBasic ExtrOcamlNatInt ExtrOcamlNativeString.
 
 From Equations Require Import Equations.
 
-From Mcltt.Core Require Import Base.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base Completeness Soundness.
 From Mcltt.Core.Syntactic Require Import SystemOpt.
-From Mcltt.Extraction Require Import TypeCheck.
+From Mcltt.Extraction Require Import NbE TypeCheck.
 From Mcltt.Frontend Require Import Elaborator Parser.
 Import MenhirLibParser.Inter.
 Import Syntax_Notations.
 
 Variant main_result :=
-  | AllGood : forall A M, {{ ⋅ ⊢ M : A }} -> main_result
+  | AllGood : forall A M W, {{ ⋅ ⊢ M : A }} -> nbe {{{ ⋅ }}} M A W -> main_result
   | TypeCheckingFailure : forall A M, ~ {{ ⋅ ⊢ M : A }} -> main_result
   | ElaborationFailure : forall cst, elaborate cst nil = None -> main_result
   | ParserFailure : Aut.state -> Aut.Gram.token -> main_result
@@ -29,7 +30,9 @@ Equations main (log_fuel : nat) (buf : buffer) : main_result :=
   | Parsed_pr (cst_exp, cst_typ) _ with inspect (elaborate cst_typ nil) => {
     | exist _ (Some A) _ with inspect (elaborate cst_exp nil) => {
       | exist _ (Some M) _ with type_check_closed A _ M _ => {
-        | left  _ => AllGood A M _
+        | left  _ with nbe_impl {{{ ⋅ }}} M A _ => {
+          | exist _ W _ => AllGood A M W _ _
+          }
         | right _ => TypeCheckingFailure A M _
         }
       | exist _ None     _ => ElaborationFailure cst_exp _
@@ -45,6 +48,11 @@ Next Obligation.
 Qed.
 Next Obligation.
   eapply elaborator_gives_user_exp; eassumption.
+Qed.
+Next Obligation.
+  (on_all_hyp: fun H => apply soundness in H as [? []]).
+  eapply nbe_order_sound.
+  eassumption.
 Qed.
 
 Extraction Language OCaml.
