@@ -561,7 +561,7 @@ Proof.
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΔℕ)).
     destruct_by_head per_univ.
-    unshelve epose proof (IHequiv_m_m' _ _ equiv_ρ_ρ' _ _) as [? [? [? []]]]; shelve_unifiable; only 4: solve [mauto]; eauto.
+    unshelve epose proof (IHequiv_m_m' _ _ equiv_ρ_ρ' _ _ _ _ _ _ _) as [? [? [? []]]]; shelve_unifiable; only 4: solve [mauto]; eauto.
     handle_per_univ_elem_irrel.
     match goal with
     | _: {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ~_ ↘ ~?r0 }},

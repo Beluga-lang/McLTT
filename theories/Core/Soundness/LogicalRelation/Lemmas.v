@@ -522,9 +522,9 @@ Proof.
         simpl in *.
         autorewrite with mcltt in *; mauto 3.
       }
-      assert {{ Δ ⊢ IT[σ] ≈ IT'[σ] : Type@i }} by mauto 4 using glu_univ_elem_per_univ_typ_escape.
-      assert {{ Δ ⊢ N : IT[σ] ® n ∈ IEl }} by (simpl; bulky_rewrite1; eassumption).
-      assert (exists mn : domain, {{ $| m & n |↘ mn }} /\ {{Δ ⊢ M[σ] N : OT[σ,,N] ® mn ∈ OEl n equiv_n }}) by mauto 3.
+      assert {{ Δ ⊢ IT'[σ] ≈ IT[σ] : Type@i }} by (symmetry; mauto 4 using glu_univ_elem_per_univ_typ_escape).
+      assert {{ Δ ⊢ N : IT'[σ] ® n ∈ IEl }} by (simpl; bulky_rewrite1; eassumption).
+      assert (exists mn : domain, {{ $| m & n |↘ mn }} /\ {{Δ ⊢ M[σ] N : OT'[σ,,N] ® mn ∈ OEl n equiv_n }}) by mauto 3.
       destruct_conjs.
       eexists; split; mauto 3.
       match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
@@ -538,9 +538,9 @@ Proof.
       end.
       assert {{ DG b ∈ glu_univ_elem i ↘ OP n equiv_n ↘ OEl n equiv_n }} by mauto 3.
       assert {{ DG b' ∈ glu_univ_elem i ↘ OP' n equiv_n ↘ OEl' n equiv_n }} by mauto 3.
-      assert {{ Δ ⊢ OT[σ,,N] ® OP n equiv_n }} by (eapply glu_univ_elem_trm_typ; mauto 3).
+      assert {{ Δ ⊢ OT'[σ,,N] ® OP n equiv_n }} by (eapply glu_univ_elem_trm_typ; mauto 3).
       assert {{ Sub b <: b' at i }} by mauto 3.
-      assert {{ Δ ⊢ OT[σ,,N] ⊆ OT'[σ,,N] }} by mauto 3.
+      assert {{ Δ ⊢ OT'[σ,,N] ⊆ OT[σ,,N] }} by mauto 3.
       intuition.
 Qed.
 

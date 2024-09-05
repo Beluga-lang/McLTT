@@ -1,13 +1,17 @@
+(include_subdirs no)
+
 (library
- (name mcltt)
- (modules main parser lexer test)
- (inline_tests)
- (preprocess
-  (pps ppx_inline_test)))
+ (name Mcltt)
+ (modules main lexer)
+ (libraries MclttExtracted)
+ ; (inline_tests)
+ ; (preprocess
+ ;  (pps ppx_inline_test))
+)
 
 (env
  (dev
   (flags
-   (:standard -w -67 -w -32 -w -39))))
+   (:standard -w -67 -w -32 -w -33 -w -39))))
 
 (ocamllex lexer)

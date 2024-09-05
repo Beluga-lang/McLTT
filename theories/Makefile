@@ -6,10 +6,14 @@ MENHIR := menhir
 COQMAKEFILE := CoqMakefile.mk
 COQPROJECTFILE := _CoqProject
 PARSERBASE := parser.ml
+POSTPARSERBASE := type_checker.ml
 PARSERFILE := ../driver/$(PARSERBASE)
-PARSEREXTRACTIONDIR := Frontend
-PARSEREXTRACTIONCOQFILE := $(PARSEREXTRACTIONDIR)/ParserExtraction.v
-PARSEREXTRACTIONRESULTFILE := $(PARSEREXTRACTIONDIR)/$(PARSERBASE)
+POSTPARSERFILE := ../driver/$(POSTPARSERBASE)
+FRONTENDDIR := Frontend
+PARSEREXTRACTIONCOQFILE := $(FRONTENDDIR)/ParserExtraction.v
+PARSEREXTRACTIONRESULTFILE := $(FRONTENDDIR)/$(PARSERBASE)
+POSTPARSEREXTRACTIONCOQFILE := $(FRONTENDDIR)/PostParserExtraction.v
+POSTPARSEREXTRACTIONRESULTFILE := $(FRONTENDDIR)/$(POSTPARSERBASE)
 COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
 COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
 
@@ -20,8 +24,12 @@ all: $(COQMAKEFILE)
 .PHONY: clean
 clean: $(COQMAKEFILE)
 	@+$(MAKE) -f "$(COQMAKEFILE)" cleanall
-	@echo "CLEAN $(COQPARSERFILE) $(PARSERBASE) $(patsubst %.ml,%.mli,$(PARSERBASE)) $(PARSERFILE) $(patsubst %.ml,%.mli,$(PARSERFILE)) $(COQMAKEFILE) $(COQMAKEFILE).conf"
-	@rm -f "$(COQPARSERFILE)" "$(PARSERBASE)" "$(patsubst %.ml,%.mli,$(PARSERBASE))" "$(PARSERFILE)" "$(patsubst %.ml,%.mli,$(PARSERFILE))" "$(COQMAKEFILE)" "$(COQMAKEFILE).conf"
+	@echo "CLEAN $(COQPARSERFILE) $(PARSERBASE) $(patsubst %.ml,%.mli,$(PARSERBASE)) $(PARSERFILE) $(patsubst %.ml,%.mli,$(PARSERFILE))"
+	@rm -f "$(COQPARSERFILE)" "$(PARSERBASE)" "$(patsubst %.ml,%.mli,$(PARSERBASE))" "$(PARSERFILE)" "$(patsubst %.ml,%.mli,$(PARSERFILE))"
+	@echo "CLEAN $(POSTPARSERBASE) $(patsubst %.ml,%.mli,$(POSTPARSERBASE)) $(POSTPARSERFILE) $(patsubst %.ml,%.mli,$(POSTPARSERFILE))"
+	@rm -f "$(POSTPARSERBASE)" "$(patsubst %.ml,%.mli,$(POSTPARSERBASE))" "$(POSTPARSERFILE)" "$(patsubst %.ml,%.mli,$(POSTPARSERFILE))"
+	@echo "CLEAN $(COQMAKEFILE) $(COQMAKEFILE).conf"
+	@rm -f "$(COQMAKEFILE)" "$(COQMAKEFILE).conf"
 
 .PHONY: update_CoqProject
 update_CoqProject: clean
