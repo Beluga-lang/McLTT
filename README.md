@@ -47,18 +47,18 @@ implementation.
 
 ## Dependencies
 
-* OCaml 4.14.1
-* Menhir
-* coq-menhirlib
-* Coq 8.17.1
-* Equations 1.3
+* [OCaml](https://ocaml.org/) 4.14.2
+* [Menhir](http://cambium.inria.fr/~fpottier/menhir/)
+* [Coq-Menhirlib](https://gitlab.inria.fr/fpottier/menhir/-/tree/master/coq-menhirlib)
+* [Coq](https://coq.inria.fr/) 8.20.0
+* [Coq-Equations](https://github.com/mattam82/Coq-Equations) 1.3
 
 We recommend to install dependencies in the following way:
 
 ```bash
-opam switch create coq-8.17.1 4.14.1
+opam switch create coq-8.20.0 4.14.2
 opam install menhir
-opam pin add coq 8.17.1
+opam pin add coq 8.20.0
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-equations
 opam install coq-menhirlib
@@ -71,7 +71,9 @@ Before anything, the Coq parser must be extracted to OCaml code. Then, you can r
 
 You can build changes to the Coq parser with the following commands:
 ```
-make gen_parser
+cd theories
+make -j16 # or the number of your cpus
+cd ..
 dune build
 ```
 
