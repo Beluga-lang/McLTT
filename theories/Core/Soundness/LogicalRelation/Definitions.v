@@ -229,7 +229,7 @@ Section GluingInduction.
   .
 
   #[local]
-  Ltac def_simp := simp glu_univ_elem in *.
+  Ltac def_simp := simp glu_univ_elem in *; mauto 3.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations glu_univ_elem_ind i P El a

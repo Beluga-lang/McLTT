@@ -209,7 +209,7 @@ Section Per_univ_elem_ind_def.
           motive i elem_rel d{{{ ⇑ a b }}} d{{{ ⇑ a' b' }}}).
 
   #[local]
-  Ltac def_simp := simp per_univ_elem in *.
+  Ltac def_simp := simp per_univ_elem in *; mauto 3.
 
   #[derive(equations=no, eliminator=no), tactic="def_simp"]
   Equations per_univ_elem_ind' (i : nat) (R : relation domain) (a b : domain)

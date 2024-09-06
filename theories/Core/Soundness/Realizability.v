@@ -31,7 +31,7 @@ Lemma var_arith : forall Γ1 Γ2 (A : typ),
     length (Γ1 ++ A :: Γ2) - length Γ2 - 1 = length Γ1.
 Proof.
   intros.
-  rewrite List.app_length. simpl.
+  rewrite List.length_app. simpl.
   lia.
 Qed.
 
@@ -64,7 +64,7 @@ Proof.
 
     rewrite <- @exp_eq_sub_compose_typ; mauto 2.
     deepexec wf_ctx_sub_ctx_lookup ltac:(fun H => destruct H as [Γ1' [? [Γ2' [? [-> [? [-> []]]]]]]]).
-    repeat rewrite List.app_length in *.
+    repeat rewrite List.length_app in *.
     replace (length Γ1) with (length Γ1') in * by lia.
     clear_refl_eqs.
     replace (length Γ2) with (length Γ2') by (simpl in *; lia).

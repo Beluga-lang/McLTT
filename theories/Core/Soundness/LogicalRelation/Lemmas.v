@@ -823,7 +823,7 @@ Proof.
     apply_predicate_equivalence;
     invert_per_ctx_env Hper;
     handle_per_ctx_env_irrel;
-    gintuition.
+    try firstorder.
 
   rename i0 into j.
   rename Γ0 into Γ'.
