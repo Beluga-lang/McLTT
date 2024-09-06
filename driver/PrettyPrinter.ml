@@ -54,7 +54,7 @@ let rec format_obj_prec (p: int) (f: Format.formatter): Cst.obj -> unit =
      end
   | Cst.Coq_natrec (escr, mx, em, ez, sx, sr, es) ->
      let impl f () =
-       fprintf f "@[<hov 0>@[<hov 2>rec %a@ return %s -> %a@]@ @[<hov 2>| zero =>@ %a@]@ @[<hov 2>| succ %s, %s =>@ %a@]@ end@]"
+       fprintf f "@[<hv 0>@[<hov 2>rec %a@ return %s -> %a@]@ @[<hov 2>| zero =>@ %a@]@ @[<hov 2>| succ %s, %s =>@ %a@]@ end@]"
          format_obj escr
          mx
          format_obj em
@@ -70,7 +70,7 @@ let rec format_obj_prec (p: int) (f: Format.formatter): Cst.obj -> unit =
          (format_obj_prec 1) ef
          (format_obj_prec 2) ea;
      in
-     pp_open_hovbox f 2;
+     pp_open_hvbox f 2;
      pp_print_paren_if (p >= 2) impl f ();
      pp_close_box f ()
   | Cst.Coq_fn (px, ep, ebody)                    ->
@@ -86,10 +86,10 @@ let rec format_obj_prec (p: int) (f: Format.formatter): Cst.obj -> unit =
          then pp_print_space f ()
          else pp_force_newline f ()
        end;
-       fprintf f " -> @[<hov 2>%a@]"
+       fprintf f "-> @[<hov 2>%a@]"
          format_obj ebody'
      in
-     pp_open_hovbox f 2;
+     pp_open_hvbox f 2;
      pp_print_paren_if (p >= 1) impl f ();
      pp_close_box f ()
   | Cst.Coq_pi (px, ep, eret)                     ->
@@ -105,10 +105,10 @@ let rec format_obj_prec (p: int) (f: Format.formatter): Cst.obj -> unit =
          then pp_print_space f ()
          else pp_force_newline f ()
        end;
-       fprintf f " -> @[<hov 2>%a@]"
+       fprintf f "-> @[<hov 2>%a@]"
          format_obj eret'
      in
-     pp_open_hovbox f 2;
+     pp_open_hvbox f 2;
      pp_print_paren_if (p >= 1) impl f ();
      pp_close_box f ()
   | Cst.Coq_var x                                 -> pp_print_string f x
@@ -138,7 +138,7 @@ let exp_to_obj =
     function
     | Coq_a_zero -> Cst.Coq_zero
     | Coq_a_succ e -> Cst.Coq_succ (impl ctx e)
-    | Coq_a_natrec (escr, em, ez, es) ->
+    | Coq_a_natrec (em, ez, es, escr) ->
        let mx, sx, sr = new_var (), new_var (), new_var () in
        Cst.Coq_natrec (impl ctx escr, mx, impl (mx :: ctx) em, impl ctx ez, sx, sr, impl (sr :: sx :: ctx) es)
     | Coq_a_nat -> Cst.Coq_nat
@@ -180,23 +180,23 @@ let format_main_result (f: Format.formatter): main_result -> unit =
   let open Format in
   function
   | AllGood (cst_typ, cst_exp, typ, exp, nf) ->
-     fprintf f "@[<v 2>Parsed:@ @[<hov 2>%a@ : %a@]@]"
+     fprintf f "@[<v 2>Parsed:@ @[<hv 0>%a@ : %a@]@]"
        format_obj cst_exp
        format_obj cst_typ;
      pp_force_newline f ();
-     fprintf f "@[<v 2>Elaborated:@ @[<hov 2>%a@ : %a@]@]"
+     fprintf f "@[<v 2>Elaborated:@ @[<hv 0>%a@ : %a@]@]"
        format_exp exp
        format_exp typ;
      pp_force_newline f ();
-     fprintf f "@[<v 2>Normalized Result:@ @[<hov 2>%a@ : %a@]@]"
+     fprintf f "@[<v 2>Normalized Result:@ @[<hv 0>%a@ : %a@]@]"
        format_nf nf
        format_exp typ
   | TypeCheckingFailure (typ, exp) ->
-     printf "@[<v 2>Type Checking Failure:@ @[<hov 2>%a@ is not of@ %a@]@]"
+     printf "@[<v 2>Type Checking Failure:@ %a@;<1 -2>is not of@ %a@]"
        format_exp exp
        format_exp typ
   | ElaborationFailure cst_exp ->
-     printf "@[<v 2>Elaboration Failure:@ %a@ cannot be elaborated@]"
+     printf "@[<v 2>Elaboration Failure:@ %a@;<1 -2>cannot be elaborated@]"
        format_obj cst_exp
   | ParserFailure (s, t) ->
      printf "@[<v 2>Parser Failure:@ on %a:@ @ @[<hov 0>%a@]@]"
