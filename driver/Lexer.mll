@@ -17,6 +17,59 @@
       "@[<h>%a - %a@]"
       format_position (fst p)
       format_position (snd p)
+
+  let token_to_string : token -> string =
+    function
+    | ARROW _ -> "->"
+    | AT _ -> "@"
+    | BAR _ -> "|"
+    | COLON _ -> ":"
+    | COMMA _ -> ","
+    | DARROW _ -> "=>"
+    | LPAREN _ -> "("
+    | RPAREN _ -> ")"
+    | ZERO _ -> "zero"
+    | SUCC _ -> "succ"
+    | REC _ -> "rec"
+    | RETURN _ -> "return"
+    | END _ -> "end"
+    | LAMBDA _ -> "fun"
+    | PI _ -> "forall"
+    | NAT _ -> "Nat"
+    | INT (_, i) -> string_of_int i
+    | TYPE _ -> "Type"
+    | VAR (_, s) -> s
+    | EOF _ -> "<EOF>"
+
+  let get_range_of_token : token -> (position * position) =
+    function
+    | ARROW r
+      | AT r
+      | BAR r
+      | COLON r
+      | COMMA r
+      | DARROW r
+      | LPAREN r
+      | RPAREN r
+      | ZERO r
+      | SUCC r
+      | REC r
+      | RETURN r
+      | END r
+      | LAMBDA r
+      | PI r
+      | NAT r
+      | TYPE r
+      | EOF r
+      | INT (r, _)
+      | VAR (r, _) -> r
+
+  let format_token (f: Format.formatter) (t: token): unit =
+    Format.fprintf
+      f
+      "@[<h>\"%s\" (at %a)@]"
+      (token_to_string t)
+      format_range (get_range_of_token t)
 }
 
 let string = ['a'-'z''A'-'Z']+

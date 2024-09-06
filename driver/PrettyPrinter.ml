@@ -1,5 +1,8 @@
-open MclttExtracted.Syntax
 open MclttExtracted.Entrypoint
+open MclttExtracted.Syntax
+
+module Parser = MclttExtracted.Parser
+module ParserMessages = MclttExtracted.ParserMessages
 
 (************************************************************)
 (* Formatting helpers *)
@@ -195,8 +198,10 @@ let format_main_result (f: Format.formatter): main_result -> unit =
   | ElaborationFailure cst_exp ->
      printf "@[<v 2>Elaboration Failure:@ %a@ cannot be elaborated@]"
        format_obj cst_exp
-  | ParserFailure (_s, _t) ->
-     printf "@[<v 2>Parser Failure@]"
+  | ParserFailure (s, t) ->
+     printf "@[<v 2>Parser Failure:@ on %a:@ @ @[<hov 0>%a@]@]"
+       Lexer.format_token t
+       pp_print_text (ParserMessages.message (Parser.Aut.coq_N_of_state s))
   | ParserTimeout fuel ->
      printf "@[<v 2>Parser Timeout with Fuel %d@]"
        fuel
