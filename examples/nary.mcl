@@ -1,8 +1,8 @@
 (* main body *)
 (
   fun (Nary : forall (n : Nat) -> Type@0)
-      (appNary : forall (n : Nat) (f : Nary (succ n)) (arg : Nat) -> Nary n)
       (toNat : forall (f : Nary 0) -> Nat)
+      (appNary : forall (n : Nat) (f : Nary (succ n)) (arg : Nat) -> Nary n)
       (n : Nat)
       (f : Nary n)
     -> (rec n return y -> (forall (g : Nary y) -> Nat)
@@ -18,6 +18,8 @@
        | succ m, r => forall (a : Nat) -> r
        end
 )
+(* toNat definition *)
+(fun (f : Nat) -> f)
 (* appNary definition *)
 (
   fun (n : Nat)
@@ -28,8 +30,6 @@
       (arg : Nat)
     -> f arg
 )
-(* toNat definition *)
-(fun (f : Nat) -> f)
 (* arguments n and f
 
    This function sums up all its 3 inputs.
