@@ -31,7 +31,7 @@ Lemma var_arith : forall Γ1 Γ2 (A : typ),
     length (Γ1 ++ A :: Γ2) - length Γ2 - 1 = length Γ1.
 Proof.
   intros.
-  rewrite List.app_length. simpl.
+  rewrite List.length_app. simpl.
   lia.
 Qed.
 
@@ -48,7 +48,7 @@ Proof.
     apply wf_sub_id_inversion in Hτ.
     pose proof (wf_ctx_sub_length _ _ Hτ).
     transitivity {{{ #(length Γ1)[Id] }}}; [mauto 3 |].
-    replace (length Γ) with (length (Γ1 ++ {{{ Γ2, A0 }}})) by eassumption.
+    replace (length Γ) with (length (Γ1 ++ {{{ Γ2, A0 }}})) by lia.
     rewrite var_arith, H.
     bulky_rewrite.
   - pose proof (app_ctx_vlookup _ _ _ _ HΔ0 eq_refl) as Hvar.
@@ -64,8 +64,8 @@ Proof.
 
     rewrite <- @exp_eq_sub_compose_typ; mauto 2.
     deepexec wf_ctx_sub_ctx_lookup ltac:(fun H => destruct H as [Γ1' [? [Γ2' [? [-> [? [-> []]]]]]]]).
-    repeat rewrite List.app_length in *.
-    replace (length Γ1) with (length Γ1') in * by eassumption.
+    repeat rewrite List.length_app in *.
+    replace (length Γ1) with (length Γ1') in * by lia.
     clear_refl_eqs.
     replace (length Γ2) with (length Γ2') by (simpl in *; lia).
 

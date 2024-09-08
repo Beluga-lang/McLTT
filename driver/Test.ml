@@ -1,7 +1,7 @@
 (* Unit test cases for parsing *)
 
 open Main
-open Parser.Cst
+open Entrypoint.Cst
 
 let x, y, z = ("x", "y", "z")
 

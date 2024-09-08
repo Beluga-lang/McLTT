@@ -1,58 +1,69 @@
 %{
 
-From Coq Require Import List String.
+From Coq Require Import List Arith.PeanoNat String.
 
 From Mcltt Require Import Syntax.
 
+Parameter loc : Type.
+
 %}
 
-%token <string> VAR
-%token <nat> INT
-%token ZERO LAMBDA PI SUCC NAT TYPE (* keywords *)
-%token LPAREN RPAREN DOT COLON EOF (* delimiters *)
+%token <loc*string> VAR
+%token <loc*nat> INT
+%token <loc> END LAMBDA NAT PI REC RETURN SUCC TYPE ZERO (* keywords *)
+%token <loc> ARROW "->" AT "@" BAR "|" COLON ":" COMMA "," DARROW "=>" LPAREN "(" RPAREN ")" EOF (* symbols *)
 
-%start <Cst.obj> prog
-%type <Cst.obj> obj app_obj simpl_obj
-%type <string * Cst.obj> args_obj
-%type <list (string * Cst.obj)> args_list
+%start <Cst.obj * Cst.obj> prog
+%type <Cst.obj> obj app_obj atomic_obj
+%type <string * Cst.obj> param
+%type <list (string * Cst.obj)> params
+%type <string -> Cst.obj -> Cst.obj -> Cst.obj> fnbinder
+
+%on_error_reduce obj params app_obj atomic_obj
 
 %%
 
-prog:
-  | obj EOF { $1 }
+let prog :=
+  exp = obj; ":"; typ = obj; EOF; <>
 
-obj:
-  | LAMBDA args_list DOT obj {
-      List.fold_left (fun acc arg => Cst.fn (fst arg) (snd arg) acc) $2 $4 
-  }
-  | PI args_list DOT obj {
-      List.fold_left (fun acc arg => Cst.pi (fst arg) (snd arg) acc) $2 $4
-  }
-  | SUCC obj { Cst.succ $2 }
-  (* Application is a special case, where we must avoid conflict by associativity: *)
-  (* see https://github.com/utgwkk/lambda-chama/blob/master/parser.mly *)
-  | app_obj { $1 }
+let fnbinder :=
+  | PI; { Cst.pi }
+  | LAMBDA; { Cst.fn }
 
-args_list:
-  (* Nonempty list of arguments *)
-  | args_list args_obj { $2 :: $1 }
-  | args_obj { [$1] }
+let obj :=
+  | ~ = fnbinder; ~ = params; "->"; ~ = obj; { List.fold_left (fun acc arg => fnbinder (fst arg) (snd arg) acc) params obj }
+  | ~ = app_obj; <>
+
+  | REC; escr = obj; RETURN; mx = VAR; "->"; em = obj;
+    "|"; ZERO; "=>"; ez = obj;
+    "|"; SUCC; sx = VAR; ","; sr = VAR; "=>"; ms = obj;
+    END; { Cst.natrec escr (snd mx) em ez (snd sx) (snd sr) ms }
+  | SUCC; ~ = obj; { Cst.succ obj }
+
+let app_obj :=
+  | ~ = app_obj; ~ = atomic_obj; { Cst.app app_obj atomic_obj }
+  | ~ = atomic_obj; <>
+
+let atomic_obj :=
+  | TYPE; "@"; n = INT; { Cst.typ (snd n) }
+
+  | NAT; { Cst.nat }
+  | ZERO; { Cst.zero }
+  | n = INT; { nat_rect (fun _ => Cst.obj) Cst.zero (fun _ => Cst.succ) (snd n) }
+
+  | x = VAR; { Cst.var (snd x) }
+
+  | "("; ~ = obj; ")"; <>
+
+(* Reversed nonempty list of parameters *)
+let params :=
+  | ~ = params; ~ = param; { param :: params }
+  | ~ = param; { [param] }
 
 (* (x : A) *)
-args_obj:
-  | LPAREN VAR COLON obj RPAREN { ($2, $4) }
+let param :=
+  | "("; x = VAR; ":"; ~ = obj; ")"; { (snd x, obj) }
 
-(* M N *)
-app_obj:
-  (* simpl_obj prevents conflict by associativity *)
-  | app_obj simpl_obj { Cst.app $1 $2 }
-  | simpl_obj { $1 }
+%%
 
-(* Either a variable or parentheses around a complex object *)
-simpl_obj:
-  | VAR { Cst.var $1 }
-  | NAT { Cst.nat }
-  | ZERO { Cst.zero }
-  | TYPE INT { Cst.typ $2 }
-  | LPAREN obj RPAREN { $2 }
-
+Extract Constant loc => "Lexing.position * Lexing.position".

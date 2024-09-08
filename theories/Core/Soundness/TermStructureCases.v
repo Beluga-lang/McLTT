@@ -67,7 +67,7 @@ Proof.
     rename a into b.
     rename a0 into a.
     assert {{ Dom a ≈ a ∈ per_univ k }} as [] by mauto.
-    eapply mk_glu_rel_exp_with_sub''; gintuition mauto using per_univ_elem_cumu_max_right.
+    eapply mk_glu_rel_exp_with_sub''; intuition mauto using per_univ_elem_cumu_max_right.
     assert {{ ⊢ Γ, B }} by mauto 3.
     assert {{ Δ ⊢ A[Wk][σ] ≈ A[Wk∘σ] : Type@j }} by mauto 3.
     assert {{ Δ ⊢ A[Wk][σ] ≈ A[Wk∘σ] : Type@(max j k) }} as -> by mauto 3 using lift_exp_eq_max_left.

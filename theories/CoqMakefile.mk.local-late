@@ -3,27 +3,18 @@ space := $(empty) $(empty)
 
 MENHIR := menhir
 
-COQMAKEFILE := CoqMakefile.mk
-COQPROJECTFILE := _CoqProject
-PARSERBASE := parser.ml
-PARSERFILE := ../driver/$(PARSERBASE)
-PARSEREXTRACTIONDIR := Frontend
-PARSEREXTRACTIONCOQFILE := $(PARSEREXTRACTIONDIR)/ParserExtraction.v
-PARSEREXTRACTIONRESULTFILE := $(PARSEREXTRACTIONDIR)/$(PARSERBASE)
-COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
-COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
+PARSERMESSAGEBASE := parserMessages.messages
+FRONTENDDIR := Frontend
+PARSERMESSAGEFILE := $(FRONTENDDIR)/$(PARSERMESSAGEBASE)
+PARSERMESSAGEEXTRACTIONFILE := ../driver/extracted/ParserMessages.ml
+COQPARSERORIGFILE := $(shell find ./ -name '*.vy')
+COQPARSERFILE := $(COQPARSERORIGFILE:%.vy=%.v)
 
-post-all:: $(COQPARSERFILE)
-	@+$(MAKE) "$(PARSERFILE)"
+post-all:: $(COQPARSERFILE) $(PARSERMESSAGEEXTRACTIONFILE)
+	@echo "Separate Extraction main." | $(COQTOP) $(COQFLAGS) $(COQLIBS) -topfile Entrypoint.v -l Entrypoint.v
 
 $(COQPARSERFILE): %.v : %.vy
 	$(MENHIR) --coq "$?"
 
-$(PARSERBASE): $(PARSEREXTRACTIONCOQFILE)
-	@+$(MAKE) -f "$(COQMAKEFILE)" -B "$(patsubst %.v,%.vo,$?)"
-
-$(PARSERFILE): $(PARSEREXTRACTIONCOQFILE)
-	@+$(MAKE) "$(PARSERBASE)"
-	@echo "MOVE $(PARSERBASE) => $@"
-	@mv "$(PARSERBASE)" "$@"
-	@mv "$(patsubst %.ml,%.mli,$(PARSERBASE))" "$(patsubst %.ml,%.mli,$@)"
+$(PARSERMESSAGEEXTRACTIONFILE): $(PARSERMESSAGEFILE) $(COQPARSERORIGFILE)
+	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --compile-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEEXTRACTIONFILE)"

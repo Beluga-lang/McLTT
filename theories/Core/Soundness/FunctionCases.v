@@ -280,10 +280,13 @@ Proof.
   match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
   inversion_clear_by_head pi_glu_exp_pred.
   match goal with
-  | _: {{ ⟦ A ⟧ ρ ↘ ~?a' }},
+  | _: glu_univ_elem i ?P' ?El' a,
+      _: {{ ⟦ A ⟧ ρ ↘ ~?a' }},
       _: {{ ⟦ N ⟧ ρ ↘ ~?n' }} |- _ =>
       rename a' into a;
-      rename n' into n
+      rename n' into n;
+      rename P' into Pa;
+      rename El' into Ela
   end.
   assert {{ Dom a ≈ a ∈ per_univ i }} as [] by mauto 3.
   handle_per_univ_elem_irrel.
@@ -302,15 +305,15 @@ Proof.
   assert {{ DG b ∈ glu_univ_elem i ↘ OP n equiv_n ↘ OEl n equiv_n }} by mauto 3.
   handle_functional_glu_univ_elem.
   assert {{ Δ ⊢w Id : Δ }} by mauto 3.
-  assert {{ Δ ⊢ IT[Id] ® P1 }} by mauto 2.
+  assert {{ Δ ⊢ IT[Id] ® Pa }} by mauto 2.
   assert {{ Δ ⊢ IT[Id] : Type@i }} by (eapply glu_univ_elem_univ_lvl; revgoals; eassumption).
   assert {{ Δ ⊢ IT : Type@i }} by mauto 2.
   assert {{ Δ ⊢ IT[Id] ≈ A[σ] : Type@i }} as HAeq by (eapply glu_univ_elem_typ_unique_upto_exp_eq'; revgoals; eassumption).
-  assert {{ Δ ⊢ N[σ] : IT[Id] ® n ∈ El1 }} by (rewrite HAeq; eassumption).
+  assert {{ Δ ⊢ N[σ] : IT[Id] ® n ∈ Ela }} by (rewrite HAeq; eassumption).
   assert (exists mn : domain, {{ $| m & n |↘ mn }} /\ {{ Δ ⊢ M[σ][Id] N[σ] : OT[Id,,N[σ]] ® mn ∈ OEl n equiv_n }}) as [] by mauto 2.
   destruct_conjs.
   functional_eval_rewrite_clear.
-  assert {{ Δ ⊢ N[σ] : A[σ][Id] ® n ∈ El1 }} by (autorewrite with mcltt; eassumption).
+  assert {{ Δ ⊢ N[σ] : A[σ][Id] ® n ∈ Ela }} by (autorewrite with mcltt; eassumption).
   assert {{ Δ ⊢s σ∘Id,,N[σ] ® ρ ↦ n ∈ SbΓA }} as Hcons by (unfold SbΓA; mauto 2).
   (on_all_hyp: destruct_glu_rel_by_assumption SbΓA).
   simplify_evals.

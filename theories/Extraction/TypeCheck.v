@@ -33,7 +33,7 @@ Section lookup.
     repeat impl_obl_tac1;
     intuition (mauto 4).
 
-  #[tactic="impl_obl_tac"]
+  #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
   Equations lookup G (HG : {{ ⊢ G }}) x : { A | {{ #x : A ∈ G }} } + { forall A, ~ {{ #x : A ∈ G }} } :=
   | {{{ G, A }}}, HG, x with x => {
     | 0 => pureo (exist _ {{{ A[Wk] }}} _)
@@ -51,12 +51,12 @@ Section type_check.
   .
 
   (* Don't forget to use 9th bit of [Extraction Flag] (for example, [Set Extraction Flag 1007.]) *)
-  Equations get_subterms_of_type_pi (A : nf) : { B & { C | A = n{{{ Π B C }}} } } + { forall B C, A <> n{{{ Π B C }}} } :=
+  Equations get_subterms_of_pi_nf (A : nf) : { B & { C | A = n{{{ Π B C }}} } } + { forall B C, A <> n{{{ Π B C }}} } :=
   | n{{{ Π B C }}} => pureo (existT _ B (exist _ C _))
   | _              => inright _
   .
 
-  Extraction Inline get_level_of_type_nf get_subterms_of_type_pi.
+  Extraction Inline get_level_of_type_nf get_subterms_of_pi_nf.
 
   Inductive type_check_order : exp -> Prop :=
   | tc_ti : forall {A}, type_infer_order A -> type_check_order A
@@ -125,24 +125,30 @@ Section type_check.
   #[local]
   Ltac impl_obl_tac :=
     clear_defs;
-    repeat impl_obl_tac_helper;
+    try match goal with
+      | H: type_check_order _ |- _ => progressive_invert H
+      end;
+    repeat match goal with
+      | H: type_infer_order _ |- _ => progressive_invert H
+      end;
     destruct_conjs;
     match goal with
     | |- {{ ⊢ ~_ }} => gen_presups; mautosolve 4
     | H: {{ ~?G ⊢ ~?A : Type@?i }} |- {{ ~?G ⊢ ~?A : Type@(Nat.max ?i ?j) }} => apply lift_exp_max_left; mautosolve 4
     | H: {{ ~?G ⊢ ~?A : Type@?j }} |- {{ ~?G ⊢ ~?A : Type@(Nat.max ?i ?j) }} => apply lift_exp_max_right; mautosolve 4
     | |- {{ ~_ ⊢ ~_ : ~_ }} => gen_presups; mautosolve 4
-    | |- (~ {{ ~_ ⊢a ~_ ⊆ ~_ }} -> ~ {{ ~_ ⊢a ~_ ⟸ ~_ }}) =>
+    | |- _ -> ~ {{ ~_ ⊢a ~_ ⟸ ~_ }} =>
         let H := fresh "H" in
         intros ? H;
-        inversion H;
+        directed dependent destruction H;
         functional_alg_type_infer_rewrite_clear;
         firstorder
-    | |- ((forall A : nf, ~ {{ ~_ ⊢a ~_ ⟹ ~_ }}) -> ~ {{ ~_ ⊢a ~_ ⟸ ~_ }}) =>
-        let H := fresh "H" in
-        intros ? H;
-        inversion H;
-        firstorder
+    | |- _ -> (forall A : nf, ~ {{ ~_ ⊢a ~_ ⟹ ~_ }}) =>
+        unfold not in *;
+        intros;
+        progressive_inversion;
+        functional_alg_type_infer_rewrite_clear;
+        solve [congruence | mautosolve 3]
     | |- type_infer_order _ => eassumption; fail 1
     | |- type_check_order _ => eassumption; fail 1
     | |- subtyping_order ?G ?A ?B =>
@@ -150,26 +156,20 @@ Section type_check.
         only 1: enough (exists j, {{ G ⊢ B : ~n{{{ Type@j }}} }}) as [? [? []]%soundness_ty];
         only 1: solve [econstructor; eauto 3 using nbe_ty_order_sound];
         solve [mauto 4 using alg_type_infer_sound]
-    | _ =>
-        unfold not;
-        intros;
-        progressive_inversion;
-        functional_alg_type_infer_rewrite_clear;
-        solve [congruence | mautosolve 3]
-    | _ => idtac
+    | _ => try mautosolve 3
     end.
 
   #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
   Equations type_check G A (HA : (exists i, {{ G ⊢ A : Type@i }})) M (H : type_check_order M) : { {{ G ⊢a M ⟸ A }} } + { ~ {{ G ⊢a M ⟸ A }} } by struct H :=
   | G, A, HA, M, H =>
       let*o->b (exist _ B _) := type_infer G _ M _ while _ in
-      let*b _ := subtyping_impl G B A _ while _ in
+      let*b _ := subtyping_impl G (B : nf) A _ while _ in
       pureb _
   with type_infer G (HG : {{ ⊢ G }}) M (H : type_infer_order M) : { A : nf | {{ G ⊢a M ⟹ A }} /\ (exists i, {{ G ⊢a A ⟹ Type@i }}) } + { forall A, ~ {{ G ⊢a M ⟹ A }} } by struct H :=
   | G, HG, M, H with M => {
     | {{{ Type@j }}} =>
         pureo (exist _ n{{{ Type@(S j) }}} _)
-    | {{{ ℕ }}} => 
+    | {{{ ℕ }}} =>
         pureo (exist _ n{{{ Type@0 }}} _)
     | {{{ zero }}} =>
         pureo (exist _ n{{{ ℕ }}} _)
@@ -198,9 +198,9 @@ Section type_check.
         pureo (exist _ n{{{ Π A'' B' }}} _)
     | {{{ M' N' }}} =>
         let*o (exist _ C _) := type_infer G _ M' _ while _ in
-        let*o (existT _ A (exist _ B _)) := get_subterms_of_type_pi C while _ in
-        let*b->o _ := type_check G A _ N' _ while _ in
-        let (B', _) := nbe_ty_impl G {{{ B[Id,,N'] }}} _ in
+        let*o (existT _ A (exist _ B _)) := get_subterms_of_pi_nf C while _ in
+        let*b->o _ := type_check G (A : nf) _ N' _ while _ in
+        let (B', _) := nbe_ty_impl G {{{ ~(B : nf)[Id,,N'] }}} _ in
         pureo (exist _ B' _)
     | {{{ #x }}} =>
         let*o (exist _ A _) := lookup G _ x while _ in
@@ -214,7 +214,7 @@ Section type_check.
     clear_defs.
     mautosolve 4.
   Qed.
-  
+
   Next Obligation (* exists j, {{ G ⊢ A'[Id,,zero] : Type@j }} *).
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
@@ -293,14 +293,14 @@ Section type_check.
     firstorder mauto 3.
   Qed.
 
-  Next Obligation. (* exists i : nat, {{ G ⊢ n : Type@i }} *)
+  Next Obligation. (* exists i : nat, {{ G ⊢ A : Type@i }} *)
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     progressive_inversion.
     eexists; mauto 4 using alg_type_infer_sound.
   Qed.
 
-  Next Obligation. (* nbe_ty_order G {{{ B[Id,,N'] }}} *)
+  Next Obligation. (* nbe_ty_order G {{{ s[Id,,N'] }}} *)
     clear_defs.
     functional_alg_type_infer_rewrite_clear.
     progressive_inversion.
@@ -340,7 +340,10 @@ End type_check.
 
 Section type_check_closed.
   #[local]
-  Ltac impl_obl_tac := unfold not; intros; mauto 3 using user_exp_to_type_infer_order, type_check_order, type_infer_order.
+  Ltac impl_obl_tac :=
+    unfold not in *;
+    intros;
+    mauto 3 using user_exp_to_type_infer_order, type_check_order, type_infer_order.
 
   #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
   Equations type_check_closed A (HA : user_exp A) M (HM : user_exp M) : { {{ ⋅ ⊢ M : A }} } + { ~ {{ ⋅ ⊢ M : A }} } :=

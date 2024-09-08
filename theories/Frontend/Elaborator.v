@@ -39,7 +39,7 @@ Fixpoint elaborate (cst : Cst.obj) (ctx : list string) : option exp :=
       | None => None
       end
   | Cst.natrec n mx m z sx sr s =>
-      match elaborate m (mx :: ctx), elaborate z ctx, elaborate s (sx :: sr :: ctx), elaborate n ctx with
+      match elaborate m (mx :: ctx), elaborate z ctx, elaborate s (sr :: sx :: ctx), elaborate n ctx with
       | Some m, Some z, Some s, Some n => Some (a_natrec m z s n)
       | _, _, _, _ => None
       end
@@ -180,19 +180,17 @@ Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (List.length c
     + simpl in H.
       destruct string_dec in H.
       * contradiction n.
-      * destruct (lookup s ctx).
-        --inversion H.
-          rewrite H1.
-          simpl.
-          pose (IHctx (m-1)).
-          rewrite <- H1 in l.
-          rewrite (Nat.add_sub n1 1) in l.
-          rewrite <- H1.
-          rewrite Nat.add_1_r.
-          apply (Arith_prebase.lt_n_S_stt (n1) (List.length ctx)).
-          apply l.
-          reflexivity.
-        --discriminate H.
+      * destruct (lookup s ctx);
+          try discriminate.
+        inversion H.
+        rewrite H1.
+        simpl.
+        pose (IHctx (m-1)).
+        rewrite <- H1 in l.
+        rewrite (Nat.add_sub n1 1) in l.
+        rewrite <- H1.
+        specialize (l eq_refl).
+        lia.
 Qed.
 
 Import StrSProp.Dec.
@@ -221,7 +219,7 @@ Proof.
   - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
     assert (cst_variables cst3 [<=] StrSProp.of_list ctx) by fsetdec.
-    assert (cst_variables cst4 [<=] StrSProp.of_list (s0 :: s1 :: ctx)) by (simpl; fsetdec).
+    assert (cst_variables cst4 [<=] StrSProp.of_list (s1 :: s0 :: ctx)) by (simpl; fsetdec).
     destruct (IHcst1 _ H0) as [ast [-> ?]];
       destruct (IHcst2 _ H1) as [ast' [-> ?]];
       destruct (IHcst3 _ H2) as [ast'' [-> ?]];

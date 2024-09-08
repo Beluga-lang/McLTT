@@ -535,8 +535,8 @@ Qed.
 Instance per_elem_PER {i R a b} `(H : per_univ_elem i R a b) : PER R.
 Proof.
   split.
-  - eauto using (per_elem_sym _ _ _ _ _ _ H).
-  - eauto using (per_elem_trans _ _ _ _ _ _ _ H).
+  - pose proof (fun m m' => per_elem_sym _ _ _ _ m m' H). eauto.
+  - pose proof (fun m0 m1 m2 => per_elem_trans _ _ _ _ m0 m1 m2 H); eauto.
 Qed.
 
 (* This lemma gets rid of the unnecessary PER premise. *)
@@ -995,8 +995,8 @@ Qed.
 Instance per_env_PER {R Γ Δ} (H : per_ctx_env R Γ Δ) : PER R.
 Proof.
   split.
-  - auto using (per_env_sym _ _ _ _ _ H).
-  - eauto using (per_env_trans _ _ _ _ _ _ H).
+  - pose proof (fun ρ ρ' => per_env_sym _ _ _ ρ ρ' H); auto.
+  - pose proof (fun ρ0 ρ1 ρ2 => per_env_trans _ _ _ ρ0 ρ1 ρ2 H); eauto.
 Qed.
 
 (* This lemma removes the PER argument *)

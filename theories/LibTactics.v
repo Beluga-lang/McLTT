@@ -432,17 +432,13 @@ Hint Extern 1 (subrelation (@subrelation ?A) _) => (let H := fresh "H" in intros
 #[export]
 Instance predicate_implication_equivalence Ts : subrelation (@predicate_equivalence Ts) (@predicate_implication Ts).
 Proof.
-  induction Ts; gintuition.
-
-  intros ? ? H v.
-  apply IHTs.
-  exact (H v).
+  induction Ts; firstorder eauto 2.
 Qed.
 
 Add Parametric Morphism Ts : (@predicate_implication Ts)
     with signature (@predicate_equivalence Ts) ==> (@predicate_equivalence Ts) ==> iff as predicate_implication_morphism.
 Proof.
-  induction Ts; split; intros; gintuition.
+  induction Ts; split; intros; try firstorder.
   - rewrite <- H.
     transitivity x0; try eassumption.
     rewrite H0; reflexivity.
@@ -466,7 +462,7 @@ Class PERElem (A : Type) (P : A -> Prop) (R : A -> A -> Prop) :=
   Instance PERProper (A : Type) (P : A -> Prop) (R : A -> A -> Prop) `(Ins : PERElem A P R) a (H : P a) :
   Proper R a.
 Proof.
-  cbv. auto using per_elem.
+  cbv. pose proof per_elem; auto.
 Qed.
 
 

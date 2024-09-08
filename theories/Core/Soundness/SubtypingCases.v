@@ -29,7 +29,7 @@ Proof.
   handle_per_univ_elem_irrel.
   unfold univ_glu_exp_pred' in *.
   destruct_conjs.
-  eapply mk_glu_rel_exp_with_sub''; gintuition mauto using per_univ_elem_cumu_max_left, per_univ_elem_cumu_max_right.
+  eapply mk_glu_rel_exp_with_sub''; intuition mauto using per_univ_elem_cumu_max_left, per_univ_elem_cumu_max_right.
   eapply glu_univ_elem_per_subtyp_trm_conv; mauto.
   assert (i <= max i k) by lia.
   eapply glu_univ_elem_typ_cumu_ge; revgoals; mauto.
