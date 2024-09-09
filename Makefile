@@ -1,14 +1,10 @@
-EXECUTABLE:=_build/default/driver/mcltt.exe
-
 .PHONY: all clean
 
 all:
-	@cd theories; make
+	@make -C theories
 	@dune build
 
 clean:
-	@cd theories; make clean
+	@make clean -C theories
 	@dune clean
 	@echo "Cleaning finished."
-
-${EXECUTABLE}: all

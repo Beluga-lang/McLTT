@@ -7,5 +7,4 @@ let () =
       exit 1
     end;
   let filename = Sys.argv.(1) in
-  main ~default_fp:filename ();
-  exit 0
+  main ~default_fp:filename ()
