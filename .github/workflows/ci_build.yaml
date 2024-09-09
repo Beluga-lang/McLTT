@@ -61,9 +61,9 @@ jobs:
               make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed
             endGroup
           after_script: |
-            startGroup "Test parser"
-              dune build
-              dune runtest
+            startGroup "Build binary"
+              cd ..
+              make
             endGroup
           export: "OPAMJOBS OPAMYES"
         env:

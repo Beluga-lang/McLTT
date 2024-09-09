@@ -1,3 +1,19 @@
+NPROCS := 1
+OS := $(shell uname)
+export NPROCS
+
+ifeq ($J,)
+
+ifeq ($(OS),Linux)
+  NPROCS := $(shell grep -c ^processor /proc/cpuinfo)
+else ifeq ($(OS),Darwin)
+  NPROCS := $(shell system_profiler | awk '/Number of CPUs/ {print $$4}{next;}')
+endif # $(OS)
+
+else
+  NPROCS := $J
+endif # $J
+
 empty :=
 space := $(empty) $(empty)
 
@@ -19,7 +35,7 @@ COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
 
 .PHONY: all
 all: $(COQMAKEFILE)
-	@+$(MAKE) -f "$(COQMAKEFILE)" all
+	@+$(MAKE) -j "${NPROCS}" -f "$(COQMAKEFILE)" all
 
 .PHONY: clean
 clean: $(COQMAKEFILE)

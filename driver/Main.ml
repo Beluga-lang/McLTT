@@ -24,6 +24,6 @@ let main ?(default_fp = "") () =
         with
         | Failure s -> prerr_string s; raise Exit) in
   let token_stream = loop (Lexing.from_channel chan) in
-  let res = Entrypoint.main max_int token_stream in
+  let res = Entrypoint.main 500 token_stream in
   Format.printf "%a@."
     PrettyPrinter.format_main_result res

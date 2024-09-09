@@ -9,6 +9,11 @@
  ;  (pps ppx_inline_test))
 )
 
+(executable
+ (name mcltt)
+ (modules Mcltt)
+ (libraries Mcltt))
+
 (env
  (dev
   (flags
