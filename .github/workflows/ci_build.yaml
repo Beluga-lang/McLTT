@@ -32,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: read
+      contents: write
     steps:
       - name: get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
