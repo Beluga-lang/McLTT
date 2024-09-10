@@ -85,3 +85,19 @@ jobs:
         # to avoid a warning at cleanup time
         if: ${{ always() }}
         run: sudo chown -R 1001:116 .
+
+      - name: generate Github pages
+        if: ${{ success() && env.DOC_DEPLOY }}
+        run: |
+          sudo apt install -y pandoc
+          mv theories/html html
+          cp assets/styling.css html/styling.css
+          cp -r assets/images html/images
+          pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McLTT: A Bottom-up Approach to Implementing A Proof Assistant' -t html --css styling.css -o html/index.html
+
+      - name: Deploy HTML
+        uses: JamesIves/github-pages-deploy-action@v4.6.4
+        if: ${{ success() && env.DOC_DEPLOY }}
+        with:
+          branch: gh-pages
+          folder: html
