@@ -1,2 +1,6 @@
 (library
  (name MclttExtracted))
+
+(documentation
+ (package mcltt)
+ (mld_files :standard))
