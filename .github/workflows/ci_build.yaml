@@ -66,7 +66,7 @@ jobs:
             endGroup
           script: |
             startGroup "Build binary"
-              if [[ "$DOC" ]]; then
+              if [[ "$DOC" == 'true' ]]; then
                 make coqdoc
               else
                 make
