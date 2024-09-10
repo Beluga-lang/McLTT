@@ -87,7 +87,7 @@ jobs:
         run: sudo chown -R 1001:116 .
 
       - name: generate Github pages
-        if: ${{ success() && env.DOC_DEPLOY }}
+        if: ${{ success() && env.DOC_DEPLOY == 'true' }}
         run: |
           sudo apt install -y pandoc
           mv theories/html html
@@ -97,7 +97,7 @@ jobs:
 
       - name: Deploy HTML
         uses: JamesIves/github-pages-deploy-action@v4.6.4
-        if: ${{ success() && env.DOC_DEPLOY }}
+        if: ${{ success() && env.DOC_DEPLOY == 'true' }}
         with:
           branch: gh-pages
           folder: html
