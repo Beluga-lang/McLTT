@@ -11,7 +11,7 @@ Parameter loc : Type.
 %token <loc*string> VAR
 %token <loc*nat> INT
 %token <loc> END LAMBDA NAT PI REC RETURN SUCC TYPE ZERO (* keywords *)
-%token <loc> ARROW "->" AT "@" BAR "|" COLON ":" COMMA "," DARROW "=>" LPAREN "(" RPAREN ")" EOF (* symbols *)
+%token <loc> ARROW "->" AT "@" BAR "|" COLON ":" COMMA "," DARROW "=>" LPAREN "(" RPAREN ")" DOT "." EOF (* symbols *)
 
 %start <Cst.obj * Cst.obj> prog
 %type <Cst.obj> obj app_obj atomic_obj
@@ -34,7 +34,7 @@ let obj :=
   | ~ = fnbinder; ~ = params; "->"; ~ = obj; { List.fold_left (fun acc arg => fnbinder (fst arg) (snd arg) acc) params obj }
   | ~ = app_obj; <>
 
-  | REC; escr = obj; RETURN; mx = VAR; "->"; em = obj;
+  | REC; escr = obj; RETURN; mx = VAR; "."; em = obj;
     "|"; ZERO; "=>"; ez = obj;
     "|"; SUCC; sx = VAR; ","; sr = VAR; "=>"; ms = obj;
     END; { Cst.natrec escr (snd mx) em ez (snd sx) (snd sr) ms }

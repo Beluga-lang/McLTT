@@ -40,29 +40,31 @@
     | TYPE _ -> "Type"
     | VAR (_, s) -> s
     | EOF _ -> "<EOF>"
+    | DOT _ -> "."
 
   let get_range_of_token : token -> (position * position) =
     function
     | ARROW r
-      | AT r
-      | BAR r
-      | COLON r
-      | COMMA r
-      | DARROW r
-      | LPAREN r
-      | RPAREN r
-      | ZERO r
-      | SUCC r
-      | REC r
-      | RETURN r
-      | END r
-      | LAMBDA r
-      | PI r
-      | NAT r
-      | TYPE r
-      | EOF r
-      | INT (r, _)
-      | VAR (r, _) -> r
+    | AT r
+    | BAR r
+    | COLON r
+    | COMMA r
+    | DARROW r
+    | LPAREN r
+    | RPAREN r
+    | ZERO r
+    | SUCC r
+    | REC r
+    | RETURN r
+    | END r
+    | LAMBDA r
+    | PI r
+    | NAT r
+    | TYPE r
+    | EOF r
+    | INT (r, _)
+    | DOT r
+    | VAR (r, _) -> r
 
   let format_token (f: Format.formatter) (t: token): unit =
     Format.fprintf
@@ -99,6 +101,7 @@ rule read =
   | "Type" { TYPE (get_range lexbuf) }
   | string { VAR (get_range lexbuf, Lexing.lexeme lexbuf) }
   | eof { EOF (get_range lexbuf) }
+  | "." { DOT (get_range lexbuf) }
   | _ as c { failwith (Format.asprintf "@[<v 2>Lexer error:@ @[<v 2>Unexpected character %C@ at %a@]@]@." c format_position lexbuf.lex_start_p) }
 and comment =
   parse
