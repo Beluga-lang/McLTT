@@ -2,6 +2,7 @@
 
 (library
  (name Mcltt)
+ (public_name mcltt.Driver)
  (modules Main Lexer PrettyPrinter)
  (libraries MclttExtracted)
  ; (inline_tests)
@@ -21,6 +22,4 @@
 
 (ocamllex Lexer)
 
-(documentation
- (package mcltt)
- (mld_files :standard))
+(documentation)

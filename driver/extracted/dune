@@ -1,6 +1,5 @@
 (library
- (name MclttExtracted))
+ (name MclttExtracted)
+ (public_name mcltt.Extracted))
 
-(documentation
- (package mcltt)
- (mld_files :standard))
+(documentation)
