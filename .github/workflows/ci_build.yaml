@@ -8,6 +8,10 @@ on:
       - main
   workflow_dispatch:
   
+permissions:
+  actions: write
+  contents: write
+
 env:
   REGISTRY: "ghcr.io"
   IMAGE_TAG: "beluga-lang/mcltt:main"
