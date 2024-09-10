@@ -33,6 +33,9 @@ POSTPARSEREXTRACTIONRESULTFILE := $(FRONTENDDIR)/$(POSTPARSERBASE)
 COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
 COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
 
+COQDOCJS_DIR:=../assets/
+include Makefile.doc
+
 .PHONY: all
 all: $(COQMAKEFILE)
 	@+$(MAKE) -j "${NPROCS}" -f "$(COQMAKEFILE)" all
@@ -57,6 +60,10 @@ update_CoqProject: clean
 
 .PHONY: force
 force: ;
+
+# html: $(COQMAKEFILE)
+# 	@+$(MAKE) -j "${NPROCS}" -f "$(COQMAKEFILE)" html
+# 	@cp -rf "${EXTRA_DIR}"/* html/
 
 $(COQMAKEFILE): $(COQPROJECTFILE)
 	$(COQBIN)coq_makefile -f "$?" -o "$@"
