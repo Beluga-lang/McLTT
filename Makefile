@@ -1,10 +1,13 @@
 .PHONY: all clean
 
 all:
-	@make -C theories
+	@$(MAKE) -C theories
 	@dune build
 
+coqdoc: all
+	@${MAKE} coqdoc -C theories
+
 clean:
-	@make clean -C theories
+	@$(MAKE) clean -C theories
 	@dune clean
 	@echo "Cleaning finished."

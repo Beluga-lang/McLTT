@@ -125,7 +125,7 @@ Module Syntax_Notations.
   Notation "{{{ x }}}" := x (at level 0, x custom exp at level 99, format "'{{{'  x  '}}}'") : mcltt_scope.
   Notation "( x )" := x (in custom exp at level 0, x custom exp at level 60) : mcltt_scope.
   Notation "~ x" := x (in custom exp at level 0, x constr at level 0) : mcltt_scope.
-  Notation "x" := x (in custom exp at level 0, x global) : mcltt_scope.
+  Notation "x" := x (in custom exp at level 0, x ident) : mcltt_scope.
   Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, s custom exp at level 60) : mcltt_scope.
   Notation "'λ' A e" := (a_fn A e) (in custom exp at level 0, A custom exp at level 0, e custom exp at level 60) : mcltt_scope.
   Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom exp at level 40, f custom exp, x custom exp at next level, y custom exp at next level) : mcltt_scope.
@@ -149,7 +149,7 @@ Module Syntax_Notations.
   Notation "n{{{ x }}}" := x (at level 0, x custom nf at level 99, format "'n{{{'  x  '}}}'") : mcltt_scope.
   Notation "( x )" := x (in custom nf at level 0, x custom nf at level 60) : mcltt_scope.
   Notation "~ x" := x (in custom nf at level 0, x constr at level 0) : mcltt_scope.
-  Notation "x" := x (in custom nf at level 0, x global) : mcltt_scope.
+  Notation "x" := x (in custom nf at level 0, x ident) : mcltt_scope.
   Notation "'λ' A e" := (nf_fn A e) (in custom nf at level 0, A custom nf at level 0, e custom nf at level 60) : mcltt_scope.
   Notation "f x .. y" := (ne_app .. (ne_app f x) .. y) (in custom nf at level 40, f custom nf, x custom nf at next level, y custom nf at next level) : mcltt_scope.
   Notation "'ℕ'" := nf_nat (in custom nf) : mcltt_scope.

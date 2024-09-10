@@ -21,15 +21,10 @@ MENHIR := menhir
 
 COQMAKEFILE := CoqMakefile.mk
 COQPROJECTFILE := _CoqProject
-PARSERBASE := parser.ml
-POSTPARSERBASE := type_checker.ml
-PARSERFILE := ../driver/$(PARSERBASE)
-POSTPARSERFILE := ../driver/$(POSTPARSERBASE)
-FRONTENDDIR := Frontend
-PARSEREXTRACTIONCOQFILE := $(FRONTENDDIR)/ParserExtraction.v
-PARSEREXTRACTIONRESULTFILE := $(FRONTENDDIR)/$(PARSERBASE)
-POSTPARSEREXTRACTIONCOQFILE := $(FRONTENDDIR)/PostParserExtraction.v
-POSTPARSEREXTRACTIONRESULTFILE := $(FRONTENDDIR)/$(POSTPARSERBASE)
+PARSERBASE := Parser.ml
+POSTPARSERBASE := Entrypoint.ml
+PARSERFILE := ../driver/extracted/$(PARSERBASE)
+POSTPARSERFILE := ../driver/extracted/$(POSTPARSERBASE)
 COQPARSERFILE := $(patsubst %.vy,%.v,$(shell find ./ -name '*.vy'))
 COQFILES := $(sort $(shell find ./ -name '*.v') $(COQPARSERFILE))
 
@@ -65,3 +60,6 @@ $(COQPROJECTFILE): ;
 
 %: $(COQMAKEFILE) force
 	@+$(MAKE) -f "$(COQMAKEFILE)" "$@"
+
+COQDOCJS_DIR:=../assets/
+include Makefile.doc

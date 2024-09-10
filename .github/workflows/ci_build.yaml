@@ -35,7 +35,16 @@ jobs:
 
       - name: repo checkout
         uses: actions/checkout@v3
-
+        
+      - name: Initialise variables
+        run: |
+          # Only deploy if the build follows from pushing to master
+          if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then
+             echo "DOC_DEPLOY=true" >> $GITHUB_ENV
+          else
+             echo "DOC_DEPLOY=false" >> $GITHUB_ENV
+          fi
+          
       - name: container registry log in
         uses: docker/login-action@v3
         with:
@@ -56,19 +65,21 @@ jobs:
               sudo chown -R coq:coq .
             endGroup
           script: |
-            startGroup "Build Coq lib"
-              cd theories/
-              make -j ${{ steps.cpu-cores.outputs.count }} pretty-timed
+            startGroup "Build binary"
+              if [[ "$DOC" ]]; then
+                make coqdoc
+              else
+                make
+              fi
             endGroup
           after_script: |
-            startGroup "Build binary"
-              cd ..
-              make
+            startGroup "after"
             endGroup
           export: "OPAMJOBS OPAMYES"
         env:
           OPAMJOBS: ${{ steps.cpu-cores.outputs.count }}
           OPAMYES: "true"
+          DOC: ${{ env.DOC_DEPLOY }}
 
       - name: permissions revert
         # to avoid a warning at cleanup time
