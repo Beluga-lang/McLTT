@@ -50,7 +50,7 @@ Module Domain_Notations.
   Notation "'d{{{' x '}}}'" := x (at level 0, x custom domain at level 99, format "'d{{{'  x  '}}}'") : mcltt_scope.
   Notation "( x )" := x (in custom domain at level 0, x custom domain at level 60) : mcltt_scope.
   Notation "~ x" := x (in custom domain at level 0, x constr at level 0) : mcltt_scope.
-  Notation "x" := x (in custom domain at level 0, x global) : mcltt_scope.
+  Notation "x" := x (in custom domain at level 0, x ident) : mcltt_scope.
   Notation "'λ' ρ M" := (d_fn ρ M) (in custom domain at level 0, ρ custom domain at level 30, M custom exp at level 30) : mcltt_scope.
   Notation "f x .. y" := (d_app .. (d_app f x) .. y) (in custom domain at level 40, f custom domain, x custom domain at next level, y custom domain at next level) : mcltt_scope.
   Notation "'ℕ'" := d_nat (in custom domain) : mcltt_scope.
