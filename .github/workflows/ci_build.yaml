@@ -23,7 +23,7 @@ jobs:
     name: Completeness of _CoqProject
     runs-on: ubuntu-latest
     permissions:
-      packages: write
+      packages: read
       contents: write
     steps:
       - name: repo checkout
