@@ -11,7 +11,9 @@ on:
 permissions:
   actions: write
   contents: write
-
+  issues: write
+  pull-requests: write
+  
 env:
   REGISTRY: "ghcr.io"
   IMAGE_TAG: "beluga-lang/mcltt:main"
