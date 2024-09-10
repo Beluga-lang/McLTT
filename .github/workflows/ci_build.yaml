@@ -30,8 +30,6 @@ jobs:
   build:
     name: Continuous Intergration
     runs-on: ubuntu-latest
-    permissions:
-      packages: read
     steps:
       - name: get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
