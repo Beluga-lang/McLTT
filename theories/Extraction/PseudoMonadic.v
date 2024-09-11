@@ -1,8 +1,9 @@
 From Coq Require Extraction.
 
-(* We cannot use class based generalization for
-   the following definitions as Coq does not support
-   polymorphism across [Prop] and [Set] *)
+(** We cannot use class based generalization for
+    the following definitions as Coq does not support
+    extractable polymorphism across [Prop] and [Set].
+    #See <a href="https://github.com/coq/coq/issues/19452">this Coq issue</a># *)
 
 Definition sumbool_failable_bind {A B} (ab : {A} + {B}) {C D : Prop} (fail : B -> D) (next : A -> {C} + {D}) :=
   match ab with

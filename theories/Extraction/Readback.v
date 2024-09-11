@@ -76,8 +76,7 @@ with read_typ_order : nat -> domain -> Prop :=
     read_typ_order s d{{{ ⇑ a b }}} ).
 
 #[local]
-  Hint Constructors read_nf_order read_ne_order read_typ_order : mcltt.
-
+Hint Constructors read_nf_order read_ne_order read_typ_order : mcltt.
 
 Lemma read_nf_order_sound : forall s d m,
     {{ Rnf d in s ↘ m }} ->
@@ -95,13 +94,12 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; mauto).
 Qed.
 
 #[export]
-  Hint Resolve read_nf_order_sound read_ne_order_sound read_typ_order_sound : mcltt.
+Hint Resolve read_nf_order_sound read_ne_order_sound read_typ_order_sound : mcltt.
 
 Derive Signature for read_nf_order read_ne_order read_typ_order.
 
-
 #[local]
-  Ltac impl_obl_tac1 :=
+Ltac impl_obl_tac1 :=
   match goal with
   | H : read_nf_order _ _ |- _ => progressive_invert H
   | H : read_ne_order _ _ |- _ => progressive_invert H
@@ -109,10 +107,10 @@ Derive Signature for read_nf_order read_ne_order read_typ_order.
   end.
 
 #[local]
-  Ltac impl_obl_tac :=
+Ltac impl_obl_tac :=
   repeat impl_obl_tac1; try econstructor; mauto.
 
-#[tactic="impl_obl_tac"]
+#[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
 Equations read_nf_impl s d (H : read_nf_order s d) : { m | {{ Rnf d in s ↘ m }} } by struct H :=
 | s, d{{{ ⇓ 𝕌@i a }}}      , H =>
     let (A, HA) := read_typ_impl s a _ in
@@ -163,69 +161,47 @@ Equations read_nf_impl s d (H : read_nf_order s d) : { m | {{ Rnf d in s ↘ m }
     let (B, HB) := read_ne_impl s b _ in
     exist _ n{{{ ⇑ B }}} _.
 
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-
 Extraction Inline read_nf_impl_functional
   read_ne_impl_functional
   read_typ_impl_functional.
 
-#[local]
-  Ltac pose_other_lemmas :=
-  pose proof eval_exp_impl_complete';
-  pose proof eval_natrec_impl_complete';
-  pose proof eval_app_impl_complete';
-  pose proof eval_sub_impl_complete'.
-
-Lemma read_nf_impl_complete' : forall s d m,
-    {{ Rnf d in s ↘ m }} ->
-    forall (H : read_nf_order s d),
-      exists H', read_nf_impl s d H = exist _ m H'
-with read_ne_impl_complete' : forall s d m,
-    {{ Rne d in s ↘ m }} ->
-    forall (H : read_ne_order s d),
-      exists H', read_ne_impl s d H = exist _ m H'
-with read_typ_impl_complete' : forall s d m,
-    {{ Rtyp d in s ↘ m }} ->
-    forall (H : read_typ_order s d),
-      exists H', read_typ_impl s d H = exist _ m H'.
-Proof with (pose_other_lemmas;  (* so that complete_tac uses these lemmas *)
-            intros;
-            simp read_nf_impl;
-            repeat complete_tac;
-            eauto).
-  - clear read_nf_impl_complete'; induction 1...
-  - clear read_ne_impl_complete'; induction 1...
-  - clear read_typ_impl_complete'; induction 1...
-Qed.
+(** The definitions of read__*_impl already come with soundness proofs,
+    so we only need to prove completeness. However, the completeness
+    is also obvious from the soundness of eval orders and functional
+    nature of readback. *)
 
 #[local]
-  Hint Resolve read_nf_impl_complete'
-  read_ne_impl_complete'
-  read_typ_impl_complete' : mcltt.
+Ltac functional_read_complete :=
+  lazymatch goal with
+  | |- exists (_ : ?T), _ =>
+      let Horder := fresh "Horder" in
+      assert T as Horder by mauto 3;
+      eexists Horder;
+      lazymatch goal with
+      | |- exists _, ?L = _ =>
+          destruct L;
+          functional_read_rewrite_clear;
+          eexists; reflexivity
+      end
+  end.
 
 Lemma read_nf_impl_complete : forall s d m,
     {{ Rnf d in s ↘ m }} ->
     exists H H', read_nf_impl s d H = exist _ m H'.
 Proof.
-  repeat unshelve mauto.
+  intros; functional_read_complete.
 Qed.
 
 Lemma read_ne_impl_complete : forall s d m,
     {{ Rne d in s ↘ m }} ->
     exists H H', read_ne_impl s d H = exist _ m H'.
 Proof.
-  repeat unshelve mauto.
+  intros; functional_read_complete.
 Qed.
 
 Lemma read_typ_impl_complete : forall s d m,
     {{ Rtyp d in s ↘ m }} ->
     exists H H', read_typ_impl s d H = exist _ m H'.
 Proof.
-  repeat unshelve mauto.
+  intros; functional_read_complete.
 Qed.
