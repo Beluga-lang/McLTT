@@ -178,7 +178,7 @@ Extraction Inline eval_exp_impl_functional
   eval_app_impl_functional
   eval_sub_impl_functional.
 
-(** The definitions of *_impl already come with soundness proofs,
+(** The definitions of eval__*_impl already come with soundness proofs,
     so we only need to prove completeness. However, the completeness
     is also obvious from the soundness of eval orders and functional
     nature of eval. *)

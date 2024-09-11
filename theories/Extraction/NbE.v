@@ -41,7 +41,7 @@ Section InitialEnvImpl.
   Ltac impl_obl_tac :=
     repeat impl_obl_tac1; try econstructor; mauto.
 
-  #[tactic="impl_obl_tac"]
+  #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
   Equations initial_env_impl G (H : initial_env_order G) : { p | initial_env G p } by struct H :=
   | nil, H => exist _ empty_env _
   | cons A G, H =>
@@ -51,7 +51,7 @@ Section InitialEnvImpl.
 
 End InitialEnvImpl.
 
-(** The definitions of *_impl already come with soundness proofs,
+(** The definitions of [initial_env_impl] already come with soundness proofs,
     so we only need to prove completeness. However, the completeness
     is also obvious from the soundness of eval orders and functional
     nature of initial_env. *)
@@ -129,7 +129,7 @@ Section NbEDef.
   Ltac impl_obl_tac :=
     repeat impl_obl_tac1; try econstructor; mauto.
 
-  #[tactic="impl_obl_tac"]
+  #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
   Equations nbe_impl G M A (H : nbe_order G M A) : { w | nbe G M A w } by struct H :=
   | G, M, A, H =>
       let (p, Hp) := initial_env_impl G _ in
@@ -187,7 +187,7 @@ Section NbETyDef.
   Ltac impl_obl_tac :=
     repeat impl_obl_tac1; try econstructor; mauto.
 
-  #[tactic="impl_obl_tac"]
+  #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
   Equations nbe_ty_impl G A (H : nbe_ty_order G A) : { w | nbe_ty G A w } by struct H :=
   | G, A, H =>
       let (p, Hp) := initial_env_impl G _ in

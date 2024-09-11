@@ -37,6 +37,9 @@ Equations subtyping_nf_impl A B : { {{ ⊢anf A ⊆ B }} } + {~ {{ ⊢anf A ⊆ 
   | right _ => right _
   }.
 
+(** The definitions of [subtyping_nf_impl] already come with soundness proofs,
+    as well as obvious completeness. *)
+
 Theorem subtyping_nf_impl_complete : forall A B,
     {{ ⊢anf A ⊆ B }} ->
     exists H, subtyping_nf_impl A B = left H.
@@ -85,6 +88,8 @@ Next Obligation.
   functional_nbe_rewrite_clear.
   contradiction.
 Qed.
+
+(** Similar for [subtyping_impl]. *)
 
 Theorem subtyping_impl_complete' : forall G A B,
     {{G ⊢a A ⊆ B}} ->

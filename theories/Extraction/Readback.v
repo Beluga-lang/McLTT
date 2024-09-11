@@ -165,7 +165,7 @@ Extraction Inline read_nf_impl_functional
   read_ne_impl_functional
   read_typ_impl_functional.
 
-(** The definitions of *_impl already come with soundness proofs,
+(** The definitions of read__*_impl already come with soundness proofs,
     so we only need to prove completeness. However, the completeness
     is also obvious from the soundness of eval orders and functional
     nature of readback. *)
