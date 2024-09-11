@@ -21,7 +21,7 @@ Ltac subtyping_tac :=
       try congruence
   end.
 
-#[tactic="subtyping_tac"]
+#[tactic="subtyping_tac",derive(equations=no,eliminator=no)]
 Equations subtyping_nf_impl A B : { {{ ⊢anf A ⊆ B }} } + {~ {{ ⊢anf A ⊆ B }} } :=
 | n{{{ Type@i }}}, n{{{ Type@j }}} =>
     let*b _ := Compare_dec.le_lt_dec i j while _ in
@@ -36,6 +36,7 @@ Equations subtyping_nf_impl A B : { {{ ⊢anf A ⊆ B }} } + {~ {{ ⊢anf A ⊆ 
   | left _ => left _
   | right _ => right _
   }.
+
 Theorem subtyping_nf_impl_complete : forall A B,
     {{ ⊢anf A ⊆ B }} ->
     exists H, subtyping_nf_impl A B = left H.
@@ -71,7 +72,7 @@ Ltac subtyping_impl_tac1 :=
 Ltac subtyping_impl_tac :=
   repeat subtyping_impl_tac1; try econstructor; mauto.
 
-#[tactic="subtyping_impl_tac"]
+#[tactic="subtyping_impl_tac",derive(equations=no,eliminator=no)]
 Equations subtyping_impl G A B (H : subtyping_order G A B) :
   { {{G ⊢a A ⊆ B}} } + { ~ {{ G ⊢a A ⊆ B }} } :=
 | G, A, B, H =>

@@ -45,12 +45,15 @@ Section lookup.
 End lookup.
 
 Section type_check.
+  #[derive(equations=no,eliminator=no)]
   Equations get_level_of_type_nf (A : nf) : { i | A = n{{{ Type@i }}} } + { forall i, A <> n{{{ Type@i }}} } :=
   | n{{{ Type@i }}} => pureo (exist _ i _)
   | _               => inright _
   .
 
-  (* Don't forget to use 9th bit of [Extraction Flag] (for example, [Set Extraction Flag 1007.]) *)
+  (** Don't forget to use 9th bit of [Extraction Flag] (for example, [Set Extraction Flag 1007.]).
+      Otherwise, this function would introduce redundant pair construction/pattern matching. *)
+  #[derive(equations=no,eliminator=no)]
   Equations get_subterms_of_pi_nf (A : nf) : { B & { C | A = n{{{ Π B C }}} } } + { forall B C, A <> n{{{ Π B C }}} } :=
   | n{{{ Π B C }}} => pureo (existT _ B (exist _ C _))
   | _              => inright _
@@ -336,7 +339,47 @@ Section type_check.
   Qed.
 
   Extraction Inline type_check_functional type_infer_functional.
+
+  Lemma type_infer_order_soundness : forall G M A,
+      {{ G ⊢a M ⟹ A }} ->
+      type_infer_order M
+  with type_check_order_soundness : forall G M A,
+      {{ G ⊢a M ⟸ A }} ->
+      type_check_order M.
+  Proof.
+    - clear type_infer_order_soundness.
+      induction 1; mauto 3.
+      econstructor; mauto 3.
+    - clear type_check_order_soundness.
+      induction 1; mauto 3.
+  Qed.
 End type_check.
+
+#[local]
+Hint Resolve type_check_order_soundness type_infer_order_soundness : mcltt.
+
+Lemma type_check_complete' : forall G M A (HA : exists i, {{ G ⊢ A : Type@i }}),
+    {{ G ⊢a M ⟸ A }} ->
+    exists H H', type_check G A HA M H = left H'.
+Proof.
+  intros ? ? ? [] ?.
+  assert (Horder : type_check_order M) by mauto.
+  exists Horder.
+  dec_complete.
+Qed.
+
+Lemma type_infer_complete : forall G M A (HG : {{ ⊢ G }}),
+    {{ G ⊢a M ⟹ A }} ->
+    exists H H', type_infer G HG M H = inleft (exist _ A H').
+Proof.
+  intros.
+  assert (Horder : type_infer_order M) by mauto.
+  exists Horder.
+  destruct (type_infer G HG M Horder) as [[? []] |].
+  - functional_alg_type_infer_rewrite_clear.
+    eexists; reflexivity.
+  - contradict H; intuition.
+Qed.
 
 Section type_check_closed.
   #[local]
@@ -378,3 +421,8 @@ Section type_check_closed.
     mauto 3 using alg_type_check_sound.
   Qed.
 End type_check_closed.
+
+Lemma type_check_closed_complete : forall A (HA : user_exp A) M (HM : user_exp M),
+    {{ ⋅ ⊢ M : A }} ->
+    exists H', type_check_closed A HA M HM = left H'.
+Proof. intros; dec_complete. Qed.
