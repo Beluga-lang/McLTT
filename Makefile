@@ -8,7 +8,7 @@ pretty-timed:
 	@$(MAKE) pretty-timed -C theories
 	@dune build
 
-coqdoc: all
+coqdoc:
 	@${MAKE} coqdoc -C theories
 
 clean:
