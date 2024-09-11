@@ -1,10 +1,14 @@
-.PHONY: all clean
+.PHONY: all pretty-timed coqdoc clean
 
 all:
 	@$(MAKE) -C theories
 	@dune build
 
-coqdoc: all
+pretty-timed:
+	@$(MAKE) pretty-timed -C theories
+	@dune build
+
+coqdoc:
 	@${MAKE} coqdoc -C theories
 
 clean:
