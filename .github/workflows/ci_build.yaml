@@ -71,10 +71,9 @@ jobs:
             endGroup
           script: |
             startGroup "Build binary"
+              make pretty-timed
               if [[ "${{ env.DOC_DEPLOY }}" == 'true' ]]; then
                 make coqdoc
-              else
-                make
               fi
             endGroup
           after_script: |
