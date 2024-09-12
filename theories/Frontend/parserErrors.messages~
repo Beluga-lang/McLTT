@@ -462,7 +462,6 @@ prog: INT COLON RPAREN
 
 An expression is expected.
 This token is invalid for the beginning of an expression.
-
 prog: LET ZERO
 ##
 ## Ends in an error in state: 11.

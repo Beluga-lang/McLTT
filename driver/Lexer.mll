@@ -41,6 +41,9 @@
     | VAR (_, s) -> s
     | EOF _ -> "<EOF>"
     | DOT _ -> "."
+    | LET _ -> "let"
+    | IN _ -> "in"
+    | EQ _ -> "="
 
   let get_range_of_token : token -> (position * position) =
     function
@@ -64,6 +67,9 @@
     | EOF r
     | INT (r, _)
     | DOT r
+    | LET r
+    | IN r
+    | EQ r
     | VAR (r, _) -> r
 
   let format_token (f: Format.formatter) (t: token): unit =
@@ -99,9 +105,12 @@ rule read =
   | "Nat" { NAT (get_range lexbuf) }
   | ['0'-'9']+ as lxm { INT (get_range lexbuf, int_of_string lxm) }
   | "Type" { TYPE (get_range lexbuf) }
-  | string { VAR (get_range lexbuf, Lexing.lexeme lexbuf) }
   | eof { EOF (get_range lexbuf) }
   | "." { DOT (get_range lexbuf) }
+  | "let" {LET (get_range lexbuf) }
+  | "in" {IN (get_range lexbuf) }
+  | "=" {EQ (get_range lexbuf) }
+  | string { VAR (get_range lexbuf, Lexing.lexeme lexbuf) }
   | _ as c { failwith (Format.asprintf "@[<v 2>Lexer error:@ @[<v 2>Unexpected character %C@ at %a@]@]@." c format_position lexbuf.lex_start_p) }
 and comment =
   parse

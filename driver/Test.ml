@@ -48,3 +48,11 @@ let%test "pi missing colon" = parse "pi (x Nat).x" = None
 let%test "ignore whitespace" =
   parse "fun (x  \n                                     : Type 4).x"
   = Some (Coq_fn (x, Coq_typ 4, Coq_var x))
+
+
+(* Tests for let-binders *)
+let%test "let" =
+  parse "let x : Type 2 = Type 1 in x" = Some (Coq_app (Coq_fn (x, Coq_typ 2, Coq_var x), Coq_typ 1) 
+
+let%test "let no type annotation" =
+  parse "let x = zero in x" = None
