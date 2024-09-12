@@ -6,11 +6,13 @@ MENHIR := menhir
 PARSERMESSAGEBASE := parserMessages.messages
 FRONTENDDIR := Frontend
 PARSERMESSAGEFILE := $(FRONTENDDIR)/$(PARSERMESSAGEBASE)
+PARSERMESSAGETEMPFILE := $(PARSERMESSAGEFILE:%.messages=%.messages.temp)
+PARSERMESSAGEMERGEFILE := $(PARSERMESSAGEFILE:%.messages=%.messages.merge)
 PARSERMESSAGEEXTRACTIONFILE := ../driver/extracted/ParserMessages.ml
 COQPARSERORIGFILE := $(shell find ./ -name '*.vy')
 COQPARSERFILE := $(COQPARSERORIGFILE:%.vy=%.v)
 
-post-all:: $(COQPARSERFILE) $(PARSERMESSAGEEXTRACTIONFILE)
+post-all:: $(COQPARSERFILE) $(PARSERMESSAGEEXTRACTIONFILE) check_parserMessages
 	@echo "Separate Extraction main." | $(COQTOP) $(COQFLAGS) $(COQLIBS) -topfile Entrypoint.v -l Entrypoint.v
 
 $(COQPARSERFILE): %.v : %.vy
@@ -18,3 +20,16 @@ $(COQPARSERFILE): %.v : %.vy
 
 $(PARSERMESSAGEEXTRACTIONFILE): $(PARSERMESSAGEFILE) $(COQPARSERORIGFILE)
 	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --compile-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEEXTRACTIONFILE)"
+
+.PHONY: check_parserMessages
+check_parserMessages:
+	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --list-errors > "$(PARSERMESSAGETEMPFILE)"
+	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --compare-errors "$(PARSERMESSAGETEMPFILE)" --compare-errors "$(PARSERMESSAGEFILE)"
+	rm "$(PARSERMESSAGETEMPFILE)"
+
+.PHONY: update_parserMessages
+update_parserMessages:
+	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --list-errors > "$(PARSERMESSAGETEMPFILE)"
+	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --merge-errors "$(PARSERMESSAGETEMPFILE)" --merge-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEMERGEFILE)"
+	rm "$(PARSERMESSAGETEMPFILE)"
+	mv "$(PARSERMESSAGEMERGEFILE)" "$(PARSERMESSAGEFILE)"

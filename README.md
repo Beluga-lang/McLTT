@@ -79,6 +79,10 @@ possible.
 
 Once `make` finishes, you can run the binary:
 ```
+dune exec mcltt examples/nary.mcl # or your own example
+```
+or more directly
+```
 _build/default/driver/mcltt.exe examples/nary.mcl # or your own example
 ```
 

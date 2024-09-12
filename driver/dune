@@ -11,6 +11,7 @@
 
 (executable
  (name mcltt)
+ (public_name mcltt)
  (modules Mcltt)
  (libraries Mcltt))
 
