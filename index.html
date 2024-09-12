@@ -104,6 +104,8 @@ opam install ppx_inline_test</code></pre>
 <pre><code>make</code></pre>
 <p>Makefile will try to find out the number of your CPU cores and parallel as much as possible.</p>
 <p>Once <code>make</code> finishes, you can run the binary:</p>
+<pre><code>dune exec mcltt examples/nary.mcl # or your own example</code></pre>
+<p>or more directly</p>
 <pre><code>_build/default/driver/mcltt.exe examples/nary.mcl # or your own example</code></pre>
 <p>To build Coq proof only, you can go into and only build the Coq folder:</p>
 <pre><code>cd theories
