@@ -473,7 +473,7 @@ prog: LET ZERO
 ## LET
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+A variable "(x : ?A)" is expected after "let", where "?A" is a type.
 
 prog: LET LPAREN VAR COLON INT RPAREN ZERO
 ##
@@ -485,7 +485,7 @@ prog: LET LPAREN VAR COLON INT RPAREN ZERO
 ## LET param
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+Token "=" is expected after let-binding.
 
 prog: LET LPAREN VAR COLON INT RPAREN EQ RPAREN
 ##
@@ -497,7 +497,7 @@ prog: LET LPAREN VAR COLON INT RPAREN EQ RPAREN
 ## LET param EQ
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+An expression is expected after "=".
 
 prog: LET LPAREN VAR COLON INT RPAREN EQ INT SUCC
 ##
@@ -515,7 +515,7 @@ prog: LET LPAREN VAR COLON INT RPAREN EQ INT SUCC
 ## In state 24, spurious reduction of production obj -> app_obj
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+Expected token "in".
 
 prog: LET LPAREN VAR COLON INT RPAREN EQ INT IN RPAREN
 ##
@@ -527,4 +527,4 @@ prog: LET LPAREN VAR COLON INT RPAREN EQ INT IN RPAREN
 ## LET param EQ obj IN
 ##
 
-<YOUR SYNTAX ERROR MESSAGE HERE>
+An expression is expected.
