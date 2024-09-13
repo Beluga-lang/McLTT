@@ -5,11 +5,9 @@ open MenhirLibParser.Inter
 open Entrypoint
 
 let main filename =
-  open_in filename
-  |> Lexing.from_channel
-  (* Before parsing, we must generate a stream of tokens from a lexer buffer,
-     which we then feed into the parser. *)
+  Lexing.from_channel (open_in filename)
   |> Lexer.lexbuf_to_token_buffer
+  (* Here, the integer argument is a *log* version of fuel.
+     Thus, 500 means 2^500. *)
   |> Entrypoint.main 500
-  |> Format.printf "%a@."
-       PrettyPrinter.format_main_result
+  |> Format.printf "%a@." PrettyPrinter.format_main_result
