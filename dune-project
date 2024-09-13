@@ -4,13 +4,17 @@
 
 (generate_opam_files)
 
+(license MIT)
+(authors "Antoine Gaulin"
+         "Jason Hu"
+         "Junyoung Jang")
+(maintainers "the CompLogic group, McGill University")
+(homepage "https://beluga-lang.github.io/McLTT/")
+(documentation "https://beluga-lang.github.io/McLTT/")
+(source (github Beluga-lang/McLTT))
+
 (package
  (name mcltt)
- (license MIT)
- (authors "the CompLogic group, McGill University")
- (maintainers "the CompLogic group, McGill University")
- (homepage "https://beluga-lang.github.io/McLTT/")
- (bug_reports "https://github.com/Beluga-lang/McLTT/issues")
  (synopsis "A Bottom-up Approach to Implementing A Proof Assistant")
  (description "In McLTT, we build a verified, runnable typechecker for Martin-Löf type theory. After
 the accomplishment of this project, we will obtain an executable, to which we can feed
@@ -26,4 +30,4 @@ elementary) and serves as a basis for future extensions.")
   (menhir (= "20240715"))
   (coq-menhirlib (= "20240715"))
   (coq-equations (= "1.3"))
-  (sherlodoc :coqdoc)))
+  (sherlodoc :with-doc)))
