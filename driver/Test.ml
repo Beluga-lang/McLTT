@@ -4,7 +4,6 @@ open Main
 open Entrypoint.Cst
 
 let x, y, z = ("x", "y", "z")
-
 let%test "type" = parse "Type 5" = Some (Coq_typ 5)
 let%test "nat" = parse "Nat" = Some Coq_nat
 let%test "var" = parse "x" = Some (Coq_var x)
