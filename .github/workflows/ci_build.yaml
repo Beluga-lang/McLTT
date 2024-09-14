@@ -76,6 +76,9 @@ jobs:
                 make coqdoc
               fi
             endGroup
+            startGroup "Run inline tests"
+              dune runtest
+            endGroup
           after_script: |
             startGroup "after"
             endGroup

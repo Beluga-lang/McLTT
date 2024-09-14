@@ -2,12 +2,14 @@
 
 (library
  (name Mcltt)
- (modules Main Lexer PrettyPrinter)
+ (public_name mcltt.driver)
+ (modules Main Lexer PrettyPrinter Test)
  (libraries MclttExtracted)
- ; (inline_tests)
- ; (preprocess
- ;  (pps ppx_inline_test))
- )
+ (inline_tests
+  (deps
+   (glob_files_rec ../examples/*.mcl)))
+ (preprocess
+  (pps ppx_expect)))
 
 (executable
  (name mcltt)
