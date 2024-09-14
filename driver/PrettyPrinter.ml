@@ -113,44 +113,55 @@ and format_obj f = format_obj_prec 0 f
 (* Formatting exp *)
 (************************************************************)
 let exp_to_obj =
-  let new_var =
+  let new_var, reset_var_suffix =
     let suffix = ref 0 in
-    fun () ->
-      incr suffix;
-      "x" ^ string_of_int !suffix
+    ( (fun () ->
+        incr suffix;
+        "x" ^ string_of_int !suffix),
+      fun () -> suffix := 0 )
   in
-  let new_tyvar =
+  let new_tyvar, reset_tyvar_suffix =
     let suffix = ref 0 in
-    fun () ->
-      incr suffix;
-      "A" ^ string_of_int !suffix
+    ( (fun () ->
+        incr suffix;
+        "A" ^ string_of_int !suffix),
+      fun () -> suffix := 0 )
   in
   let rec impl (ctx : string list) : exp -> Cst.obj = function
     | Coq_a_zero -> Cst.Coq_zero
     | Coq_a_succ e -> Cst.Coq_succ (impl ctx e)
     | Coq_a_natrec (em, ez, es, escr) ->
-       let mx, sx, sr = (new_var (), new_var (), new_var ()) in
-       Cst.Coq_natrec
-         ( impl ctx escr,
-           mx,
-           impl (mx :: ctx) em,
-           impl ctx ez,
-           sx,
-           sr,
-           impl (sr :: sx :: ctx) es )
+       let mx = new_var () in
+       let sx = new_var () in
+       let sr = match em with Coq_a_typ _ -> new_tyvar () | _ -> new_var () in
+       let escr' = impl ctx escr in
+       let em' = impl (mx :: ctx) em in
+       let ez' = impl ctx ez in
+       let es' = impl (sr :: sx :: ctx) es in
+       Cst.Coq_natrec (escr', mx, em', ez', sx, sr, es')
     | Coq_a_nat -> Cst.Coq_nat
     | Coq_a_typ i -> Cst.Coq_typ i
     | Coq_a_var x -> Cst.Coq_var (List.nth ctx x)
     | Coq_a_fn (ep, ebody) ->
        let px = match ep with Coq_a_typ _ -> new_tyvar () | _ -> new_var () in
-       Cst.Coq_fn (px, impl ctx ep, impl (px :: ctx) ebody)
-    | Coq_a_app (ef, ea) -> Cst.Coq_app (impl ctx ef, impl ctx ea)
+       let ep' = impl ctx ep in
+       let ebody' = impl (px :: ctx) ebody in
+       Cst.Coq_fn (px, ep', ebody')
+    | Coq_a_app (ef, ea) ->
+       let ef' = impl ctx ef in
+       let ea' = impl ctx ea in
+       Cst.Coq_app (ef', ea')
     | Coq_a_pi (ep, eret) ->
        let px = match ep with Coq_a_typ _ -> new_tyvar () | _ -> new_var () in
-       Cst.Coq_pi (px, impl ctx ep, impl (px :: ctx) eret)
+       let ep' = impl ctx ep in
+       let eret' = impl (px :: ctx) eret in
+       Cst.Coq_pi (px, ep', eret')
     | Coq_a_sub _ -> failwith "Invalid internal language construct"
   in
-  impl []
+  fun exp ->
+    reset_var_suffix ();
+    reset_tyvar_suffix ();
+    impl [] exp
 
 let format_exp f exp = format_obj f (exp_to_obj exp)
 
