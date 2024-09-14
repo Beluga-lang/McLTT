@@ -6,5 +6,8 @@ ENV OPAMJOBS=$NCPUS
 
 RUN opam repo add coq-released https://coq.inria.fr/opam/released \
     && opam update \
-    && opam install coq-equations coq-menhirlib menhir ppx_inline_test \
+    && opam install coq-equations coq-menhirlib menhir ppx_expect \
     && eval $(opam env)
+
+RUN sudo apt-get update -y -q \
+    && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y -q --no-install-recommends pandoc
