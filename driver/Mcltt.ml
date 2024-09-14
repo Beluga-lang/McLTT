@@ -8,4 +8,4 @@ let () =
     exit 1
   end;
   let filename = Sys.argv.(1) in
-  main filename
+  main_of_filename filename
