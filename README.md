@@ -92,3 +92,10 @@ cd theories
 make
 ```
 
+## Branches
+
+The Github repo includes the following special branches:
+
+1. `main`: the main branch that is used to generate this homepage and Coqdoc;
+2. `ext/*`: branches in this pattern are variations of `main` that implements various extensions. They are often used to implement extensions that require non-trivial workload and are aimed to be merged to `main` eventually;
+3. `gh-pages`: the branch to host the homepage.
