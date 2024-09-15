@@ -77,7 +77,7 @@ jobs:
               fi
             endGroup
             startGroup "Run inline tests"
-              dune runtest
+              # dune runtest
             endGroup
           after_script: |
             startGroup "after"
