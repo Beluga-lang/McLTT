@@ -46,8 +46,7 @@ Ltac destruct_rel_typ :=
 
 Ltac basic_invert_per_univ_elem H :=
   progress simp per_univ_elem in H;
-  inversion H;
-  subst;
+  dependent destruction H;
   try rewrite <- per_univ_elem_equation_1 in *.
 
 Ltac basic_per_univ_elem_econstructor :=

@@ -446,10 +446,10 @@ Lemma per_univ_elem_trans : forall i R a1 a2,
           R m1 m2 ->
           R m2 m3 ->
           R m1 m3).
-Proof with (basic_per_univ_elem_econstructor; mautosolve).
+Proof with (basic_per_univ_elem_econstructor; mautosolve 4).
   induction 1 using per_univ_elem_ind;
     [> split;
-     [ intros * HT2; basic_invert_per_univ_elem HT2; clear HT2
+     [ intros * HT2; basic_invert_per_univ_elem HT2
      | intros * HTR1 HTR2; apply_relation_equivalence ] ..]; mauto.
   - (* univ case *)
     subst.

@@ -59,7 +59,7 @@ Proof.
   intros * [SbΓA].
   match_by_head1 glu_ctx_env invert_glu_ctx_env.
   handle_functional_glu_ctx_env.
-  do 2 eexists; repeat split; mauto.
+  do 2 eexists; repeat split; [econstructor | |]; try reflexivity; mauto.
   intros.
   destruct_by_head cons_glu_sub_pred.
   econstructor; mauto.
