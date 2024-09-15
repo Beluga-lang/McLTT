@@ -98,7 +98,7 @@
 &nbsp;&nbsp;<span class="id" title="tactic">intros</span> * [<span class="id" title="var">SbΓA</span>].<br/>
 &nbsp;&nbsp;<span class="id" title="var">match_by_head1</span> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#glu_ctx_env"><span class="id" title="inductive">glu_ctx_env</span></a> <span class="id" title="var">invert_glu_ctx_env</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="var">handle_functional_glu_ctx_env</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">eexists</span>; <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; <span class="id" title="var">mauto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">eexists</span>; <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; [<span class="id" title="tactic">econstructor</span> | |]; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>; <span class="id" title="var">mauto</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="var">destruct_by_head</span> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#cons_glu_sub_pred"><span class="id" title="inductive">cons_glu_sub_pred</span></a>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="var">mauto</span>.<br/>
