@@ -43,6 +43,7 @@ with wf_exp : ctx -> typ -> exp -> Prop :=
 | wf_typ :
   `( {{ ⊢ Γ }} ->
      {{ Γ ⊢ Type@i : Type@(S i) }} )
+
 | wf_nat :
   `( {{ ⊢ Γ }} ->
      {{ Γ ⊢ ℕ : Type@0 }} )
@@ -58,6 +59,7 @@ with wf_exp : ctx -> typ -> exp -> Prop :=
      {{ Γ , ℕ , A ⊢ MS : A[Wk∘Wk,,succ(#1)] }} ->
      {{ Γ ⊢ M : ℕ }} ->
      {{ Γ ⊢ rec M return A | zero -> MZ | succ -> MS end : A[Id,,M] }} )
+
 | wf_pi :
   `( {{ Γ ⊢ A : Type@i }} ->
      {{ Γ , A ⊢ B : Type@i }} ->
@@ -72,10 +74,30 @@ with wf_exp : ctx -> typ -> exp -> Prop :=
      {{ Γ ⊢ M : Π A B }} ->
      {{ Γ ⊢ N : A }} ->
      {{ Γ ⊢ M N : B[Id,,N] }} )
+
 | wf_vlookup :
   `( {{ ⊢ Γ }} ->
      {{ #x : A ∈ Γ }} ->
      {{ Γ ⊢ #x : A }} )
+
+| wf_eq :
+  `( {{ Γ ⊢ A : Type@i }} ->
+     {{ Γ ⊢ M : A }} ->
+     {{ Γ ⊢ N : A }} ->
+     {{ Γ ⊢ Eq A M N : Type@i }})
+| wf_refl :
+  `( {{ Γ ⊢ A : Type@i }} ->
+     {{ Γ ⊢ M : A }} ->
+     {{ Γ ⊢ refl A M : Eq A M M }})
+| wf_eqrec :
+  `( {{ Γ ⊢ A : Type@i }} ->
+     {{ Γ ⊢ M1 : A }} ->
+     {{ Γ ⊢ M2 : A }} ->
+     {{ Γ ⊢ N : Eq A M1 M2 }} ->
+     {{ Γ , A , A[Wk], Eq (A[Wk][Wk]) #1 #0 ⊢ B : Type@j }} ->
+     {{ Γ , A ⊢ BR : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
+     {{ Γ ⊢ eqrec N as Eq A M1 M2 return B | refl -> BR end : M[Id,,M1,,M2,,N] }} )
+
 | wf_exp_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ Δ ⊢ M : A }} ->
@@ -127,6 +149,7 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
 | wf_exp_eq_typ_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ Γ ⊢ Type@i[σ] ≈ Type@i : Type@(S i) }} )
+
 | wf_exp_eq_nat_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ Γ ⊢ ℕ[σ] ≈ ℕ : Type@0 }} )
@@ -165,6 +188,7 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
      {{ Γ , ℕ , A ⊢ MS : A[Wk∘Wk,,succ(#1)] }} ->
      {{ Γ ⊢ M : ℕ }} ->
      {{ Γ ⊢ rec (succ M) return A | zero -> MZ | succ -> MS end ≈ MS[Id,,M,,rec M return A | zero -> MZ | succ -> MS end] : A[Id,,succ M] }} )
+
 | wf_exp_eq_pi_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
      {{ Δ ⊢ A : Type@i }} ->
@@ -209,6 +233,58 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
      {{ Γ , A ⊢ B : Type@i }} ->
      {{ Γ ⊢ M : Π A B }} ->
      {{ Γ ⊢ M ≈ λ A (M[Wk] #0) : Π A B }} )
+
+| wf_exp_eq_eq_sub :
+  `( {{ Γ ⊢s σ : Δ }} ->
+     {{ Δ ⊢ A : Type@i }} ->
+     {{ Δ ⊢ M : A }} ->
+     {{ Δ ⊢ N : A }} ->
+     {{ Γ ⊢ (Eq A M N)[σ] ≈ Eq (A[σ]) (M[σ]) (N[σ]) : Type@i }} )
+| wf_exp_eq_refl_sub :
+  `( {{ Γ ⊢s σ : Δ }} ->
+     {{ Δ ⊢ A : Type@i }} ->
+     {{ Δ ⊢ M : A }} ->
+     {{ Γ ⊢ (refl A M)[σ] ≈ refl (A[σ]) (M[σ]) : (Eq A M M)[σ] }} )
+| wf_exp_eq_eqrec_sub :
+  `( {{ Γ ⊢s σ : Δ }} ->
+     {{ Δ ⊢ A : Type@i }} ->
+     {{ Δ ⊢ M1 : A }} ->
+     {{ Δ ⊢ M2 : A }} ->
+     {{ Δ ⊢ N : Eq A M1 M2 }} ->
+     {{ Δ , A , A[Wk], Eq (A[Wk][Wk]) #1 #0 ⊢ B : Type@j }} ->
+     {{ Δ , A ⊢ BR : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
+     {{ Γ ⊢ (eqrec N as Eq A M1 M2 return B | refl -> BR end)[σ]
+          ≈ eqrec (N[σ]) as Eq (A[σ]) (M1[σ]) (M2[σ]) return B[q (q (q σ))] | refl -> BR[q σ] end
+         : M[σ,,M1[σ],,M2[σ],,N[σ]] }} )
+| wf_exp_eq_eq_cong :
+  `( {{ Γ ⊢ A ≈ A' : Type@i }} ->
+     {{ Γ ⊢ M ≈ M' : A }} ->
+     {{ Γ ⊢ N ≈ N' : A }} ->
+     {{ Γ ⊢ Eq A M N ≈ Eq A' M' N' : Type@i }})
+| wf_exp_eq_refl_cong :
+  `( {{ Γ ⊢ A ≈ A' : Type@i }} ->
+     {{ Γ ⊢ M ≈ M' : A }} ->
+     {{ Γ ⊢ refl A M ≈ refl A' M' : Eq A M M }})
+| wf_exp_eq_eqrec_cong :
+  `( {{ Γ ⊢ A ≈ A' : Type@i }} ->
+     {{ Γ ⊢ M1 ≈ M1' : A }} ->
+     {{ Γ ⊢ M2 ≈ M2' : A }} ->
+     {{ Γ ⊢ N ≈ N' : Eq A M1 M2 }} ->
+     {{ Γ , A , A[Wk], Eq (A[Wk][Wk]) #1 #0 ⊢ B ≈ B' : Type@j }} ->
+     {{ Γ , A ⊢ BR ≈ BR' : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
+     {{ Γ ⊢ eqrec N as Eq A M1 M2 return B | refl -> BR end
+          ≈ eqrec N' as Eq A' M1' M2' return B' | refl -> BR' end
+         : M[Id,,M1,,M2,,N] }} )
+| wf_exp_eq_beta :
+  `( {{ Γ ⊢ A : Type@i }} ->
+     {{ Γ ⊢ M : A }} ->
+     {{ Γ ⊢ N : Eq A M M }} ->
+     {{ Γ , A , A[Wk], Eq (A[Wk][Wk]) #1 #0 ⊢ B : Type@j }} ->
+     {{ Γ , A ⊢ BR : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
+     {{ Γ ⊢ eqrec refl A M as Eq A M M return B | refl -> BR end
+          ≈ BR[Id,,M]
+         : M[Id,,M,,M,,refl A M] }} )
+
 | wf_exp_eq_var :
   `( {{ ⊢ Γ }} ->
      {{ #x : A ∈ Γ }} ->
@@ -534,7 +610,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub using mauto 3 : mcltt.
+Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub wf_exp_eq_eq_sub using mauto 3 : mcltt.
 
 #[export]
 Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left
