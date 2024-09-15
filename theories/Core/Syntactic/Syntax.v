@@ -13,7 +13,13 @@ Inductive obj : Set :=
 | app : obj -> obj -> obj
 | fn : string -> obj -> obj -> obj
 | pi : string -> obj -> obj -> obj
-| var : string -> obj.
+| var : string -> obj
+| prop_eq : obj -> obj -> obj -> obj
+| refl : obj -> obj -> obj
+| eqrec : obj ->                 (** A : eq domain type *)
+          string -> string -> string -> obj -> (** x y (z : Eq A x y). M *)
+          string -> obj ->                   (** x. Pf : M[x/x, x/y, refl A x/z] *)
+          obj -> obj -> obj -> obj.
 End Cst.
 
 (* AST term *)
@@ -30,6 +36,10 @@ Inductive exp : Set :=
 | a_fn : exp -> exp -> exp
 | a_app : exp -> exp -> exp
 | a_pi : exp -> exp -> exp
+(* Propositional equality *)
+| a_eq : exp -> exp -> exp -> exp
+| a_refl : exp -> exp -> exp
+| a_eqrec : exp -> exp -> exp -> exp -> exp -> exp -> exp
 (* Substitutions *)
 | a_sub : exp -> sub -> exp
 with sub : Set :=
@@ -71,11 +81,14 @@ Inductive nf : Set :=
 | nf_succ : nf -> nf
 | nf_pi : nf -> nf -> nf
 | nf_fn : nf -> nf -> nf
+| nf_eq : nf -> nf -> nf -> nf
+| nf_refl : nf -> nf -> nf
 | nf_neut : ne -> nf
 with ne : Set :=
 | ne_natrec : nf -> nf -> nf -> ne -> ne
 | ne_app : ne -> nf -> ne
 | ne_var : nat -> ne
+| ne_eqrec : nf -> nf -> nf -> nf -> nf -> ne -> ne
 .
 
 Fixpoint nf_to_exp (M : nf) : exp :=
@@ -86,6 +99,8 @@ Fixpoint nf_to_exp (M : nf) : exp :=
   | nf_succ M => a_succ (nf_to_exp M)
   | nf_pi A B => a_pi (nf_to_exp A) (nf_to_exp B)
   | nf_fn A M => a_fn (nf_to_exp A) (nf_to_exp M)
+  | nf_eq A M N => a_eq (nf_to_exp A) (nf_to_exp M) (nf_to_exp N)
+  | nf_refl A M => a_refl (nf_to_exp A) (nf_to_exp M)
   | nf_neut M => ne_to_exp M
   end
 with ne_to_exp (M : ne) : exp :=
@@ -93,6 +108,8 @@ with ne_to_exp (M : ne) : exp :=
   | ne_natrec A MZ MS M => a_natrec (nf_to_exp A) (nf_to_exp MZ) (nf_to_exp MS) (ne_to_exp M)
   | ne_app M N => a_app (ne_to_exp M) (nf_to_exp N)
   | ne_var x => a_var x
+  | ne_eqrec A B BR M M' N =>
+      a_eqrec (nf_to_exp A) (nf_to_exp B) (nf_to_exp BR) (nf_to_exp M) (nf_to_exp M') (ne_to_exp N)
   end
 .
 
@@ -135,6 +152,10 @@ Module Syntax_Notations.
   Notation "'zero'" := a_zero (in custom exp at level 0) : mcltt_scope.
   Notation "'succ' e" := (a_succ e) (in custom exp at level 0, e custom exp at level 0) : mcltt_scope.
   Notation "'rec' e 'return' A | 'zero' -> ez | 'succ' -> es 'end'" := (a_natrec A ez es e) (in custom exp at level 0, A custom exp at level 60, ez custom exp at level 60, es custom exp at level 60, e custom exp at level 60) : mcltt_scope.
+  Notation "'Eq' A M N" := (a_eq A M N) (in custom exp at level 0, A custom exp at level 60, M custom exp at level 60, N custom exp at level 60) : mcltt_scope.
+  Notation "'refl' A M" := (a_refl A M) (in custom exp at level 0, A custom exp at level 60, M custom exp at level 60) : mcltt_scope.
+  Notation "'eqrec' N : 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (a_eqrec A B BR M1 M2 N) (in custom exp at level 0, A custom exp at level 60, B custom exp at level 60, BR custom exp at level 60, M1 custom exp at level 60, M2 custom exp at level 60, N custom exp at level 60) : mcltt_scope.
+
   Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0) : mcltt_scope.
   Notation "'Id'" := a_id (in custom exp at level 0) : mcltt_scope.
   Notation "'Wk'" := a_weaken (in custom exp at level 0) : mcltt_scope.
@@ -160,4 +181,7 @@ Module Syntax_Notations.
   Notation "'rec' M 'return' A | 'zero' -> MZ | 'succ' -> MS 'end'" := (ne_natrec A MZ MS M) (in custom nf at level 0, A custom nf at level 60, MZ custom nf at level 60, MS custom nf at level 60, M custom nf at level 60) : mcltt_scope.
   Notation "'#' n" := (ne_var n) (in custom nf at level 0, n constr at level 0) : mcltt_scope.
   Notation "'⇑' M" := (nf_neut M) (in custom nf at level 0, M custom nf at level 0) : mcltt_scope.
+  Notation "'Eq' A M N" := (nf_eq A M N) (in custom nf at level 0, A custom nf at level 60, M custom nf at level 60, N custom nf at level 60) : mcltt_scope.
+  Notation "'refl' A M" := (nf_refl A M) (in custom nf at level 0, A custom nf at level 60, M custom nf at level 60) : mcltt_scope.
+  Notation "'eqrec' N : 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (ne_eqrec A B BR M1 M2 N) (in custom nf at level 0, A custom nf at level 60, B custom nf at level 60, BR custom nf at level 60, M1 custom nf at level 60, M2 custom nf at level 60, N custom nf at level 60) : mcltt_scope.
 End Syntax_Notations.
