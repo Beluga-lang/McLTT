@@ -2,11 +2,11 @@
 
 all:
 	@$(MAKE) -C theories
-	@dune build
+	# @dune build
 
 pretty-timed:
 	@$(MAKE) pretty-timed -C theories
-	@dune build
+	# @dune build
 
 coqdoc:
 	@${MAKE} coqdoc -C theories
