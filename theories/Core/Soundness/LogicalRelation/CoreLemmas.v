@@ -59,7 +59,7 @@ Lemma glu_nat_resp_exp_eq : forall Γ M a,
     {{ Γ ⊢ M ≈ M' : ℕ }} ->
     glu_nat Γ M' a.
 Proof.
-  induction 1; intros; mauto.
+  induction 1; intros; mauto 4.
   econstructor; trivial.
   intros.
   transitivity {{{ M[σ] }}}; mauto.
@@ -82,11 +82,11 @@ Lemma glu_nat_readback : forall Γ M a,
       {{ Δ ⊢ M[σ] ≈ M' : ℕ }}.
 Proof.
   induction 1; intros; progressive_inversion; gen_presups.
-  - transitivity {{{ zero[σ] }}}; mauto.
-  - assert {{ Δ ⊢ M'[σ] ≈ M0 : ℕ }} by mauto.
+  - transitivity {{{ zero[σ] }}}; mauto 4.
+  - assert {{ Δ ⊢ M'[σ] ≈ M0 : ℕ }} by mauto 4.
     transitivity {{{ (succ M')[σ] }}}; mauto 3.
     transitivity {{{ succ M'[σ] }}}; mauto 4.
-  - mauto.
+  - mauto 4.
 Qed.
 
 #[global]
@@ -270,7 +270,7 @@ Lemma glu_univ_elem_per_elem : forall i P El a,
 Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
-    try do 2 match_by_head1 per_univ_elem invert_per_univ_elem;
+    match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H);
     simpl_glu_rel;
     try fold (per_univ j m m);
     mauto 4.

@@ -5,8 +5,7 @@ From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions.
 
 Ltac basic_invert_glu_univ_elem H :=
   progress simp glu_univ_elem in H;
-  inversion H;
-  subst;
+  dependent destruction H;
   try rewrite <- glu_univ_elem_equation_1 in *.
 
 Ltac basic_glu_univ_elem_econstructor :=
