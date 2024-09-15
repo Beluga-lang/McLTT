@@ -152,9 +152,9 @@ Module Syntax_Notations.
   Notation "'zero'" := a_zero (in custom exp at level 0) : mcltt_scope.
   Notation "'succ' e" := (a_succ e) (in custom exp at level 0, e custom exp at level 0) : mcltt_scope.
   Notation "'rec' e 'return' A | 'zero' -> ez | 'succ' -> es 'end'" := (a_natrec A ez es e) (in custom exp at level 0, A custom exp at level 60, ez custom exp at level 60, es custom exp at level 60, e custom exp at level 60) : mcltt_scope.
-  Notation "'Eq' A M N" := (a_eq A M N) (in custom exp at level 0, A custom exp at level 60, M custom exp at level 60, N custom exp at level 60) : mcltt_scope.
-  Notation "'refl' A M" := (a_refl A M) (in custom exp at level 0, A custom exp at level 60, M custom exp at level 60) : mcltt_scope.
-  Notation "'eqrec' N : 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (a_eqrec A B BR M1 M2 N) (in custom exp at level 0, A custom exp at level 60, B custom exp at level 60, BR custom exp at level 60, M1 custom exp at level 60, M2 custom exp at level 60, N custom exp at level 60) : mcltt_scope.
+  Notation "'Eq' A M N" := (a_eq A M N) (in custom exp at level 0, A custom exp at level 30, M custom exp at level 35, N custom exp at level 40) : mcltt_scope.
+  Notation "'refl' A M" := (a_refl A M) (in custom exp at level 0, A custom exp at level 30, M custom exp at level 40) : mcltt_scope.
+  Notation "'eqrec' N 'as' 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (a_eqrec A B BR M1 M2 N) (in custom exp at level 0, A custom exp at level 30, B custom exp at level 60, BR custom exp at level 60, M1 custom exp at level 35, M2 custom exp at level 40, N custom exp at level 60) : mcltt_scope.
 
   Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0) : mcltt_scope.
   Notation "'Id'" := a_id (in custom exp at level 0) : mcltt_scope.
@@ -181,7 +181,7 @@ Module Syntax_Notations.
   Notation "'rec' M 'return' A | 'zero' -> MZ | 'succ' -> MS 'end'" := (ne_natrec A MZ MS M) (in custom nf at level 0, A custom nf at level 60, MZ custom nf at level 60, MS custom nf at level 60, M custom nf at level 60) : mcltt_scope.
   Notation "'#' n" := (ne_var n) (in custom nf at level 0, n constr at level 0) : mcltt_scope.
   Notation "'⇑' M" := (nf_neut M) (in custom nf at level 0, M custom nf at level 0) : mcltt_scope.
-  Notation "'Eq' A M N" := (nf_eq A M N) (in custom nf at level 0, A custom nf at level 60, M custom nf at level 60, N custom nf at level 60) : mcltt_scope.
-  Notation "'refl' A M" := (nf_refl A M) (in custom nf at level 0, A custom nf at level 60, M custom nf at level 60) : mcltt_scope.
-  Notation "'eqrec' N : 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (ne_eqrec A B BR M1 M2 N) (in custom nf at level 0, A custom nf at level 60, B custom nf at level 60, BR custom nf at level 60, M1 custom nf at level 60, M2 custom nf at level 60, N custom nf at level 60) : mcltt_scope.
+  Notation "'Eq' A M N" := (nf_eq A M N) (in custom nf at level 0, A custom nf at level 30, M custom nf at level 35, N custom nf at level 40) : mcltt_scope.
+  Notation "'refl' A M" := (nf_refl A M) (in custom nf at level 0, A custom nf at level 30, M custom nf at level 40) : mcltt_scope.
+  Notation "'eqrec' N 'as' 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (ne_eqrec A B BR M1 M2 N) (in custom nf at level 0, A custom nf at level 30, B custom nf at level 60, BR custom nf at level 60, M1 custom nf at level 35, M2 custom nf at level 40, N custom nf at level 60) : mcltt_scope.
 End Syntax_Notations.
