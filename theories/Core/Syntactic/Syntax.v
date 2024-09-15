@@ -16,9 +16,9 @@ Inductive obj : Set :=
 | var : string -> obj
 | prop_eq : obj -> obj -> obj -> obj
 | refl : obj -> obj -> obj
-| eqrec : obj ->                 (* A : eq domain type *)
-          string -> string -> string -> obj -> (* x y (z : Eq A x y). M *)
-          string -> obj ->                   (* x. [x/x,x/y, refl A x/z] *)
+| eqrec : obj ->                 (** A : eq domain type *)
+          string -> string -> string -> obj -> (** x y (z : Eq A x y). M *)
+          string -> obj ->                   (** x. Pf : M[x/x, x/y, refl A x/z] *)
           obj -> obj -> obj -> obj.
 End Cst.
 
