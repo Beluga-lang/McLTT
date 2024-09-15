@@ -257,18 +257,18 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
           ≈ eqrec (N[σ]) as Eq (A[σ]) (M1[σ]) (M2[σ]) return B[q (q (q σ))] | refl -> BR[q σ] end
          : M[σ,,M1[σ],,M2[σ],,N[σ]] }} )
 | wf_exp_eq_eq_cong :
-  `( {{ Γ ⊢ A : Type@i }} ->
-     {{ Γ ⊢ A ≈ A' : Type@i }} ->
+  `( {{ Γ ⊢ A ≈ A' : Type@i }} ->
      {{ Γ ⊢ M ≈ M' : A }} ->
      {{ Γ ⊢ N ≈ N' : A }} ->
      {{ Γ ⊢ Eq A M N ≈ Eq A' M' N' : Type@i }})
 | wf_exp_eq_refl_cong :
-  `( {{ Γ ⊢ A : Type@i }} ->
-     {{ Γ ⊢ A ≈ A' : Type@i }} ->
+  `( {{ Γ ⊢ A ≈ A' : Type@i }} ->
      {{ Γ ⊢ M ≈ M' : A }} ->
      {{ Γ ⊢ refl A M ≈ refl A' M' : Eq A M M }})
 | wf_exp_eq_eqrec_cong :
   `( {{ Γ ⊢ A : Type@i }} ->
+     {{ Γ ⊢ M1 : A }} ->
+     {{ Γ ⊢ M2 : A }} ->
      {{ Γ ⊢ A ≈ A' : Type@i }} ->
      {{ Γ ⊢ M1 ≈ M1' : A }} ->
      {{ Γ ⊢ M2 ≈ M2' : A }} ->
