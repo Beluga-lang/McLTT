@@ -229,22 +229,16 @@ Tactic Notation "mautosolve" int_or_var(pow) := mautosolve_impl pow.
 (* Improve type class resolution *)
 
 #[export]
-  Hint Extern 1 => eassumption : typeclass_instances.
-
-Ltac predicate_resolve :=
-  lazymatch goal with
-  | |- @Reflexive _ (@predicate_equivalence _) =>
-      simple apply @Equivalence_Reflexive
-  | |- @Symmetric _ (@predicate_equivalence _) =>
-      simple apply @Equivalence_Symmetric
-  | |- @Transitive _ (@predicate_equivalence _) =>
-      simple apply @Equivalence_Transitive
-  | |- @Transitive _ (@predicate_implication _) =>
-      simple apply @PreOrder_Transitive
-  end.
+Hint Extern 1 => eassumption : typeclass_instances.
 
 #[export]
-Hint Extern 1 => predicate_resolve : typeclass_instances.
+Hint Extern 1 (@Reflexive _ (@predicate_equivalence _)) => simple apply @Equivalence_Reflexive : typeclass_instances.
+#[export]
+Hint Extern 1 (@Symmetric _ (@predicate_equivalence _)) => simple apply @Equivalence_Symmetric : typeclass_instances.
+#[export]
+Hint Extern 1 (@Transitive _ (@predicate_equivalence _)) => simple apply @Equivalence_Transitive : typeclass_instances.
+#[export]
+Hint Extern 1 (@Transitive _ (@predicate_implication _)) => simple apply @PreOrder_Transitive : typeclass_instances.
 
 
 (* intuition tactic default setting *)

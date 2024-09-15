@@ -364,7 +364,7 @@ Proof.
   assert {{ Γ ⊩ A : Type@(max i j) }} by mauto 3.
   assert {{ ⊩ Γ, A }} by mauto 2.
   assert (i <= max i j) by lia.
-  assert {{ Γ, A ⊢ Type@i ⊆ Type@(max i j) }} by mauto 3.
+  assert {{ Γ, A ⊢ Type@i ⊆ Type@(max i j) }} by mauto 4.
   assert {{ Γ, A ⊩ B : Type@(max i j) }} by mauto 3.
   mauto 2 using glu_rel_exp_app_helper.
 Qed.
