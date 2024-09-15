@@ -39,18 +39,31 @@ Module ctxsub_judg.
       clear ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyp_helper;
       intros * HΓΔ; destruct (presup_ctx_sub HΓΔ); mauto 4;
       try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
-    (* ctxsub_exp_helper & ctxsub_exp_eq_helper recursion cases *)
-    1,6-8: assert {{ ⊢ Δ, ℕ ⊆ Γ, ℕ }} by (econstructor; mautosolve);
+    (** ctxsub_exp_helper & ctxsub_exp_eq_helper recursion cases *)
+    1,8-10: assert {{ ⊢ Δ, ℕ ⊆ Γ, ℕ }} by (econstructor; mautosolve);
     assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
-    (* ctxsub_exp_helper & ctxsub_exp_eq_helper function cases *)
-    1-3,5-9: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
+    (** ctxsub_exp_helper & ctxsub_exp_eq_helper function cases *)
+    1-3,7-11: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
     try econstructor...
-    (* ctxsub_exp_helper & ctxsub_exp_eq_helper variable cases *)
-    1-2: assert (exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢ B ⊆ A }}); destruct_conjs; mautosolve 4.
-    (* ctxsub_sub_helper & ctxsub_sub_eq_helper weakening cases *)
-    2-3: inversion_clear HΓΔ; econstructor; mautosolve 4.
+    (** equality type case *)
+    2,4:idtac...
 
-    - (* ctxsub_exp_eq_helper variable case *)
+    (** ctxsub_exp_helper & ctxsub_exp_eq_helper variable cases *)
+    1,5: assert (exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢ B ⊆ A }}); destruct_conjs; mautosolve 4.
+    (** ctxsub_sub_helper & ctxsub_sub_eq_helper weakening cases *)
+    5,6: inversion_clear HΓΔ; econstructor; mautosolve 4.
+
+    (** eqrec related cases *)
+    1-3:assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
+      assert {{ Γ, B ⊢ B[Wk] : Type@i }} by mauto;
+      assert {{ Δ, B ⊢ B[Wk] : Type@i }} by mauto;
+      assert {{ ⊢ Δ, B, B[Wk] ⊆ Γ, B, B[Wk] }} by (econstructor; mauto 4);
+      assert {{ Γ, B, B[Wk] ⊢ Eq (B[Wk][Wk]) #1 #0 : Type@i }} by (econstructor; mauto 4);
+      assert {{ Δ, B, B[Wk] ⊢ Eq (B[Wk][Wk]) #1 #0 : Type@i }} by (econstructor; mauto 4);
+      assert {{ ⊢ Δ, B, B[Wk], Eq (B[Wk][Wk]) #1 #0 ⊆ Γ, B, B[Wk], Eq (B[Wk][Wk]) #1 #0 }} by mauto;
+      econstructor; mauto 2.
+
+    - (** ctxsub_exp_eq_helper variable case *)
       inversion_clear HΓΔ as [|Δ0 ? ? C'].
       assert (exists D, {{ #x : D ∈ Δ0 }} /\ {{ Δ0 ⊢ D ⊆ B }}) as [D [i0 ?]] by mauto.
       destruct_conjs.
