@@ -63,10 +63,26 @@ Proof with mautosolve 4.
     try (rename M0 into N); try (rename MZ into NZ); try (rename MS into NS);
     try (rename M'0 into N'); try (rename MZ' into NZ'); try (rename MS' into NS');
     try (rename M' into N').
-  (* presup_exp cases *)
+  (** presup_exp cases *)
   - eexists.
     assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
     assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
+  - eexists.
+    eapply exp_sub_typ; [eassumption |].
+    assert {{ Γ ⊢s Id ,, M1 : Γ, B}} by mauto 4.
+    assert {{ Γ ⊢s Id ,, M1 ,, M2 : Γ, B , B[Wk]}}.
+    {
+      econstructor; mauto 3.
+      Search (a_sub (a_sub _ _) _).
+      rewrite exp_eq_sub_compose_typ.
+      rewrite
+    }
+
+    by mauto 4.
+
+    econstructor.
+    2:mauto 4.
+    eapply wf_sub.
 
   (* presup_exp_eq cases *)
   - assert {{ Γ ⊢s Id ,, N ≈ Id ,, N' : Γ, ℕ }} by mauto 4.

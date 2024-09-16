@@ -96,7 +96,7 @@ with wf_exp : ctx -> typ -> exp -> Prop :=
      {{ Γ ⊢ N : Eq A M1 M2 }} ->
      {{ Γ , A , A[Wk], Eq (A[Wk][Wk]) #1 #0 ⊢ B : Type@j }} ->
      {{ Γ , A ⊢ BR : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
-     {{ Γ ⊢ eqrec N as Eq A M1 M2 return B | refl -> BR end : M[Id,,M1,,M2,,N] }} )
+     {{ Γ ⊢ eqrec N as Eq A M1 M2 return B | refl -> BR end : B[Id,,M1,,M2,,N] }} )
 
 | wf_exp_sub :
   `( {{ Γ ⊢s σ : Δ }} ->
