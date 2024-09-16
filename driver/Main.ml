@@ -7,10 +7,11 @@ open Entrypoint
 let get_exit_code result : int =
   match result with
   | AllGood _ -> 0
-  | TypeCheckingFailure _ -> 1
-  | ElaborationFailure _ -> 2
-  | ParserFailure _ -> 3
-  | ParserTimeout _ -> 4
+  (* 1 and 2 have special meanings in Bash-like shells *)
+  | TypeCheckingFailure _ -> 3
+  | ElaborationFailure _ -> 4
+  | ParserFailure _ -> 5
+  | ParserTimeout _ -> 6
 
 let main_of_lexbuf lexbuf =
   Lexer.lexbuf_to_token_buffer lexbuf
