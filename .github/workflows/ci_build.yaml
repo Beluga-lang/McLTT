@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - main
+      - ext/**
   pull_request:
     branches:
       - main
+      - ext/**
   workflow_dispatch:
   
 permissions:
@@ -71,11 +73,13 @@ jobs:
             endGroup
           script: |
             startGroup "Build binary"
+              make pretty-timed
               if [[ "${{ env.DOC_DEPLOY }}" == 'true' ]]; then
                 make coqdoc
-              else
-                make
               fi
+            endGroup
+            startGroup "Run inline tests"
+              dune runtest
             endGroup
           after_script: |
             startGroup "after"

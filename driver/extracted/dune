@@ -1,5 +1,5 @@
 (library
  (name MclttExtracted)
- (public_name mcltt.Extracted))
+ (public_name mcltt.extracted))
 
 (documentation)

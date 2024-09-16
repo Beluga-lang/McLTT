@@ -1,4 +1,5 @@
 _build
+*.opam
 
 # Ignore generated parser code
 **/parser.ml
