@@ -8,12 +8,12 @@ Open Scope string_scope.
 Module StrSet := Make String_as_OT.
 Module StrSProp := MSetProperties.Properties StrSet.
 
-(* One cannot import notation from module type without
-   restricting a module to that exact type.
-   Thus here we repeat the notation from WSetsOn. *)
+(** One cannot import notation from module type without
+    restricting a module to that exact type.
+    Thus, here we repeat the notation from [WSetsOn]. *)
 Notation "s [<=] t" := (StrSet.Subset s t) (at level 70, no associativity).
 
-(* De-monadify with pattern matching for now *)
+(** De-monadify with pattern matching for now *)
 Fixpoint lookup (s : string) (ctx : list string) : option nat :=
   match ctx with
   | nil => None
@@ -21,7 +21,7 @@ Fixpoint lookup (s : string) (ctx : list string) : option nat :=
       if string_dec c s
       then Some 0
       else
-        match lookup s cs  with
+        match lookup s cs with
         | Some n => Some (n + 1)%nat
         | None => None
         end
@@ -152,7 +152,7 @@ Inductive closed_at : exp -> nat -> Prop :=
 #[local]
 Hint Constructors closed_at: mcltt.
 
-(*Lemma for the well_scoped proof, lookup succeeds if var is in context*)
+(** Lemma for the well_scoped proof, lookup succeeds if var is in context *)
 Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n /\ n < List.length ctx).
 Proof.
   induction ctx as [| c ctx' IHctx]; simpl in *.
@@ -165,7 +165,7 @@ Proof.
       eexists; split; auto. lia.
 Qed.
 
-(*Lemma for the well_scoped proof, lookup result always less than context length*)
+(** Lemma for the well_scoped proof, lookup result always less than context length *)
 Lemma lookup_bound s : forall ctx m, lookup s ctx = Some m -> m < (List.length ctx).
   induction ctx.
   - intros. discriminate H.
@@ -209,14 +209,18 @@ Proof.
     assert (y = x); fsetdec.
 Qed.
 
-(*Well scopedness lemma: If the set of free variables in a cst are contained in a context
-  then elaboration succeeds with that context, and the result is a closed term*)
+(** ** Well scopedness lemma *)
+
+(** If the set of free variables in a cst are contained in a context
+    then elaboration succeeds with that context, and the result is a closed term *)
 Lemma well_scoped (cst : Cst.obj) : forall ctx,  cst_variables cst [<=] StrSProp.of_list ctx  ->
 exists a : exp, (elaborate cst ctx = Some a) /\ (closed_at a (List.length ctx)).
 Proof.
   induction cst; intros; simpl in *; mauto.
-  - destruct (IHcst _ H) as [ast [-> ?]]; mauto.
-  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+  - (* succ *)
+    destruct (IHcst _ H) as [ast [-> ?]]; mauto.
+  - (* natrec *)
+    assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
     assert (cst_variables cst3 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst4 [<=] StrSProp.of_list (s1 :: s0 :: ctx)) by (simpl; fsetdec).
@@ -224,16 +228,19 @@ Proof.
       destruct (IHcst2 _ H1) as [ast' [-> ?]];
       destruct (IHcst3 _ H2) as [ast'' [-> ?]];
       destruct (IHcst4 _ H3) as [ast''' [-> ?]]; mauto.
-  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+  - (* pi *)
+    assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
+    destruct (IHcst1 _ H0) as [ast [-> ?]];
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
+  - (* fn *)
+    assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
+    assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
+    destruct (IHcst1 _ H0) as [ast [-> ?]];
+      destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
+  - (* app *)
+    assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
     assert (cst_variables cst2 [<=] StrSProp.of_list ctx) by fsetdec.
-    destruct (IHcst1 _ H0) as [ast [-> ?]];
-      destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
-  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
-    assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
-    destruct (IHcst1 _ H0) as [ast [-> ?]];
-      destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
-  - assert (cst_variables cst1 [<=] StrSProp.of_list ctx) by fsetdec.
-    assert (cst_variables cst2 [<=] StrSProp.of_list (s :: ctx)) by (simpl; fsetdec).
     destruct (IHcst1 _ H0) as [ast [-> ?]];
       destruct (IHcst2 _ H1) as [ast' [-> ?]]; mauto.
   - apply Subset_to_In in H.
@@ -242,17 +249,6 @@ Proof.
     destruct H as [? [? ?]].
     mauto.
 Qed.
-
-
-(* Check elaborate Cst.nat nil : option exp. *)
-(* Fail Check elaborate (Cst.succ a_nat) : option exp. *)
-
-
-(* Compute (elaborate (Cst.fn "s" (Cst.typ 5) (Cst.var "s")) nil). *)
-(* Compute (elaborate (Cst.fn "s" (Cst.typ 0) (Cst.fn "x" Cst.nat (Cst.app (Cst.var "x") (Cst.var "s")))) nil). *)
-(* Compute (elaborate (Cst.fn "s" Cst.nat (Cst.fn "x" Cst.nat (Cst.fn "s" Cst.nat (Cst.var "s")))) nil). *)
-(* Compute (elaborate (Cst.fn "s" (Cst.typ 10) (Cst.fn "x" (Cst.typ 0) (Cst.fn "s" (Cst.typ 5) (Cst.var "q")))) nil). *)
-
 
 Example test_elab : elaborate Cst.nat nil = Some a_nat.
 Proof. reflexivity. Qed.

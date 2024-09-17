@@ -19,7 +19,6 @@ Proof.
   destruct_conjs.
   functional_initial_env_rewrite_clear.
   assert {{ Γ ⊢s Id ® p ∈ Sb }} by (eapply initial_env_glu_rel_exp; mauto).
-  (* TODO: extract a tactic from this *)
   destruct_glu_rel_exp_with_sub.
   assert {{ Γ ⊢ M[Id] : A[Id] ® m ∈ glu_elem_top i a }} as [] by (eapply realize_glu_elem_top; mauto).
   match_by_head per_top ltac:(fun H => destruct (H (length Γ)) as [W []]).

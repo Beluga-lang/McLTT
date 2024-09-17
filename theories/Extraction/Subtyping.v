@@ -30,8 +30,9 @@ Equations subtyping_nf_impl A B : { {{ ⊢anf A ⊆ B }} } + {~ {{ ⊢anf A ⊆ 
     let*b _ := nf_eq_dec A A' while _ in
     let*b _ := subtyping_nf_impl B B' while _ in
     pureb _
-(* Pseudo-monadic syntax for the next catch-all branch
-   generates some unsolved obligations *)
+(** Pseudo-monadic syntax for the next catch-all branch
+    generates some unsolved obligations, so we directly match on
+    [nf_eq_dec A B] here. *)
 | A, B with nf_eq_dec A B => {
   | left _ => left _
   | right _ => right _
