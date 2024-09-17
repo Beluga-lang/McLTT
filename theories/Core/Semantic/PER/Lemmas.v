@@ -419,7 +419,7 @@ Ltac do_per_univ_elem_irrel_assert1 :=
       end
   | H1 : {{ DF ~?a ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
       H2 : {{ DF ~_ ≈ ~?a ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
-      (* Order matters less here as H1 and H2 cannot be exchanged *)
+      (** Order matters less here as H1 and H2 cannot be exchanged *)
       assert_fails (unify R1 R2);
       match goal with
       | H : R1 <~> R2 |- _ => fail 1
@@ -451,7 +451,7 @@ Proof with (basic_per_univ_elem_econstructor; mautosolve 4).
     [> split;
      [ intros * HT2; basic_invert_per_univ_elem HT2
      | intros * HTR1 HTR2; apply_relation_equivalence ] ..]; mauto.
-  - (* univ case *)
+  - (** univ case *)
     subst.
     destruct HTR1, HTR2.
     functional_eval_rewrite_clear.
@@ -459,9 +459,9 @@ Proof with (basic_per_univ_elem_econstructor; mautosolve 4).
     eexists.
     specialize (H2 _ _ _ H0) as [].
     intuition.
-  - (* nat case *)
+  - (** nat case *)
     idtac...
-  - (* pi case *)
+  - (** pi case *)
     destruct_conjs.
     basic_per_univ_elem_econstructor; eauto.
     + handle_per_univ_elem_irrel.
@@ -474,7 +474,7 @@ Proof with (basic_per_univ_elem_econstructor; mautosolve 4).
       destruct_rel_mod_eval.
       functional_eval_rewrite_clear.
       handle_per_univ_elem_irrel...
-  - (* fun case *)
+  - (** fun case *)
     intros.
     assert (in_rel c c) by intuition.
     destruct_rel_mod_eval.
@@ -482,7 +482,7 @@ Proof with (basic_per_univ_elem_econstructor; mautosolve 4).
     handle_per_univ_elem_irrel.
     econstructor; eauto.
     intuition.
-  - (* neut case *)
+  - (** neut case *)
     idtac...
 Qed.
 
@@ -539,7 +539,7 @@ Proof.
   - pose proof (fun m0 m1 m2 => per_elem_trans _ _ _ _ m0 m1 m2 H); eauto.
 Qed.
 
-(* This lemma gets rid of the unnecessary PER premise. *)
+(** This lemma gets rid of the unnecessary PER premise. *)
 Lemma per_univ_elem_pi' :
   forall i a a' ρ B ρ' B'
     (in_rel : relation domain)
@@ -909,7 +909,7 @@ Ltac do_per_ctx_env_irrel_assert1 :=
         end
     | H1 : {{ DF ~?Γ ≈ ~_ ∈ per_ctx_env ↘ ?R1 }},
         H2 : {{ DF ~_ ≈ ~?Γ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
-        (* Order matters less here as H1 and H2 cannot be exchanged *)
+        (** Order matters less here as H1 and H2 cannot be exchanged *)
         assert_fails (unify R1 R2);
         match goal with
         | H : R1 <~> R2 |- _ => fail 1
@@ -953,7 +953,7 @@ Proof with solve [eauto using per_univ_trans].
       destruct_rel_typ.
       handle_per_univ_elem_irrel.
       econstructor; intuition.
-      (* This one cannot be replaced with `etransitivity` as we need different `i`s. *)
+      (** This one cannot be replaced with `etransitivity` as we need different `i`s. *)
       eapply per_univ_trans; [| eassumption]; eassumption.
   - destruct_conjs.
     assert (tail_rel d{{{ ρ1 ↯ }}} d{{{ ρ3 ↯ }}}) by eauto.
@@ -999,7 +999,7 @@ Proof.
   - pose proof (fun ρ0 ρ1 ρ2 => per_env_trans _ _ _ ρ0 ρ1 ρ2 H); eauto.
 Qed.
 
-(* This lemma removes the PER argument *)
+(** This lemma removes the PER argument *)
 Lemma per_ctx_env_cons' : forall {Γ Γ' i A A' tail_rel}
                              (head_rel : forall {ρ ρ'} (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ tail_rel }}), relation domain)
                              env_rel,

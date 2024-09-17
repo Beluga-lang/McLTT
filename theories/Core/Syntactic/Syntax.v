@@ -2,7 +2,7 @@ From Coq Require Import List String.
 
 From Mcltt Require Import Base.
 
-(* CST term *)
+(** ** Concrete Syntax Tree *)
 Module Cst.
 Inductive obj : Set :=
 | typ : nat -> obj
@@ -10,37 +10,38 @@ Inductive obj : Set :=
 | zero : obj
 | succ : obj -> obj
 | natrec : obj -> string -> obj -> obj -> string -> string -> obj -> obj
-| app : obj -> obj -> obj
-| fn : string -> obj -> obj -> obj
 | pi : string -> obj -> obj -> obj
-| var : string -> obj
+| fn : string -> obj -> obj -> obj
+| app : obj -> obj -> obj
 | prop_eq : obj -> obj -> obj -> obj
 | refl : obj -> obj -> obj
 | eqrec : obj ->                 (** A : eq domain type *)
           string -> string -> string -> obj -> (** x y (z : Eq A x y). M *)
           string -> obj ->                   (** x. Pf : M[x/x, x/y, refl A x/z] *)
-          obj -> obj -> obj -> obj.
+          obj -> obj -> obj -> obj
+| var : string -> obj.
 End Cst.
 
-(* AST term *)
+(** ** Abstract Syntac Tree *)
 Inductive exp : Set :=
-(* Natural numbers *)
+(** Universe *)
+| a_typ : nat -> exp
+(** Natural numbers *)
+| a_nat : exp
 | a_zero : exp
 | a_succ : exp -> exp
 | a_natrec : exp -> exp -> exp -> exp -> exp
-(* Type constructors *)
-| a_nat : exp
-| a_typ : nat -> exp
-| a_var : nat -> exp
-(* Functions *)
+(** Functions *)
+| a_pi : exp -> exp -> exp
 | a_fn : exp -> exp -> exp
 | a_app : exp -> exp -> exp
-| a_pi : exp -> exp -> exp
-(* Propositional equality *)
+(** Propositional equality *)
 | a_eq : exp -> exp -> exp -> exp
 | a_refl : exp -> exp -> exp
 | a_eqrec : exp -> exp -> exp -> exp -> exp -> exp -> exp
-(* Substitutions *)
+(** Variable *)
+| a_var : nat -> exp
+(** Substitution Application *)
 | a_sub : exp -> sub -> exp
 with sub : Set :=
 | a_id : sub
@@ -74,6 +75,7 @@ Definition exp_to_num e :=
   | None => None
   end.
 
+(** *** Syntactic Normal/Neutral Form *)
 Inductive nf : Set :=
 | nf_typ : nat -> nf
 | nf_nat : nf

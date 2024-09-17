@@ -23,3 +23,5 @@
    (:standard -w -67 -w -32 -w -33 -w -39))))
 
 (ocamllex Lexer)
+
+(documentation)
