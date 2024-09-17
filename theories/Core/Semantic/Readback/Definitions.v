@@ -21,10 +21,9 @@ Inductive read_nf : nat -> domain_nf -> nf -> Prop :=
   `( {{ Rne m in s ↘ M }} ->
      {{ Rnf ⇓ ℕ (⇑ ℕ m) in s ↘ ⇑ M }} )
 | read_nf_fn :
-  (* Nf of arg type *)
-  `( {{ Rtyp a in s ↘ A }} ->
-
-     (* Nf of eta-expanded body *)
+  `( (** Normal form of arg type *)
+     {{ Rtyp a in s ↘ A }} ->
+     (** Normal form of eta-expanded body *)
      {{ $| m & ⇑! a s |↘ m' }} ->
      {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↘ b }} ->
      {{ Rnf ⇓ b m' in S s ↘ M }} ->
@@ -42,20 +41,20 @@ with read_ne : nat -> domain_ne -> ne -> Prop :=
      {{ Rnf n in s ↘ N }} ->
      {{ Rne m n in s ↘ M N }} )
 | read_ne_natrec :
-  (* Nf of motive *)
-  `( {{ ⟦ B ⟧ ρ ↦ ⇑! ℕ s ↘ b }} ->
+  `( (** Normal form of motive *)
+     {{ ⟦ B ⟧ ρ ↦ ⇑! ℕ s ↘ b }} ->
      {{ Rtyp b in S s ↘ B' }} ->
 
-     (* Nf of mz *)
+     (** Normal form of mz *)
      {{ ⟦ B ⟧ ρ ↦ zero ↘ bz }} ->
      {{ Rnf ⇓ bz mz in s ↘ MZ }} ->
 
-     (* Nf of MS *)
+     (** Normal form of MS *)
      {{ ⟦ B ⟧ ρ ↦ succ (⇑! ℕ s) ↘ bs }} ->
      {{ ⟦ MS ⟧ ρ ↦ ⇑! ℕ s ↦ ⇑! b (S s) ↘ ms }} ->
      {{ Rnf ⇓ bs ms in S (S s) ↘ MS' }} ->
 
-     (* Ne of m *)
+     (** Neutral form of m *)
      {{ Rne m in s ↘ M }} ->
 
      {{ Rne rec m under ρ return B | zero -> mz | succ -> MS end in s ↘ rec M return B' | zero -> MZ | succ -> MS' end }} )
@@ -66,10 +65,10 @@ with read_typ : nat -> domain -> nf -> Prop :=
 | read_typ_nat :
   `( {{ Rtyp ℕ in s ↘ ℕ }} )
 | read_typ_pi :
-  (* Nf of arg type *)
-  `( {{ Rtyp a in s ↘ A }} ->
+  `( (** Normal form of arg type *)
+     {{ Rtyp a in s ↘ A }} ->
 
-     (* Nf of ret type *)
+     (** Normal form of ret type *)
      {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↘ b }} ->
      {{ Rtyp b in S s ↘ B' }} ->
 

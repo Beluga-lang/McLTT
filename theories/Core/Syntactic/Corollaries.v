@@ -254,7 +254,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_natrec_cong_rhs_typ : mcltt.
 
-(* This works for both natrec_sub and app_sub *)
+(** This works for both natrec_sub and app_sub cases *)
 Lemma exp_eq_elim_sub_lhs_typ_gen : forall {Γ σ Δ M A B i},
     {{ Γ ⊢s σ : Δ }} ->
     {{ Δ, A ⊢ B : Type@i }} ->
@@ -273,7 +273,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_elim_sub_lhs_typ_gen : mcltt.
 
-(* This works for both natrec_sub and app_sub *)
+(** This works for both natrec_sub and app_sub cases *)
 Lemma exp_eq_elim_sub_rhs_typ : forall {Γ σ Δ M A B i},
     {{ Γ ⊢s σ : Δ }} ->
     {{ Δ, A ⊢ B : Type@i }} ->
@@ -386,7 +386,7 @@ Qed.
 #[export]
 Hint Resolve exp_pi_eta_rhs_body : mcltt.
 
-(* This works for both var_0 and var_S *)
+(** This works for both var_0 and var_S cases *)
 Lemma exp_eq_var_sub_rhs_typ_gen : forall {Γ σ Δ i A M},
     {{ Γ ⊢s σ : Δ }} ->
     {{ Δ ⊢ A : Type@i }} ->
