@@ -11,7 +11,7 @@ let main_of_example s = main_of_filename ("../examples/" ^ s)
 (* We never expect parser timeout. 2^500 fuel should be large enough! *)
 
 let%expect_test "Type@0 is of Type@1" =
-  main_of_program_string "Type@0 : Type@1";
+  let _ = main_of_program_string "Type@0 : Type@1" in
   [%expect
     {|
     Parsed:
@@ -23,7 +23,7 @@ let%expect_test "Type@0 is of Type@1" =
   |}]
 
 let%expect_test "zero is of Nat" =
-  main_of_program_string "zero : Nat";
+  let _ = main_of_program_string "zero : Nat" in
   [%expect
     {|
     Parsed:
@@ -35,7 +35,7 @@ let%expect_test "zero is of Nat" =
   |}]
 
 let%expect_test "zero is not of Type@0" =
-  main_of_program_string "zero : Type@0";
+  let _ = main_of_program_string "zero : Type@0" in
   [%expect
     {|
     Type Checking Failure:
@@ -45,7 +45,7 @@ let%expect_test "zero is not of Type@0" =
   |}]
 
 let%expect_test "succ zero is of Nat" =
-  main_of_program_string "succ zero : Nat";
+  let _ = main_of_program_string "succ zero : Nat" in
   [%expect
     {|
     Parsed:
@@ -57,7 +57,7 @@ let%expect_test "succ zero is of Nat" =
   |}]
 
 let%expect_test "succ Type@0 is not of Nat (as it is ill-typed)" =
-  main_of_program_string "succ Type@0 : Nat";
+  let _ = main_of_program_string "succ Type@0 : Nat" in
   [%expect
     {|
     Type Checking Failure:
@@ -67,7 +67,7 @@ let%expect_test "succ Type@0 is not of Nat (as it is ill-typed)" =
   |}]
 
 let%expect_test "variable x is ill-scoped" =
-  main_of_program_string "x : Type@0";
+  let _ = main_of_program_string "x : Type@0" in
   [%expect {|
     Elaboration Failure:
       x
@@ -75,7 +75,7 @@ let%expect_test "variable x is ill-scoped" =
   |}]
 
 let%expect_test "identity function of Nat is of forall (x : Nat) -> Nat" =
-  main_of_program_string "fun (y : Nat) -> y : forall (x : Nat) -> Nat";
+  let _ = main_of_program_string "fun (y : Nat) -> y : forall (x : Nat) -> Nat" in
   [%expect
     {|
     Parsed:
@@ -88,8 +88,8 @@ let%expect_test "identity function of Nat is of forall (x : Nat) -> Nat" =
 
 let%expect_test "recursion on a natural number that always returns zero is of \
                  Nat" =
-  main_of_program_string
-    "rec 3 return y -> Nat | zero => 0 | succ n, r => 0 end : Nat";
+  let _ = main_of_program_string
+    "rec 3 return y -> Nat | zero => 0 | succ n, r => 0 end : Nat" in
   [%expect
     {|
     Parsed:
@@ -101,7 +101,7 @@ let%expect_test "recursion on a natural number that always returns zero is of \
   |}]
 
 let%expect_test "simple_nat.mcl works" =
-  main_of_example "simple_nat.mcl";
+  let _ = main_of_example "simple_nat.mcl" in
   [%expect
     {|
     Parsed:
@@ -113,7 +113,7 @@ let%expect_test "simple_nat.mcl works" =
   |}]
 
 let%expect_test "simple_rec.mcl works" =
-  main_of_example "simple_rec.mcl";
+  let _ = main_of_example "simple_rec.mcl" in
   [%expect
     {|
     Parsed:
@@ -131,7 +131,7 @@ let%expect_test "simple_rec.mcl works" =
   |}]
 
 let%expect_test "pair.mcl works" =
-  main_of_example "pair.mcl";
+  let _ = main_of_example "pair.mcl" in
   [%expect
     {|
     Parsed:
@@ -257,7 +257,7 @@ let%expect_test "pair.mcl works" =
   |}]
 
 let%expect_test "vector.mcl works" =
-  main_of_example "vector.mcl";
+  let _ = main_of_example "vector.mcl" in
   [%expect
     {|
     Parsed:
@@ -465,7 +465,7 @@ let%expect_test "vector.mcl works" =
   |}]
 
 let%expect_test "nary.mcl works" =
-  main_of_example "nary.mcl";
+  let _ = main_of_example "nary.mcl" in
   [%expect
     {|
     Parsed:

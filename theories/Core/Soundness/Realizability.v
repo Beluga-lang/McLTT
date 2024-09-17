@@ -104,14 +104,14 @@ Theorem realize_glu_univ_elem_gen : forall a i P El,
         {{ Γ ⊢ A ® P }} ->
         {{ Γ ⊢ A ® glu_typ_top i a }}) /\
       (forall Γ M A m,
-          (* We repeat this to get the relation between [a] and [P]
-             more easily after applying [induction 1.] *)
+          (** We repeat this to get the relation between [a] and [P]
+              more easily after applying [induction 1.] *)
           {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
           {{ Γ ⊢ M : A ® m ∈ glu_elem_bot i a }} ->
           {{ Γ ⊢ M : A ® ⇑ a m ∈ El }}) /\
       (forall Γ M A m R,
-          (* We repeat this to get the relation between [a] and [P]
-             more easily after applying [induction 1.] *)
+          (** We repeat this to get the relation between [a] and [P]
+              more easily after applying [induction 1.] *)
           {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
           {{ Γ ⊢ M : A ® m ∈ El }} ->
           {{ DF a ≈ a ∈ per_univ_elem i ↘ R }} ->

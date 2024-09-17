@@ -5,7 +5,8 @@ let () =
   then begin
     Printf.fprintf stderr
       "Missing <input-file> argument.\nUsage: %s <input-file>\n" Sys.argv.(0);
-    exit 1
+    exit 7
   end;
   let filename = Sys.argv.(1) in
-  main_of_filename filename
+  let code = main_of_filename filename in
+  exit code
