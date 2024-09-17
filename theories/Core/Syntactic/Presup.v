@@ -72,6 +72,34 @@ Proof.
     mauto 4.
 Qed.
 
+Lemma sub_lookup_var1 : forall Γ M1 M2 A B i j,
+    {{Γ ⊢ A : Type@i}} ->
+    {{Γ ⊢ B : Type@j}} ->
+    {{Γ ⊢ M1 : A}} ->
+    {{Γ ⊢ M2 : B}} ->
+    {{Γ ⊢ #1[Id,,M1,,M2] ≈ M1 : A}}.
+Proof.
+  intros.
+  assert {{ Γ , A ⊢ B[Wk] : Type@j }} by mauto.
+  assert {{ Γ ⊢s Id ,, M1 : Γ, A}} by mauto 4.
+  assert {{ Γ ⊢ B[Wk][Id,,M1] ≈ B : Type @ j }}.
+  {
+    transitivity {{{B[Wk ∘ (Id,,M1)]}}};
+      [| transitivity {{{B[Id]}}}];
+      mauto 3.
+    - eapply exp_eq_sub_compose_typ; mauto 4.
+    - eapply exp_eq_sub_cong_typ2'; mauto 4.
+  }
+  transitivity {{{#0[Id,,M1]}}}.
+  - eapply wf_exp_eq_conv;
+      [eapply wf_exp_eq_var_S_sub | |];
+      mauto 4.
+    admit.
+  - eapply wf_exp_eq_conv;
+    [eapply wf_exp_eq_var_0_sub with (A := A) | |];
+    mauto 4.
+Qed.
+
 Lemma presup_exp : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}
 with presup_exp_eq : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢ M : A }} /\ {{ Γ ⊢ M' : A }} /\ exists i, {{ Γ ⊢ A : Type@i }}
 with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢s σ : Δ }} /\ {{ Γ ⊢s σ' : Δ }} /\ {{ ⊢ Δ }}
@@ -125,6 +153,12 @@ Proof with mautosolve 4.
         etransitivity.
         -- eapply wf_exp_eq_eq_sub; mauto.
         -- econstructor; mauto 3.
+           2:{
+             eapply wf_exp_eq_conv;
+             [eapply sub_lookup_var0 with (A:=B) (B:=B) | |];
+               mauto 4.
+           }
+
            ++ eapply wf_exp_eq_conv with (A := B); mauto 2.
 
               transitivity {{{#0[Id,,M1]}}};
