@@ -492,7 +492,13 @@
 &nbsp;&nbsp;<span class="id" title="var">clear_predicate_equivalence</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Simple&nbsp;Morphism&nbsp;instance&nbsp;for&nbsp;"glu_univ_elem"&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab6"></a><h2 class="section">Simple Morphism instance for <span class="inlinecode"><a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#glu_univ_elem"><span class="id" title="definition">glu_univ_elem</span></a></span></h2>
+
+</div>
+<div class="code">
 <span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <a id="i:760" class="idref" href="#i:760"><span class="id" title="binder">i</span></a> : (<a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#glu_univ_elem"><span class="id" title="definition">glu_univ_elem</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.CoreLemmas.html#i:760"><span class="id" title="variable">i</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">signature</span> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#:::'glu_typ_pred_equivalence'"><span class="id" title="notation">glu_typ_pred_equivalence</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#:::'glu_exp_pred_equivalence'"><span class="id" title="notation">glu_exp_pred_equivalence</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="keyword">as</span> <span class="id" title="var">simple_glu_univ_elem_morphism_iff</span>.<br/>
 <span class="id" title="keyword">Proof</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mautosolve</span>.<br/>
@@ -503,7 +509,13 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Morphism&nbsp;instances&nbsp;for&nbsp;"neut_glu_*_pred"s&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab7"></a><h2 class="section">Morphism instances for <span class="inlinecode"><span class="id" title="var">neut_glu_</span>*<span class="id" title="var">_pred</span></span>s</h2>
+
+</div>
+<div class="code">
 <span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <a id="i:761" class="idref" href="#i:761"><span class="id" title="binder">i</span></a> : (<a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#neut_glu_typ_pred"><span class="id" title="definition">neut_glu_typ_pred</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.CoreLemmas.html#i:761"><span class="id" title="variable">i</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">signature</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_bot"><span class="id" title="definition">per_bot</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="keyword">as</span> <span class="id" title="var">neut_glu_typ_pred_morphism_iff</span>.<br/>
 <span class="id" title="keyword">Proof</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mautosolve</span>.<br/>
@@ -537,7 +549,13 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Morphism&nbsp;instances&nbsp;for&nbsp;"pi_glu_*_pred"s&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab8"></a><h2 class="section">Morphism instances for <span class="inlinecode"><span class="id" title="var">pi_glu_</span>*<span class="id" title="var">_pred</span></span>s</h2>
+
+</div>
+<div class="code">
 <span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <a id="i:765" class="idref" href="#i:765"><span class="id" title="binder">i</span></a> <a id="IR:766" class="idref" href="#IR:766"><span class="id" title="binder">IR</span></a> : (<a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#pi_glu_typ_pred"><span class="id" title="inductive">pi_glu_typ_pred</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.CoreLemmas.html#i:765"><span class="id" title="variable">i</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.CoreLemmas.html#IR:766"><span class="id" title="variable">IR</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">signature</span> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#:::'glu_typ_pred_equivalence'"><span class="id" title="notation">glu_typ_pred_equivalence</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#:::'glu_exp_pred_equivalence'"><span class="id" title="notation">glu_exp_pred_equivalence</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="keyword">as</span> <span class="id" title="var">pi_glu_typ_pred_morphism_iff</span>.<br/>
 <span class="id" title="keyword">Proof</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mautosolve</span>.<br/>
@@ -761,7 +779,13 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Morphism&nbsp;instances&nbsp;for&nbsp;"glu_univ_elem"&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab9"></a><h2 class="section">Morphism instances for <span class="inlinecode"><a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#glu_univ_elem"><span class="id" title="definition">glu_univ_elem</span></a></span></h2>
+
+</div>
+<div class="code">
 <span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <a id="i:1268" class="idref" href="#i:1268"><span class="id" title="binder">i</span></a> : (<a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#glu_univ_elem"><span class="id" title="definition">glu_univ_elem</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.CoreLemmas.html#i:1268"><span class="id" title="variable">i</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">signature</span> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#:::'glu_typ_pred_equivalence'"><span class="id" title="notation">glu_typ_pred_equivalence</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#:::'glu_exp_pred_equivalence'"><span class="id" title="notation">glu_exp_pred_equivalence</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_univ"><span class="id" title="definition">per_univ</span></a> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.CoreLemmas.html#i:1268"><span class="id" title="variable">i</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="keyword">as</span> <span class="id" title="var">glu_univ_elem_morphism_iff</span>.<br/>
 <span class="id" title="keyword">Proof</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mautosolve</span>.<br/>
@@ -1067,7 +1091,13 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Simple&nbsp;Morphism&nbsp;instance&nbsp;for&nbsp;"glu_ctx_env"&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab10"></a><h2 class="section">Simple Morphism instance for <span class="inlinecode"><a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#glu_ctx_env"><span class="id" title="inductive">glu_ctx_env</span></a></span></h2>
+
+</div>
+<div class="code">
 <span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> : <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#glu_ctx_env"><span class="id" title="inductive">glu_ctx_env</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">signature</span> <a class="idref" href="Mcltt.Core.Soundness.LogicalRelation.Definitions.html#:::'glu_sub_pred_equivalence'"><span class="id" title="notation">glu_sub_pred_equivalence</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="keyword">as</span> <span class="id" title="var">simple_glu_ctx_env_morphism_iff</span>.<br/>
 <span class="id" title="keyword">Proof</span>.<br/>

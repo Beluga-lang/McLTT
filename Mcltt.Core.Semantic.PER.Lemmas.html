@@ -497,7 +497,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
 &nbsp;&nbsp;| <span class="id" title="var">H1</span> : <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">DF</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a>?<span class="id" title="var">a</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">≈</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a><span class="id" title="var">_</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">∈</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_univ_elem"><span class="id" title="definition">per_univ_elem</span></a> ?<span class="id" title="var">i</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">↘</span></a> ?<span class="id" title="var">R1</span> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">H2</span> : <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">DF</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a><span class="id" title="var">_</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">≈</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a>?<span class="id" title="var">a</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">∈</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_univ_elem"><span class="id" title="definition">per_univ_elem</span></a> ?<span class="id" title="var">i'</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">↘</span></a> ?<span class="id" title="var">R2</span> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> |- <span class="id" title="var">_</span> =&gt;<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Order&nbsp;matters&nbsp;less&nbsp;here&nbsp;as&nbsp;H1&nbsp;and&nbsp;H2&nbsp;cannot&nbsp;be&nbsp;exchanged&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Order matters less here as H1 and H2 cannot be exchanged 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">assert_fails</span> (<span class="id" title="var">unify</span> <span class="id" title="var">R1</span> <span class="id" title="var">R2</span>);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span> : <span class="id" title="var">R1</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#e8aac4a093c83da9a780e8c256235d19"><span class="id" title="notation">&lt;~&gt;</span></a> <span class="id" title="var">R2</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">fail</span> 1<br/>
@@ -532,7 +537,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[&gt; <span class="id" title="tactic">split</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">intros</span> * <span class="id" title="var">HT2</span>; <span class="id" title="var">basic_invert_per_univ_elem</span> <span class="id" title="var">HT2</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">intros</span> * <span class="id" title="var">HTR1</span> <span class="id" title="var">HTR2</span>; <span class="id" title="var">apply_relation_equivalence</span> ] ..]; <span class="id" title="var">mauto</span>.<br/>
-&nbsp;&nbsp;- <span class="comment">(*&nbsp;univ&nbsp;case&nbsp;*)</span><br/>
+&nbsp;&nbsp;- </div>
+
+<div class="doc">
+univ case 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">HTR1</span>, <span class="id" title="var">HTR2</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">functional_eval_rewrite_clear</span>.<br/>
@@ -540,9 +550,19 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eexists</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">H2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">H0</span>) <span class="id" title="keyword">as</span> [].<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intuition</span>.<br/>
-&nbsp;&nbsp;- <span class="comment">(*&nbsp;nat&nbsp;case&nbsp;*)</span><br/>
+&nbsp;&nbsp;- </div>
+
+<div class="doc">
+nat case 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">idtac</span>...<br/>
-&nbsp;&nbsp;- <span class="comment">(*&nbsp;pi&nbsp;case&nbsp;*)</span><br/>
+&nbsp;&nbsp;- </div>
+
+<div class="doc">
+pi case 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">destruct_conjs</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">basic_per_univ_elem_econstructor</span>; <span class="id" title="tactic">eauto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">handle_per_univ_elem_irrel</span>.<br/>
@@ -555,7 +575,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">destruct_rel_mod_eval</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">functional_eval_rewrite_clear</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">handle_per_univ_elem_irrel</span>...<br/>
-&nbsp;&nbsp;- <span class="comment">(*&nbsp;fun&nbsp;case&nbsp;*)</span><br/>
+&nbsp;&nbsp;- </div>
+
+<div class="doc">
+fun case 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">in_rel</span> <span class="id" title="var">c</span> <span class="id" title="var">c</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">intuition</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">destruct_rel_mod_eval</span>.<br/>
@@ -563,7 +588,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">handle_per_univ_elem_irrel</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="tactic">eauto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intuition</span>.<br/>
-&nbsp;&nbsp;- <span class="comment">(*&nbsp;neut&nbsp;case&nbsp;*)</span><br/>
+&nbsp;&nbsp;- </div>
+
+<div class="doc">
+neut case 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">idtac</span>...<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
 
@@ -627,7 +657,12 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;This&nbsp;lemma&nbsp;gets&nbsp;rid&nbsp;of&nbsp;the&nbsp;unnecessary&nbsp;PER&nbsp;premise.&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+This lemma gets rid of the unnecessary PER premise. 
+</div>
+<div class="code">
 <span class="id" title="keyword">Lemma</span> <a id="per_univ_elem_pi'" class="idref" href="#per_univ_elem_pi'"><span class="id" title="lemma">per_univ_elem_pi'</span></a> :<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">forall</span> <a id="i:357" class="idref" href="#i:357"><span class="id" title="binder">i</span></a> <a id="a:358" class="idref" href="#a:358"><span class="id" title="binder">a</span></a> <a id="a':359" class="idref" href="#a':359"><span class="id" title="binder">a'</span></a> <a id="9d5a4c41cf09a3ecd31178171c7c0bc3" class="idref" href="#9d5a4c41cf09a3ecd31178171c7c0bc3"><span class="id" title="binder">ρ</span></a> <a id="B:361" class="idref" href="#B:361"><span class="id" title="binder">B</span></a> <a id="5287382639e6c4f1e8f3a64a427aac4d" class="idref" href="#5287382639e6c4f1e8f3a64a427aac4d"><span class="id" title="binder">ρ'</span></a> <a id="B':363" class="idref" href="#B':363"><span class="id" title="binder">B'</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<a id="in_rel:364" class="idref" href="#in_rel:364"><span class="id" title="binder">in_rel</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Relations.Relation_Definitions.html#relation"><span class="id" title="definition">relation</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#domain"><span class="id" title="inductive">domain</span></a>)<br/>
@@ -1030,7 +1065,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H1</span> : <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">DF</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a>?<span class="id" title="var">Γ</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">≈</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a><span class="id" title="var">_</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">∈</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_ctx_env"><span class="id" title="inductive">per_ctx_env</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">↘</span></a> ?<span class="id" title="var">R1</span> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">H2</span> : <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">DF</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a><span class="id" title="var">_</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">≈</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#1fb14ce35194a2309d4e68e8326d78de"><span class="id" title="notation">~</span></a>?<span class="id" title="var">Γ</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">∈</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_ctx_env"><span class="id" title="inductive">per_ctx_env</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#133d1fcce1c072b503f04b70aa308ae0"><span class="id" title="notation">↘</span></a> ?<span class="id" title="var">R2</span> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> |- <span class="id" title="var">_</span> =&gt;<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Order&nbsp;matters&nbsp;less&nbsp;here&nbsp;as&nbsp;H1&nbsp;and&nbsp;H2&nbsp;cannot&nbsp;be&nbsp;exchanged&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Order matters less here as H1 and H2 cannot be exchanged 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">assert_fails</span> (<span class="id" title="var">unify</span> <span class="id" title="var">R1</span> <span class="id" title="var">R2</span>);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span> : <span class="id" title="var">R1</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#e8aac4a093c83da9a780e8c256235d19"><span class="id" title="notation">&lt;~&gt;</span></a> <span class="id" title="var">R2</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">fail</span> 1<br/>
@@ -1077,7 +1117,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">destruct_rel_typ</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">handle_per_univ_elem_irrel</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="tactic">intuition</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;This&nbsp;one&nbsp;cannot&nbsp;be&nbsp;replaced&nbsp;with&nbsp;`etransitivity`&nbsp;as&nbsp;we&nbsp;need&nbsp;different&nbsp;`i`s.&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+This one cannot be replaced with `etransitivity` as we need different `i`s. 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Lemmas.html#per_univ_trans"><span class="id" title="lemma">per_univ_trans</span></a>; [| <span class="id" title="var">eassumption</span>]; <span class="id" title="var">eassumption</span>.<br/>
 &nbsp;&nbsp;- <span class="id" title="var">destruct_conjs</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">tail_rel</span> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#9ec978b188eee4943b90057a597432c2"><span class="id" title="notation">d</span></a><a class="idref" href="Mcltt.Core.Semantic.Domain.html#9ec978b188eee4943b90057a597432c2"><span class="id" title="notation">{{{</span></a> <a id="33e8201730d7fffdff35a8c637b8456e" class="idref" href="#33e8201730d7fffdff35a8c637b8456e"><span class="id" title="binder"><span id="d78edc13e32e0a72aec2f28d86fe30d4" class="id"><span id="fed32a0d139649cc4b4dbbf7bb286a9b" class="id"><span id="d80dbdcb007f33189baf2004e6875263" class="id">ρ1</span></span></span></span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#5586a3d29ba064e5cede74cc51d10ca4"><span class="id" title="notation">↯</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#9ec978b188eee4943b90057a597432c2"><span class="id" title="notation">}}}</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#9ec978b188eee4943b90057a597432c2"><span class="id" title="notation">d</span></a><a class="idref" href="Mcltt.Core.Semantic.Domain.html#9ec978b188eee4943b90057a597432c2"><span class="id" title="notation">{{{</span></a> <a id="e375c228e5e3d3d3753e40c7b40f68c9" class="idref" href="#e375c228e5e3d3d3753e40c7b40f68c9"><span class="id" title="binder"><span id="655f36348614eda3fb6a008bad2872c1" class="id"><span id="ce61657e1b5ef947ff2d03ec921f3be3" class="id"><span id="46bf7cc7bea67a10e0ab0db89389f626" class="id">ρ3</span></span></span></span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#5586a3d29ba064e5cede74cc51d10ca4"><span class="id" title="notation">↯</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#9ec978b188eee4943b90057a597432c2"><span class="id" title="notation">}}}</span></a>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">eauto</span>.<br/>
@@ -1128,7 +1173,12 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;This&nbsp;lemma&nbsp;removes&nbsp;the&nbsp;PER&nbsp;argument&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+This lemma removes the PER argument 
+</div>
+<div class="code">
 <span class="id" title="keyword">Lemma</span> <a id="per_ctx_env_cons'" class="idref" href="#per_ctx_env_cons'"><span class="id" title="lemma">per_ctx_env_cons'</span></a> : <span class="id" title="keyword">forall</span> {<a id="deaa1dc42b63b5342c11f33518381ed1" class="idref" href="#deaa1dc42b63b5342c11f33518381ed1"><span class="id" title="binder">Γ</span></a> <a id="2b2e24ea4a5ff95f34aeb554c4fb5991" class="idref" href="#2b2e24ea4a5ff95f34aeb554c4fb5991"><span class="id" title="binder">Γ'</span></a> <a id="i:946" class="idref" href="#i:946"><span class="id" title="binder">i</span></a> <a id="A:947" class="idref" href="#A:947"><span class="id" title="binder">A</span></a> <a id="A':948" class="idref" href="#A':948"><span class="id" title="binder">A'</span></a> <a id="tail_rel:949" class="idref" href="#tail_rel:949"><span class="id" title="binder">tail_rel</span></a>}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a id="head_rel:957" class="idref" href="#head_rel:957"><span class="id" title="binder">head_rel</span></a> : <span class="id" title="keyword">forall</span> {<a id="fd313d3952a38e11707e80b7cddb8285" class="idref" href="#fd313d3952a38e11707e80b7cddb8285"><span class="id" title="binder">ρ</span></a> <a id="cfef9f113c60c522f3464e5a1aeed4b0" class="idref" href="#cfef9f113c60c522f3464e5a1aeed4b0"><span class="id" title="binder">ρ'</span></a>} (<a id="3493f23fb65c18a85c3dd86695c76bfc" class="idref" href="#3493f23fb65c18a85c3dd86695c76bfc"><span class="id" title="binder">equiv_</span></a><a id="3493f23fb65c18a85c3dd86695c76bfc" class="idref" href="#3493f23fb65c18a85c3dd86695c76bfc"><span class="id" title="binder">ρ</span></a><a id="3493f23fb65c18a85c3dd86695c76bfc" class="idref" href="#3493f23fb65c18a85c3dd86695c76bfc"><span class="id" title="binder">_</span></a><a id="3493f23fb65c18a85c3dd86695c76bfc" class="idref" href="#3493f23fb65c18a85c3dd86695c76bfc"><span class="id" title="binder">ρ'</span></a> : <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#a0092480f8234c90d43caac9569b7f0f"><span class="id" title="notation">Dom</span></a> <a id="03d5e68aea6bd057435def42c15e6ffd" class="idref" href="#03d5e68aea6bd057435def42c15e6ffd"><span class="id" title="binder"><span id="92f759fb39564917ae5b850149915cda" class="id">ρ</span></span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#a0092480f8234c90d43caac9569b7f0f"><span class="id" title="notation">≈</span></a> <a id="4f3a15acc33f7a9b50110fd4727e5a9f" class="idref" href="#4f3a15acc33f7a9b50110fd4727e5a9f"><span class="id" title="binder"><span id="91beab6b1345f213424d3af1505568c7" class="id">ρ'</span></span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#a0092480f8234c90d43caac9569b7f0f"><span class="id" title="notation">∈</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Lemmas.html#tail_rel:949"><span class="id" title="variable">tail_rel</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a>), <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Relations.Relation_Definitions.html#relation"><span class="id" title="definition">relation</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#domain"><span class="id" title="inductive">domain</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id="env_rel:958" class="idref" href="#env_rel:958"><span class="id" title="binder">env_rel</span></a>,<br/>

@@ -38,7 +38,12 @@
 <span class="id" title="keyword">Create HintDb</span> <span class="id" title="var">mcltt</span> <span class="id" title="var">discriminated</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Transparency&nbsp;setting&nbsp;for&nbsp;generalized&nbsp;rewriting&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Transparency setting for generalized rewriting 
+</div>
+<div class="code">
 #[<span class="id" title="var">export</span>]<br/>
 <span class="id" title="keyword">Typeclasses</span> <span class="id" title="keyword">Transparent</span> <span class="id" title="var">arrows</span>.<br/>
 
@@ -46,7 +51,8 @@
 </div>
 
 <div class="doc">
-Generalization of Variables 
+<a id="lab26"></a><h2 class="section">Generalization of Variables</h2>
+
 </div>
 <div class="code">
 
@@ -60,7 +66,8 @@ Generalization of Variables
 </div>
 
 <div class="doc">
-Marking-based Tactics 
+<a id="lab27"></a><h2 class="section">Marking-based Tactics</h2>
+
 </div>
 <div class="code">
 
@@ -114,7 +121,8 @@ Marking-based Tactics
 </div>
 
 <div class="doc">
-Simple helper 
+<a id="lab28"></a><h2 class="section">Simple helper</h2>
+
 </div>
 <div class="code">
 
@@ -180,12 +188,17 @@ Simple helper
 
 <br/>
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">progressive_invert</span> <span class="id" title="var">H</span> :=<br/>
-&nbsp;&nbsp;<span class="comment">(*&nbsp;dependent&nbsp;destruction&nbsp;is&nbsp;more&nbsp;general&nbsp;than&nbsp;inversion&nbsp;*)</span><br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+We use dependent destruction as it is more general than inversion 
+</div>
+<div class="code">
 &nbsp;&nbsp;<span class="id" title="var">directed</span> <span class="id" title="tactic">dependent</span> <span class="id" title="tactic">destruction</span> <span class="id" title="var">H</span>.<br/>
 
 <br/>
 #[<span class="id" title="var">local</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">progressive_invert_once</span> <span class="id" title="var">H</span> <span class="id" title="var">n</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">progressive_invert_once</span> <span class="id" title="var">H</span> <span class="id" title="var">n</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">T</span> := <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">H</span> <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">lazymatch</span> <span class="id" title="var">T</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| <a class="idref" href="Mcltt.LibTactics.html#__mark__"><span class="id" title="definition">__mark__</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">fail</span><br/>
@@ -204,7 +217,7 @@ Simple helper
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">progressive_inversion</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">progressive_inversion</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="var">clear_dups</span>;<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span> : <span class="id" title="var">_</span> |- <span class="id" title="var">_</span> =&gt;<br/>
@@ -227,7 +240,7 @@ Simple helper
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">find_head</span> <span class="id" title="var">t</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">find_head</span> <span class="id" title="var">t</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">lazymatch</span> <span class="id" title="var">t</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| ?<span class="id" title="var">t'</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">find_head</span> <span class="id" title="var">t'</span><br/>
 &nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="var">t</span><br/>
@@ -268,7 +281,8 @@ Simple helper
 </div>
 
 <div class="doc">
-McLTT automation 
+<a id="lab29"></a><h2 class="section">McLTT automation</h2>
+
 </div>
 <div class="code">
 
@@ -320,7 +334,12 @@ McLTT automation
 <span class="id" title="keyword">Tactic Notation</span> "mautosolve" <span class="id" title="var">int_or_var</span>(<span class="id" title="var">pow</span>) := <span class="id" title="var">mautosolve_impl</span> <span class="id" title="var">pow</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Improve&nbsp;type&nbsp;class&nbsp;resolution&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Improve type class resolution for Equivalence and PER 
+</div>
+<div class="code">
 
 <br/>
 #[<span class="id" title="var">export</span>]<br/>
@@ -337,7 +356,12 @@ McLTT automation
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 1 (@<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#Transitive"><span class="id" title="class">Transitive</span></a> <span class="id" title="var">_</span> (@<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#predicate_implication"><span class="id" title="definition">predicate_implication</span></a> <span class="id" title="var">_</span>)) =&gt; <span class="id" title="tactic">simple</span> <span class="id" title="tactic">apply</span> @<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#PreOrder_Transitive"><span class="id" title="method">PreOrder_Transitive</span></a> : <span class="id" title="var">typeclass_instances</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;intuition&nbsp;tactic&nbsp;default&nbsp;setting&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Default setting for <span class="inlinecode"><span class="id" title="tactic">intuition</span></span> tactic 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">Tauto.intuition_solver</span> ::= <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mcltt</span> <span class="id" title="var">core</span> <span class="id" title="var">solve_subterm</span>.<br/>
 
 <br/>
@@ -357,7 +381,12 @@ McLTT automation
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;this&nbsp;tactic&nbsp;traverses&nbsp;to&nbsp;the&nbsp;bottom&nbsp;of&nbsp;a&nbsp;lemma&nbsp;following&nbsp;universals&nbsp;and&nbsp;conjunctions&nbsp;to&nbsp;the&nbsp;bottom&nbsp;and&nbsp;apply&nbsp;a&nbsp;tactic&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+this tactic traverses to the bottom of a lemma following universals and conjunctions to the bottom and apply a tactic 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">deepexec</span> <span class="id" title="var">lem</span> <span class="id" title="var">tac</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">T</span> := <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">T'</span> := <span class="id" title="tactic">eval</span> <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">T</span> <span class="id" title="tactic">in</span><br/>
@@ -378,7 +407,12 @@ McLTT automation
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;this&nbsp;tactic&nbsp;is&nbsp;similar&nbsp;to&nbsp;above,&nbsp;but&nbsp;the&nbsp;traversal&nbsp;cuts&nbsp;off&nbsp;when&nbsp;it&nbsp;sees&nbsp;an&nbsp;assumption&nbsp;applicable&nbsp;to&nbsp;a&nbsp;cut-off&nbsp;argument&nbsp;C&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+this tactic is similar to above, but the traversal cuts off when it sees an assumption applicable to a cut-off argument C 
+</div>
+<div class="code">
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">cutexec</span> <span class="id" title="var">lem</span> <span class="id" title="var">C</span> <span class="id" title="var">tac</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">CT</span> := <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">C</span> <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">T</span> := <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span><br/>
@@ -415,7 +449,7 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">strong_apply</span> <span class="id" title="var">H</span> <span class="id" title="var">X</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">strong_apply</span> <span class="id" title="var">H</span> <span class="id" title="var">X</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">H'</span> := <span class="id" title="tactic">fresh</span> "H" <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">T</span> := <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">X</span> <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">R</span> := <span class="id" title="var">unify_args</span> <span class="id" title="var">H</span> <span class="id" title="var">T</span> <span class="id" title="tactic">in</span><br/>
@@ -423,7 +457,7 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_left1</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_left1</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">tac1</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">H</span> <span class="id" title="var">R</span> <span class="id" title="var">H1</span> <span class="id" title="var">T</span> =&gt; (<span class="id" title="keyword">let</span> <span class="id" title="var">h</span> := <span class="id" title="var">find_head</span> <span class="id" title="var">T</span> <span class="id" title="tactic">in</span> <span class="id" title="var">unify</span> <span class="id" title="var">R</span> <span class="id" title="var">h</span>; <span class="id" title="var">strong_apply</span> <span class="id" title="var">H</span> <span class="id" title="var">H1</span>) <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">tac2</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">H</span> <span class="id" title="var">R</span> <span class="id" title="var">G</span> =&gt; (<span class="id" title="keyword">let</span> <span class="id" title="var">h</span> := <span class="id" title="var">find_head</span> <span class="id" title="var">G</span> <span class="id" title="tactic">in</span> <span class="id" title="var">unify</span> <span class="id" title="var">R</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">simpl</span>) <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
@@ -435,11 +469,11 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_left</span> := <span class="id" title="tactic">repeat</span> <span class="id" title="var">apply_equiv_left1</span>.<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_left</span> := <span class="id" title="tactic">repeat</span> <span class="id" title="var">apply_equiv_left1</span>.<br/>
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_right1</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_right1</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">tac1</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">H</span> <span class="id" title="var">R</span> <span class="id" title="var">H1</span> <span class="id" title="var">T</span> =&gt; (<span class="id" title="keyword">let</span> <span class="id" title="var">h</span> := <span class="id" title="var">find_head</span> <span class="id" title="var">T</span> <span class="id" title="tactic">in</span> <span class="id" title="var">unify</span> <span class="id" title="var">R</span> <span class="id" title="var">h</span>; <span class="id" title="var">strong_apply</span> <span class="id" title="var">H</span> <span class="id" title="var">H1</span>) <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">tac2</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">H</span> <span class="id" title="var">R</span> <span class="id" title="var">G</span> =&gt; (<span class="id" title="keyword">let</span> <span class="id" title="var">h</span> := <span class="id" title="var">find_head</span> <span class="id" title="var">G</span> <span class="id" title="tactic">in</span> <span class="id" title="var">unify</span> <span class="id" title="var">R</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">simpl</span>) <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
@@ -451,11 +485,11 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_right</span> := <span class="id" title="tactic">repeat</span> <span class="id" title="var">apply_equiv_right1</span>.<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_equiv_right</span> := <span class="id" title="tactic">repeat</span> <span class="id" title="var">apply_equiv_right1</span>.<br/>
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">clear_PER</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">clear_PER</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span> : <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#PER"><span class="id" title="class">PER</span></a> <span class="id" title="var">_</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">clear</span> <span class="id" title="var">H</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span> : <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#Symmetric"><span class="id" title="class">Symmetric</span></a> <span class="id" title="var">_</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">clear</span> <span class="id" title="var">H</span><br/>
@@ -480,7 +514,7 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">saturate_refl</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">saturate_refl</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span> : ?<span class="id" title="var">R</span> ?<span class="id" title="var">a</span> ?<span class="id" title="var">b</span> |- <span class="id" title="var">_</span> =&gt;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">tryif</span> <span class="id" title="var">unify</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span><br/>
@@ -493,7 +527,7 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">saturate_refl_for</span> <span class="id" title="var">hd</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">saturate_refl_for</span> <span class="id" title="var">hd</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span> : ?<span class="id" title="var">R</span> ?<span class="id" title="var">a</span> ?<span class="id" title="var">b</span> |- <span class="id" title="var">_</span> =&gt;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">unify_by_head_of</span> <span class="id" title="var">R</span> <span class="id" title="var">hd</span>;<br/>
@@ -507,11 +541,24 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">global</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">solve_refl</span> :=<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">solve_refl</span> :=<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Sometimes `reflexivity` does not work as (simple) unification fails for some unknown reason.
+      Thus, we try <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#Equivalence_Reflexive"><span class="id" title="method">Equivalence_Reflexive</span></a></span> as well. 
+</div>
+<div class="code">
 &nbsp;&nbsp;<span class="id" title="tactic">solve</span> [<span class="id" title="tactic">reflexivity</span> || <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#Equivalence_Reflexive"><span class="id" title="method">Equivalence_Reflexive</span></a>].<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Helper&nbsp;Instances&nbsp;for&nbsp;Generalized&nbsp;Rewriting&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab30"></a><h2 class="section">Helper Instances for Generalized Rewriting</h2>
+
+</div>
+<div class="code">
 #[<span class="id" title="var">export</span>]<br/>
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 1 (<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#subrelation"><span class="id" title="class">subrelation</span></a> (@<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#predicate_equivalence"><span class="id" title="definition">predicate_equivalence</span></a> ?<span class="id" title="var">Ts</span>) <span class="id" title="var">_</span>) =&gt; (<span class="id" title="keyword">let</span> <span class="id" title="var">H</span> := <span class="id" title="tactic">fresh</span> "H" <span class="id" title="tactic">in</span> <span class="id" title="tactic">intros</span> ? ? <span class="id" title="var">H</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">H</span>) : <span class="id" title="var">typeclass_instances</span>.<br/>
 
@@ -563,7 +610,12 @@ McLTT automation
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;The&nbsp;following&nbsp;facility&nbsp;converts&nbsp;search&nbsp;of&nbsp;Proper&nbsp;from&nbsp;type&nbsp;class&nbsp;instances&nbsp;to&nbsp;the&nbsp;local&nbsp;context&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+The following facility converts search of Proper from type class instances to the local context 
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Class</span> <a id="PERElem" class="idref" href="#PERElem"><span class="id" title="inductive, record"><span id="PERElem" class="id">PERElem</span></span></a> (<a id="A:17" class="idref" href="#A:17"><span class="id" title="binder">A</span></a> : <span class="id" title="keyword">Type</span>) (<a id="P:18" class="idref" href="#P:18"><span class="id" title="binder">P</span></a> : <a class="idref" href="Mcltt.LibTactics.html#A:17"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>) (<a id="R:19" class="idref" href="#R:19"><span class="id" title="binder">R</span></a> : <a class="idref" href="Mcltt.LibTactics.html#A:17"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.LibTactics.html#A:17"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>) :=<br/>
@@ -571,7 +623,7 @@ McLTT automation
 
 <br/>
 #[<span class="id" title="var">export</span>]<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="PERProper" class="idref" href="#PERProper"><span class="id" title="instance">PERProper</span></a> (<a id="A:23" class="idref" href="#A:23"><span class="id" title="binder">A</span></a> : <span class="id" title="keyword">Type</span>) (<a id="P:24" class="idref" href="#P:24"><span class="id" title="binder">P</span></a> : <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>) (<a id="R:25" class="idref" href="#R:25"><span class="id" title="binder">R</span></a> : <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>) `(<a id="Ins:26" class="idref" href="#Ins:26"><span class="id" title="binder">Ins</span></a> : <a class="idref" href="Mcltt.LibTactics.html#PERElem"><span class="id" title="class">PERElem</span></a> <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="Mcltt.LibTactics.html#P:24"><span class="id" title="variable">P</span></a> <a class="idref" href="Mcltt.LibTactics.html#R:25"><span class="id" title="variable">R</span></a>) <a id="a:27" class="idref" href="#a:27"><span class="id" title="binder">a</span></a> (<a id="H:28" class="idref" href="#H:28"><span class="id" title="binder">H</span></a> : <a class="idref" href="Mcltt.LibTactics.html#P:24"><span class="id" title="variable">P</span></a> <a class="idref" href="Mcltt.LibTactics.html#a:27"><span class="id" title="variable">a</span></a>) :<br/>
+<span class="id" title="keyword">Instance</span> <a id="PERProper" class="idref" href="#PERProper"><span class="id" title="instance">PERProper</span></a> (<a id="A:23" class="idref" href="#A:23"><span class="id" title="binder">A</span></a> : <span class="id" title="keyword">Type</span>) (<a id="P:24" class="idref" href="#P:24"><span class="id" title="binder">P</span></a> : <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>) (<a id="R:25" class="idref" href="#R:25"><span class="id" title="binder">R</span></a> : <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>) `(<a id="Ins:26" class="idref" href="#Ins:26"><span class="id" title="binder">Ins</span></a> : <a class="idref" href="Mcltt.LibTactics.html#PERElem"><span class="id" title="class">PERElem</span></a> <a class="idref" href="Mcltt.LibTactics.html#A:23"><span class="id" title="variable">A</span></a> <a class="idref" href="Mcltt.LibTactics.html#P:24"><span class="id" title="variable">P</span></a> <a class="idref" href="Mcltt.LibTactics.html#R:25"><span class="id" title="variable">R</span></a>) <a id="a:27" class="idref" href="#a:27"><span class="id" title="binder">a</span></a> (<a id="H:28" class="idref" href="#H:28"><span class="id" title="binder">H</span></a> : <a class="idref" href="Mcltt.LibTactics.html#P:24"><span class="id" title="variable">P</span></a> <a class="idref" href="Mcltt.LibTactics.html#a:27"><span class="id" title="variable">a</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> <a class="idref" href="Mcltt.LibTactics.html#R:25"><span class="id" title="variable">R</span></a> <a class="idref" href="Mcltt.LibTactics.html#a:27"><span class="id" title="variable">a</span></a>.<br/>
 <span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">cbv</span>. <span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> <a class="idref" href="Mcltt.LibTactics.html#per_elem"><span class="id" title="definition">per_elem</span></a>; <span class="id" title="tactic">auto</span>.<br/>

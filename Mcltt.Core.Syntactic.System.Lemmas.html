@@ -32,7 +32,13 @@
 <span class="id" title="keyword">Import</span> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#Syntax_Notations"><span class="id" title="module">Syntax_Notations</span></a>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Core&nbsp;Presuppositions&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab19"></a><h2 class="section">Core Presuppositions</h2>
+
+</div>
+<div class="code">
 <span class="id" title="keyword">Lemma</span> <a id="ctx_decomp" class="idref" href="#ctx_decomp"><span class="id" title="lemma">ctx_decomp</span></a> : <span class="id" title="keyword">forall</span> {<a id="454330da0f56a2416dd22d7f96feb974" class="idref" href="#454330da0f56a2416dd22d7f96feb974"><span class="id" title="binder">Γ</span></a> <a id="A:2" class="idref" href="#A:2"><span class="id" title="binder">A</span></a>}, <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#5bb0e34309fa0f2c1cf8cfc5347d711a"><span class="id" title="notation">⊢</span></a> <a id="a66eb0e7c85ea280f33904e5ac83af54" class="idref" href="#a66eb0e7c85ea280f33904e5ac83af54"><span class="id" title="binder"><span id="6b23b3527a5ae82de0dbe08d52926f19" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#d1064cbf3bcb4d3b63e8559a3ab3b23c"><span class="id" title="notation">,</span></a> <a id="A:3" class="idref" href="#A:3"><span class="id" title="binder"><span id="A:4" class="id">A</span></span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#5bb0e34309fa0f2c1cf8cfc5347d711a"><span class="id" title="notation">⊢</span></a> <a id="de9bdb4e9c2be34cf9b5e2f20d66b06e" class="idref" href="#de9bdb4e9c2be34cf9b5e2f20d66b06e"><span class="id" title="binder"><span id="d5be501d00a8c9c4c28302f544699b7d" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a id="i:9" class="idref" href="#i:9"><span class="id" title="binder">i</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">,</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="2c1ebf9f6f644b76d36a0d699f8e9ac4" class="idref" href="#2c1ebf9f6f644b76d36a0d699f8e9ac4"><span class="id" title="binder"><span id="8a5fb5e1be55058be9aa6b31d1a8bfab" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">⊢</span></a> <a id="A:12" class="idref" href="#A:12"><span class="id" title="binder"><span id="A:13" class="id">A</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">:</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#51477920c762bb573d0c48e88bde2399"><span class="id" title="notation">Type@i</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a>.<br/>
 <span class="id" title="keyword">Proof</span> <span class="id" title="keyword">with</span> <span class="id" title="var">now</span> <span class="id" title="tactic">eauto</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">inversion</span> 1...<br/>
@@ -145,8 +151,13 @@
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">presup_exp_eq_ctx</span> : <span class="id" title="var">mcltt</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Recover&nbsp;some&nbsp;previous&nbsp;rules&nbsp;without&nbsp;subtyping.<br/>
-&nbsp;&nbsp;&nbsp;Rest&nbsp;are&nbsp;recovered&nbsp;after&nbsp;presupposition&nbsp;lemmas&nbsp;(in&nbsp;SystemOpt).&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Recover some rules we had before adding subtyping.
+    Rest are recovered after presupposition lemmas (in SystemOpt). 
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a id="wf_ctx_sub_refl" class="idref" href="#wf_ctx_sub_refl"><span class="id" title="lemma">wf_ctx_sub_refl</span></a> : <span class="id" title="keyword">forall</span> <a id="e13fd54a03223b3dca3e4ccd9cb6b4d8" class="idref" href="#e13fd54a03223b3dca3e4ccd9cb6b4d8"><span class="id" title="binder">Γ</span></a> <a id="1eeb063a6a89022fd6e8e0bf026382c2" class="idref" href="#1eeb063a6a89022fd6e8e0bf026382c2"><span class="id" title="binder">Δ</span></a>,<br/>
@@ -161,7 +172,12 @@
 <br/>
 <span class="id" title="keyword">Lemma</span> <a id="wf_conv" class="idref" href="#wf_conv"><span class="id" title="lemma">wf_conv</span></a> : <span class="id" title="keyword">forall</span> <a id="c78756a1f6abcb48e68e03dbf5894050" class="idref" href="#c78756a1f6abcb48e68e03dbf5894050"><span class="id" title="binder">Γ</span></a> <a id="M:174" class="idref" href="#M:174"><span class="id" title="binder">M</span></a> <a id="A:175" class="idref" href="#A:175"><span class="id" title="binder">A</span></a> <a id="i:176" class="idref" href="#i:176"><span class="id" title="binder">i</span></a> <a id="A':177" class="idref" href="#A':177"><span class="id" title="binder">A'</span></a>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="dc1356b602fe68110656293f361bcd12" class="idref" href="#dc1356b602fe68110656293f361bcd12"><span class="id" title="binder"><span id="7807f98c7c2a7e31d92972793b159d64" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">⊢</span></a> <a id="M:182" class="idref" href="#M:182"><span class="id" title="binder"><span id="M:183" class="id">M</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">:</span></a> <a id="A:180" class="idref" href="#A:180"><span class="id" title="binder"><span id="A:181" class="id">A</span></span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;this&nbsp;will&nbsp;be&nbsp;removed&nbsp;in&nbsp;SystemOpt&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The next argument will be removed in SystemOpt 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="e1d284cf5abad24f47e1cbe9f62ccfc3" class="idref" href="#e1d284cf5abad24f47e1cbe9f62ccfc3"><span class="id" title="binder"><span id="c54608f68d4895f682706a0240e95d0a" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">⊢</span></a> <a id="A':186" class="idref" href="#A':186"><span class="id" title="binder"><span id="A':187" class="id">A'</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">:</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#51477920c762bb573d0c48e88bde2399"><span class="id" title="notation">Type@i</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="483c47e7100adec85d58e3dde43d0c71" class="idref" href="#483c47e7100adec85d58e3dde43d0c71"><span class="id" title="binder"><span id="a21cdd7eafebbe8e81ec0025876def77" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">⊢</span></a> <a id="A:190" class="idref" href="#A:190"><span class="id" title="binder"><span id="A:191" class="id">A</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">≈</span></a> <a id="A':192" class="idref" href="#A':192"><span class="id" title="binder"><span id="A':193" class="id">A'</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">:</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#51477920c762bb573d0c48e88bde2399"><span class="id" title="notation">Type@i</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="d60cca09333596614699de21d7139a5f" class="idref" href="#d60cca09333596614699de21d7139a5f"><span class="id" title="binder"><span id="667ae7c77607fb4d6b2230ff562fb53b" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">⊢</span></a> <a id="M:198" class="idref" href="#M:198"><span class="id" title="binder"><span id="M:199" class="id">M</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">:</span></a> <a id="A':196" class="idref" href="#A':196"><span class="id" title="binder"><span id="A':197" class="id">A'</span></span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a>.<br/>
@@ -194,7 +210,12 @@
 <br/>
 <span class="id" title="keyword">Lemma</span> <a id="wf_exp_eq_conv" class="idref" href="#wf_exp_eq_conv"><span class="id" title="lemma">wf_exp_eq_conv</span></a> : <span class="id" title="keyword">forall</span> <a id="429db7ca251be16f80bbe8e8e8b6635b" class="idref" href="#429db7ca251be16f80bbe8e8e8b6635b"><span class="id" title="binder">Γ</span></a> <a id="M:236" class="idref" href="#M:236"><span class="id" title="binder">M</span></a> <a id="M':237" class="idref" href="#M':237"><span class="id" title="binder">M'</span></a> <a id="A:238" class="idref" href="#A:238"><span class="id" title="binder">A</span></a> <a id="A':239" class="idref" href="#A':239"><span class="id" title="binder">A'</span></a> <a id="i:240" class="idref" href="#i:240"><span class="id" title="binder">i</span></a>,<br/>
 &nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="1705851d5f5c5c34db4c797c88f1974f" class="idref" href="#1705851d5f5c5c34db4c797c88f1974f"><span class="id" title="binder"><span id="570e3711a725ac9b838f519a4a277354" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">⊢</span></a> <a id="M:245" class="idref" href="#M:245"><span class="id" title="binder"><span id="M:246" class="id">M</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">≈</span></a> <a id="M':247" class="idref" href="#M':247"><span class="id" title="binder"><span id="M':248" class="id">M'</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">:</span></a> <a id="A:243" class="idref" href="#A:243"><span class="id" title="binder"><span id="A:244" class="id">A</span></span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;this&nbsp;will&nbsp;be&nbsp;removed&nbsp;in&nbsp;SystemOpt&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The next argument will be removed in SystemOpt 
+</div>
+<div class="code">
 &nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="fac6e9b8e33c123832f0263e54a3a0ef" class="idref" href="#fac6e9b8e33c123832f0263e54a3a0ef"><span class="id" title="binder"><span id="22b9ad85d12359960087c9bb9fdb4280" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">⊢</span></a> <a id="A':251" class="idref" href="#A':251"><span class="id" title="binder"><span id="A':252" class="id">A'</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#946b41ceb8284bcfce58d31084906f52"><span class="id" title="notation">:</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#51477920c762bb573d0c48e88bde2399"><span class="id" title="notation">Type@i</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
 &nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="8ea3abb1296c9ee6a4358e5f99a49ac0" class="idref" href="#8ea3abb1296c9ee6a4358e5f99a49ac0"><span class="id" title="binder"><span id="6f5e61c1c7de5742f06eed914ff13ac3" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">⊢</span></a> <a id="A:255" class="idref" href="#A:255"><span class="id" title="binder"><span id="A:256" class="id">A</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">≈</span></a> <a id="A':257" class="idref" href="#A':257"><span class="id" title="binder"><span id="A':258" class="id">A'</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">:</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#51477920c762bb573d0c48e88bde2399"><span class="id" title="notation">Type@i</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
 &nbsp;&nbsp;&nbsp;<a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a id="cf4647f6852be2fb9d1b73c2322db9ec" class="idref" href="#cf4647f6852be2fb9d1b73c2322db9ec"><span class="id" title="binder"><span id="a54d2d50b80047a260a1ff9aef9408a2" class="id">Γ</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">⊢</span></a> <a id="M:263" class="idref" href="#M:263"><span class="id" title="binder"><span id="M:264" class="id">M</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">≈</span></a> <a id="M':265" class="idref" href="#M':265"><span class="id" title="binder"><span id="M':266" class="id">M'</span></span></a> <a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#69c002c61be42d9d1a14553e4974593f"><span class="id" title="notation">:</span></a> <a id="A':261" class="idref" href="#A':261"><span class="id" title="binder"><span id="A':262" class="id">A'</span></span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a>.<br/>
@@ -294,7 +315,13 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;PER&nbsp;extension&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab20"></a><h2 class="section">Additional Lemmas for Syntactic PERs</h2>
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a id="exp_eq_refl" class="idref" href="#exp_eq_refl"><span class="id" title="lemma">exp_eq_refl</span></a> : <span class="id" title="keyword">forall</span> {<a id="3601bb85eb891372eb9440e7eed640f5" class="idref" href="#3601bb85eb891372eb9440e7eed640f5"><span class="id" title="binder">Γ</span></a> <a id="M:401" class="idref" href="#M:401"><span class="id" title="binder">M</span></a> <a id="A:402" class="idref" href="#A:402"><span class="id" title="binder">A</span></a>},<br/>
@@ -332,7 +359,13 @@
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">sub_eq_refl</span> : <span class="id" title="var">mcltt</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Lemmas&nbsp;for&nbsp;exp&nbsp;of&nbsp;"Type@i"&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab21"></a><h2 class="section">Lemmas for <span class="inlinecode"><a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#exp"><span class="id" title="inductive">exp</span></a></span> of <span class="inlinecode">{{{</span> <span class="inlinecode"><span class="id" title="var">Type@i</span></span> <span class="inlinecode">}}}</span></h2>
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a id="exp_sub_typ" class="idref" href="#exp_sub_typ"><span class="id" title="lemma">exp_sub_typ</span></a> : <span class="id" title="keyword">forall</span> {<a id="f64ba87bef8f526ab6e7edaabf5055f3" class="idref" href="#f64ba87bef8f526ab6e7edaabf5055f3"><span class="id" title="binder">Δ</span></a> <a id="576e660459f92b1931085fcd60aa76dc" class="idref" href="#576e660459f92b1931085fcd60aa76dc"><span class="id" title="binder">Γ</span></a> <a id="A:484" class="idref" href="#A:484"><span class="id" title="binder">A</span></a> <a id="bd1c61913cf39ed3dcf1c7c53045eaf0" class="idref" href="#bd1c61913cf39ed3dcf1c7c53045eaf0"><span class="id" title="binder">σ</span></a> <a id="i:486" class="idref" href="#i:486"><span class="id" title="binder">i</span></a>},<br/>
@@ -585,7 +618,13 @@
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">exp_eq_sub_sub_compose_cong_typ</span> : <span class="id" title="var">mcltt</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Lemmas&nbsp;for&nbsp;exp&nbsp;of&nbsp;"ℕ"&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab22"></a><h2 class="section">Lemmas for <span class="inlinecode"><a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#exp"><span class="id" title="inductive">exp</span></a></span> of <span class="inlinecode">{{{</span> <span class="inlinecode"><span class="id" title="var">ℕ</span></span> <span class="inlinecode">}}}</span></h2>
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a id="exp_sub_nat" class="idref" href="#exp_sub_nat"><span class="id" title="lemma">exp_sub_nat</span></a> : <span class="id" title="keyword">forall</span> {<a id="40618e264ff07d8287d3efa7d67a5dd7" class="idref" href="#40618e264ff07d8287d3efa7d67a5dd7"><span class="id" title="binder">Δ</span></a> <a id="0c2cf095dfb1682f4f373d5f0f6c4c4a" class="idref" href="#0c2cf095dfb1682f4f373d5f0f6c4c4a"><span class="id" title="binder">Γ</span></a> <a id="M:1155" class="idref" href="#M:1155"><span class="id" title="binder">M</span></a> <a id="d60062add844f0a6fb5df96cf8304f11" class="idref" href="#d60062add844f0a6fb5df96cf8304f11"><span class="id" title="binder">σ</span></a>},<br/>
@@ -812,7 +851,13 @@
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">exp_eq_sub_sub_compose_cong_nat</span> : <span class="id" title="var">mcltt</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Other&nbsp;lemmas&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a id="lab23"></a><h2 class="section">Other Tedious Lemmas</h2>
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a id="exp_eq_sub_sub_compose_cong" class="idref" href="#exp_eq_sub_sub_compose_cong"><span class="id" title="lemma">exp_eq_sub_sub_compose_cong</span></a> : <span class="id" title="keyword">forall</span> {<a id="7c5a092abe1fa7b349110144ec17966a" class="idref" href="#7c5a092abe1fa7b349110144ec17966a"><span class="id" title="binder">Γ</span></a> <a id="2c3ef6afc37fbf2cdbb4799f3420eb6f" class="idref" href="#2c3ef6afc37fbf2cdbb4799f3420eb6f"><span class="id" title="binder">Δ</span></a> <a id="a00ddda593176046b07e51aaf96323a5" class="idref" href="#a00ddda593176046b07e51aaf96323a5"><span class="id" title="binder">Δ'</span></a> <a id="c85c308825558848677a2f38da53fc92" class="idref" href="#c85c308825558848677a2f38da53fc92"><span class="id" title="binder">Ψ</span></a> <a id="37bedb1b9cefa2727b9deac96ddeb01d" class="idref" href="#37bedb1b9cefa2727b9deac96ddeb01d"><span class="id" title="binder">σ</span></a> <a id="14e2fec7c11214bcabd76951adab979a" class="idref" href="#14e2fec7c11214bcabd76951adab979a"><span class="id" title="binder">τ</span></a> <a id="047032575ab1192f089f3f74f592c127" class="idref" href="#047032575ab1192f089f3f74f592c127"><span class="id" title="binder">σ'</span></a> <a id="82ae4fbd3c2814eafaf0a52345365621" class="idref" href="#82ae4fbd3c2814eafaf0a52345365621"><span class="id" title="binder">τ'</span></a> <a id="M:1776" class="idref" href="#M:1776"><span class="id" title="binder">M</span></a> <a id="A:1777" class="idref" href="#A:1777"><span class="id" title="binder">A</span></a> <a id="i:1778" class="idref" href="#i:1778"><span class="id" title="binder">i</span></a>},<br/>
@@ -1190,6 +1235,15 @@
 <br/>
 #[<span class="id" title="var">export</span>]<br/>
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1</span> : <span class="id" title="var">mcltt</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab24"></a><h2 class="section">Lemmas for <span class="inlinecode"><a class="idref" href="Mcltt.Core.Syntactic.System.Definitions.html#wf_subtyp"><span class="id" title="inductive">wf_subtyp</span></a></span></h2>
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Fact</span> <a id="wf_subtyp_refl" class="idref" href="#wf_subtyp_refl"><span class="id" title="lemma">wf_subtyp_refl</span></a> : <span class="id" title="keyword">forall</span> {<a id="9093ec7ab5df9b546201d7c71757965d" class="idref" href="#9093ec7ab5df9b546201d7c71757965d"><span class="id" title="binder">Γ</span></a> <a id="A:4017" class="idref" href="#A:4017"><span class="id" title="binder">A</span></a> <a id="i:4018" class="idref" href="#i:4018"><span class="id" title="binder">i</span></a>},<br/>
