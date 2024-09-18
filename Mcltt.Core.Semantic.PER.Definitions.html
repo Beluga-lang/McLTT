@@ -57,7 +57,7 @@ Precedences of the next notations follow the ones in the standard library.
 </div>
 
 <div class="doc">
-<a id="lab1"></a><h2 class="section">Helper Bundles</h2>
+<a id="lab1"></a><h3 class="section">Helper Bundles</h3>
  Related modulo evaluation 
 </div>
 <div class="code">
@@ -84,7 +84,7 @@ Related modulo application
 </div>
 
 <div class="doc">
-<a id="lab2"></a><h2 class="section">(Some Elements of) PER Lattice</h2>
+<a id="lab2"></a><h3 class="section">(Some Elements of) PER Lattice</h3>
 
 </div>
 <div class="code">
@@ -142,7 +142,8 @@ Related modulo application
 </div>
 
 <div class="doc">
-<a id="lab3"></a><h2 class="section">Universe/Element PER Definition</h2>
+<a id="lab3"></a><h1 class="section">Universe/Element PER</h1>
+<a id="lab4"></a><h2 class="section">Universe/Element PER Definition</h2>
 
 </div>
 <div class="code">
@@ -261,7 +262,7 @@ Related modulo application
 </div>
 
 <div class="doc">
-<a id="lab4"></a><h2 class="section">Universe/Element PER Induction Principle</h2>
+<a id="lab5"></a><h2 class="section">Universe/Element PER Induction Principle</h2>
 
 </div>
 <div class="code">
@@ -320,6 +321,15 @@ Related modulo application
 <span class="id" title="keyword">Reserved Notation</span> &quot;'Sub' a &lt;: b 'at' i" (<span class="id" title="tactic">in</span> <span class="id" title="var">custom</span> <span class="id" title="var">judg</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 90, <span class="id" title="var">a</span> <span class="id" title="var">custom</span> <span class="id" title="var">domain</span>, <span class="id" title="var">b</span> <span class="id" title="var">custom</span> <span class="id" title="var">domain</span>, <span class="id" title="var">i</span> <span class="id" title="keyword">constr</span>).<br/>
 
 <br/>
+</div>
+
+<div class="doc">
+<a id="lab6"></a><h1 class="section">Universe Subtyping</h1>
+
+</div>
+<div class="code">
+
+<br/>
 <span class="id" title="keyword">Inductive</span> <a id="per_subtyp" class="idref" href="#per_subtyp"><span class="id" title="definition, inductive"><span id="per_subtyp_ind" class="id"><span id="per_subtyp_sind" class="id">per_subtyp</span></span></span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#domain"><span class="id" title="inductive">domain</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#domain"><span class="id" title="inductive">domain</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
 | <a id="per_subtyp_neut" class="idref" href="#per_subtyp_neut"><span class="id" title="constructor">per_subtyp_neut</span></a> :<br/>
 &nbsp;&nbsp;`( <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">{{</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#a0092480f8234c90d43caac9569b7f0f"><span class="id" title="notation">Dom</span></a> <a id="b:634" class="idref" href="#b:634"><span class="id" title="binder"><span id="b:635" class="id">b</span></span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#a0092480f8234c90d43caac9569b7f0f"><span class="id" title="notation">≈</span></a> <a id="b':636" class="idref" href="#b':636"><span class="id" title="binder"><span id="b':637" class="id">b'</span></span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#a0092480f8234c90d43caac9569b7f0f"><span class="id" title="notation">∈</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_bot"><span class="id" title="definition">per_bot</span></a> <a class="idref" href="Mcltt.Core.Base.html#2e12ae37c5a5c7396a13d7170e0de451"><span class="id" title="notation">}}</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
@@ -348,21 +358,21 @@ Related modulo application
 &nbsp;<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Constructors</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_subtyp"><span class="id" title="inductive">per_subtyp</span></a> : <span class="id" title="var">mcltt</span>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-<a id="lab5"></a><h2 class="section">Context/Environment PER</h2>
-
-</div>
-<div class="code">
-
-<br/>
 <span class="id" title="keyword">Definition</span> <a id="rel_typ" class="idref" href="#rel_typ"><span class="id" title="definition">rel_typ</span></a> <a id="i:733" class="idref" href="#i:733"><span class="id" title="binder">i</span></a> <a id="A:734" class="idref" href="#A:734"><span class="id" title="binder">A</span></a> <a id="cb4b3ec485a1b3943d8b917ebd8a0d3e" class="idref" href="#cb4b3ec485a1b3943d8b917ebd8a0d3e"><span class="id" title="binder">ρ</span></a> <a id="A':736" class="idref" href="#A':736"><span class="id" title="binder">A'</span></a> <a id="48375aae3cd0e421cd716a4fe1341378" class="idref" href="#48375aae3cd0e421cd716a4fe1341378"><span class="id" title="binder">ρ'</span></a> <a id="R':738" class="idref" href="#R':738"><span class="id" title="binder">R'</span></a> := <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#rel_mod_eval"><span class="id" title="inductive">rel_mod_eval</span></a> (<a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#per_univ_elem"><span class="id" title="definition">per_univ_elem</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#i:733"><span class="id" title="variable">i</span></a>) <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#A:734"><span class="id" title="variable">A</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#cb4b3ec485a1b3943d8b917ebd8a0d3e"><span class="id" title="variable">ρ</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#A':736"><span class="id" title="variable">A'</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#48375aae3cd0e421cd716a4fe1341378"><span class="id" title="variable">ρ'</span></a> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#R':738"><span class="id" title="variable">R'</span></a>.<br/>
 <span class="id" title="keyword">Arguments</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#rel_typ"><span class="id" title="definition">rel_typ</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> /.<br/>
 #[<span class="id" title="var">export</span>]<br/>
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Transparent</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#rel_typ"><span class="id" title="definition">rel_typ</span></a> : <span class="id" title="var">mcltt</span>.<br/>
 #[<span class="id" title="var">export</span>]<br/>
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Unfold</span> <a class="idref" href="Mcltt.Core.Semantic.PER.Definitions.html#rel_typ"><span class="id" title="definition">rel_typ</span></a> : <span class="id" title="var">mcltt</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab7"></a><h1 class="section">Context/Environment PER</h1>
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Inductive</span> <a id="per_ctx_env" class="idref" href="#per_ctx_env"><span class="id" title="definition, inductive"><span id="per_ctx_env_ind" class="id"><span id="per_ctx_env_sind" class="id">per_ctx_env</span></span></span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Relations.Relation_Definitions.html#relation"><span class="id" title="definition">relation</span></a> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#:::'env'"><span class="id" title="notation">env</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#ctx"><span class="id" title="abbreviation">ctx</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#ctx"><span class="id" title="abbreviation">ctx</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
@@ -396,6 +406,15 @@ Related modulo application
 
 <br/>
 <span class="id" title="keyword">Reserved Notation</span> &quot;'SubE' Γ &lt;: Δ" (<span class="id" title="tactic">in</span> <span class="id" title="var">custom</span> <span class="id" title="var">judg</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 90, <span class="id" title="var">Γ</span> <span class="id" title="var">custom</span> <span class="id" title="var">exp</span>, <span class="id" title="var">Δ</span> <span class="id" title="var">custom</span> <span class="id" title="var">exp</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab8"></a><h1 class="section">Context Subtyping</h1>
+
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Inductive</span> <a id="per_ctx_subtyp" class="idref" href="#per_ctx_subtyp"><span class="id" title="definition, inductive"><span id="per_ctx_subtyp_ind" class="id"><span id="per_ctx_subtyp_sind" class="id">per_ctx_subtyp</span></span></span></a> : <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#ctx"><span class="id" title="abbreviation">ctx</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="Mcltt.Core.Syntactic.Syntax.html#ctx"><span class="id" title="abbreviation">ctx</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
