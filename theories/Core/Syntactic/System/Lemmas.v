@@ -1,7 +1,7 @@
 From Mcltt Require Import Base LibTactics System.Definitions.
 Import Syntax_Notations.
 
-(** ** Core Presuppositions *)
+(** *** Core Presuppositions *)
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with now eauto.
   inversion 1...
@@ -220,7 +220,7 @@ Proof with mautosolve.
   assert (m <= max n m) by lia...
 Qed.
 
-(** ** Additional Lemmas for Syntactic PERs *)
+(** *** Additional Lemmas for Syntactic PERs *)
 
 Lemma exp_eq_refl : forall {Γ M A},
     {{ Γ ⊢ M : A }} ->
@@ -251,7 +251,7 @@ Proof. mauto. Qed.
 #[export]
 Hint Resolve sub_eq_refl : mcltt.
 
-(** ** Lemmas for [exp] of [{{{ Type@i }}}] *)
+(** *** Lemmas for [exp] of [{{{ Type@i }}}] *)
 
 Lemma exp_sub_typ : forall {Δ Γ A σ i},
     {{ Δ ⊢ A : Type@i }} ->
@@ -475,7 +475,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_sub_sub_compose_cong_typ : mcltt.
 
-(** ** Lemmas for [exp] of [{{{ ℕ }}}] *)
+(** *** Lemmas for [exp] of [{{{ ℕ }}}] *)
 
 Lemma exp_sub_nat : forall {Δ Γ M σ},
     {{ Δ ⊢ M : ℕ }} ->
@@ -674,7 +674,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_sub_sub_compose_cong_nat : mcltt.
 
-(** ** Other Tedious Lemmas *)
+(** *** Other Tedious Lemmas *)
 
 Lemma exp_eq_sub_sub_compose_cong : forall {Γ Δ Δ' Ψ σ τ σ' τ' M A i},
     {{ Ψ ⊢ A : Type@i }} ->
@@ -1018,7 +1018,7 @@ Qed.
 #[export]
 Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
 
-(** ** Lemmas for [wf_subtyp] *)
+(** *** Lemmas for [wf_subtyp] *)
 
 Fact wf_subtyp_refl : forall {Γ A i},
     {{ Γ ⊢ A : Type@i }} ->

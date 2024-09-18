@@ -16,7 +16,7 @@ Notation "R <~> R'" := (relation_equivalence R R') (at level 95, no associativit
 
 Generalizable All Variables.
 
-(** ** Helper Bundles *)
+(** *** Helper Bundles *)
 (** Related modulo evaluation *)
 Inductive rel_mod_eval (R : relation domain -> domain -> domain -> Prop) A ρ A' ρ' R' : Prop := mk_rel_mod_eval : forall a a', {{ ⟦ A ⟧ ρ ↘ a }} -> {{ ⟦ A' ⟧ ρ' ↘ a' }} -> {{ DF a ≈ a' ∈ R ↘ R' }} -> rel_mod_eval R A ρ A' ρ' R'.
 #[global]
@@ -31,7 +31,7 @@ Arguments mk_rel_mod_app {_ _ _ _ _}.
 #[export]
 Hint Constructors rel_mod_app : mcltt.
 
-(** ** (Some Elements of) PER Lattice *)
+(** *** (Some Elements of) PER Lattice *)
 
 Definition per_bot : relation domain_ne := fun m n => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne n in s ↘ L }}).
 #[global]
@@ -77,6 +77,7 @@ Inductive per_ne : relation domain :=
 #[export]
 Hint Constructors per_ne : mcltt.
 
+(** * Universe/Element PER *)
 (** ** Universe/Element PER Definition *)
 
 Section Per_univ_elem_core_def.
@@ -229,6 +230,8 @@ End Per_univ_elem_ind_def.
 
 Reserved Notation "'Sub' a <: b 'at' i" (in custom judg at level 90, a custom domain, b custom domain, i constr).
 
+(** * Universe Subtyping *)
+
 Inductive per_subtyp : nat -> domain -> domain -> Prop :=
 | per_subtyp_neut :
   `( {{ Dom b ≈ b' ∈ per_bot }} ->
@@ -255,14 +258,14 @@ where "'Sub' a <: b 'at' i" := (per_subtyp i a b) (in custom judg) : type_scope.
 #[export]
  Hint Constructors per_subtyp : mcltt.
 
-(** ** Context/Environment PER *)
-
 Definition rel_typ i A ρ A' ρ' R' := rel_mod_eval (per_univ_elem i) A ρ A' ρ' R'.
 Arguments rel_typ _ _ _ _ _ _ /.
 #[export]
 Hint Transparent rel_typ : mcltt.
 #[export]
 Hint Unfold rel_typ : mcltt.
+
+(** * Context/Environment PER *)
 
 Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
 | per_ctx_env_nil :
@@ -293,6 +296,8 @@ Hint Transparent valid_ctx : mcltt.
 Hint Unfold valid_ctx : mcltt.
 
 Reserved Notation "'SubE' Γ <: Δ" (in custom judg at level 90, Γ custom exp, Δ custom exp).
+
+(** * Context Subtyping *)
 
 Inductive per_ctx_subtyp : ctx -> ctx -> Prop :=
 | per_ctx_subtyp_nil :

@@ -9,14 +9,14 @@ Create HintDb mcltt discriminated.
 #[export]
 Typeclasses Transparent arrows.
 
-(** ** Generalization of Variables *)
+(** *** Generalization of Variables *)
 
 Tactic Notation "gen" ident(x) := generalize dependent x.
 Tactic Notation "gen" ident(x) ident(y) := gen x; gen y.
 Tactic Notation "gen" ident(x) ident(y) ident(z) := gen x y; gen z.
 Tactic Notation "gen" ident(x) ident(y) ident(z) ident(w) := gen x y z; gen w.
 
-(** ** Marking-based Tactics *)
+(** *** Marking-based Tactics *)
 
 Definition __mark__ (n : nat) A (a : A) : A := a.
 Arguments __mark__ n {A} a : simpl never.
@@ -59,7 +59,7 @@ Tactic Notation "on_all_hyp:" tactic4(tac) :=
 Tactic Notation "on_all_hyp_rev:" tactic4(tac) :=
   mark_all_with 0; (on_all_marked_hyp_rev: tac).
 
-(** ** Simple helper *)
+(** *** Simple helper *)
 
 Ltac destruct_logic :=
   destruct_one_pair
@@ -189,7 +189,7 @@ Ltac dir_inversion_clear_by_head head := match_by_head head ltac:(fun H => direc
 Ltac destruct_by_head head := match_by_head head ltac:(fun H => destruct H).
 Ltac dir_destruct_by_head head := match_by_head head ltac:(fun H => directed destruct H).
 
-(** ** McLTT automation *)
+(** *** McLTT automation *)
 
 Tactic Notation "mauto" :=
   eauto with mcltt core.
@@ -403,7 +403,7 @@ Ltac solve_refl :=
       Thus, we try [Equivalence_Reflexive] as well. *)
   solve [reflexivity || apply Equivalence_Reflexive].
 
-(** ** Helper Instances for Generalized Rewriting *)
+(** *** Helper Instances for Generalized Rewriting *)
 #[export]
 Hint Extern 1 (subrelation (@predicate_equivalence ?Ts) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
 
