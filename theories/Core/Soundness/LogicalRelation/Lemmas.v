@@ -565,7 +565,7 @@ Proof.
   eapply glu_univ_elem_exp_lower; mauto.
 Qed.
 
-(** ** Lemmas for [glu_rel_typ_with_sub] and [glu_rel_exp_with_sub] *)
+(** *** Lemmas for [glu_rel_typ_with_sub] and [glu_rel_exp_with_sub] *)
 
 Lemma mk_glu_rel_typ_with_sub' : forall {i Δ A σ ρ a},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
@@ -672,7 +672,7 @@ Qed.
 #[export]
 Hint Resolve glu_rel_typ_with_sub_implies_glu_rel_exp_with_sub : mcltt.
 
-(** ** Lemmas for [glu_ctx_env] *)
+(** *** Lemmas for [glu_ctx_env] *)
 
 Lemma glu_ctx_env_sub_resp_ctx_eq : forall {Γ Sb},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -1039,7 +1039,7 @@ Proof.
     eapply glu_ctx_env_sub_monotone; mauto 4.
 Qed.
 
-(** ** Tactics for [glu_rel_*] *)
+(** *** Tactics for [glu_rel_*] *)
 
 Ltac destruct_glu_rel_by_assumption sub_glu_rel H :=
   repeat
@@ -1079,7 +1079,7 @@ Ltac destruct_glu_rel_typ_with_sub :=
     end;
   unmark_all.
 
-(** ** Lemmas about [glu_rel_exp] *)
+(** *** Lemmas about [glu_rel_exp] *)
 
 Lemma glu_rel_exp_clean_inversion1 : forall {Γ Sb M A},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -1148,7 +1148,7 @@ Qed.
 #[export]
 Hint Resolve glu_rel_exp_to_wf_exp : mcltt.
 
-(** ** Lemmas about [glu_rel_sub] *)
+(** *** Lemmas about [glu_rel_sub] *)
 
 Lemma glu_rel_sub_clean_inversion1 : forall {Γ Sb τ Γ'},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
