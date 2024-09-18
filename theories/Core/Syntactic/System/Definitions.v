@@ -255,7 +255,7 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
      {{ Δ , A ⊢ BR : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
      {{ Γ ⊢ (eqrec N as Eq A M1 M2 return B | refl -> BR end)[σ]
           ≈ eqrec (N[σ]) as Eq (A[σ]) (M1[σ]) (M2[σ]) return B[q (q (q σ))] | refl -> BR[q σ] end
-         : M[σ,,M1[σ],,M2[σ],,N[σ]] }} )
+         : B[σ,,M1[σ],,M2[σ],,N[σ]] }} )
 | wf_exp_eq_eq_cong :
   `( {{ Γ ⊢ A ≈ A' : Type@i }} ->
      {{ Γ ⊢ M ≈ M' : A }} ->
@@ -277,7 +277,7 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
      {{ Γ , A ⊢ BR ≈ BR' : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
      {{ Γ ⊢ eqrec N as Eq A M1 M2 return B | refl -> BR end
           ≈ eqrec N' as Eq A' M1' M2' return B' | refl -> BR' end
-         : M[Id,,M1,,M2,,N] }} )
+         : B[Id,,M1,,M2,,N] }} )
 | wf_exp_eq_eqrec_beta :
   `( {{ Γ ⊢ A : Type@i }} ->
      {{ Γ ⊢ M : A }} ->
@@ -286,7 +286,7 @@ with wf_exp_eq : ctx -> typ -> exp -> exp -> Prop :=
      {{ Γ , A ⊢ BR : M [Id,,#0,,refl (A[Wk]) #0 ] }} ->
      {{ Γ ⊢ eqrec refl A M as Eq A M M return B | refl -> BR end
           ≈ BR[Id,,M]
-         : M[Id,,M,,M,,refl A M] }} )
+         : B[Id,,M,,M,,refl A M] }} )
 
 | wf_exp_eq_var :
   `( {{ ⊢ Γ }} ->
