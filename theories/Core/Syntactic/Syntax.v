@@ -2,7 +2,7 @@ From Coq Require Import List String.
 
 From Mcltt Require Import Base.
 
-(** ** Concrete Syntax Tree *)
+(** * Concrete Syntax Tree *)
 Module Cst.
 Inductive obj : Set :=
 | typ : nat -> obj
@@ -22,7 +22,7 @@ Inductive obj : Set :=
 | var : string -> obj.
 End Cst.
 
-(** ** Abstract Syntac Tree *)
+(** * Abstract Syntac Tree *)
 Inductive exp : Set :=
 (** Universe *)
 | a_typ : nat -> exp
@@ -75,7 +75,7 @@ Definition exp_to_num e :=
   | None => None
   end.
 
-(** *** Syntactic Normal/Neutral Form *)
+(** ** Syntactic Normal/Neutral Form *)
 Inductive nf : Set :=
 | nf_typ : nat -> nf
 | nf_nat : nf
@@ -140,6 +140,7 @@ Arguments q σ/.
 #[global] Bind Scope mcltt_scope with ne.
 Open Scope mcltt_scope.
 
+(** ** Syntactic Notations *)
 Module Syntax_Notations.
   Notation "{{{ x }}}" := x (at level 0, x custom exp at level 99, format "'{{{'  x  '}}}'") : mcltt_scope.
   Notation "( x )" := x (in custom exp at level 0, x custom exp at level 60) : mcltt_scope.

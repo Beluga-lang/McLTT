@@ -209,7 +209,7 @@ Proof.
     assert (y = x); fsetdec.
 Qed.
 
-(** ** Well scopedness lemma *)
+(** *** Well scopedness lemma *)
 
 (** If the set of free variables in a cst are contained in a context
     then elaboration succeeds with that context, and the result is a closed term *)
