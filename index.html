@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>McLTT: A Bottom-up Approach to Implementing A Proof Assistant</title>
+  <title>McLTT: A Bottom-up Approach to Implementing A Proof
+Assistant</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -12,6 +13,7 @@
     div.column{display: inline-block; vertical-align: top; width: 50%;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="styling.css" />
   <script type="text/javascript" src="style.js"></script>
@@ -52,10 +54,22 @@
   <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
-<h1 id="mcltt-a-bottom-up-approach-to-implementing-a-proof-assistant">McLTT: A Bottom-up Approach to Implementing A Proof Assistant</h1>
-<p>In McLTT, we build a verified, runnable typechecker for Martin-Löf type theory. After the accomplishment of this project, we will obtain an executable, to which we can feed a program in Martin-Löf type theory, and this executable will check whether this program has the specified type. McLTT is novel in that it is implemented in Coq. Moreover, we will prove that the typechecking algorithm extracted from Coq is sound and complete: a program passes typechecking if and only if it is a well-typed program in MLTT. This will be the first verified proof assistant (despite being elementary) and serves as a basis for future extensions.</p>
+<h1
+id="mcltt-a-bottom-up-approach-to-implementing-a-proof-assistant">McLTT:
+A Bottom-up Approach to Implementing A Proof Assistant</h1>
+<p>In McLTT, we build a verified, runnable typechecker for Martin-Löf
+type theory. After the accomplishment of this project, we will obtain an
+executable, to which we can feed a program in Martin-Löf type theory,
+and this executable will check whether this program has the specified
+type. McLTT is novel in that it is implemented in Coq. Moreover, we will
+prove that the typechecking algorithm extracted from Coq is sound and
+complete: a program passes typechecking if and only if it is a
+well-typed program in MLTT. This will be the first verified proof
+assistant (despite being elementary) and serves as a basis for future
+extensions.</p>
 <h2 id="online-documentation">Online Documentation</h2>
-<p>We have generated a <a href="toc.html">Coqdoc</a> for browsing our Coq proof.</p>
+<p>We have generated a <a href="toc.html">Coqdoc</a> for browsing our
+Coq proof.</p>
 <h2 id="architecture">Architecture</h2>
 <p>McLTT has the following architecture:</p>
 <pre><code>    | source code of McLTT
@@ -82,14 +96,18 @@
 +-------------+
     | yes or no    Driver in OCaml
     v</code></pre>
-<p>In this architecture, most code is in Coq, with accompanying theorems to justify the implementation.</p>
+<p>In this architecture, most code is in Coq, with accompanying theorems
+to justify the implementation.</p>
 <h2 id="dependencies">Dependencies</h2>
 <ul>
 <li><a href="https://ocaml.org/">OCaml</a> 4.14.2</li>
 <li><a href="http://cambium.inria.fr/~fpottier/menhir/">Menhir</a></li>
-<li><a href="https://gitlab.inria.fr/fpottier/menhir/-/tree/master/coq-menhirlib">Coq-Menhirlib</a></li>
+<li><a
+href="https://gitlab.inria.fr/fpottier/menhir/-/tree/master/coq-menhirlib">Coq-Menhirlib</a></li>
 <li><a href="https://coq.inria.fr/">Coq</a> 8.20.0</li>
-<li><a href="https://github.com/mattam82/Coq-Equations">Coq-Equations</a> 1.3</li>
+<li><a
+href="https://github.com/mattam82/Coq-Equations">Coq-Equations</a>
+1.3</li>
 </ul>
 <p>We recommend to install dependencies in the following way:</p>
 <pre class="bash"><code>opam switch create coq-8.20.0 4.14.2
@@ -102,19 +120,25 @@ opam install ppx_inline_test</code></pre>
 <h2 id="development">Development</h2>
 <p>Use the toplevel <code>make</code> to build the whole project:</p>
 <pre><code>make</code></pre>
-<p>Makefile will try to find out the number of your CPU cores and parallel as much as possible.</p>
+<p>Makefile will try to find out the number of your CPU cores and
+parallel as much as possible.</p>
 <p>Once <code>make</code> finishes, you can run the binary:</p>
 <pre><code>dune exec mcltt examples/nary.mcl # or your own example</code></pre>
 <p>or more directly</p>
 <pre><code>_build/default/driver/mcltt.exe examples/nary.mcl # or your own example</code></pre>
-<p>To build Coq proof only, you can go into and only build the Coq folder:</p>
+<p>To build Coq proof only, you can go into and only build the Coq
+folder:</p>
 <pre><code>cd theories
 make</code></pre>
 <h2 id="branches">Branches</h2>
 <p>The Github repo includes the following special branches:</p>
 <ol type="1">
-<li><code>main</code>: the main branch that is used to generate this homepage and Coqdoc;</li>
-<li><code>ext/*</code>: branches in this pattern are variations of <code>main</code> that implements various extensions. They are often used to implement extensions that require non-trivial workload and are aimed to be merged to <code>main</code> eventually;</li>
+<li><code>main</code>: the main branch that is used to generate this
+homepage and Coqdoc;</li>
+<li><code>ext/*</code>: branches in this pattern are variations of
+<code>main</code> that implements various extensions. They are often
+used to implement extensions that require non-trivial workload and are
+aimed to be merged to <code>main</code> eventually;</li>
 <li><code>gh-pages</code>: the branch to host the homepage.</li>
 </ol>
 </body>
