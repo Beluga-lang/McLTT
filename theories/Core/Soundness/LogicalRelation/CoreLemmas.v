@@ -828,7 +828,7 @@ Proof.
       deepexec H1 ltac:(fun H => pose proof H).
       autorewrite with mcltt in *.
       repeat eexists; eauto.
-      assert {{ Δ0 ⊢s σ0,,N : Δ, ~ (a_sub IT σ) }}.
+      assert {{ Δ0 ⊢s σ0,,N : Δ, IT[σ] }}.
       {
         econstructor; mauto 2.
         bulky_rewrite.
