@@ -11,6 +11,9 @@ PARSERMESSAGEMERGEFILE := $(PARSERMESSAGEFILE:%.messages=%.messages.merge)
 PARSERMESSAGEEXTRACTIONFILE := ../driver/extracted/ParserMessages.ml
 COQPARSERORIGFILE := $(shell find ./ -name '*.vy')
 COQPARSERFILE := $(COQPARSERORIGFILE:%.vy=%.v)
+DEPGRAPHSCRIPT := ../scripts/generate_dep.pl
+DEPGRAPHDOT := ../dep.dot
+DEPGRAPH := ../dep.svg
 
 post-all:: $(COQPARSERFILE) $(PARSERMESSAGEEXTRACTIONFILE) check_parserMessages
 	@echo "Separate Extraction main." | $(COQTOP) $(COQFLAGS) $(COQLIBS) -topfile Entrypoint.v -l Entrypoint.v
@@ -33,3 +36,12 @@ update_parserMessages:
 	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --merge-errors "$(PARSERMESSAGETEMPFILE)" --merge-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEMERGEFILE)"
 	rm "$(PARSERMESSAGETEMPFILE)"
 	mv "$(PARSERMESSAGEMERGEFILE)" "$(PARSERMESSAGEFILE)"
+
+$(DEPGRAPHDOT): $(VFILES) $(DEPGRAPHSCRIPT)
+	@coqdep $(VFILES) -f _CoqProject | perl "$(DEPGRAPHSCRIPT)" | tred -o "$@"
+
+$(DEPGRAPH): $(DEPGRAPHDOT)
+	@dot -T svg -o "$(DEPGRAPH)" "$(DEPGRAPHDOT)"
+
+.PHONY: depgraph
+depgraph: $(DEPGRAPH)
