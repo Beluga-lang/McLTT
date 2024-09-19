@@ -1083,3 +1083,128 @@ Qed.
 
 #[export]
 Hint Resolve ctx_sub_ctx_lookup : mcltt.
+
+
+Lemma sub_lookup_var0 : forall Δ Γ σ M1 M2 B i,
+    {{Δ ⊢s σ : Γ}} ->
+    {{Γ ⊢ B : Type@i}} ->
+    {{Δ ⊢ M1 : B[σ]}} ->
+    {{Δ ⊢ M2 : B[σ]}} ->
+    {{Δ ⊢ #0[σ,,M1,,M2] ≈ M2 : B[σ]}}.
+Proof.
+  intros.
+  assert {{ Γ , B ⊢ B[Wk] : Type@i }} by mauto.
+  assert {{ Δ ⊢s σ ,, M1 : Γ, B}} by mauto 4.
+  assert {{ Δ ⊢ B[Wk][σ,,M1] : Type @ i }} by mauto 4.
+  assert {{ Δ ⊢ B[Wk][σ,,M1] ≈ B[σ] : Type @ i }}.
+  {
+    transitivity {{{B[Wk ∘ (σ,,M1)]}}}.
+    - eapply exp_eq_sub_compose_typ; mauto 4.
+    - eapply exp_eq_sub_cong_typ2'; mauto 4.
+  }
+  eapply wf_exp_eq_conv;
+    [eapply wf_exp_eq_var_0_sub with (A := {{{B[Wk]}}}) | |];
+    mauto 4.
+Qed.
+
+Lemma id_sub_lookup_var0 : forall Γ M1 M2 B i,
+    {{Γ ⊢ B : Type@i}} ->
+    {{Γ ⊢ M1 : B}} ->
+    {{Γ ⊢ M2 : B}} ->
+    {{Γ ⊢ #0[Id,,M1,,M2] ≈ M2 : B}}.
+Proof.
+  intros.
+  eapply wf_exp_eq_conv;
+    [eapply sub_lookup_var0 | |];
+    mauto 3.
+Qed.
+
+Lemma sub_lookup_var1 : forall Δ Γ σ M1 M2 B i,
+    {{Δ ⊢s σ : Γ}} ->
+    {{Γ ⊢ B : Type@i}} ->
+    {{Δ ⊢ M1 : B[σ]}} ->
+    {{Δ ⊢ M2 : B[σ]}} ->
+    {{Δ ⊢ #1[σ,,M1,,M2] ≈ M1 : B[σ]}}.
+Proof.
+  intros.
+  assert {{ Γ , B ⊢ B[Wk] : Type@i }} by mauto.
+  assert {{ Δ ⊢s σ ,, M1 : Γ, B}} by mauto 4.
+  assert {{ Δ ⊢ B[Wk][σ,,M1] : Type @ i }} by mauto 4.
+  assert {{ Δ ⊢ B[Wk][σ,,M1] ≈ B[σ] : Type @ i }}.
+  {
+    transitivity {{{B[Wk ∘ (σ,,M1)]}}}.
+    - eapply exp_eq_sub_compose_typ; mauto 4.
+    - eapply exp_eq_sub_cong_typ2'; mauto 4.
+  }
+  transitivity {{{#0[σ,,M1]}}}.
+  - eapply wf_exp_eq_conv;
+      [eapply wf_exp_eq_var_S_sub | |];
+      mauto 4.
+  - eapply wf_exp_eq_conv;
+    [eapply wf_exp_eq_var_0_sub with (A := B) | |];
+    mauto 2.
+    mauto.
+Qed.
+
+Lemma id_sub_lookup_var1 : forall Γ M1 M2 B i,
+    {{Γ ⊢ B : Type@i}} ->
+    {{Γ ⊢ M1 : B}} ->
+    {{Γ ⊢ M2 : B}} ->
+    {{Γ ⊢ #1[Id,,M1,,M2] ≈ M1 : B}}.
+Proof.
+  intros.
+  eapply wf_exp_eq_conv;
+    [eapply sub_lookup_var1 | |];
+    mauto 3.
+Qed.
+
+Lemma exp_eq_var_1_sub_q_sigma : forall {Γ A i B j σ Δ},
+    {{ Δ ⊢ B : Type@j }} ->
+    {{ Δ, B ⊢ A : Type@i }} ->
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Γ, B[σ], A[q σ] ⊢ #1[q (q σ)] ≈ #1 : B[σ][Wk][Wk] }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ, B[σ] ⊢s q σ : Δ, B }} by mauto.
+  assert {{ ⊢ Γ, B[σ], A[q σ] }} by mauto 3.
+  assert {{ Δ, B ⊢ B[Wk] : Type@j }} by mauto.
+  assert {{ Δ, B ⊢ #0 : B[Wk] }} by mauto.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0 : A[q σ][Wk] }} by mauto 4.
+  assert {{ Γ, B[σ], A[q σ] ⊢ A[q σ∘Wk] ≈ A[q σ][Wk] : Type@i }} by mauto 4.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0 : A[q σ∘Wk] }} by (eapply wf_conv; mauto 4).
+  assert {{ Γ, B[σ], A[q σ] ⊢s q σ∘Wk : Δ, B }} by mauto 4.
+  assert {{ Γ ⊢ B[σ] : Type@j }} by mauto 3.
+  assert {{ Γ,B[σ] ⊢ B[σ][Wk] : Type@j }} by mauto 4.
+  assert {{Γ, B[σ], A[q σ] ⊢ B[σ][Wk][Wk] : Type@j}} by mauto 4.
+  assert {{Γ, B[σ],A[q σ] ⊢ B[Wk][q σ ∘ Wk] : Type@j}} by mauto.
+  assert {{Γ, B[σ] ⊢ B[Wk][q σ] ≈ B[σ][Wk] : Type@j}}.
+  {
+    transitivity {{{B[Wk ∘ q σ]}}};
+      [mauto 4 | transitivity {{{B[σ ∘ Wk]}}}];
+      [eapply exp_eq_sub_cong_typ2'; mauto 4 | mauto].
+  }
+  assert {{Γ, B[σ],A[q σ] ⊢ B[Wk][q σ ∘ Wk] ≈ B[σ][Wk][Wk] : Type@j}}.
+  {
+    transitivity {{{B[Wk][q σ][Wk]}}};
+      [mauto 4 |].
+    eapply exp_eq_sub_cong_typ1; mauto 3.
+  }
+  assert {{ Γ, B[σ], A[q σ] ⊢ #1[q (q σ)] ≈ #0[q σ∘Wk] : B[σ][Wk][Wk] }} by mauto 3.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ∘Wk] ≈ #0[q σ][Wk] : B[σ][Wk][Wk] }} by mauto 4.
+  assert {{ Γ, B[σ] ⊢s σ∘Wk : Δ }} by mauto 4.
+  assert {{ Γ, B[σ] ⊢ #0 : B[σ∘Wk] }}.
+  {
+    eapply wf_conv with (A:={{{B[σ][Wk]}}}); mauto 2; mauto 4.
+  }
+  assert {{ Γ, B[σ] ⊢ #0[q σ] ≈ #0 : B[σ ∘ Wk] }} by mauto 4.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ][Wk] ≈ #0[Wk] : B[σ ∘ Wk][Wk] }} by mauto 4.
+  assert {{ Γ, B[σ], A[q σ] ⊢ B[σ ∘ Wk][Wk] ≈ B[σ][Wk][Wk] : Type@j}}.
+  {
+    eapply exp_eq_sub_cong_typ1; mauto 3.
+    symmetry.
+    mauto 4.
+  }
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ][Wk] ≈ #0[Wk] : B[σ][Wk][Wk] }} by mauto 4.
+  etransitivity; mauto 2.
+  transitivity {{{#0[q σ][Wk]}}}; mauto 3.
+Qed.
