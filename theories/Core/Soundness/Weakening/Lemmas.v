@@ -79,7 +79,7 @@ Proof with mautosolve.
     eapply weakening_resp_equiv; [mauto 2 |].
     transitivity {{{ Id ∘ σ0 }}}...
   - eapply wk_p; eauto.
-    transitivity {{{ Wk ∘ τ ∘ σ0 }}}; mauto 4.
+    transitivity {{{ (Wk ∘ τ) ∘ σ0 }}}; mauto 4.
     eapply wf_sub_eq_compose_assoc; revgoals...
 Qed.
 
