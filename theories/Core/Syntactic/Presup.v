@@ -820,7 +820,6 @@ Proof with mautosolve 4.
   - admit.
   - admit.
   - admit.
-  - admit.
 
   - assert {{ Γ ⊢s Wk∘(σ ,, N') ≈ σ : Δ }} by mauto.
     assert {{ Γ ⊢ B[Wk∘(σ ,, N')] ≈ B[σ] : Type@i }} by mauto.
