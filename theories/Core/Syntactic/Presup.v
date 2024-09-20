@@ -811,11 +811,12 @@ Proof with mautosolve 4.
     assert {{ Γ ⊢ Eq B' M1' M2' : Type @ i }} by mauto 4.
     assert {{ Γ ⊢ Eq B' M1' M2' ≈ Eq B M1 M2 : Type @ i }} by (symmetry; mauto 3).
 
-    eapply wf_conv;
-      [econstructor; mauto 3 | mauto 2 | ].
-    + admit.
-    + admit.
-    + admit.
+    admit.
+    (* eapply wf_conv; *)
+    (*   [econstructor; mauto 3 | mauto 2 | ]. *)
+    (* + admit. *)
+    (* + admit. *)
+    (* + admit. *)
 
   - admit.
   - admit.
@@ -867,7 +868,8 @@ Proof with mautosolve 4.
   - exists (max i i0); split; mauto 3 using lift_exp_max_left, lift_exp_max_right.
   - exists (max (S i) (S j)); split; mauto 3 using lift_exp_max_left, lift_exp_max_right.
   - mauto.
-Qed.
+Admitted.
+(* Qed. *)
 
 Ltac gen_presup H := gen_presup_IH @presup_exp @presup_exp_eq @presup_sub_eq @presup_subtyp H.
 
