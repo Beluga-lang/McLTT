@@ -410,7 +410,7 @@ Ltac apply_predicate_equivalence :=
   rewrite_predicate_equivalence_left;
   clear_predicate_equivalence.
 
-(* Simple Morphism instance for "glu_univ_elem" *)
+(** *** Simple Morphism instance for [glu_univ_elem] *)
 Add Parametric Morphism i : (glu_univ_elem i)
     with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> eq ==> iff as simple_glu_univ_elem_morphism_iff.
 Proof with mautosolve.
@@ -420,7 +420,7 @@ Proof with mautosolve.
     try (etransitivity; [symmetry + idtac|]; eassumption); eauto.
 Qed.
 
-(* Morphism instances for "neut_glu_*_pred"s *)
+(** *** Morphism instances for [neut_glu_*_pred]s *)
 Add Parametric Morphism i : (neut_glu_typ_pred i)
     with signature per_bot ==> eq ==> eq ==> iff as neut_glu_typ_pred_morphism_iff.
 Proof with mautosolve.
@@ -450,7 +450,7 @@ Proof with mautosolve.
   split; apply neut_glu_exp_pred_morphism_iff; mauto.
 Qed.
 
-(* Morphism instances for "pi_glu_*_pred"s *)
+(** *** Morphism instances for [pi_glu_*_pred]s *)
 Add Parametric Morphism i IR : (pi_glu_typ_pred i IR)
     with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> eq ==> eq ==> eq ==> iff as pi_glu_typ_pred_morphism_iff.
 Proof with mautosolve.
@@ -662,7 +662,7 @@ Proof.
     eassumption.
 Qed.
 
-(* Morphism instances for "glu_univ_elem" *)
+(** *** Morphism instances for [glu_univ_elem] *)
 Add Parametric Morphism i : (glu_univ_elem i)
     with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> per_univ i ==> iff as glu_univ_elem_morphism_iff.
 Proof with mautosolve.
@@ -828,7 +828,7 @@ Proof.
       deepexec H1 ltac:(fun H => pose proof H).
       autorewrite with mcltt in *.
       repeat eexists; eauto.
-      assert {{ Δ0 ⊢s σ0,,N : Δ, ~ (a_sub IT σ) }}.
+      assert {{ Δ0 ⊢s σ0,,N : Δ, IT[σ] }}.
       {
         econstructor; mauto 2.
         bulky_rewrite.
@@ -943,7 +943,7 @@ Proof.
     mauto.
 Qed.
 
-(* Simple Morphism instance for "glu_ctx_env" *)
+(** *** Simple Morphism instance for [glu_ctx_env] *)
 Add Parametric Morphism : glu_ctx_env
     with signature glu_sub_pred_equivalence ==> eq ==> iff as simple_glu_ctx_env_morphism_iff.
 Proof.

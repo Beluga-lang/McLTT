@@ -2,7 +2,7 @@
 
 In McLTT, we build a verified, runnable typechecker for Martin-Löf type theory. After
 the accomplishment of this project, we will obtain an executable, to which we can feed
-a program in Martin-Loef type theory, and this executable will check whether this
+a program in Martin-Löf type theory, and this executable will check whether this
 program has the specified type. McLTT is novel in that it is implemented in
 Coq. Moreover, we will prove that the typechecking algorithm extracted from Coq is
 sound and complete: a program passes typechecking if and only if it is a well-typed

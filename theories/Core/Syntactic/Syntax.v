@@ -2,7 +2,7 @@ From Coq Require Import List String.
 
 From Mcltt Require Import Base.
 
-(* CST term *)
+(** * Concrete Syntax Tree *)
 Module Cst.
 Inductive obj : Set :=
 | typ : nat -> obj
@@ -10,37 +10,38 @@ Inductive obj : Set :=
 | zero : obj
 | succ : obj -> obj
 | natrec : obj -> string -> obj -> obj -> string -> string -> obj -> obj
-| app : obj -> obj -> obj
-| fn : string -> obj -> obj -> obj
 | pi : string -> obj -> obj -> obj
-| var : string -> obj
+| fn : string -> obj -> obj -> obj
+| app : obj -> obj -> obj
 | prop_eq : obj -> obj -> obj -> obj
 | refl : obj -> obj -> obj
 | eqrec : obj ->                 (** A : eq domain type *)
           string -> string -> string -> obj -> (** x y (z : Eq A x y). M *)
           string -> obj ->                   (** x. Pf : M[x/x, x/y, refl A x/z] *)
-          obj -> obj -> obj -> obj.
+          obj -> obj -> obj -> obj
+| var : string -> obj.
 End Cst.
 
-(* AST term *)
+(** * Abstract Syntac Tree *)
 Inductive exp : Set :=
-(* Natural numbers *)
+(** Universe *)
+| a_typ : nat -> exp
+(** Natural numbers *)
+| a_nat : exp
 | a_zero : exp
 | a_succ : exp -> exp
 | a_natrec : exp -> exp -> exp -> exp -> exp
-(* Type constructors *)
-| a_nat : exp
-| a_typ : nat -> exp
-| a_var : nat -> exp
-(* Functions *)
+(** Functions *)
+| a_pi : exp -> exp -> exp
 | a_fn : exp -> exp -> exp
 | a_app : exp -> exp -> exp
-| a_pi : exp -> exp -> exp
-(* Propositional equality *)
+(** Propositional equality *)
 | a_eq : exp -> exp -> exp -> exp
 | a_refl : exp -> exp -> exp
 | a_eqrec : exp -> exp -> exp -> exp -> exp -> exp -> exp
-(* Substitutions *)
+(** Variable *)
+| a_var : nat -> exp
+(** Substitution Application *)
 | a_sub : exp -> sub -> exp
 with sub : Set :=
 | a_id : sub
@@ -74,6 +75,7 @@ Definition exp_to_num e :=
   | None => None
   end.
 
+(** ** Syntactic Normal/Neutral Form *)
 Inductive nf : Set :=
 | nf_typ : nat -> nf
 | nf_nat : nf
@@ -138,50 +140,52 @@ Arguments q σ/.
 #[global] Bind Scope mcltt_scope with ne.
 Open Scope mcltt_scope.
 
+(** ** Syntactic Notations *)
 Module Syntax_Notations.
   Notation "{{{ x }}}" := x (at level 0, x custom exp at level 99, format "'{{{'  x  '}}}'") : mcltt_scope.
+  (** We need to define substitution notation first to assert [left associativity] of level 0. *)
+  Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, e custom exp, s custom exp at level 60, left associativity, format "e [ s ]") : mcltt_scope.
   Notation "( x )" := x (in custom exp at level 0, x custom exp at level 60) : mcltt_scope.
   Notation "~ x" := x (in custom exp at level 0, x constr at level 0) : mcltt_scope.
   Notation "x" := x (in custom exp at level 0, x ident) : mcltt_scope.
-  Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, s custom exp at level 60) : mcltt_scope.
-  Notation "'λ' A e" := (a_fn A e) (in custom exp at level 0, A custom exp at level 0, e custom exp at level 60) : mcltt_scope.
+  Notation "'λ' A e" := (a_fn A e) (in custom exp at level 1, A custom exp at level 0, e custom exp at level 60) : mcltt_scope.
   Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom exp at level 40, f custom exp, x custom exp at next level, y custom exp at next level) : mcltt_scope.
   Notation "'ℕ'" := a_nat (in custom exp) : mcltt_scope.
-  Notation "'Type' @ n" := (a_typ n) (in custom exp at level 0, n constr at level 0) : mcltt_scope.
-  Notation "'Π' A B" := (a_pi A B) (in custom exp at level 0, A custom exp at level 0, B custom exp at level 60) : mcltt_scope.
+  Notation "'Type' @ n" := (a_typ n) (in custom exp at level 0, n constr at level 0, format "'Type' @ n") : mcltt_scope.
+  Notation "'Π' A B" := (a_pi A B) (in custom exp at level 1, A custom exp at level 0, B custom exp at level 60) : mcltt_scope.
   Notation "'zero'" := a_zero (in custom exp at level 0) : mcltt_scope.
-  Notation "'succ' e" := (a_succ e) (in custom exp at level 0, e custom exp at level 0) : mcltt_scope.
+  Notation "'succ' e" := (a_succ e) (in custom exp at level 1, e custom exp at level 0) : mcltt_scope.
   Notation "'rec' e 'return' A | 'zero' -> ez | 'succ' -> es 'end'" := (a_natrec A ez es e) (in custom exp at level 0, A custom exp at level 60, ez custom exp at level 60, es custom exp at level 60, e custom exp at level 60) : mcltt_scope.
-  Notation "'Eq' A M N" := (a_eq A M N) (in custom exp at level 0, A custom exp at level 30, M custom exp at level 35, N custom exp at level 40) : mcltt_scope.
-  Notation "'refl' A M" := (a_refl A M) (in custom exp at level 0, A custom exp at level 30, M custom exp at level 40) : mcltt_scope.
+  Notation "'Eq' A M N" := (a_eq A M N) (in custom exp at level 1, A custom exp at level 30, M custom exp at level 35, N custom exp at level 40) : mcltt_scope.
+  Notation "'refl' A M" := (a_refl A M) (in custom exp at level 1, A custom exp at level 30, M custom exp at level 40) : mcltt_scope.
   Notation "'eqrec' N 'as' 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (a_eqrec A B BR M1 M2 N) (in custom exp at level 0, A custom exp at level 30, B custom exp at level 60, BR custom exp at level 60, M1 custom exp at level 35, M2 custom exp at level 40, N custom exp at level 60) : mcltt_scope.
 
-  Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0) : mcltt_scope.
+  Notation "'#' n" := (a_var n) (in custom exp at level 0, n constr at level 0, format "'#' n") : mcltt_scope.
   Notation "'Id'" := a_id (in custom exp at level 0) : mcltt_scope.
   Notation "'Wk'" := a_weaken (in custom exp at level 0) : mcltt_scope.
 
-  Infix "∘" := a_compose (in custom exp at level 40) : mcltt_scope.
-  Infix ",," := a_extend (in custom exp at level 50) : mcltt_scope.
+  Notation "σ ∘ τ" := (a_compose σ τ) (in custom exp at level 40, right associativity, format "σ ∘ τ") : mcltt_scope.
+  Notation "σ ,, e" := (a_extend σ e) (in custom exp at level 50, left associativity, format "σ ,, e") : mcltt_scope.
   Notation "'q' σ" := (q σ) (in custom exp at level 30) : mcltt_scope.
 
   Notation "⋅" := nil (in custom exp at level 0) : mcltt_scope.
-  Notation "x , y" := (cons y x) (in custom exp at level 50) : mcltt_scope.
+  Notation "x , y" := (cons y x) (in custom exp at level 50, format "x ,  y") : mcltt_scope.
 
   Notation "n{{{ x }}}" := x (at level 0, x custom nf at level 99, format "'n{{{'  x  '}}}'") : mcltt_scope.
   Notation "( x )" := x (in custom nf at level 0, x custom nf at level 60) : mcltt_scope.
   Notation "~ x" := x (in custom nf at level 0, x constr at level 0) : mcltt_scope.
   Notation "x" := x (in custom nf at level 0, x ident) : mcltt_scope.
-  Notation "'λ' A e" := (nf_fn A e) (in custom nf at level 0, A custom nf at level 0, e custom nf at level 60) : mcltt_scope.
+  Notation "'λ' A e" := (nf_fn A e) (in custom nf at level 2, A custom nf at level 1, e custom nf at level 60) : mcltt_scope.
   Notation "f x .. y" := (ne_app .. (ne_app f x) .. y) (in custom nf at level 40, f custom nf, x custom nf at next level, y custom nf at next level) : mcltt_scope.
   Notation "'ℕ'" := nf_nat (in custom nf) : mcltt_scope.
-  Notation "'Type' @ n" := (nf_typ n) (in custom nf at level 0, n constr at level 0) : mcltt_scope.
-  Notation "'Π' A B" := (nf_pi A B) (in custom nf at level 0, A custom nf at level 0, B custom nf at level 60) : mcltt_scope.
+  Notation "'Type' @ n" := (nf_typ n) (in custom nf at level 0, n constr at level 0, format "'Type' @ n") : mcltt_scope.
+  Notation "'Π' A B" := (nf_pi A B) (in custom nf at level 2, A custom nf at level 1, B custom nf at level 60) : mcltt_scope.
   Notation "'zero'" := nf_zero (in custom nf at level 0) : mcltt_scope.
-  Notation "'succ' M" := (nf_succ M) (in custom nf at level 0, M custom nf at level 0) : mcltt_scope.
+  Notation "'succ' M" := (nf_succ M) (in custom nf at level 2, M custom nf at level 1) : mcltt_scope.
   Notation "'rec' M 'return' A | 'zero' -> MZ | 'succ' -> MS 'end'" := (ne_natrec A MZ MS M) (in custom nf at level 0, A custom nf at level 60, MZ custom nf at level 60, MS custom nf at level 60, M custom nf at level 60) : mcltt_scope.
-  Notation "'#' n" := (ne_var n) (in custom nf at level 0, n constr at level 0) : mcltt_scope.
-  Notation "'⇑' M" := (nf_neut M) (in custom nf at level 0, M custom nf at level 0) : mcltt_scope.
-  Notation "'Eq' A M N" := (nf_eq A M N) (in custom nf at level 0, A custom nf at level 30, M custom nf at level 35, N custom nf at level 40) : mcltt_scope.
-  Notation "'refl' A M" := (nf_refl A M) (in custom nf at level 0, A custom nf at level 30, M custom nf at level 40) : mcltt_scope.
+  Notation "'#' n" := (ne_var n) (in custom nf at level 0, n constr at level 0, format "'#' n") : mcltt_scope.
+  Notation "'⇑' M" := (nf_neut M) (in custom nf at level 0, M custom nf at level 99, format "'⇑'  M") : mcltt_scope.
+  Notation "'Eq' A M N" := (nf_eq A M N) (in custom nf at level 1, A custom nf at level 30, M custom nf at level 35, N custom nf at level 40) : mcltt_scope.
+  Notation "'refl' A M" := (nf_refl A M) (in custom nf at level 1, A custom nf at level 30, M custom nf at level 40) : mcltt_scope.
   Notation "'eqrec' N 'as' 'Eq' A M1 M2 'return' B | 'refl' -> BR 'end'" := (ne_eqrec A B BR M1 M2 N) (in custom nf at level 0, A custom nf at level 30, B custom nf at level 60, BR custom nf at level 60, M1 custom nf at level 35, M2 custom nf at level 40, N custom nf at level 60) : mcltt_scope.
 End Syntax_Notations.

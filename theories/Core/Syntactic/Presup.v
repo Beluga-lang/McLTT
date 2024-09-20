@@ -68,6 +68,7 @@ Proof with mautosolve 4.
   - eexists.
     assert {{ Γ ⊢ B : Type@(max i i0) }} by mauto using lift_exp_max_left.
     assert {{ Γ, B ⊢ C : Type@(max i i0) }} by mauto using lift_exp_max_right...
+
   - eexists.
     eapply exp_sub_typ; [eassumption |].
     assert {{ Γ ⊢s Id ,, M1 : Γ, B}} by mauto 4.
@@ -972,7 +973,7 @@ Proof with mautosolve 4.
 
   - assert (exists i, {{ Δ ⊢ C : Type@i }}) as []...
 
-  (* presup_sub_eq cases *)
+  (** presup_sub_eq cases *)
   - econstructor...
 
   - assert {{ Γ ⊢ B[σ] ≈ B[σ'] : Type@i }} by mauto 4.
@@ -995,7 +996,7 @@ Proof with mautosolve 4.
     enough {{ Γ ⊢ #0[σ] : A[Wk∘σ] }} by mauto 4.
     eapply wf_conv...
 
-    (* presup_subtyp cases *)
+  (** presup_subtyp cases *)
   - exists (max i i0); split; mauto 3 using lift_exp_max_left, lift_exp_max_right.
   - exists (max (S i) (S j)); split; mauto 3 using lift_exp_max_left, lift_exp_max_right.
   - mauto.

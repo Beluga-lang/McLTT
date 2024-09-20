@@ -13,7 +13,7 @@ Generalizable All Variables.
 Notation "'glu_typ_pred_args'" := (Tcons ctx (Tcons typ Tnil)).
 Notation "'glu_typ_pred'" := (predicate glu_typ_pred_args).
 Notation "'glu_typ_pred_equivalence'" := (@predicate_equivalence glu_typ_pred_args) (only parsing).
-(* This type annotation is to distinguish this notation from others *)
+(** This type annotation is to distinguish this notation from others *)
 Notation "Γ ⊢ A ® R" := ((R Γ A : (Prop : Type)) : (Prop : (Type : Type))) (in custom judg at level 80, Γ custom exp, A custom exp, R constr).
 
 Notation "'glu_exp_pred_args'" := (Tcons ctx (Tcons typ (Tcons exp (Tcons domain Tnil)))).
@@ -61,10 +61,9 @@ Variant neut_glu_exp_pred i a : glu_exp_pred :=
   `{ {{ Γ ⊢ A ® neut_glu_typ_pred i a }} ->
      {{ Γ ⊢ M : A }} ->
      {{ Dom m ≈ m ∈ per_bot }} ->
-     (forall Δ σ (* A' *) M', {{ Δ ⊢w σ : Γ }} ->
-                    (* {{ Rne a in length Δ ↘ A' }} -> *)
-                    {{ Rne m in length Δ ↘ M' }} ->
-                    {{ Δ ⊢ M[σ] ≈ M' : A[σ] }}) ->
+     (forall Δ σ M', {{ Δ ⊢w σ : Γ }} ->
+                   {{ Rne m in length Δ ↘ M' }} ->
+                   {{ Δ ⊢ M[σ] ≈ M' : A[σ] }}) ->
      {{ Γ ⊢ M : A ® ⇑ b m ∈ neut_glu_exp_pred i a }} }.
 
 Variant pi_glu_typ_pred i
@@ -297,17 +296,17 @@ Definition nil_glu_sub_pred : glu_sub_pred :=
   fun Δ σ ρ => {{ Δ ⊢s σ : ⋅ }}.
 Arguments nil_glu_sub_pred Δ σ ρ/.
 
-(* The parameters are ordered differently from the Agda version
-   so that we can return "glu_sub_pred". *)
+(** The parameters are ordered differently from the Agda version
+    so that we can return [glu_sub_pred]. *)
 Variant cons_glu_sub_pred i Γ A (TSb : glu_sub_pred) : glu_sub_pred :=
 | mk_cons_glu_sub_pred :
   `{ forall P El,
         {{ Δ ⊢s σ : Γ, A }} ->
         {{ ⟦ A ⟧ ρ ↯ ↘ a }} ->
         {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-        (* Here we use [A[Wk][σ]] instead of [A[Wk∘σ]]
-           as syntactic judgement derived from that is
-           a more direct consequence of [{{ Γ, A ⊢ #0 : A[Wk] }}] *)
+        (** Here we use [{{{ A[Wk][σ] }}}] instead of [{{{ A[Wk∘σ] }}}]
+            as syntactic judgement derived from that is
+            a more direct consequence of [{{ Γ, A ⊢ #0 : A[Wk] }}] *)
         {{ Δ ⊢ #0[σ] : A[Wk][σ] ® ~(ρ 0) ∈ El }} ->
         {{ Δ ⊢s Wk ∘ σ ® ρ ↯ ∈ TSb }} ->
         {{ Δ ⊢s σ ® ρ ∈ cons_glu_sub_pred i Γ A TSb }} }.

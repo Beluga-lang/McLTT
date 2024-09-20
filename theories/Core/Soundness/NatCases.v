@@ -437,7 +437,7 @@ Proof.
     invert_rel_typ_body.
     match goal with
     | _: {{ ⟦ A ⟧ ρ ↦ ⇑! ℕ s ↘ ~?a }}, _: {{ ⟦ A ⟧ ρ ↦ (succ ⇑! ℕ s) ↘ ~?a' }} |- _ =>
-        rename a into as'; (* We cannot use [as] as a name *)
+        rename a into as'; (** We cannot use [as] as a name *)
         rename a' into asucc
     end.
     assert {{ Dom ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ≈ ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ∈ env_relΓℕA }} as HΓℕA
@@ -607,11 +607,11 @@ Proof.
     mauto.
   }
   induction 1; intros; rename Γ0 into Δ.
-  - (* glu_nat_zero *)
+  - (** [glu_nat_zero] *)
     mauto 4 using glu_rel_exp_natrec_zero_helper.
-  - (* glu_nat_succ *)
+  - (** [glu_nat_succ] *)
     mauto 3 using glu_rel_exp_natrec_succ_helper.
-  - (* glu_nat_neut *)
+  - (** [glu_nat_neut] *)
     mauto 3 using glu_rel_exp_natrec_neut_helper.
 Qed.
 
