@@ -11,7 +11,7 @@ PARSERMESSAGEMERGEFILE := $(PARSERMESSAGEFILE:%.messages=%.messages.merge)
 PARSERMESSAGEEXTRACTIONFILE := ../driver/extracted/ParserMessages.ml
 COQPARSERORIGFILE := $(shell find ./ -name '*.vy')
 COQPARSERFILE := $(COQPARSERORIGFILE:%.vy=%.v)
-DEPGRAPHSCRIPT := ../scripts/generate_dep.pl
+DEPGRAPHSCRIPT := ../scripts/generate_dep.py
 DEPGRAPHDOT := ../dep.dot
 DEPGRAPH := ../dep.svg
 
@@ -38,7 +38,7 @@ update_parserMessages:
 	mv "$(PARSERMESSAGEMERGEFILE)" "$(PARSERMESSAGEFILE)"
 
 $(DEPGRAPHDOT): $(VFILES) $(DEPGRAPHSCRIPT)
-	@coqdep $(VFILES) -f _CoqProject | perl "$(DEPGRAPHSCRIPT)" | tred -o "$@"
+	@coqdep $(VFILES) -f _CoqProject | python "$(DEPGRAPHSCRIPT)" | tred -o "$@"
 
 $(DEPGRAPH): $(DEPGRAPHDOT)
 	@dot -T svg -o "$(DEPGRAPH)" "$(DEPGRAPHDOT)"
