@@ -38,7 +38,7 @@ update_parserMessages:
 	mv "$(PARSERMESSAGEMERGEFILE)" "$(PARSERMESSAGEFILE)"
 
 $(DEPGRAPHDOT): $(VFILES) $(DEPGRAPHSCRIPT)
-	@coqdep $(VFILES) -f _CoqProject | python "$(DEPGRAPHSCRIPT)" | tred -o "$@"
+	@coqdep $(VFILES) -f _CoqProject | python3 "$(DEPGRAPHSCRIPT)" | tred -o "$@"
 
 $(DEPGRAPH): $(DEPGRAPHDOT)
 	@dot -T svg -o "$(DEPGRAPH)" "$(DEPGRAPHDOT)"
