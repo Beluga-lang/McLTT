@@ -79,8 +79,8 @@ def data_of_depline(depline: str) -> str:
     if result := DEPLINE_PATTERN.fullmatch(depline.strip()):
         sink_module = module_name_of_path(result.group(1))
         source_paths = result.group(2).split(" ")
-        source_modules = [module_name_of_path(source_path) for source_path in source_paths if DEPSOURCE_PATTERN.match(source_path)]
-        edges = "\n".join((f""""{source_module}" -> "{sink_module}";""" for source_module in source_modules))
+        source_modules = (module_name_of_path(source_path) for source_path in source_paths if DEPSOURCE_PATTERN.match(source_path))
+        edges = "\n".join(f""""{source_module}" -> "{sink_module}";""" for source_module in source_modules)
         return f"""{edges}{node_of_path(result.group(1))}"""
     else:
         raise ValueError(f"Broken Dependency: \"{depline}\"")
@@ -98,7 +98,7 @@ def gen_graph() -> str:
         {core_subgraph_decl("Syntactic")}
         {default_subgraph_decl("Extraction")}
         {default_subgraph_decl("Frontend")}
-        {textwrap.indent("\n".join([data_of_depline(depline) for depline in sys.stdin]), "        ").lstrip()}
+        {textwrap.indent("\n".join(data_of_depline(depline) for depline in sys.stdin), "        ").lstrip()}
       }}""")
 
 print(gen_graph())
