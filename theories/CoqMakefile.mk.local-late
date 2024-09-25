@@ -12,6 +12,9 @@ PARSERMESSAGEEXTRACTIONFILE := ../driver/extracted/ParserMessages.ml
 COQPARSERORIGFILE := $(shell find ./ -name '*.vy')
 COQPARSERFILE := $(COQPARSERORIGFILE:%.vy=%.v)
 DEPGRAPHSCRIPT := ../scripts/generate_dep.py
+DEPPOSTPROCESSSCRIPT := ../scripts/post_process_dep.py
+DEPSVGSCRIPT := ../scripts/svg_script.html
+DEPSVGSTYLE := ../scripts/svg_style.html
 DEPGRAPHDOT := ../dep.dot
 DEPGRAPH := ../dep.svg
 
@@ -40,8 +43,8 @@ update_parserMessages:
 $(DEPGRAPHDOT): $(VFILES) $(DEPGRAPHSCRIPT)
 	@coqdep $(VFILES) -f _CoqProject | python3 "$(DEPGRAPHSCRIPT)" | tred -o "$@"
 
-$(DEPGRAPH): $(DEPGRAPHDOT)
-	@dot -T svg -o "$(DEPGRAPH)" "$(DEPGRAPHDOT)"
+$(DEPGRAPH): $(DEPGRAPHDOT) $(DEPPOSTPROCESSSCRIPT) $(DEPSVGSCRIPT) $(DEPSVGSTYLE)
+	@dot -T svg "$(DEPGRAPHDOT)" | python3 "$(DEPPOSTPROCESSSCRIPT)" "$(DEPGRAPH)"
 
 .PHONY: depgraph
 depgraph: $(DEPGRAPH)
