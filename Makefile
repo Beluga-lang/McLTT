@@ -11,10 +11,10 @@ pretty-timed:
 coqdoc:
 	@${MAKE} coqdoc -C theories
 
+depgraphdoc:
+	@$(MAKE) depgraphdoc -C theories
+
 clean:
 	@$(MAKE) clean -C theories
 	@dune clean
 	@echo "Cleaning finished."
-
-depgraph:
-	@$(MAKE) depgraph -C theories
