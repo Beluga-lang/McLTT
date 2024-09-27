@@ -44,3 +44,4 @@ function makeEdgesInteractive(evt) {
       polygon.style.opacity = '1';
     }, 1000 * timeUnit);
   }
+}
