@@ -3,12 +3,12 @@ function makeEdgesInteractive(evt) {
   let viewBox = svg.viewBox.baseVal;
   let edges = document.getElementsByClassName('edge');
 
-  edges.forEach((edge) => {
+  Array.from(edges).forEach((edge) => {
     edge.addEventListener('click', clickEdge);
   });
 
-  function clickEdge(evt) {
-    let edge = evt.target;
+  function clickEdge() {
+    let edge = this;
     if (edge.classList.contains("edge-highlight")) {
       edge.classList.remove("edge-highlight");
       edge.classList.remove("text-highlight-edges");
