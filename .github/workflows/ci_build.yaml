@@ -83,7 +83,7 @@ jobs:
                 make coqdoc
                 make depgraphdoc
                 mv theories/html html
-                mv theories/depgraph.html html/depgraph.html
+                mv theories/dep.html html/dep.html
                 cp assets/styling.css html/styling.css
                 cp -r assets/images html/images
                 pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McLTT: A Bottom-up Approach to Implementing A Proof Assistant' -t html --css styling.css -o html/index.html
