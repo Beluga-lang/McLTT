@@ -1,4 +1,4 @@
-.PHONY: all pretty-timed test coqdoc clean depgraph
+.PHONY: all pretty-timed test coqdoc clean depgraphdoc
 
 all:
 	@$(MAKE) -C theories

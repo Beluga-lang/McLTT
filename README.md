@@ -11,7 +11,7 @@ elementary) and serves as a basis for future extensions.
 
 ## Online Documentation
 
-We have generated a [Coqdoc](toc.html) for browsing our Coq proof.
+We have generated a [Coqdoc](https://beluga-lang.github.io/McLTT/dep.html) for browsing our Coq proof.
 
 ## Architecture
 

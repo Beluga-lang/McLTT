@@ -5,6 +5,8 @@ import io, sys
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SVG = parse(sys.stdin)
 SVG_ELEMENT = SVG.getElementsByTagName("svg")[0]
+ENTIRE_GRAPH_ELEMENT = SVG_ELEMENT.getElementsByTagName("g")[0]
+ENTIRE_GRAPH_ELEMENT.removeChild(ENTIRE_GRAPH_ELEMENT.getElementsByTagName("title")[0])
 SVG_ELEMENT.setAttribute("onload", "addInteractivity(evt)")
 for line in io.open(PROJECT_ROOT / "assets" / "extra" / "header.html"):
     print(line, end='')

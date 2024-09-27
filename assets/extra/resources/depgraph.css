@@ -1,3 +1,15 @@
+div.#main {
+    max-width: unset;
+}
+
+svg.depgraph {
+    max-width: 100%;
+}
+
+svg.depgraph > text:first-of-type {
+    font-weight: bold;
+}
+
 .text-highlight-edges text {
     opacity: 1 !important;
     stroke-width: 3;

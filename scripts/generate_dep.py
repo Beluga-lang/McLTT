@@ -89,7 +89,7 @@ def gen_graph() -> str:
     newline = "\n"
     return textwrap.dedent(f"""
       digraph Mcltt {{
-        graph [cluster=true,fontsize=28,label="Mcltt",labeljust=l,labelloc=t,penwidth=2,size=15,splines=true,tooltip=""];
+        graph [center=true,class="depgraph",cluster=true,fontname="Open Sans",fontsize=28,label="Mcltt",labeljust=l,labelloc=t,penwidth=2,size=15,splines=true,tooltip=""];
         node [fontsize=18,shape=note,style=filled,URL="https://beluga-lang.github.io/McLTT/\\N.html"];
         {default_subgraph_decl("Algorithmic")}
         {default_subgraph_decl("Core")}
