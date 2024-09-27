@@ -10,4 +10,4 @@ RUN opam repo add coq-released https://coq.inria.fr/opam/released \
     && eval $(opam env)
 
 RUN sudo apt-get update -y -q \
-    && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y -q --no-install-recommends pandoc
+    && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y -q --no-install-recommends graphviz pandoc
