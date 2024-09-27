@@ -86,6 +86,7 @@ def data_of_depline(depline: str) -> str:
         raise ValueError(f"Broken Dependency: \"{depline}\"")
 
 def gen_graph() -> str:
+    newline = "\n"
     return textwrap.dedent(f"""
       digraph Mcltt {{
         graph [cluster=true,fontsize=28,label="Mcltt",labeljust=l,labelloc=t,penwidth=2,size=15,splines=true,tooltip=""];
@@ -98,7 +99,7 @@ def gen_graph() -> str:
         {core_subgraph_decl("Syntactic")}
         {default_subgraph_decl("Extraction")}
         {default_subgraph_decl("Frontend")}
-        {textwrap.indent("\n".join(data_of_depline(depline) for depline in sys.stdin), "        ").lstrip()}
+        {textwrap.indent(newline.join(data_of_depline(depline) for depline in sys.stdin), "        ").lstrip()}
       }}""")
 
 print(gen_graph())

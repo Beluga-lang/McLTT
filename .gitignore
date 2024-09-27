@@ -21,8 +21,8 @@ CoqMakefile.mk*
 theories/html/
 
 # Generated coq dependency graph
-*.dot
-*.svg
+dep.dot
+dep.html
 
 # Editor related files
 ## Emacs
