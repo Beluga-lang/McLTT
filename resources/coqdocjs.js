@@ -168,7 +168,7 @@ function repairDom(){
 function fixTitle(){
   var url = "/" + window.location.pathname;
   var basename = url.substring(url.lastIndexOf('/')+1, url.lastIndexOf('.'));
-  if (basename === "toc") {document.title = "Table of Contents";}
+  if (basename === "dep") {document.title = "Table of Contents";}
   else if (basename === "indexpage") {document.title = "Index";}
   else {document.title = basename;}
 }
