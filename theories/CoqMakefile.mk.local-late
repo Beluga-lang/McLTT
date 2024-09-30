@@ -11,25 +11,55 @@ PARSERMESSAGEMERGEFILE := $(PARSERMESSAGEFILE:%.messages=%.messages.merge)
 PARSERMESSAGEEXTRACTIONFILE := ../driver/extracted/ParserMessages.ml
 COQPARSERORIGFILE := $(shell find ./ -name '*.vy')
 COQPARSERFILE := $(COQPARSERORIGFILE:%.vy=%.v)
+DEPGRAPHSCRIPT := ../scripts/generate_dep.py
+DEPPOSTPROCESSSCRIPT := ../scripts/post_process_dep.py
+DEPGRAPHDOT := dep.dot
+DEPGRAPHDOC := dep.html
+EXTRA_DIR := ../assets/extra
+COQDOCFLAGS := \
+  --toc --toc-depth 2 --html --interpolate \
+  --index indexpage --no-lib-name --parse-comments \
+  --with-header $(EXTRA_DIR)/header.html --with-footer $(EXTRA_DIR)/footer.html
+export COQDOCFLAGS
 
 # post-all:: $(COQPARSERFILE) $(PARSERMESSAGEEXTRACTIONFILE) check_parserMessages
 # 	@echo "Separate Extraction main." | $(COQTOP) $(COQFLAGS) $(COQLIBS) -topfile Entrypoint.v -l Entrypoint.v
 
 $(COQPARSERFILE): %.v : %.vy
-	$(MENHIR) --coq "$?"
+	@echo "MENHIR $?"
+	@$(MENHIR) --coq "$?"
 
 $(PARSERMESSAGEEXTRACTIONFILE): $(PARSERMESSAGEFILE) $(COQPARSERORIGFILE)
-	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --compile-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEEXTRACTIONFILE)"
+	@echo "MENHIR $? PARSER MESSAGE"
+	@$(MENHIR) --coq "$(COQPARSERORIGFILE)" --compile-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEEXTRACTIONFILE)"
 
 .PHONY: check_parserMessages
 check_parserMessages:
-	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --list-errors > "$(PARSERMESSAGETEMPFILE)"
-	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --compare-errors "$(PARSERMESSAGETEMPFILE)" --compare-errors "$(PARSERMESSAGEFILE)"
-	rm "$(PARSERMESSAGETEMPFILE)"
+	@echo "MENHIR $? CHECK PARSER MESSAGE"
+	@$(MENHIR) --coq "$(COQPARSERORIGFILE)" --list-errors > "$(PARSERMESSAGETEMPFILE)"
+	@$(MENHIR) --coq "$(COQPARSERORIGFILE)" --compare-errors "$(PARSERMESSAGETEMPFILE)" --compare-errors "$(PARSERMESSAGEFILE)"
+	@rm "$(PARSERMESSAGETEMPFILE)"
 
 .PHONY: update_parserMessages
 update_parserMessages:
-	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --list-errors > "$(PARSERMESSAGETEMPFILE)"
-	$(MENHIR) --coq "$(COQPARSERORIGFILE)" --merge-errors "$(PARSERMESSAGETEMPFILE)" --merge-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEMERGEFILE)"
-	rm "$(PARSERMESSAGETEMPFILE)"
-	mv "$(PARSERMESSAGEMERGEFILE)" "$(PARSERMESSAGEFILE)"
+	@echo "MENHIR $? UPDATE PARSER MESSAGE"
+	@$(MENHIR) --coq "$(COQPARSERORIGFILE)" --list-errors > "$(PARSERMESSAGETEMPFILE)"
+	@$(MENHIR) --coq "$(COQPARSERORIGFILE)" --merge-errors "$(PARSERMESSAGETEMPFILE)" --merge-errors "$(PARSERMESSAGEFILE)" > "$(PARSERMESSAGEMERGEFILE)"
+	@rm "$(PARSERMESSAGETEMPFILE)"
+	@mv "$(PARSERMESSAGEMERGEFILE)" "$(PARSERMESSAGEFILE)"
+
+.PHONY: coqdoc
+coqdoc: html
+	cp -R $(EXTRA_DIR)/resources html
+
+$(DEPGRAPHDOT): $(VFILES) $(DEPGRAPHSCRIPT)
+	@coqdep $(VFILES) -f _CoqProject | python3 "$(DEPGRAPHSCRIPT)" | tred > "$@"
+
+$(DEPGRAPHDOC): $(DEPGRAPHDOT) $(DEPPOSTPROCESSSCRIPT)
+	@dot -T svg "$(DEPGRAPHDOT)" | python3 "$(DEPPOSTPROCESSSCRIPT)" > "$(DEPGRAPHDOC)"
+
+.PHONY: depgraphdoc
+depgraphdoc: $(DEPGRAPHDOC)
+
+clean::
+	@rm $(DEPGRAPHDOT) $(DEPGRAPHDOC)
