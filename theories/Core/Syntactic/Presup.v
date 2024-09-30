@@ -983,6 +983,11 @@ Proof with mautosolve 4.
     (* + admit. *)
     (* + admit. *)
     (* + admit. *)
+    assert {{ ⊢ Γ, B ≈ Γ, B' }} by mauto 3.
+    assert {{ Γ , B ⊢ B'[Wk] : Type@i }} by mauto 4.
+    assert {{ Γ, B ⊢ B[Wk] ≈ B'[Wk] : Type@i }} by mauto 3.
+    assert {{ Γ, B' ⊢ B[Wk] ≈ B'[Wk] : Type@i }} by mauto 3.
+    assert {{ ⊢ Γ, B, B[Wk] ≈ Γ, B', B'[Wk] }} by mauto 4.
 
   - eexists.
     eapply exp_sub_typ; mauto 2.
