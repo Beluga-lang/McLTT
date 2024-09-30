@@ -1,5 +1,5 @@
-From Mcltt Require Import Base LibTactics CtxSub.
-From Mcltt Require Export System.
+From Mcltt Require Import Base LibTactics.
+From Mcltt Require Export CtxSub.
 Import Syntax_Notations.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
