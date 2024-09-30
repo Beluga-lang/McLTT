@@ -58,19 +58,19 @@
 # ./Core/Soundness/Weakening.v
 # ./Core/Soundness/Weakening/Definition.v
 # ./Core/Soundness/Weakening/Lemmas.v
-# ./Core/Syntactic/CoreInversions.v
-# ./Core/Syntactic/CoreTypeInversions.v
-# ./Core/Syntactic/Corollaries.v
+./Core/Syntactic/CoreInversions.v
+./Core/Syntactic/CoreTypeInversions.v
+./Core/Syntactic/Corollaries.v
 ./Core/Syntactic/CtxEq.v
 ./Core/Syntactic/CtxSub.v
 ./Core/Syntactic/ExpNoConfusion.v
-# ./Core/Syntactic/Presup.v
+./Core/Syntactic/Presup.v
 ./Core/Syntactic/Syntax.v
 ./Core/Syntactic/System.v
 ./Core/Syntactic/System/Definitions.v
 ./Core/Syntactic/System/Lemmas.v
 ./Core/Syntactic/System/Tactics.v
-# ./Core/Syntactic/SystemOpt.v
+./Core/Syntactic/SystemOpt.v
 # ./Entrypoint.v
 # ./Extraction/Evaluation.v
 # ./Extraction/NbE.v
