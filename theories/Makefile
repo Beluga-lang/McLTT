@@ -60,6 +60,3 @@ $(COQPROJECTFILE): ;
 
 %: $(COQMAKEFILE) force
 	@+$(MAKE) -f "$(COQMAKEFILE)" "$@"
-
-COQDOCJS_DIR:=../assets/
-include Makefile.doc

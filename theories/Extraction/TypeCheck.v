@@ -1,17 +1,9 @@
 From Coq Require Import Morphisms_Relations.
 From Mcltt Require Import Base LibTactics.
 From Mcltt.Algorithmic Require Import Typing.Definitions Typing.Lemmas.
-From Mcltt.Core Require Import
-  Completeness
-  Completeness.Consequences.Inversions
-  Completeness.Consequences.Types
-  Completeness.FundamentalTheorem
-  Completeness.LogicalRelation
-  NbE
-  Semantic.Consequences
-  Semantic.Realizability
-  Soundness
-  SystemOpt.
+From Mcltt.Core Require Import Completeness Soundness.
+From Mcltt.Core.Completeness Require Import Consequences.Types FundamentalTheorem.
+From Mcltt.Core.Semantic Require Import Consequences Realizability.
 From Mcltt.Extraction Require Import NbE PseudoMonadic Subtyping.
 From Mcltt.Frontend Require Import Elaborator.
 From Equations Require Import Equations.

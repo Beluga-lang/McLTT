@@ -1,5 +1,5 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base LibTactics CtxSub.
+From Mcltt Require Import Base LibTactics.
 From Mcltt.Core Require Export SystemOpt.
 Import Syntax_Notations.
 

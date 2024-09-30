@@ -81,7 +81,9 @@ jobs:
             startGroup "Build HTMLs for GitHub pages"
               if [[ "${{ env.DOC_DEPLOY }}" == 'true' ]]; then
                 make coqdoc
+                make depgraphdoc
                 mv theories/html html
+                mv theories/dep.html html/dep.html
                 cp assets/styling.css html/styling.css
                 cp -r assets/images html/images
                 pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McLTT: A Bottom-up Approach to Implementing A Proof Assistant' -t html --css styling.css -o html/index.html
@@ -104,7 +106,7 @@ jobs:
         run: sudo chown -R 1001:116 .
 
       - name: Deploy GitHub pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.4
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         if: ${{ success() && env.DOC_DEPLOY == 'true' }}
         with:
           branch: gh-pages
