@@ -1,6 +1,6 @@
 From Coq Require Import Setoid Nat.
-From Mcltt Require Import Base LibTactics CtxSub.
-From Mcltt.Core Require Export SystemOpt CoreInversions.
+From Mcltt Require Import Base LibTactics.
+From Mcltt.Core Require Export CoreInversions.
 Import Syntax_Notations.
 
 Corollary sub_id_typ : forall Γ M A,
