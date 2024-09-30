@@ -106,7 +106,7 @@ jobs:
         run: sudo chown -R 1001:116 .
 
       - name: Deploy GitHub pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.4
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         if: ${{ success() && env.DOC_DEPLOY == 'true' }}
         with:
           branch: gh-pages
