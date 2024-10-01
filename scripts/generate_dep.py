@@ -48,7 +48,8 @@ def module_name_of_path(path: str) -> str:
 
 def node_of_path(path: str) -> str:
     parts = module_parts_of_path(path)
-    color = next((COLORS[parts[i]] for i in range(len(parts)-1,-1,-1) if parts[i] in COLORS),COLORS["others"])
+    dedupe_parts = list(dict.fromkeys(parts))
+    color = next((COLORS[part] for part in reversed(dedupe_parts) if part in COLORS),COLORS["others"])
     subgraph_names = ["/".join(parts[:partindex]) for partindex in range(1,len(parts))]
     module_name = module_name_of_module_parts(parts)
     node_label = parts[-1]
