@@ -28,10 +28,13 @@
 <h1 class="libtitle">Mcltt.Extraction.NbE</h1>
 
 <div class="code">
-<span class="id" title="keyword">From</span> <span class="id" title="var">Mcltt</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mcltt.Core.Base.html#"><span class="id" title="library">Base</span></a> <a class="idref" href="Mcltt.LibTactics.html#"><span class="id" title="library">LibTactics</span></a>.<br/>
-<span class="id" title="keyword">From</span> <span class="id" title="var">Mcltt.Core</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="Mcltt.Core.Semantic.NbE.html#"><span class="id" title="library">NbE</span></a>.<br/>
-<span class="id" title="keyword">From</span> <span class="id" title="var">Mcltt.Extraction</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mcltt.Extraction.Evaluation.html#"><span class="id" title="library">Evaluation</span></a> <a class="idref" href="Mcltt.Extraction.Readback.html#"><span class="id" title="library">Readback</span></a>.<br/>
 <span class="id" title="keyword">From</span> <span class="id" title="keyword">Equations</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">Equations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Mcltt</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mcltt.LibTactics.html#"><span class="id" title="library">LibTactics</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Mcltt.Core</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mcltt.Core.Base.html#"><span class="id" title="library">Base</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Mcltt.Core.Semantic</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="Mcltt.Core.Semantic.NbE.html#"><span class="id" title="library">NbE</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Mcltt.Extraction</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mcltt.Extraction.Evaluation.html#"><span class="id" title="library">Evaluation</span></a> <a class="idref" href="Mcltt.Extraction.Readback.html#"><span class="id" title="library">Readback</span></a>.<br/>
 <span class="id" title="keyword">Import</span> <a class="idref" href="Mcltt.Core.Semantic.Domain.html#Domain_Notations"><span class="id" title="module">Domain_Notations</span></a>.<br/>
 
 <br/>
@@ -61,9 +64,6 @@
 <br/>
 #[<span class="id" title="var">local</span>]<br/>
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">initial_env_order_sound</span> : <span class="id" title="var">mcltt</span>.<br/>
-
-<br/>
-<span class="id" title="keyword">Derive</span> <span class="id" title="var">Signature</span> <span class="id" title="keyword">for</span> <a class="idref" href="Mcltt.Extraction.NbE.html#initial_env_order"><span class="id" title="inductive">initial_env_order</span></a>.<br/>
 
 <br/>
 <span class="id" title="keyword">Section</span> <a id="InitialEnvImpl" class="idref" href="#InitialEnvImpl"><span class="id" title="section">InitialEnvImpl</span></a>.<br/>
