@@ -1,7 +1,9 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Readback Evaluation ExpNoConfusion.
-From Mcltt.Extraction Require Import Evaluation.
 From Equations Require Import Equations.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import Readback Evaluation.
+From Mcltt.Extraction Require Import Evaluation.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -95,8 +97,6 @@ Qed.
 
 #[export]
 Hint Resolve read_nf_order_sound read_ne_order_sound read_typ_order_sound : mcltt.
-
-Derive Signature for read_nf_order read_ne_order read_typ_order.
 
 #[local]
 Ltac impl_obl_tac1 :=

@@ -1,4 +1,6 @@
-From Mcltt Require Import Base LibTactics System.Definitions.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic.System Require Import Definitions.
 Import Syntax_Notations.
 
 (** ** Core Presuppositions *)

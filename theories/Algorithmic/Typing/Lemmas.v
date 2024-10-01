@@ -1,10 +1,9 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Algorithmic Require Import Typing.Definitions.
-From Mcltt.Algorithmic Require Export Subtyping.Lemmas.
-From Mcltt.Core Require Import Soundness Completeness.
+From Mcltt Require Import LibTactics.
+From Mcltt.Algorithmic.Typing Require Import Definitions.
+From Mcltt.Algorithmic.Subtyping Require Export Lemmas.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import Consequences.Rules.
 From Mcltt.Core.Semantic Require Import Consequences.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
 From Mcltt.Frontend Require Import Elaborator.
 Import Domain_Notations.
 

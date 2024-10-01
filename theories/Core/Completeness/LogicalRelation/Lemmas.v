@@ -1,6 +1,8 @@
 From Coq Require Import Morphisms Morphisms_Relations RelationClasses Relation_Definitions.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core.Completeness Require Import LogicalRelation.Definitions LogicalRelation.Tactics.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Completeness.LogicalRelation Require Import Definitions Tactics.
 Import Domain_Notations.
 
 Add Parametric Morphism M ρ M' ρ' : (rel_exp M ρ M' ρ')

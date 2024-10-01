@@ -1,5 +1,8 @@
 From Coq Require Import Lia PeanoNat Relations.
-From Mcltt Require Import Base LibTactics Evaluation.Definitions.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic.Evaluation Require Import Definitions.
 Import Domain_Notations.
 
 Section functional_eval.

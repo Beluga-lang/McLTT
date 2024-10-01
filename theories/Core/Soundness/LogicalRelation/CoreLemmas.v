@@ -1,9 +1,9 @@
 From Coq Require Import Equivalence Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses.
 
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import PER Syntactic.Corollaries.
-From Mcltt.Core.Soundness Require Import LogicalRelation.Definitions LogicalRelation.CoreTactics.
-From Mcltt.Core.Soundness Require Export Weakening.Lemmas.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Soundness.LogicalRelation Require Import CoreTactics Definitions.
+From Mcltt.Core.Soundness.Weakening Require Export Lemmas.
 Import Domain_Notations.
 
 Lemma glu_nat_per_nat : forall Γ M a,

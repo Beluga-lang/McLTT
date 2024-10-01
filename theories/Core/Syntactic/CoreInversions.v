@@ -1,6 +1,7 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export SystemOpt.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Syntax_Notations.
 
 Corollary wf_zero_inversion : forall Γ A,

@@ -1,7 +1,7 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Algorithmic Require Import Subtyping.Definitions.
-From Mcltt.Core Require Import NbE.
-From Mcltt.Extraction Require Import Evaluation NbE PseudoMonadic.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Algorithmic Require Export Subtyping.
+From Mcltt.Extraction Require Import NbE PseudoMonadic.
 From Equations Require Import Equations.
 Import Domain_Notations.
 

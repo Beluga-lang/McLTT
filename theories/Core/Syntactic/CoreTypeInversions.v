@@ -1,6 +1,7 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export System.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export System.
 Import Syntax_Notations.
 
 Lemma wf_typ_inversion : forall {Γ i A},

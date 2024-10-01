@@ -1,6 +1,6 @@
-From Mcltt Require Import Base.
-From Mcltt.Core Require Import System.Definitions NbE.
-From Mcltt Require Export Syntax.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Export NbE.
+From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Syntax_Notations.
 
 Reserved Notation "Γ ⊢a A ⊆ A'" (in custom judg at level 80, Γ custom exp, A custom exp, A' custom exp).

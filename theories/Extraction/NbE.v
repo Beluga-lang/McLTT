@@ -1,7 +1,9 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export NbE.
-From Mcltt.Extraction Require Import Evaluation Readback.
 From Equations Require Import Equations.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Export NbE.
+From Mcltt.Extraction Require Import Evaluation Readback.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -26,8 +28,6 @@ Qed.
 
 #[local]
 Hint Resolve initial_env_order_sound : mcltt.
-
-Derive Signature for initial_env_order.
 
 Section InitialEnvImpl.
 

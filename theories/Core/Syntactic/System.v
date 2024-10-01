@@ -1,1 +1,1 @@
-From Mcltt Require Export System.Definitions System.Lemmas System.Tactics.
+From Mcltt.Core.Syntactic.System Require Export Definitions Lemmas Tactics.

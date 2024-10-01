@@ -1,5 +1,6 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt Require Export System.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export System.
 Import Syntax_Notations.
 
 Lemma ctx_sub_refl : forall {Γ},

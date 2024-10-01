@@ -1,8 +1,7 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness Soundness.
-From Mcltt.Core.Completeness Require Import Consequences.Types LogicalRelation.
-From Mcltt.Core.Semantic Require Import NbE.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core Require Export Soundness.
+From Mcltt.Core.Completeness.Consequences Require Export Types.
 Import Domain_Notations.
 
 Lemma adjust_exp_eq_level : forall {Γ A A' i j},

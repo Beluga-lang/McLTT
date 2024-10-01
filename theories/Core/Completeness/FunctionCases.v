@@ -1,6 +1,7 @@
 From Coq Require Import Morphisms_Relations Relation_Definitions.
 
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import LogicalRelation TermStructureCases UniverseCases.
 Import Domain_Notations.
 

@@ -1,7 +1,8 @@
-From Coq Require Import List Classes.RelationClasses.
-Require Import Setoid Morphisms.
-From Mcltt Require Import Base LibTactics.
-From Mcltt Require Export Syntax.
+From Coq Require Import List Classes.RelationClasses Setoid Morphisms.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export Syntax.
 Import Syntax_Notations.
 
 Reserved Notation "⊢ Γ" (in custom judg at level 80, Γ custom exp).

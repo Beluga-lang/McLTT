@@ -1,10 +1,6 @@
-From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses SetoidTactics.
-
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Soundness Require Import LogicalRelation.
-From Mcltt.Core.Syntactic Require Import Corollaries.
 Import Domain_Notations.
 
 Lemma glu_rel_ctx_empty : {{ ⊩ ⋅ }}.

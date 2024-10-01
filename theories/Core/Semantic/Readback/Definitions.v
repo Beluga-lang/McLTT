@@ -1,5 +1,6 @@
-From Mcltt.Core Require Import Base Evaluation.
-From Mcltt Require Export Domain.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import Evaluation.
+From Mcltt.Core.Semantic Require Export Domain.
 Import Domain_Notations.
 
 Reserved Notation "'Rnf' m 'in' s ↘ M" (in custom judg at level 80, m custom domain, s constr, M custom nf).

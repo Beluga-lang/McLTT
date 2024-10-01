@@ -1,6 +1,8 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation ExpNoConfusion.
 From Equations Require Import Equations.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import Evaluation.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -74,7 +76,6 @@ with eval_sub_order : sub -> env -> Prop :=
 #[local]
 Hint Constructors eval_exp_order eval_natrec_order eval_app_order eval_sub_order : mcltt.
 
-
 Lemma eval_exp_order_sound : forall m p a,
     {{ ⟦ m ⟧ p ↘ a }} ->
     eval_exp_order m p
@@ -97,7 +98,6 @@ Qed.
 #[export]
 Hint Resolve eval_exp_order_sound eval_natrec_order_sound eval_app_order_sound eval_sub_order_sound : mcltt.
 
-
 #[local]
 Ltac impl_obl_tac1 :=
   match goal with
@@ -110,8 +110,6 @@ Ltac impl_obl_tac1 :=
 #[local]
 Ltac impl_obl_tac :=
   repeat impl_obl_tac1; try econstructor; eauto.
-
-Derive Signature for eval_exp_order eval_natrec_order eval_app_order eval_sub_order.
 
 #[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
 Equations eval_exp_impl m p (H : eval_exp_order m p) : { d | eval_exp m p d } by struct H :=
