@@ -1,4 +1,4 @@
-import re, sys, textwrap
+import itertools, re, sys, textwrap
 from pathlib import Path
 from typing import Iterable
 
@@ -50,7 +50,7 @@ def node_of_path(path: str) -> str:
     parts = module_parts_of_path(path)
     dedupe_parts = list(dict.fromkeys(parts))
     color = next((COLORS[part] for part in reversed(dedupe_parts) if part in COLORS),COLORS["others"])
-    subgraph_names = ["/".join(parts[:partindex]) for partindex in range(1,len(parts))]
+    subgraph_names = list(itertools.accumulate(parts[:-1], func="{0}/{1}".format))
     module_name = module_name_of_module_parts(parts)
     node_label = parts[-1]
 
@@ -60,6 +60,8 @@ def node_of_path(path: str) -> str:
         result = under_subgraph(f"Core/{node_label}", f""""{module_name}"[label="{node_label}",tooltip="{module_name}",color={color},fillcolor=white];""")
     elif module_name == "Mcltt.LibTactics":
         result = f"""{{ graph[cluster=false,rank=min]; "{module_name}"[label="{node_label}",tooltip="{module_name}",fillcolor={color}]; }}"""
+    elif module_name == "Mcltt.Core.Semantic.Consequences":
+        result = f"""{{ cluster=false; rank=max; "{module_name}"[label="{node_label}",tooltip="{module_name}",fillcolor={color}]; }}"""
     else:
         result = f""""{module_name}"[label="{node_label}",tooltip="{module_name}",fillcolor={color}];"""
 

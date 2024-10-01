@@ -1,1 +1,1 @@
-From Mcltt.Core.Completeness Require Export LogicalRelation.Definitions LogicalRelation.Lemmas LogicalRelation.Tactics.
+From Mcltt.Core.Completeness.LogicalRelation Require Export Definitions Lemmas Tactics.

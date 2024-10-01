@@ -1,4 +1,5 @@
-From Mcltt Require Import Base System.Definitions.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Syntax_Notations.
 
 Generalizable All Variables.

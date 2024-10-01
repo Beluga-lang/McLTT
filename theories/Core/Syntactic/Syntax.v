@@ -1,6 +1,6 @@
 From Coq Require Import List String.
 
-From Mcltt Require Import Base.
+From Mcltt.Core Require Import Base.
 
 (** * Concrete Syntax Tree *)
 Module Cst.

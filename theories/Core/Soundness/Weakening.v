@@ -1,1 +1,1 @@
-From Mcltt.Core.Soundness Require Export Weakening.Definition Weakening.Lemmas.
+From Mcltt.Core.Soundness.Weakening Require Export Definitions Lemmas.

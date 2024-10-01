@@ -1,1 +1,1 @@
-From Mcltt Require Export PER.Definitions PER.Lemmas PER.CoreTactics.
+From Mcltt.Core.Semantic.PER Require Export CoreTactics Definitions Lemmas.

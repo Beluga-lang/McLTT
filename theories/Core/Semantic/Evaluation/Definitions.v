@@ -1,5 +1,5 @@
-From Mcltt Require Import Base.
-From Mcltt Require Export Domain.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Export Domain.
 Import Domain_Notations.
 
 Reserved Notation "'⟦' M '⟧' ρ '↘' r" (in custom judg at level 80, M custom exp at level 99, ρ custom domain at level 99, r custom domain at level 99).

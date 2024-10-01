@@ -1,6 +1,7 @@
 From Coq Require Import Lia List MSets PeanoNat String FunInd.
 
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Syntactic Require Import Syntax.
 
 Open Scope string_scope.

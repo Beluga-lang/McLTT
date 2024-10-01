@@ -1,7 +1,8 @@
 From Coq Require Import RelationClasses.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Completeness Completeness.FundamentalTheorem Completeness.LogicalRelation Semantic.Realizability.
-From Mcltt.Core Require Export SystemOpt.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core Require Export Completeness.
+From Mcltt.Core.Semantic Require Import Realizability.
 Import Domain_Notations.
 
 Lemma exp_eq_typ_implies_eq_level : forall {Γ i j k},

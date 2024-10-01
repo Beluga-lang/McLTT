@@ -1,10 +1,13 @@
-From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses.
-
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem UniverseCases.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import ContextCases LogicalRelation SubstitutionCases SubtypingCases TermStructureCases UniverseCases.
-From Mcltt.Core.Syntactic Require Import Corollaries.
+From Mcltt.Core.Soundness Require Import
+  ContextCases
+  LogicalRelation
+  SubstitutionCases
+  SubtypingCases
+  TermStructureCases
+  UniverseCases.
 Import Domain_Notations.
 
 Lemma cons_glu_sub_pred_pi_helper : forall {Γ Sb Γ' σ ρ A a i P El Γ'' τ M c},

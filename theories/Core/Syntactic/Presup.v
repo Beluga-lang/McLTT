@@ -1,5 +1,6 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt Require Export CtxEq.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export CtxEq.
 Import Syntax_Notations.
 
 #[local]

@@ -1,5 +1,6 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt Require Export System.Definitions System.Lemmas.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic.System Require Export Definitions Lemmas.
 Import Syntax_Notations.
 
 #[global]

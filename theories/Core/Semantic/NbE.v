@@ -1,5 +1,6 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export Domain Evaluation Readback.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Export Domain Evaluation Readback.
 Import Domain_Notations.
 
 Generalizable All Variables.

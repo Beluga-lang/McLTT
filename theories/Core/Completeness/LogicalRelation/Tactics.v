@@ -1,5 +1,6 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import PER.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import PER.
 Import Domain_Notations.
 
 Ltac eexists_rel_exp :=

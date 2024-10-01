@@ -1,6 +1,5 @@
-From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses.
-
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Soundness Require Import
   ContextCases
   FunctionCases
@@ -10,7 +9,6 @@ From Mcltt.Core.Soundness Require Import
   TermStructureCases
   UniverseCases.
 From Mcltt.Core.Soundness Require Export LogicalRelation.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Domain_Notations.
 
 Section soundness_fundamental.

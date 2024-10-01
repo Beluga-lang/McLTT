@@ -1,11 +1,10 @@
 From Coq Require Import Equivalence Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses.
 
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import PER Syntactic.Corollaries.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import NbE Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation.Core Realizability.
-From Mcltt.Core.Syntactic Require Import Corollaries.
+From Mcltt.Core.Semantic Require Import Realizability.
+From Mcltt.Core.Soundness Require Export Realizability.
 Import Domain_Notations.
 
 Add Parametric Morphism i a Γ A M : (glu_elem_bot i a Γ A M)

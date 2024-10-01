@@ -1,7 +1,9 @@
 From Coq Require Import Equivalence Lia Morphisms Morphisms_Prop Morphisms_Relations PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import PER.Definitions PER.CoreTactics.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import PER.CoreTactics PER.Definitions.
 Import Domain_Notations.
 
 Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A ρ A' ρ' : (rel_mod_eval R0 A ρ A' ρ')

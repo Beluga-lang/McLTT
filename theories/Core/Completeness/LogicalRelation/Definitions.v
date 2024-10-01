@@ -1,6 +1,6 @@
 From Coq Require Import Relations.
-From Mcltt Require Import Base.
-From Mcltt.Core Require Export PER.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Export PER.
 Import Domain_Notations.
 
 Inductive rel_exp M ρ M' ρ' (R : relation domain) : Prop :=

@@ -1,8 +1,8 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation Readback NbE CoreTypeInversions Presup CtxSub SystemOpt.
-From Mcltt.Core.Completeness Require Import Consequences.Rules.
-From Mcltt Require Import Completeness Soundness.
-From Mcltt.Algorithmic Require Import Subtyping.Definitions.
+From Mcltt Require Import LibTactics.
+From Mcltt.Algorithmic.Subtyping Require Import Definitions.
+From Mcltt.Core Require Import Base Soundness.
+From Mcltt.Core.Syntactic Require Import SystemOpt.
+From Mcltt.Core.Completeness.Consequences Require Import Rules.
 Import Syntax_Notations.
 
 #[local]

@@ -1,6 +1,9 @@
 From Coq Require Import Lia PeanoNat Relations.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation Readback.Definitions.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import Evaluation.
+From Mcltt.Core.Semantic.Readback Require Import Definitions.
 Import Domain_Notations.
 
 Section functional_read.

@@ -1,5 +1,6 @@
-From Mcltt Require Export Syntax.
 From Equations Require Import Equations.
+
+From Mcltt.Core.Syntactic Require Export Syntax.
 
 Reserved Notation "'env'".
 
