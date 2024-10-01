@@ -64,14 +64,11 @@ jobs:
           script: |
             startGroup "Build binary"
               make pretty-timed
-              if [[ "${{ env.DOC_DEPLOY }}" == 'true' ]]; then
-                make coqdoc
-              fi
             endGroup
             startGroup "Build HTMLs for GitHub pages"
               if [[ "${{ env.DOC_DEPLOY }}" == 'true' ]]; then
                 make coqdoc
-                make depgraphdoc
+                DOC_BASE="${{ env.DOC_DEPLOY_DEST }}" make depgraphdoc
                 mv theories/html html
                 mv theories/dep.html html/dep.html
                 cp assets/styling.css html/styling.css
