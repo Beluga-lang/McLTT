@@ -43,7 +43,7 @@
     | DOT _ -> "."
     | LET _ -> "let"
     | IN _ -> "in"
-    | EQ _ -> "="
+    | EQ _ -> ":="
 
   let get_range_of_token : token -> (position * position) =
     function
@@ -109,7 +109,7 @@ rule read =
   | "." { DOT (get_range lexbuf) }
   | "let" {LET (get_range lexbuf) }
   | "in" {IN (get_range lexbuf) }
-  | "=" {EQ (get_range lexbuf) }
+  | ":=" {EQ (get_range lexbuf) }
   | string { VAR (get_range lexbuf, Lexing.lexeme lexbuf) }
   | _ as c { failwith (Format.asprintf "@[<v 2>Lexer error:@ @[<v 2>Unexpected character %C@ at %a@]@]@." c format_position lexbuf.lex_start_p) }
 and comment =
