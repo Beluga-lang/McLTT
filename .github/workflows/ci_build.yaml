@@ -9,14 +9,6 @@ on:
       - main
       - ext/**
   workflow_dispatch:
-  
-permissions:
-  actions: write
-  contents: write
-
-env:
-  REGISTRY: "ghcr.io"
-  IMAGE_TAG: "beluga-lang/mcltt:main"
       
 jobs:
   wf:
@@ -33,8 +25,15 @@ jobs:
     name: Continuous Intergration
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       packages: read
       contents: write
+    env:
+      REGISTRY: "ghcr.io"
+      IMAGE_TAG: "beluga-lang/mcltt:main"
+      # Only deploy if the build follows from pushing to one of main branches
+      DOC_DEPLOY: ${{ (github.ref_name == 'main' || startsWith(github.ref_name, 'ext/')) && 'true' || 'false' }}
+      DOC_DEPLOY_DEST: ${{ startsWith(github.ref_name, 'ext/') && github.ref_name || '' }}
     steps:
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
@@ -42,15 +41,6 @@ jobs:
 
       - name: Checkout repo
         uses: actions/checkout@v4
-        
-      - name: Initialise variables
-        run: |
-          # Only deploy if the build follows from pushing to master
-          if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then
-             echo "DOC_DEPLOY=true" >> $GITHUB_ENV
-          else
-             echo "DOC_DEPLOY=false" >> $GITHUB_ENV
-          fi
           
       - name: Log in container registry
         uses: docker/login-action@v3
@@ -74,14 +64,11 @@ jobs:
           script: |
             startGroup "Build binary"
               make pretty-timed
-              if [[ "${{ env.DOC_DEPLOY }}" == 'true' ]]; then
-                make coqdoc
-              fi
             endGroup
             startGroup "Build HTMLs for GitHub pages"
               if [[ "${{ env.DOC_DEPLOY }}" == 'true' ]]; then
                 make coqdoc
-                make depgraphdoc
+                DOC_BASE="${{ env.DOC_DEPLOY_DEST }}" make depgraphdoc
                 mv theories/html html
                 mv theories/dep.html html/dep.html
                 cp assets/styling.css html/styling.css
@@ -106,8 +93,9 @@ jobs:
         run: sudo chown -R 1001:116 .
 
       - name: Deploy GitHub pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.8
-        if: ${{ success() && env.DOC_DEPLOY == 'true' }}
+        uses: JamesIves/github-pages-deploy-action@v4
+        if: ${{ env.DOC_DEPLOY == 'true' }}
         with:
-          branch: gh-pages
           folder: html
+          target-folder: ${{ env.DOC_DEPLOY_DEST }}
+          clean-exclude: ext

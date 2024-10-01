@@ -1,4 +1,4 @@
-import itertools, re, sys, textwrap
+import itertools, os, re, sys, textwrap
 from pathlib import Path
 from typing import Iterable
 
@@ -20,6 +20,7 @@ COLORS = {
 
 GRAPH_SET: set[str] = set()
 RANKED_GRAPH_SET: set[str] = set()
+DOC_BASE = os.environ["DOC_BASE"] if "DOC_BASE" in os.environ else ""
 
 def under_subgraph(name: str, body: str) -> str:
     return f"""subgraph "{name}" {{ {body} }}"""
@@ -93,7 +94,7 @@ def gen_graph() -> str:
     return textwrap.dedent(f"""
       digraph Mcltt {{
         graph [center=true,class="depgraph",cluster=true,fontname="Open Sans",fontsize=28,label="Mcltt",labeljust=l,labelloc=t,penwidth=2,size=15,splines=true,tooltip=""];
-        node [fontsize=18,shape=note,style=filled,URL="https://beluga-lang.github.io/McLTT/\\N.html"];
+        node [fontsize=18,shape=note,style=filled,URL="https://beluga-lang.github.io/McLTT/{DOC_BASE}/\\N.html"];
         {default_subgraph_decl("Algorithmic")}
         {default_subgraph_decl("Core")}
         {core_subgraph_decl("Completeness")}
