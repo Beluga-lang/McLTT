@@ -6,6 +6,15 @@ Import Syntax_Notations.
 (** ** Core Presuppositions *)
 
 (** *** Basic inversion *)
+Lemma ctx_lookup_lt : forall {Γ A x},
+    {{ #x : A ∈ Γ }} ->
+    x < length Γ.
+Proof.
+  induction 1; simpl; lia.
+Qed.
+#[export]
+Hint Resolve ctx_lookup_lt : mcltt.
+
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with now eauto.
   inversion 1...
@@ -1135,3 +1144,16 @@ Qed.
 
 #[export]
 Hint Resolve ctx_sub_ctx_lookup : mcltt.
+
+Lemma no_closed_neutral : forall {A} {W : ne},
+    ~ {{ ⋅ ⊢ W : A }}.
+Proof.
+  intros * H.
+  dependent induction H; destruct W;
+    try (simpl in *; congruence);
+    autoinjections;
+    intuition.
+  inversion_by_head ctx_lookup.
+Qed.
+#[export]
+Hint Resolve no_closed_neutral : mcltt.
