@@ -1,6 +1,7 @@
 From Mcltt Require Import LibTactics.
 From Mcltt.Core Require Import Base.
 From Mcltt.Core.Semantic Require Export Domain Evaluation Readback.
+From Mcltt.Core.Syntactic Require Export System.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -29,6 +30,23 @@ Qed.
 
 #[export]
 Hint Resolve functional_initial_env : mcltt.
+
+(** In the following spec, we do not care (for now)
+    whether [a] is the evaluation result of A or not.
+    If we want to specify that as well, we need a generalized
+    version of [drop_env] that can drop [x] elements. *)
+Lemma initial_env_spec : forall x Γ ρ A,
+    initial_env Γ ρ ->
+    {{ #x : A ∈ Γ }} ->
+    exists a, ρ x = d{{{ ⇑! a (length Γ - x - 1) }}}.
+Proof.
+  induction x; intros * Hinit Hlookup;
+    dependent destruction Hlookup; dependent destruction Hinit; simpl; mauto 3.
+  eexists; repeat f_equal; lia.
+Qed.
+
+#[export]
+Hint Resolve initial_env_spec : mcltt.
 
 Ltac functional_initial_env_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_initial_env equality between" o1 "and" o2 "cannot be solved by mauto" in
