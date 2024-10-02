@@ -1,7 +1,7 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Algorithmic Require Import Subtyping.Definitions.
-From Mcltt.Core Require Import NbE.
-From Mcltt.Extraction Require Import Evaluation NbE PseudoMonadic.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Algorithmic Require Export Subtyping.
+From Mcltt.Extraction Require Import NbE PseudoMonadic.
 From Equations Require Import Equations.
 Import Domain_Notations.
 
@@ -21,7 +21,7 @@ Ltac subtyping_tac :=
       try congruence
   end.
 
-#[tactic="subtyping_tac"]
+#[tactic="subtyping_tac",derive(equations=no,eliminator=no)]
 Equations subtyping_nf_impl A B : { {{ ⊢anf A ⊆ B }} } + {~ {{ ⊢anf A ⊆ B }} } :=
 | n{{{ Type@i }}}, n{{{ Type@j }}} =>
     let*b _ := Compare_dec.le_lt_dec i j while _ in
@@ -30,12 +30,17 @@ Equations subtyping_nf_impl A B : { {{ ⊢anf A ⊆ B }} } + {~ {{ ⊢anf A ⊆ 
     let*b _ := nf_eq_dec A A' while _ in
     let*b _ := subtyping_nf_impl B B' while _ in
     pureb _
-(* Pseudo-monadic syntax for the next catch-all branch
-   generates some unsolved obligations *)
+(** Pseudo-monadic syntax for the next catch-all branch
+    generates some unsolved obligations, so we directly match on
+    [nf_eq_dec A B] here. *)
 | A, B with nf_eq_dec A B => {
   | left _ => left _
   | right _ => right _
   }.
+
+(** The definitions of [subtyping_nf_impl] already come with soundness proofs,
+    as well as obvious completeness. *)
+
 Theorem subtyping_nf_impl_complete : forall A B,
     {{ ⊢anf A ⊆ B }} ->
     exists H, subtyping_nf_impl A B = left H.
@@ -71,7 +76,7 @@ Ltac subtyping_impl_tac1 :=
 Ltac subtyping_impl_tac :=
   repeat subtyping_impl_tac1; try econstructor; mauto.
 
-#[tactic="subtyping_impl_tac"]
+#[tactic="subtyping_impl_tac",derive(equations=no,eliminator=no)]
 Equations subtyping_impl G A B (H : subtyping_order G A B) :
   { {{G ⊢a A ⊆ B}} } + { ~ {{ G ⊢a A ⊆ B }} } :=
 | G, A, B, H =>
@@ -84,6 +89,8 @@ Next Obligation.
   functional_nbe_rewrite_clear.
   contradiction.
 Qed.
+
+(** Similar for [subtyping_impl]. *)
 
 Theorem subtyping_impl_complete' : forall G A B,
     {{G ⊢a A ⊆ B}} ->

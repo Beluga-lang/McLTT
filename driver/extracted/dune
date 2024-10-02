@@ -1,2 +1,5 @@
 (library
- (name MclttExtracted))
+ (name MclttExtracted)
+ (public_name mcltt.extracted))
+
+(documentation)

@@ -1,6 +1,7 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Export CtxEq Presup System CoreTypeInversions.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export CoreTypeInversions Presup.
 Import Syntax_Notations.
 
 Add Parametric Morphism i Γ : (wf_exp Γ)

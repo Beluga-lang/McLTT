@@ -1,9 +1,5 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Algorithmic Require Export Subtyping.Definitions.
-From Mcltt.Core Require Import Soundness Completeness.
-From Mcltt.Core.Semantic Require Import NbE.
-From Mcltt.Core.Syntactic Require Import System.Definitions.
-From Mcltt.Core.Syntactic Require Export Syntax.
+From Mcltt.Algorithmic.Subtyping Require Export Definitions.
+From Mcltt.Core Require Import Base.
 Import Domain_Notations.
 
 Reserved Notation "Γ '⊢a' M ⟹ A" (in custom judg at level 80, Γ custom exp, M custom exp, A custom nf).

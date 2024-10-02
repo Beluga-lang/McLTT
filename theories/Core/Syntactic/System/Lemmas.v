@@ -1,7 +1,20 @@
-From Mcltt Require Import Base LibTactics System.Definitions.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic.System Require Import Definitions.
 Import Syntax_Notations.
 
-(* Core Presuppositions *)
+(** ** Core Presuppositions *)
+
+(** *** Basic inversion *)
+Lemma ctx_lookup_lt : forall {Γ A x},
+    {{ #x : A ∈ Γ }} ->
+    x < length Γ.
+Proof.
+  induction 1; simpl; lia.
+Qed.
+#[export]
+Hint Resolve ctx_lookup_lt : mcltt.
+
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with now eauto.
   inversion 1...
@@ -23,6 +36,8 @@ Qed.
 #[export]
 Hint Resolve ctx_decomp_left ctx_decomp_right : mcltt.
 
+(** *** Context Presuppositions *)
+
 Lemma presup_ctx_eq : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with mautosolve.
   induction 1; destruct_pairs...
@@ -41,23 +56,25 @@ Qed.
 #[export]
 Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mcltt.
 
-Lemma presup_sub_ctx : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
+Lemma presup_sub : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with mautosolve.
   induction 1; destruct_pairs...
 Qed.
 
-Corollary presup_sub_ctx_left : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }}.
+Corollary presup_sub_left : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }}.
 Proof with easy.
-  intros * ?%presup_sub_ctx...
+  intros * ?%presup_sub...
 Qed.
 
-Corollary presup_sub_ctx_right : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Δ }}.
+Corollary presup_sub_right : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Δ }}.
 Proof with easy.
-  intros * ?%presup_sub_ctx...
+  intros * ?%presup_sub...
 Qed.
 
 #[export]
-Hint Resolve presup_sub_ctx presup_sub_ctx_left presup_sub_ctx_right : mcltt.
+Hint Resolve presup_sub presup_sub_left presup_sub_right : mcltt.
+
+(** With [presup_sub], we can prove similar for [exp]. *)
 
 Lemma presup_exp_ctx : forall {Γ M A}, {{ Γ ⊢ M : A }} -> {{ ⊢ Γ }}.
 Proof with mautosolve.
@@ -66,6 +83,8 @@ Qed.
 
 #[export]
 Hint Resolve presup_exp_ctx : mcltt.
+
+(** and other presuppositions about context well-formedness. *)
 
 Lemma presup_sub_eq_ctx : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with mautosolve.
@@ -93,24 +112,37 @@ Qed.
 #[export]
 Hint Resolve presup_exp_eq_ctx : mcltt.
 
-(* Recover some previous rules without subtyping.
-   Rest are recovered after presupposition lemmas (in SystemOpt). *)
+(** *** Immediate Results of Context Presuppositions *)
 
-Lemma wf_ctx_sub_refl : forall Γ Δ,
-    {{ ⊢ Γ ≈ Δ }} ->
-    {{ ⊢ Γ ⊆ Δ }}.
-Proof. induction 1; mauto. Qed.
+(** From above, we can get following helper lemmas about [{{{ Type@i }}}] and [{{{ ℕ }}}]. *)
+
+Lemma exp_sub_typ : forall {Δ Γ A σ i},
+    {{ Δ ⊢ A : Type@i }} ->
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Γ ⊢ A[σ] : Type@i }}.
+Proof with mautosolve 3.
+  intros.
+  econstructor; mauto 3.
+  econstructor...
+Qed.
 
 #[export]
-Hint Resolve wf_ctx_sub_refl : mcltt.
+Hint Resolve exp_sub_typ : mcltt.
 
-Lemma wf_conv : forall Γ M A i A',
-    {{ Γ ⊢ M : A }} ->
-    (* this will be removed in SystemOpt *)
-    {{ Γ ⊢ A' : Type@i }} ->
-    {{ Γ ⊢ A ≈ A' : Type@i }} ->
-    {{ Γ ⊢ M : A' }}.
-Proof. mauto. Qed.
+Lemma exp_sub_nat : forall {Δ Γ M σ},
+    {{ Δ ⊢ M : ℕ }} ->
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Γ ⊢ M[σ] : ℕ }}.
+Proof with mautosolve 3.
+  intros.
+  econstructor; mauto 3.
+  econstructor...
+Qed.
+
+#[export]
+Hint Resolve exp_sub_nat : mcltt.
+
+(** Also we can recover cumulativity rules we had before adding subtyping. *)
 
 Lemma wf_cumu : forall Γ A i,
     {{ Γ ⊢ A : Type@i }} ->
@@ -119,26 +151,6 @@ Proof with mautosolve.
   intros.
   enough {{ ⊢ Γ }}...
 Qed.
-
-#[export]
-Hint Resolve wf_conv wf_cumu : mcltt.
-
-Lemma wf_sub_conv : forall Γ σ Δ Δ',
-  {{ Γ ⊢s σ : Δ }} ->
-  {{ ⊢ Δ ≈ Δ' }} ->
-  {{ Γ ⊢s σ : Δ' }}.
-Proof. mauto. Qed.
-
-#[export]
-Hint Resolve wf_sub_conv : mcltt.
-
-Lemma wf_exp_eq_conv : forall Γ M M' A A' i,
-   {{ Γ ⊢ M ≈ M' : A }} ->
-    (* this will be removed in SystemOpt *)
-   {{ Γ ⊢ A' : Type@i }} ->
-   {{ Γ ⊢ A ≈ A' : Type@i }} ->
-   {{ Γ ⊢ M ≈ M' : A' }}.
-Proof. mauto. Qed.
 
 Lemma wf_exp_eq_cumu : forall Γ A A' i,
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -149,29 +161,16 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_conv wf_exp_eq_cumu : mcltt.
+Hint Resolve wf_cumu wf_exp_eq_cumu : mcltt.
 
-Lemma wf_sub_eq_conv : forall Γ σ σ' Δ Δ',
-    {{ Γ ⊢s σ ≈ σ' : Δ }} ->
-    {{ ⊢ Δ ≈ Δ' }} ->
-    {{ Γ ⊢s σ ≈ σ' : Δ' }}.
-Proof. mauto. Qed.
-
-#[export]
-Hint Resolve wf_sub_eq_conv : mcltt.
-
-Add Parametric Morphism Γ : (wf_sub_eq Γ)
-    with signature wf_ctx_eq ==> eq ==> eq ==> iff as wf_sub_eq_morphism_iff3.
-Proof.
-  intros Δ Δ' H **; split; [| symmetry in H]; mauto.
-Qed.
+(** We can prove some additional lemmas for type presuppositions as well. *)
 
 Lemma lift_exp_ge : forall {Γ A n m},
     n <= m ->
     {{ Γ ⊢ A : Type@n }} ->
     {{ Γ ⊢ A : Type@m }}.
 Proof with mautosolve.
-  induction 1...
+  induction 1; intros; mauto.
 Qed.
 
 #[export]
@@ -198,7 +197,7 @@ Lemma lift_exp_eq_ge : forall {Γ A A' n m},
     {{ Γ ⊢ A ≈ A': Type@n }} ->
     {{ Γ ⊢ A ≈ A' : Type@m }}.
 Proof with mautosolve.
-  induction 1; subst...
+  induction 1; subst; mauto.
 Qed.
 
 #[export]
@@ -220,7 +219,99 @@ Proof with mautosolve.
   assert (m <= max n m) by lia...
 Qed.
 
-(* PER extension *)
+(** *** Types Presuppositions *)
+
+Lemma presup_ctx_lookup_typ : forall {Γ A x},
+    {{ ⊢ Γ }} ->
+    {{ #x : A ∈ Γ }} ->
+    exists i, {{ Γ ⊢ A : Type@i }}.
+Proof with mautosolve 4.
+  intros * HΓ.
+  induction 1; inversion_clear HΓ;
+    [assert {{ Γ, A ⊢ Type@i[Wk] ≈ Type@i : Type@(S i) }} by mauto 4
+    | assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by eauto]; econstructor...
+Qed.
+
+#[export]
+Hint Resolve presup_ctx_lookup_typ : mcltt.
+
+Lemma presup_exp_typ : forall {Γ M A},
+    {{ Γ ⊢ M : A }} ->
+    exists i, {{ Γ ⊢ A : Type@i }}.
+Proof.
+  induction 1; assert {{ ⊢ Γ }} by mauto 3; destruct_conjs; mauto 3.
+  - enough {{ Γ ⊢s Id,,M : Γ, ℕ }} by mauto 3.
+    do 3 (econstructor; mauto 3).
+  - eexists; mauto 4 using lift_exp_max_left, lift_exp_max_right.
+  - enough {{ Γ ⊢s Id,,N : Γ, A }} by mauto 3.
+    do 3 (econstructor; mauto 3).
+Qed.
+
+Lemma presup_exp : forall {Γ M A},
+    {{ Γ ⊢ M : A }} ->
+    {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
+Proof.
+  mauto 4 using presup_exp_typ.
+Qed.
+
+(** Recover some rules we had before adding subtyping.
+    Rest are recovered after presupposition lemmas (in SystemOpt). *)
+
+Lemma wf_ctx_sub_refl : forall Γ Δ,
+    {{ ⊢ Γ ≈ Δ }} ->
+    {{ ⊢ Γ ⊆ Δ }}.
+Proof. induction 1; mauto. Qed.
+
+#[export]
+Hint Resolve wf_ctx_sub_refl : mcltt.
+
+Lemma wf_conv : forall Γ M A i A',
+    {{ Γ ⊢ M : A }} ->
+    (** The next argument will be removed in SystemOpt *)
+    {{ Γ ⊢ A' : Type@i }} ->
+    {{ Γ ⊢ A ≈ A' : Type@i }} ->
+    {{ Γ ⊢ M : A' }}.
+Proof. mauto. Qed.
+
+#[export]
+Hint Resolve wf_conv : mcltt.
+
+Lemma wf_sub_conv : forall Γ σ Δ Δ',
+  {{ Γ ⊢s σ : Δ }} ->
+  {{ ⊢ Δ ≈ Δ' }} ->
+  {{ Γ ⊢s σ : Δ' }}.
+Proof. mauto. Qed.
+
+#[export]
+Hint Resolve wf_sub_conv : mcltt.
+
+Lemma wf_exp_eq_conv : forall Γ M M' A A' i,
+   {{ Γ ⊢ M ≈ M' : A }} ->
+   (** The next argument will be removed in SystemOpt *)
+   {{ Γ ⊢ A' : Type@i }} ->
+   {{ Γ ⊢ A ≈ A' : Type@i }} ->
+   {{ Γ ⊢ M ≈ M' : A' }}.
+Proof. mauto. Qed.
+
+#[export]
+Hint Resolve wf_exp_eq_conv : mcltt.
+
+Lemma wf_sub_eq_conv : forall Γ σ σ' Δ Δ',
+    {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+    {{ ⊢ Δ ≈ Δ' }} ->
+    {{ Γ ⊢s σ ≈ σ' : Δ' }}.
+Proof. mauto. Qed.
+
+#[export]
+Hint Resolve wf_sub_eq_conv : mcltt.
+
+Add Parametric Morphism Γ : (wf_sub_eq Γ)
+    with signature wf_ctx_eq ==> eq ==> eq ==> iff as wf_sub_eq_morphism_iff3.
+Proof.
+  intros Δ Δ' H **; split; [| symmetry in H]; mauto.
+Qed.
+
+(** *** Additional Lemmas for Syntactic PERs *)
 
 Lemma exp_eq_refl : forall {Γ M A},
     {{ Γ ⊢ M : A }} ->
@@ -251,16 +342,7 @@ Proof. mauto. Qed.
 #[export]
 Hint Resolve sub_eq_refl : mcltt.
 
-(* Lemmas for exp of "Type@i" *)
-
-Lemma exp_sub_typ : forall {Δ Γ A σ i},
-    {{ Δ ⊢ A : Type@i }} ->
-    {{ Γ ⊢s σ : Δ }} ->
-    {{ Γ ⊢ A[σ] : Type@i }}.
-Proof with mautosolve 3.
-  intros.
-  eapply wf_conv...
-Qed.
+(** *** Lemmas for [exp] of [{{{ Type@i }}}] *)
 
 Lemma exp_eq_sub_cong_typ1 : forall {Δ Γ A A' σ i},
     {{ Δ ⊢ A ≈ A' : Type@i }} ->
@@ -292,7 +374,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve exp_sub_typ exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mcltt.
+Hint Resolve exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mcltt.
 
 Lemma exp_eq_typ_sub_sub : forall {Γ Δ Ψ σ τ i},
     {{ Δ ⊢s σ : Ψ }} ->
@@ -475,16 +557,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_sub_sub_compose_cong_typ : mcltt.
 
-(* Lemmas for exp of "ℕ" *)
-
-Lemma exp_sub_nat : forall {Δ Γ M σ},
-    {{ Δ ⊢ M : ℕ }} ->
-    {{ Γ ⊢s σ : Δ }} ->
-    {{ Γ ⊢ M[σ] : ℕ }}.
-Proof with mautosolve 3.
-  intros.
-  eapply wf_conv...
-Qed.
+(** *** Lemmas for [exp] of [{{{ ℕ }}}] *)
 
 Lemma exp_eq_sub_cong_nat1 : forall {Δ Γ M M' σ},
     {{ Δ ⊢ M ≈ M' : ℕ }} ->
@@ -674,7 +747,7 @@ Qed.
 #[export]
 Hint Resolve exp_eq_sub_sub_compose_cong_nat : mcltt.
 
-(* Other lemmas *)
+(** *** Other Tedious Lemmas *)
 
 Lemma exp_eq_sub_sub_compose_cong : forall {Γ Δ Δ' Ψ σ τ σ' τ' M A i},
     {{ Ψ ⊢ A : Type@i }} ->
@@ -697,20 +770,6 @@ Qed.
 
 #[export]
 Hint Resolve exp_eq_sub_sub_compose_cong : mcltt.
-
-Lemma ctx_lookup_wf : forall {Γ A x},
-    {{ ⊢ Γ }} ->
-    {{ #x : A ∈ Γ }} ->
-    exists i, {{ Γ ⊢ A : Type@i }}.
-Proof with mautosolve 4.
-  intros * HΓ.
-  induction 1; inversion_clear HΓ;
-    [assert {{ Γ, A ⊢ Type@i[Wk] ≈ Type@i : Type@(S i) }} by mauto 4
-    | assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by eauto]; econstructor...
-Qed.
-
-#[export]
-Hint Resolve ctx_lookup_wf : mcltt.
 
 Lemma ctxeq_ctx_lookup : forall {Γ Δ A x},
     {{ ⊢ Γ ≈ Δ }} ->
@@ -1018,6 +1077,8 @@ Qed.
 #[export]
 Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
 
+(** *** Lemmas for [wf_subtyp] *)
+
 Fact wf_subtyp_refl : forall {Γ A i},
     {{ Γ ⊢ A : Type@i }} ->
     {{ Γ ⊢ A ⊆ A }}.
@@ -1083,3 +1144,16 @@ Qed.
 
 #[export]
 Hint Resolve ctx_sub_ctx_lookup : mcltt.
+
+Lemma no_closed_neutral : forall {A} {W : ne},
+    ~ {{ ⋅ ⊢ W : A }}.
+Proof.
+  intros * H.
+  dependent induction H; destruct W;
+    try (simpl in *; congruence);
+    autoinjections;
+    intuition.
+  inversion_by_head ctx_lookup.
+Qed.
+#[export]
+Hint Resolve no_closed_neutral : mcltt.

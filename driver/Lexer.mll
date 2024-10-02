@@ -116,3 +116,14 @@ and comment =
   parse
   | "*)" { read lexbuf }
   | _ { comment lexbuf }
+
+{
+  let rec lexbuf_to_token_buffer lexbuf =
+    lazy
+      begin
+        try
+          MenhirLibParser.Inter.Buf_cons (read lexbuf, lexbuf_to_token_buffer lexbuf)
+        with
+        | Failure s -> prerr_string s; raise Exit
+      end
+}

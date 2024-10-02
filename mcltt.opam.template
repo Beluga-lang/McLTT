@@ -1,0 +1,5 @@
+build: [
+  [make]
+  [make coqdoc] {with-doc}
+]
+

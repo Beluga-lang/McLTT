@@ -1,11 +1,11 @@
+# Dune outputs
 _build
+*.opam
 
-# Ignore generated parser code
-**/parser.ml
-**/parser.mli
+# Generated coq files
 theories/**/Parser.v
 
-# Remove Coq compiled code
+# Coq compiler outputs
 *.vo
 *.glob
 *.d
@@ -18,7 +18,12 @@ CoqMakefile.mk*
 !CoqMakefile.mk.local
 !CoqMakefile.mk.local-late
 *.log
+theories/html/
 
-# Editor related
+# Generated coq dependency graph
+dep.dot
+dep.html
+
+# Editor related files
 ## Emacs
 *.~undo-tree~

@@ -5,18 +5,18 @@ Open Scope predicate_scope.
 
 Create HintDb mcltt discriminated.
 
-(* Transparency setting for generalized rewriting *)
+(** Transparency setting for generalized rewriting *)
 #[export]
 Typeclasses Transparent arrows.
 
-(** Generalization of Variables *)
+(** *** Generalization of Variables *)
 
 Tactic Notation "gen" ident(x) := generalize dependent x.
 Tactic Notation "gen" ident(x) ident(y) := gen x; gen y.
 Tactic Notation "gen" ident(x) ident(y) ident(z) := gen x y; gen z.
 Tactic Notation "gen" ident(x) ident(y) ident(z) ident(w) := gen x y z; gen w.
 
-(** Marking-based Tactics *)
+(** *** Marking-based Tactics *)
 
 Definition __mark__ (n : nat) A (a : A) : A := a.
 Arguments __mark__ n {A} a : simpl never.
@@ -59,7 +59,7 @@ Tactic Notation "on_all_hyp:" tactic4(tac) :=
 Tactic Notation "on_all_hyp_rev:" tactic4(tac) :=
   mark_all_with 0; (on_all_marked_hyp_rev: tac).
 
-(** Simple helper *)
+(** *** Simple helper *)
 
 Ltac destruct_logic :=
   destruct_one_pair
@@ -113,11 +113,11 @@ Ltac directed tac :=
 Tactic Notation "directed" tactic2(tac) := directed tac.
 
 Ltac progressive_invert H :=
-  (* dependent destruction is more general than inversion *)
+  (** We use dependent destruction as it is more general than inversion *)
   directed dependent destruction H.
 
 #[local]
-  Ltac progressive_invert_once H n :=
+Ltac progressive_invert_once H n :=
   let T := type of H in
   lazymatch T with
   | __mark__ _ _ => fail
@@ -135,7 +135,7 @@ Ltac progressive_invert H :=
   try mark_with H n.
 
 #[global]
-  Ltac progressive_inversion :=
+Ltac progressive_inversion :=
   clear_dups;
   repeat match goal with
     | H : _ |- _ =>
@@ -155,7 +155,7 @@ Ltac clean_replace_by exp0 exp1 tac :=
 Tactic Notation "clean" "replace" uconstr(exp0) "with" uconstr(exp1) "by" tactic3(tac) := clean_replace_by exp0 exp1 tac.
 
 #[global]
-  Ltac find_head t :=
+Ltac find_head t :=
   lazymatch t with
   | ?t' _ => find_head t'
   | _ => t
@@ -189,7 +189,7 @@ Ltac dir_inversion_clear_by_head head := match_by_head head ltac:(fun H => direc
 Ltac destruct_by_head head := match_by_head head ltac:(fun H => destruct H).
 Ltac dir_destruct_by_head head := match_by_head head ltac:(fun H => directed destruct H).
 
-(** McLTT automation *)
+(** *** McLTT automation *)
 
 Tactic Notation "mauto" :=
   eauto with mcltt core.
@@ -226,28 +226,22 @@ Ltac mautosolve_impl pow := unshelve solve [mauto pow]; solve [constructor].
 Tactic Notation "mautosolve" := mautosolve_impl integer:(5).
 Tactic Notation "mautosolve" int_or_var(pow) := mautosolve_impl pow.
 
-(* Improve type class resolution *)
+(** Improve type class resolution for Equivalence and PER *)
 
 #[export]
-  Hint Extern 1 => eassumption : typeclass_instances.
-
-Ltac predicate_resolve :=
-  lazymatch goal with
-  | |- @Reflexive _ (@predicate_equivalence _) =>
-      simple apply @Equivalence_Reflexive
-  | |- @Symmetric _ (@predicate_equivalence _) =>
-      simple apply @Equivalence_Symmetric
-  | |- @Transitive _ (@predicate_equivalence _) =>
-      simple apply @Equivalence_Transitive
-  | |- @Transitive _ (@predicate_implication _) =>
-      simple apply @PreOrder_Transitive
-  end.
+Hint Extern 1 => eassumption : typeclass_instances.
 
 #[export]
-Hint Extern 1 => predicate_resolve : typeclass_instances.
+Hint Extern 1 (@Reflexive _ (@predicate_equivalence _)) => simple apply @Equivalence_Reflexive : typeclass_instances.
+#[export]
+Hint Extern 1 (@Symmetric _ (@predicate_equivalence _)) => simple apply @Equivalence_Symmetric : typeclass_instances.
+#[export]
+Hint Extern 1 (@Transitive _ (@predicate_equivalence _)) => simple apply @Equivalence_Transitive : typeclass_instances.
+#[export]
+Hint Extern 1 (@Transitive _ (@predicate_implication _)) => simple apply @PreOrder_Transitive : typeclass_instances.
 
 
-(* intuition tactic default setting *)
+(** Default setting for [intuition] tactic *)
 Ltac Tauto.intuition_solver ::= auto with mcltt core solve_subterm.
 
 Ltac exvar T tac :=
@@ -265,7 +259,7 @@ Ltac exvar T tac :=
         clear x; tac x'
   end.
 
-(* this tactic traverses to the bottom of a lemma following universals and conjunctions to the bottom and apply a tactic *)
+(** this tactic traverses to the bottom of a lemma following universals and conjunctions to the bottom and apply a tactic *)
 Ltac deepexec lem tac :=
   let T := type of lem in
   let T' := eval simpl in T in
@@ -285,7 +279,7 @@ Ltac deepexec lem tac :=
   | _ => tac lem
   end.
 
-(* this tactic is similar to above, but the traversal cuts off when it sees an assumption applicable to a cut-off argument C *)
+(** this tactic is similar to above, but the traversal cuts off when it sees an assumption applicable to a cut-off argument C *)
 Ltac cutexec lem C tac :=
   let CT := type of C in
   let T := type of lem in
@@ -321,15 +315,14 @@ Ltac unify_args H P :=
   end.
 
 #[global]
-  Ltac strong_apply H X :=
+Ltac strong_apply H X :=
   let H' := fresh "H" in
   let T := type of X in
   let R := unify_args H T in
   cutexec R X ltac:(fun L => pose proof (L X) as H'; simpl in H'; clear X; rename H' into X).
 
-
 #[global]
-  Ltac apply_equiv_left1 :=
+Ltac apply_equiv_left1 :=
   let tac1 := fun H R H1 T => (let h := find_head T in unify R h; strong_apply H H1) in
   let tac2 := fun H R G => (let h := find_head G in unify R h; apply H; simpl) in
   match goal with
@@ -339,13 +332,11 @@ Ltac unify_args H P :=
   | H : relation_equivalence ?R _ |- ?G => progress tac2 H R G
   end.
 
+#[global]
+Ltac apply_equiv_left := repeat apply_equiv_left1.
 
 #[global]
-  Ltac apply_equiv_left := repeat apply_equiv_left1.
-
-
-#[global]
-  Ltac apply_equiv_right1 :=
+Ltac apply_equiv_right1 :=
   let tac1 := fun H R H1 T => (let h := find_head T in unify R h; strong_apply H H1) in
   let tac2 := fun H R G => (let h := find_head G in unify R h; apply H; simpl) in
   match goal with
@@ -356,10 +347,10 @@ Ltac unify_args H P :=
   end.
 
 #[global]
-  Ltac apply_equiv_right := repeat apply_equiv_right1.
+Ltac apply_equiv_right := repeat apply_equiv_right1.
 
 #[global]
-  Ltac clear_PER :=
+Ltac clear_PER :=
   repeat match goal with
     | H : PER _ |- _ => clear H
     | H : Symmetric _ |- _ => clear H
@@ -382,7 +373,7 @@ Proof.
 Qed.
 
 #[global]
-  Ltac saturate_refl :=
+Ltac saturate_refl :=
   repeat match goal with
     | H : ?R ?a ?b |- _ =>
         tryif unify a b
@@ -394,7 +385,7 @@ Qed.
     end.
 
 #[global]
-  Ltac saturate_refl_for hd :=
+Ltac saturate_refl_for hd :=
   repeat match goal with
     | H : ?R ?a ?b |- _ =>
         unify_by_head_of R hd;
@@ -407,10 +398,12 @@ Qed.
     end.
 
 #[global]
-  Ltac solve_refl :=
+Ltac solve_refl :=
+  (** Sometimes `reflexivity` does not work as (simple) unification fails for some unknown reason.
+      Thus, we try [Equivalence_Reflexive] as well. *)
   solve [reflexivity || apply Equivalence_Reflexive].
 
-(* Helper Instances for Generalized Rewriting *)
+(** *** Helper Instances for Generalized Rewriting *)
 #[export]
 Hint Extern 1 (subrelation (@predicate_equivalence ?Ts) _) => (let H := fresh "H" in intros ? ? H; exact H) : typeclass_instances.
 
@@ -453,13 +446,13 @@ Proof.
   split; intros []; econstructor; unfold Symmetric, Transitive in *; intuition.
 Qed.
 
-(* The following facility converts search of Proper from type class instances to the local context *)
+(** The following facility converts search of Proper from type class instances to the local context *)
 
 Class PERElem (A : Type) (P : A -> Prop) (R : A -> A -> Prop) :=
   per_elem : forall a, P a -> R a a.
 
 #[export]
-  Instance PERProper (A : Type) (P : A -> Prop) (R : A -> A -> Prop) `(Ins : PERElem A P R) a (H : P a) :
+Instance PERProper (A : Type) (P : A -> Prop) (R : A -> A -> Prop) `(Ins : PERElem A P R) a (H : P a) :
   Proper R a.
 Proof.
   cbv. pose proof per_elem; auto.

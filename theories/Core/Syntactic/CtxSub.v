@@ -1,5 +1,6 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt Require Export System.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export System.
 Import Syntax_Notations.
 
 Lemma ctx_sub_refl : forall {Γ},
@@ -39,18 +40,18 @@ Module ctxsub_judg.
       clear ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyp_helper;
       intros * HΓΔ; destruct (presup_ctx_sub HΓΔ); mauto 4;
       try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B').
-    (* ctxsub_exp_helper & ctxsub_exp_eq_helper recursion cases *)
+    (** ctxsub_exp_helper & ctxsub_exp_eq_helper recursion cases *)
     1,6-8: assert {{ ⊢ Δ, ℕ ⊆ Γ, ℕ }} by (econstructor; mautosolve);
     assert {{ Δ, ℕ ⊢ B : Type@i }} by eauto; econstructor...
-    (* ctxsub_exp_helper & ctxsub_exp_eq_helper function cases *)
+    (** ctxsub_exp_helper & ctxsub_exp_eq_helper function cases *)
     1-3,5-9: assert {{ Δ ⊢ B : Type@i }} by eauto; assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
     try econstructor...
-    (* ctxsub_exp_helper & ctxsub_exp_eq_helper variable cases *)
+    (** ctxsub_exp_helper & ctxsub_exp_eq_helper variable cases *)
     1-2: assert (exists B, {{ #x : B ∈ Δ }} /\ {{ Δ ⊢ B ⊆ A }}); destruct_conjs; mautosolve 4.
-    (* ctxsub_sub_helper & ctxsub_sub_eq_helper weakening cases *)
+    (** ctxsub_sub_helper & ctxsub_sub_eq_helper weakening cases *)
     2-3: inversion_clear HΓΔ; econstructor; mautosolve 4.
 
-    - (* ctxsub_exp_eq_helper variable case *)
+    - (** ctxsub_exp_eq_helper variable case *)
       inversion_clear HΓΔ as [|Δ0 ? ? C'].
       assert (exists D, {{ #x : D ∈ Δ0 }} /\ {{ Δ0 ⊢ D ⊆ B }}) as [D [i0 ?]] by mauto.
       destruct_conjs.

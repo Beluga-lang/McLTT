@@ -1,6 +1,8 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Evaluation ExpNoConfusion.
 From Equations Require Import Equations.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import Evaluation.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -72,8 +74,7 @@ with eval_sub_order : sub -> env -> Prop :=
      eval_sub_order {{{ σ ∘ τ }}} p ).
 
 #[local]
-  Hint Constructors eval_exp_order eval_natrec_order eval_app_order eval_sub_order : mcltt.
-
+Hint Constructors eval_exp_order eval_natrec_order eval_app_order eval_sub_order : mcltt.
 
 Lemma eval_exp_order_sound : forall m p a,
     {{ ⟦ m ⟧ p ↘ a }} ->
@@ -95,11 +96,10 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; eauto).
 Qed.
 
 #[export]
-  Hint Resolve eval_exp_order_sound eval_natrec_order_sound eval_app_order_sound eval_sub_order_sound : mcltt.
-
+Hint Resolve eval_exp_order_sound eval_natrec_order_sound eval_app_order_sound eval_sub_order_sound : mcltt.
 
 #[local]
-  Ltac impl_obl_tac1 :=
+Ltac impl_obl_tac1 :=
   match goal with
   | H : eval_exp_order _ _ |- _ => progressive_invert H
   | H : eval_natrec_order _ _ _ _ _ |- _ => progressive_invert H
@@ -108,13 +108,11 @@ Qed.
   end.
 
 #[local]
-  Ltac impl_obl_tac :=
+Ltac impl_obl_tac :=
   repeat impl_obl_tac1; try econstructor; eauto.
 
-Derive Signature for eval_exp_order eval_natrec_order eval_app_order eval_sub_order.
-
-#[tactic="impl_obl_tac"]
-  Equations eval_exp_impl m p (H : eval_exp_order m p) : { d | eval_exp m p d } by struct H :=
+#[tactic="impl_obl_tac",derive(equations=no,eliminator=no)]
+Equations eval_exp_impl m p (H : eval_exp_order m p) : { d | eval_exp m p d } by struct H :=
 | {{{ Type@i }}}, p, H => exist _ d{{{ 𝕌@i }}} _
 | {{{ #x }}}    , p, H => exist _ (p x) _
 | {{{ ℕ }}}     , p, H => exist _ d{{{ ℕ }}} _
@@ -140,7 +138,7 @@ Derive Signature for eval_exp_order eval_natrec_order eval_app_order eval_sub_or
     let (m, Hm) := eval_exp_impl M p' _ in
     exist _ m _
 
-  with eval_natrec_impl A MZ MS m p (H : eval_natrec_order A MZ MS m p) : { d | eval_natrec A MZ MS m p d } by struct H :=
+with eval_natrec_impl A MZ MS m p (H : eval_natrec_order A MZ MS m p) : { d | eval_natrec A MZ MS m p d } by struct H :=
 | A, MZ, MS, d{{{ zero }}}  , p, H =>
     let (mz, Hmz) := eval_exp_impl MZ p _ in
     exist _ mz _
@@ -153,7 +151,7 @@ Derive Signature for eval_exp_order eval_natrec_order eval_app_order eval_sub_or
     let (mA, HmA) := eval_exp_impl A d{{{ p ↦ ⇑ ℕ m }}} _ in
     exist _ d{{{ ⇑ mA (rec m under p return A | zero -> mz | succ -> MS end) }}} _
 
-  with eval_app_impl m n (H : eval_app_order m n) : { d | eval_app m n d } by struct H :=
+with eval_app_impl m n (H : eval_app_order m n) : { d | eval_app m n d } by struct H :=
 | d{{{ λ p M }}}        , n, H =>
     let (m, Hm) := eval_exp_impl M d{{{ p ↦ n }}} _ in
     exist _ m _
@@ -161,7 +159,7 @@ Derive Signature for eval_exp_order eval_natrec_order eval_app_order eval_sub_or
     let (b, Hb) := eval_exp_impl B d{{{ p ↦ n }}} _ in
     exist _ d{{{ ⇑ b (m (⇓ a n)) }}} _
 
-  with eval_sub_impl s p (H : eval_sub_order s p) : { p' | eval_sub s p p' } by struct H :=
+with eval_sub_impl s p (H : eval_sub_order s p) : { p' | eval_sub s p p' } by struct H :=
 | {{{ Id }}}, p, H => exist _ p _
 | {{{ Wk }}}, p, H => exist _ d{{{ p↯ }}} _
 | {{{ s ,, M }}}, p, H =>
@@ -173,102 +171,55 @@ Derive Signature for eval_exp_order eval_natrec_order eval_app_order eval_sub_or
     let (p'', Hp'') := eval_sub_impl s p' _ in
     exist _ p'' _.
 
-(* I don't understand why these obligations must be defined separately *)
-(* c.f. https://github.com/mattam82/Coq-Equations/issues/598 *)
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-Next Obligation. impl_obl_tac. Defined.
-
 Extraction Inline eval_exp_impl_functional
   eval_natrec_impl_functional
   eval_app_impl_functional
   eval_sub_impl_functional.
 
-
-Ltac edes_rewrite Hind :=
-  let Heq := fresh "Heq" in
-  edestruct Hind as [? Heq];
-  try rewrite Heq in *.
-
-
-Ltac complete_tac :=
-  match goal with
-  | Hind : context[exists _, ?f _ _ = _] |- exists _, (let (_, _) := ?f _ _ in _) = _ =>
-      edes_rewrite Hind
-  | Hind : context[exists _, ?f _ _ _ = _] |- exists _, (let (_, _) := ?f _ _ _ in _) = _ =>
-      edes_rewrite Hind
-  | Hind : context[exists _, ?f _ _ _ _ = _] |- exists _, (let (_, _) := ?f _ _ _ _ in _) = _ =>
-      edes_rewrite Hind
-  | Hind : context[exists _, ?f _ _ _ _ _ = _] |- exists _, (let (_, _) := ?f _ _ _ _ _ in _) = _ =>
-      edes_rewrite Hind
-  | Hind : context[exists _, ?f _ _ _ _ _ _ = _] |- exists _, (let (_, _) := ?f _ _ _ _ _ _ in _) = _ =>
-      edes_rewrite Hind
-  end.
-
-(* The definitions of *_impl already come with soundness proofs, so we only need to prove completeness *)
-
-Lemma eval_exp_impl_complete' : forall M p m,
-    {{ ⟦ M ⟧ p ↘ m }} ->
-    forall (H : eval_exp_order M p),
-    exists H', eval_exp_impl M p H = exist _ m H'
-with eval_natrec_impl_complete' : forall A MZ MS m p r,
-    {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} ->
-    forall (H : eval_natrec_order A MZ MS m p),
-    exists H', eval_natrec_impl A MZ MS m p H = exist _ r H'
-with eval_app_impl_complete' : forall m n r,
-    {{ $| m & n |↘ r }} ->
-    forall (H : eval_app_order m n),
-    exists H', eval_app_impl m n H = exist _ r H'
-with eval_sub_impl_complete' : forall σ p p',
-    {{ ⟦ σ ⟧s p ↘ p' }} ->
-    forall (H : eval_sub_order σ p),
-    exists H', eval_sub_impl σ p H = exist _ p' H'.
-Proof with (intros;
-      simp eval_exp_impl;
-      repeat complete_tac;
-      eauto).
-  - clear eval_exp_impl_complete'; induction 1...
-  - clear eval_natrec_impl_complete'; induction 1...
-  - clear eval_app_impl_complete'; induction 1...
-  - clear eval_sub_impl_complete'; induction 1...
-Qed.
+(** The definitions of [eval_*_impl] already come with soundness proofs,
+    so we only need to prove completeness. However, the completeness
+    is also obvious from the soundness of eval orders and functional
+    nature of eval. *)
 
 #[local]
-  Hint Resolve eval_exp_impl_complete'
-  eval_natrec_impl_complete'
-  eval_app_impl_complete'
-  eval_sub_impl_complete' : mcltt.
+Ltac functional_eval_complete :=
+  lazymatch goal with
+  | |- exists (_ : ?T), _ =>
+      let Horder := fresh "Horder" in
+      assert T as Horder by mauto 3;
+      eexists Horder;
+      lazymatch goal with
+      | |- exists _, ?L = _ =>
+          destruct L;
+          functional_eval_rewrite_clear;
+          eexists; reflexivity
+      end
+  end.
 
 Lemma eval_exp_impl_complete : forall M p m,
     {{ ⟦ M ⟧ p ↘ m }} ->
     exists H H', eval_exp_impl M p H = exist _ m H'.
 Proof.
-  repeat unshelve mauto.
+  intros; functional_eval_complete.
 Qed.
 
 Lemma eval_natrec_impl_complete : forall A MZ MS m p r,
     {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ p ↘ r }} ->
     exists H H', eval_natrec_impl A MZ MS m p H = exist _ r H'.
 Proof.
-  repeat unshelve mauto.
+  intros; functional_eval_complete.
 Qed.
 
 Lemma eval_app_impl_complete : forall m n r,
     {{ $| m & n |↘ r }} ->
     exists H H', eval_app_impl m n H = exist _ r H'.
 Proof.
-  repeat unshelve mauto.
+  intros; functional_eval_complete.
 Qed.
 
 Lemma eval_sub_impl_complete : forall σ p p',
     {{ ⟦ σ ⟧s p ↘ p' }} ->
     exists H H', eval_sub_impl σ p H = exist _ p' H'.
 Proof.
-  repeat unshelve mauto.
+  intros; functional_eval_complete.
 Qed.

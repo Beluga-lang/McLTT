@@ -1,6 +1,7 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import LogicalRelation FunctionCases.
 Import Domain_Notations.
 
@@ -99,7 +100,7 @@ Proof.
   assert (forall c c', head_rel ρ ρ' equiv_ρ_ρ' c c' -> env_relΓA' d{{{ ρ ↦ c }}} d{{{ ρ' ↦ c' }}}) as HΓA'
       by (intros; apply_relation_equivalence; unshelve eexists; eassumption).
 
-  (* The proofs for the next two assertions are basically the same *)
+  (** The proofs for the next two assertions are basically the same *)
   exvar (relation domain)
     ltac:(fun R => assert ({{ DF Π m0 ρ B ≈ Π m1 ρ' B ∈ per_univ_elem (Nat.max i k) ↘ R }})).
   {

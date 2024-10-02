@@ -1,6 +1,7 @@
 From Coq Require Import Morphisms_Relations Relation_Definitions.
 
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import LogicalRelation TermStructureCases UniverseCases.
 Import Domain_Notations.
 
@@ -70,7 +71,7 @@ Lemma rel_exp_pi_core : forall {i o B o' B' R out_rel},
     (forall c c',
         R c c' ->
         rel_exp B d{{{ o ↦ c }}} B' d{{{ o' ↦ c' }}} (per_univ i)) ->
-    (* We use this equality to make unification on `out_rel` works *)
+    (** We use the next equality to make unification on `out_rel` works *)
     (out_rel = fun c c' (equiv_c_c' : R c c') m m' =>
                  forall R',
                    rel_typ i B d{{{ o ↦ c }}} B' d{{{ o' ↦ c' }}} R' ->
@@ -108,8 +109,7 @@ Proof with mautosolve.
   - intros.
     eapply rel_exp_pi_core; eauto.
     reflexivity.
-  - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
-    apply Equivalence_Reflexive.
+  - solve_refl.
 Qed.
 
 #[export]
@@ -140,8 +140,7 @@ Proof with mautosolve.
   - eapply rel_exp_pi_core; eauto; try reflexivity.
     intros.
     extract_output_info_with ρσ c ρ'σ' c' env_relΔA...
-  - (* `reflexivity` does not work as (simple) unification fails for some unknown reason. *)
-    apply Equivalence_Reflexive.
+  - solve_refl.
 Qed.
 
 #[export]

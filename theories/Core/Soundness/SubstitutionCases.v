@@ -1,10 +1,8 @@
-From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses.
-
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation Realizability SubtypingCases TermStructureCases UniverseCases.
-From Mcltt.Core.Syntactic Require Import Corollaries.
+From Mcltt.Core.Soundness Require Import LogicalRelation SubtypingCases TermStructureCases UniverseCases.
 Import Domain_Notations.
 
 Lemma presup_glu_rel_sub : forall {Γ σ Δ},
@@ -59,7 +57,7 @@ Proof.
   intros * [SbΓA].
   match_by_head1 glu_ctx_env invert_glu_ctx_env.
   handle_functional_glu_ctx_env.
-  do 2 eexists; repeat split; mauto.
+  do 2 eexists; repeat split; [econstructor | |]; try reflexivity; mauto.
   intros.
   destruct_by_head cons_glu_sub_pred.
   econstructor; mauto.

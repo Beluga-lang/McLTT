@@ -1,10 +1,20 @@
-.PHONY: all clean
+.PHONY: all pretty-timed test coqdoc clean depgraphdoc
 
 all:
-	@make -C theories
+	@$(MAKE) -C theories
 	@dune build
 
+pretty-timed:
+	@$(MAKE) pretty-timed -C theories
+	@dune build
+
+coqdoc:
+	@${MAKE} coqdoc -C theories
+
+depgraphdoc:
+	@$(MAKE) depgraphdoc -C theories
+
 clean:
-	@make clean -C theories
+	@$(MAKE) clean -C theories
 	@dune clean
 	@echo "Cleaning finished."

@@ -1,7 +1,9 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import PER.Definitions.
+
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Semantic Require Import PER.Definitions.
 Import Domain_Notations.
 
 Ltac destruct_rel_by_assumption in_rel H :=
@@ -46,8 +48,7 @@ Ltac destruct_rel_typ :=
 
 Ltac basic_invert_per_univ_elem H :=
   progress simp per_univ_elem in H;
-  inversion H;
-  subst;
+  dependent destruction H;
   try rewrite <- per_univ_elem_equation_1 in *.
 
 Ltac basic_per_univ_elem_econstructor :=

@@ -1,7 +1,9 @@
 From Coq Require Import Program.Equality.
 
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core Require Import Syntactic.Corollaries Syntactic.CtxSub Weakening.Definition.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Soundness.Weakening Require Import Definitions.
+From Mcltt.Core.Syntactic Require Export Corollaries.
 Import Syntax_Notations.
 
 Lemma weakening_escape : forall Γ σ Δ,
@@ -79,7 +81,7 @@ Proof with mautosolve.
     eapply weakening_resp_equiv; [mauto 2 |].
     transitivity {{{ Id ∘ σ0 }}}...
   - eapply wk_p; eauto.
-    transitivity {{{ Wk ∘ τ ∘ σ0 }}}; mauto 4.
+    transitivity {{{ (Wk ∘ τ) ∘ σ0 }}}; mauto 4.
     eapply wf_sub_eq_compose_assoc; revgoals...
 Qed.
 

@@ -1,5 +1,6 @@
-From Mcltt Require Import Base LibTactics.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Completeness Require Export FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
 From Mcltt.Core.Semantic Require Export NbE.
 From Mcltt.Core.Syntactic Require Export SystemOpt.

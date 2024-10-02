@@ -1,10 +1,14 @@
-From Coq Require Import Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses SetoidTactics.
-
-From Mcltt Require Import Base LibTactics.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
 From Mcltt.Core.Completeness Require Import FundamentalTheorem.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import ContextCases LogicalRelation Realizability SubstitutionCases SubtypingCases TermStructureCases UniverseCases.
-From Mcltt.Core.Syntactic Require Import Corollaries.
+From Mcltt.Core.Soundness Require Import
+  ContextCases
+  LogicalRelation
+  SubstitutionCases
+  SubtypingCases
+  TermStructureCases
+  UniverseCases.
 Import Domain_Notations.
 
 Lemma glu_rel_exp_nat : forall {Γ i},
@@ -437,7 +441,7 @@ Proof.
     invert_rel_typ_body.
     match goal with
     | _: {{ ⟦ A ⟧ ρ ↦ ⇑! ℕ s ↘ ~?a }}, _: {{ ⟦ A ⟧ ρ ↦ (succ ⇑! ℕ s) ↘ ~?a' }} |- _ =>
-        rename a into as'; (* We cannot use [as] as a name *)
+        rename a into as'; (** We cannot use [as] as a name *)
         rename a' into asucc
     end.
     assert {{ Dom ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ≈ ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ∈ env_relΓℕA }} as HΓℕA
@@ -607,11 +611,11 @@ Proof.
     mauto.
   }
   induction 1; intros; rename Γ0 into Δ.
-  - (* glu_nat_zero *)
+  - (** [glu_nat_zero] *)
     mauto 4 using glu_rel_exp_natrec_zero_helper.
-  - (* glu_nat_succ *)
+  - (** [glu_nat_succ] *)
     mauto 3 using glu_rel_exp_natrec_succ_helper.
-  - (* glu_nat_neut *)
+  - (** [glu_nat_neut] *)
     mauto 3 using glu_rel_exp_natrec_neut_helper.
 Qed.
 

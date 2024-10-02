@@ -1,6 +1,7 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import Base LibTactics CtxSub.
-From Mcltt.Core Require Export SystemOpt.
+From Mcltt Require Import LibTactics.
+From Mcltt.Core Require Import Base.
+From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Syntax_Notations.
 
 Corollary wf_zero_inversion : forall Γ A,
@@ -103,7 +104,7 @@ Qed.
 #[export]
 Hint Resolve wf_exp_sub_inversion : mcltt.
 
-(* [wf_conv] and [wf_cumu] do not give useful inversions *)
+(** We omit [wf_conv] and [wf_cumu] as they do not give useful inversions *)
 
 Lemma wf_sub_id_inversion : forall Γ Δ,
     {{ Γ ⊢s Id : Δ }} ->
