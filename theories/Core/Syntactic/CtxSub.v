@@ -55,13 +55,21 @@ Module ctxsub_judg.
     5,6: inversion_clear HΓΔ; econstructor; mautosolve 4.
 
     (** eqrec related cases *)
-    1-3:assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
-      assert {{ Γ, B ⊢ B[Wk] : Type@i }} by mauto;
-      assert {{ Δ, B ⊢ B[Wk] : Type@i }} by mauto;
+    1-3: assert {{ ⊢ Δ, B ⊆ Γ, B }} by mauto;
+      assert {{ Γ, B ⊢s Wk : Γ }} by mauto 3;
+      assert {{ Γ, B ⊢ B[Wk] : Type@i }} by mauto 3;
+      assert {{ Γ, B, B[Wk] ⊢s Wk : Γ, B }} by mauto 4;
+      assert {{ Γ, B, B[Wk] ⊢s Wk∘Wk : Γ }} by mauto 3;
+      assert {{ Δ, B ⊢s Wk : Δ }} by mauto 3;
+      assert {{ Δ, B ⊢ B[Wk] : Type@i }} by mauto 3;
+      assert {{ Δ, B, B[Wk] ⊢s Wk : Δ, B }} by mauto 4;
+      assert {{ Δ, B, B[Wk] ⊢s Wk∘Wk : Δ }} by mauto 3;
+      assert {{ Δ, B, B[Wk] ⊢ B[Wk∘Wk] : Type@i }} by mauto 3;
+      assert {{ Δ, B, B[Wk] ⊢ B[Wk∘Wk] : Type@i }} by mauto 3;
       assert {{ ⊢ Δ, B, B[Wk] ⊆ Γ, B, B[Wk] }} by (econstructor; mauto 4);
-      assert {{ Γ, B, B[Wk] ⊢ Eq (B[Wk][Wk]) #1 #0 : Type@i }} by (econstructor; mauto 4);
-      assert {{ Δ, B, B[Wk] ⊢ Eq (B[Wk][Wk]) #1 #0 : Type@i }} by (econstructor; mauto 4);
-      assert {{ ⊢ Δ, B, B[Wk], Eq (B[Wk][Wk]) #1 #0 ⊆ Γ, B, B[Wk], Eq (B[Wk][Wk]) #1 #0 }} by mauto;
+      assert {{ Γ, B, B[Wk] ⊢ Eq B[Wk∘Wk] #1 #0 : Type@i }} by (econstructor; mauto 3; eapply wf_conv; mauto 4);
+      assert {{ Δ, B, B[Wk] ⊢ Eq B[Wk∘Wk] #1 #0 : Type@i }} by (econstructor; mauto 3; eapply wf_conv; mauto 4);
+      assert {{ ⊢ Δ, B, B[Wk], Eq B[Wk∘Wk] #1 #0 ⊆ Γ, B, B[Wk], Eq B[Wk∘Wk] #1 #0 }} by mauto 3;
       econstructor; mauto 2.
 
     - (** ctxsub_exp_eq_helper variable case *)
