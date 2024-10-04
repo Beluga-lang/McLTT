@@ -169,7 +169,7 @@ Module Syntax_Notations.
   Notation "'q' σ" := (q σ) (in custom exp at level 30) : mcltt_scope.
 
   Notation "⋅" := nil (in custom exp at level 0) : mcltt_scope.
-  Notation "x , y" := (cons y x) (in custom exp at level 50, format "x ,  y") : mcltt_scope.
+  Notation "x , y" := (cons y x) (in custom exp at level 50, left associativity, format "x ,  y") : mcltt_scope.
 
   Notation "n{{{ x }}}" := x (at level 0, x custom nf at level 99, format "'n{{{'  x  '}}}'") : mcltt_scope.
   Notation "( x )" := x (in custom nf at level 0, x custom nf at level 60) : mcltt_scope.

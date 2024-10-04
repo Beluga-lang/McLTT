@@ -3,9 +3,8 @@ From Mcltt.Core Require Import Base.
 From Mcltt.Core.Syntactic.System Require Import Definitions.
 Import Syntax_Notations.
 
-(** ** Core Presuppositions *)
+(** ** Basic Context Properties *)
 
-(** *** Basic inversion *)
 Lemma ctx_lookup_lt : forall {Γ A x},
     {{ #x : A ∈ Γ }} ->
     x < length Γ.
@@ -15,13 +14,21 @@ Qed.
 #[export]
 Hint Resolve ctx_lookup_lt : mcltt.
 
+Lemma functional_ctx_lookup : forall {Γ A A' x},
+    {{ #x : A ∈ Γ }} ->
+    {{ #x : A' ∈ Γ }} ->
+    A = A'.
+Proof with mautosolve.
+  intros * Hx Hx'; gen A'.
+  induction Hx as [|* ? IHHx]; intros; inversion_clear Hx';
+    f_equal;
+    intuition.
+Qed.
+
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with now eauto.
   inversion 1...
 Qed.
-
-#[export]
-Hint Resolve ctx_decomp : mcltt.
 
 Corollary ctx_decomp_left : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }}.
 Proof with easy.
@@ -35,6 +42,8 @@ Qed.
 
 #[export]
 Hint Resolve ctx_decomp_left ctx_decomp_right : mcltt.
+
+(** ** Core Presuppositions *)
 
 (** *** Context Presuppositions *)
 
@@ -277,6 +286,16 @@ Proof. mauto. Qed.
 #[export]
 Hint Resolve sub_eq_refl : mcltt.
 
+Lemma ctx_eq_refl : forall {Γ},
+    {{ ⊢ Γ }} ->
+    {{ ⊢ Γ ≈ Γ }}.
+Proof.
+  induction 1; mauto 4.
+Qed.
+
+#[export]
+Hint Resolve ctx_eq_refl : mcltt.
+
 (** *** Lemmas for [exp] of [{{{ Type@i }}}] *)
 
 Lemma exp_sub_typ : forall {Δ Γ A σ i},
@@ -338,6 +357,75 @@ Qed.
 #[export]
 Hint Resolve exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mcltt.
 
+Lemma exp_eq_sub_compose_weaken_extend_typ : forall {Γ σ Δ i A j B M},
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Δ ⊢ A : Type@i }} ->
+    {{ Δ ⊢ B : Type@j }} ->
+    {{ Γ ⊢ M : B[σ] }} ->
+    {{ Γ ⊢ A[Wk][σ,,M] ≈ A[σ] : Type@i }}.
+Proof with mautosolve 3.
+  intros.
+  assert {{ Δ, B ⊢s Wk : Δ }} by mauto 4.
+  transitivity {{{ A[Wk∘(σ,,M)] }}}; [mautosolve 4 |].
+  eapply exp_eq_sub_cong_typ2'...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_weaken_extend_typ : mcltt.
+
+Lemma exp_eq_sub_compose_weaken_id_extend_typ : forall {Γ i A j B M},
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ ⊢ B : Type@j }} ->
+    {{ Γ ⊢ M : B }} ->
+    {{ Γ ⊢ A[Wk][Id,,M] ≈ A : Type@i }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ ⊢ B[Id] : Type@_ }} by mauto 4.
+  assert {{ Γ ⊢ B ⊆ B[Id] }} by mauto 4.
+  assert {{ Γ ⊢ M : B[Id] }} by mauto 2.
+  transitivity {{{ A[Id] }}}...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_weaken_id_extend_typ : mcltt.
+
+Lemma exp_eq_sub_compose_double_weaken_double_extend_typ : forall {Γ σ Δ i A j B M k C N},
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Δ ⊢ A : Type@i }} ->
+    {{ Δ ⊢ B : Type@j }} ->
+    {{ Γ ⊢ M : B[σ] }} ->
+    {{ Δ, B ⊢ C : Type@k }} ->
+    {{ Γ ⊢ N : C[σ,,M] }} ->
+    {{ Γ ⊢ A[Wk∘Wk][σ,,M,,N] ≈ A[σ] : Type@i }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Δ, B ⊢s Wk : Δ }} by mauto 4.
+  assert {{ Δ, B, C ⊢s Wk : Δ, B }} by mauto 4.
+  transitivity {{{ A[Wk][Wk][σ,,M,,N] }}}; [eapply exp_eq_sub_cong_typ1; mautosolve 3 |].
+  transitivity {{{ A[Wk][σ,,M] }}}...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_double_weaken_double_extend_typ : mcltt.
+
+Lemma exp_eq_sub_compose_double_weaken_id_double_extend_typ : forall {Γ i A j B M k C N},
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ ⊢ B : Type@j }} ->
+    {{ Γ ⊢ M : B }} ->
+    {{ Γ, B ⊢ C : Type@k }} ->
+    {{ Γ ⊢ N : C[Id,,M] }} ->
+    {{ Γ ⊢ A[Wk∘Wk][Id,,M,,N] ≈ A : Type@i }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ ⊢ B[Id] : Type@_ }} by mauto 4.
+  assert {{ Γ ⊢ B ⊆ B[Id] }} by mauto 4.
+  assert {{ Γ ⊢ M : B[Id] }} by mauto 2.
+  transitivity {{{ A[Id] }}}...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_double_weaken_id_double_extend_typ : mcltt.
+
 Lemma exp_eq_typ_sub_sub : forall {Γ Δ Ψ σ τ i},
     {{ Δ ⊢s σ : Ψ }} ->
     {{ Γ ⊢s τ : Δ }} ->
@@ -349,20 +437,9 @@ Hint Resolve exp_eq_typ_sub_sub : mcltt.
 #[export]
 Hint Rewrite -> @exp_eq_sub_compose_typ @exp_eq_typ_sub_sub using mauto 4 : mcltt.
 
-Lemma functional_ctx_lookup : forall {Γ A A' x},
-    {{ #x : A ∈ Γ }} ->
-    {{ #x : A' ∈ Γ }} ->
-    A = A'.
-Proof with mautosolve.
-  intros * Hx Hx'; gen A'.
-  induction Hx as [|* ? IHHx]; intros; inversion_clear Hx';
-    f_equal;
-    intuition.
-Qed.
-
 Lemma vlookup_0_typ : forall {Γ i},
     {{ ⊢ Γ }} ->
-    {{ Γ, Type@i ⊢ # 0 : Type@i }}.
+    {{ Γ, Type@i ⊢ #0 : Type@i }}.
 Proof with mautosolve 4.
   intros.
   eapply wf_conv; mauto 4.
@@ -371,7 +448,7 @@ Qed.
 
 Lemma vlookup_1_typ : forall {Γ i A j},
     {{ Γ, Type@i ⊢ A : Type@j }} ->
-    {{ Γ, Type@i, A ⊢ # 1 : Type@i }}.
+    {{ Γ, Type@i, A ⊢ #1 : Type@i }}.
 Proof with mautosolve 4.
   intros.
   assert {{ Γ, Type@i ⊢s Wk : Γ }} by mauto 4.
@@ -485,22 +562,6 @@ Qed.
 #[export]
 Hint Resolve sub_eq_extend_cong_typ sub_eq_extend_compose_typ sub_eq_p_extend_typ : mcltt.
 
-Lemma sub_eq_wk_var0_id : forall {Γ A i},
-    {{ Γ ⊢ A : Type@i }} ->
-    {{ Γ, A ⊢s Wk,,#0 ≈ Id : Γ, A }}.
-Proof with mautosolve 4.
-  intros * ?.
-  assert {{ ⊢ Γ, A }} by mauto 3.
-  assert {{ Γ, A ⊢s (Wk∘Id),,#0[Id] ≈ Id : Γ, A }} by mauto.
-  assert {{ Γ, A ⊢s Wk ≈ Wk∘Id : Γ }} by mauto.
-  enough {{ Γ, A ⊢ #0 ≈ #0[Id] : A[Wk] }}...
-Qed.
-
-#[export]
-Hint Resolve sub_eq_wk_var0_id : mcltt.
-#[export]
-Hint Rewrite -> @sub_eq_wk_var0_id using mauto 4 : mcltt.
-
 Lemma exp_eq_sub_sub_compose_cong_typ : forall {Γ Δ Δ' Ψ σ τ σ' τ' A i},
     {{ Ψ ⊢ A : Type@i }} ->
     {{ Δ ⊢s σ : Ψ }} ->
@@ -584,6 +645,75 @@ Proof. mauto. Qed.
 
 #[export]
 Hint Resolve exp_eq_nat_sub_sub_to_nat_sub : mcltt.
+
+Lemma exp_eq_sub_compose_weaken_extend_nat : forall {Γ σ Δ M i B N},
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Δ ⊢ M : ℕ }} ->
+    {{ Δ ⊢ B : Type@i }} ->
+    {{ Γ ⊢ N : B[σ] }} ->
+    {{ Γ ⊢ M[Wk][σ,,N] ≈ M[σ] : ℕ }}.
+Proof with mautosolve 3.
+  intros.
+  assert {{ Δ, B ⊢s Wk : Δ }} by mauto 4.
+  transitivity {{{ M[Wk∘(σ,,N)] }}}; [mauto 4 |].
+  eapply exp_eq_sub_cong_nat2...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_weaken_extend_nat : mcltt.
+
+Lemma exp_eq_sub_compose_weaken_id_extend_nat : forall {Γ M i B N},
+    {{ Γ ⊢ M : ℕ }} ->
+    {{ Γ ⊢ B : Type@i }} ->
+    {{ Γ ⊢ N : B }} ->
+    {{ Γ ⊢ M[Wk][Id,,N] ≈ M : ℕ }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ ⊢ B[Id] : Type@_ }} by mauto 4.
+  assert {{ Γ ⊢ B ⊆ B[Id] }} by mauto 4.
+  assert {{ Γ ⊢ N : B[Id] }} by mauto 2.
+  transitivity {{{ M[Id] }}}...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_weaken_id_extend_nat : mcltt.
+
+Lemma exp_eq_sub_compose_double_weaken_double_extend_nat : forall {Γ σ Δ M i B N j C L},
+    {{ Γ ⊢s σ : Δ }} ->
+    {{ Δ ⊢ M : ℕ }} ->
+    {{ Δ ⊢ B : Type@i }} ->
+    {{ Γ ⊢ N : B[σ] }} ->
+    {{ Δ, B ⊢ C : Type@j }} ->
+    {{ Γ ⊢ L : C[σ,,N] }} ->
+    {{ Γ ⊢ M[Wk∘Wk][σ,,N,,L] ≈ M[σ] : ℕ }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Δ, B ⊢s Wk : Δ }} by mauto 4.
+  assert {{ Δ, B, C ⊢s Wk : Δ, B }} by mauto 4.
+  transitivity {{{ M[Wk][Wk][σ,,N,,L] }}}; [eapply exp_eq_sub_cong_nat1; mautosolve 3 |].
+  transitivity {{{ M[Wk][σ,,N] }}}...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_double_weaken_double_extend_nat : mcltt.
+
+Lemma exp_eq_sub_compose_double_weaken_id_double_extend_nat : forall {Γ M i B N j C L},
+    {{ Γ ⊢ M : ℕ }} ->
+    {{ Γ ⊢ B : Type@i }} ->
+    {{ Γ ⊢ N : B }} ->
+    {{ Γ, B ⊢ C : Type@j }} ->
+    {{ Γ ⊢ L : C[Id,,N] }} ->
+    {{ Γ ⊢ M[Wk∘Wk][Id,,N,,L] ≈ M : ℕ }}.
+Proof with mautosolve 4.
+  intros.
+  assert {{ Γ ⊢ B[Id] : Type@_ }} by mauto 4.
+  assert {{ Γ ⊢ B ⊆ B[Id] }} by mauto 4.
+  assert {{ Γ ⊢ N : B[Id] }} by mauto 2.
+  transitivity {{{ M[Id] }}}...
+Qed.
+
+#[export]
+Hint Resolve exp_eq_sub_compose_double_weaken_id_double_extend_nat : mcltt.
 
 Lemma vlookup_0_nat : forall {Γ},
     {{ ⊢ Γ }} ->
@@ -724,6 +854,22 @@ Hint Resolve exp_eq_sub_sub_compose_cong_nat : mcltt.
 
 (** *** Other Tedious Lemmas *)
 
+Lemma sub_eq_weaken_var0_id : forall {Γ A i},
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ, A ⊢s Wk,,#0 ≈ Id : Γ, A }}.
+Proof with mautosolve 4.
+  intros * ?.
+  assert {{ ⊢ Γ, A }} by mauto 3.
+  assert {{ Γ, A ⊢s (Wk∘Id),,#0[Id] ≈ Id : Γ, A }} by mauto.
+  assert {{ Γ, A ⊢s Wk ≈ Wk∘Id : Γ }} by mauto.
+  enough {{ Γ, A ⊢ #0 ≈ #0[Id] : A[Wk] }}...
+Qed.
+
+#[export]
+Hint Resolve sub_eq_weaken_var0_id : mcltt.
+#[export]
+Hint Rewrite -> @sub_eq_weaken_var0_id using mauto 4 : mcltt.
+
 Lemma exp_eq_sub_sub_compose_cong : forall {Γ Δ Δ' Ψ σ τ σ' τ' M A i},
     {{ Ψ ⊢ A : Type@i }} ->
     {{ Ψ ⊢ M : A }} ->
@@ -786,6 +932,30 @@ Qed.
 #[export]
 Hint Resolve sub_id_extend : mcltt.
 
+Lemma sub_eq_id_on_typ : forall {Γ M M' A i},
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ ⊢ M ≈ M' : A }} ->
+    {{ Γ ⊢ M ≈ M' : A[Id] }}.
+Proof with mautosolve 4.
+  intros.
+  eapply wf_exp_eq_conv...
+Qed.
+
+#[export]
+Hint Resolve sub_eq_id_on_typ : mcltt.
+
+Lemma sub_eq_id_extend_cong : forall {Γ M M' A i},
+    {{ Γ ⊢ A : Type@i }} ->
+    {{ Γ ⊢ M ≈ M' : A }} ->
+    {{ Γ ⊢s Id,,M ≈ Id,,M' : Γ, A }}.
+Proof with mautosolve 4.
+  intros.
+  econstructor; mauto 3.
+Qed.
+
+#[export]
+Hint Resolve sub_eq_id_extend_cong : mcltt.
+
 Lemma sub_eq_p_id_extend : forall {Γ M A i},
     {{ Γ ⊢ A : Type@i }} ->
     {{ Γ ⊢ M : A }} ->
@@ -821,7 +991,6 @@ Proof with mautosolve 4.
   assert {{ ⊢ Γ }} by mauto 3.
   assert {{ Γ, Type@i ⊢s Wk : Γ }} by mauto 4.
   assert {{ Γ, Type@i ⊢s σ ∘ Wk : Δ }} by mauto 4.
-  assert {{ Γ, Type@i ⊢ # 0 : Type@i[Wk] }} by mauto 4.
   assert {{ Γ, Type@i ⊢ # 0 : Type@i }}...
 Qed.
 
@@ -833,7 +1002,6 @@ Proof with mautosolve 4.
   assert {{ ⊢ Γ }} by mauto 3.
   assert {{ Γ, ℕ ⊢s Wk : Γ }} by mauto 4.
   assert {{ Γ, ℕ ⊢s σ ∘ Wk : Δ }} by mauto 4.
-  assert {{ Γ, ℕ ⊢ # 0 : ℕ[Wk] }} by mauto 4.
   assert {{ Γ, ℕ ⊢ # 0 : ℕ }}...
 Qed.
 
@@ -1120,6 +1288,20 @@ Qed.
 #[export]
 Hint Resolve ctx_sub_ctx_lookup : mcltt.
 
+Lemma var_compose_subs : forall {Γ τ Δ σ Ψ i A x},
+    {{ Ψ ⊢ A : Type@i }} ->
+    {{ Δ ⊢s σ : Ψ }} ->
+    {{ Γ ⊢s τ : Δ }} ->
+    {{ #x : A[σ][τ] ∈ Γ }} ->
+    {{ Γ ⊢ #x : A[σ∘τ] }}.
+Proof.
+  intros.
+  eapply wf_conv; mauto 3.
+Qed.
+
+#[export]
+Hint Resolve var_compose_subs : mcltt.
+
 Lemma sub_lookup_var0 : forall Δ Γ σ M1 M2 B i,
     {{Δ ⊢s σ : Γ}} ->
     {{Γ ⊢ B : Type@i}} ->
@@ -1197,88 +1379,72 @@ Lemma exp_eq_var_1_sub_q_sigma : forall {Γ A i B j σ Δ},
     {{ Δ ⊢ B : Type@j }} ->
     {{ Δ, B ⊢ A : Type@i }} ->
     {{ Γ ⊢s σ : Δ }} ->
-    {{ Γ, B[σ], A[q σ] ⊢ #1[q (q σ)] ≈ #1 : B[σ][Wk][Wk] }}.
+    {{ Γ, B[σ], A[q σ] ⊢ #1[q (q σ)] ≈ #1 : B[σ][Wk∘Wk] }}.
 Proof with mautosolve 4.
   intros.
-  assert {{ Γ, B[σ] ⊢s q σ : Δ, B }} by mauto.
+  assert {{ ⊢ Δ }} by mauto 2.
+  assert {{ Γ, B[σ] ⊢s q σ : Δ, B }} by mauto 2.
+  assert {{ ⊢ Γ, B[σ] }} by mauto 3.
   assert {{ ⊢ Γ, B[σ], A[q σ] }} by mauto 3.
-  assert {{ Δ, B ⊢ B[Wk] : Type@j }} by mauto.
-  assert {{ Δ, B ⊢ #0 : B[Wk] }} by mauto.
-  assert {{ Γ, B[σ], A[q σ] ⊢ #0 : A[q σ][Wk] }} by mauto 4.
+  assert {{ Δ, B ⊢ B[Wk] : Type@j }} by mauto 4.
+  assert {{ Δ, B ⊢ #0 : B[Wk] }} by mauto 3.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0 : A[q σ][Wk] }} by mauto 2.
   assert {{ Γ, B[σ], A[q σ] ⊢ A[q σ∘Wk] ≈ A[q σ][Wk] : Type@i }} by mauto 4.
-  assert {{ Γ, B[σ], A[q σ] ⊢ #0 : A[q σ∘Wk] }} by (eapply wf_conv; mauto 4).
-  assert {{ Γ, B[σ], A[q σ] ⊢s q σ∘Wk : Δ, B }} by mauto 4.
-  assert {{ Γ ⊢ B[σ] : Type@j }} by mauto 3.
-  assert {{ Γ,B[σ] ⊢ B[σ][Wk] : Type@j }} by mauto 4.
-  assert {{Γ, B[σ], A[q σ] ⊢ B[σ][Wk][Wk] : Type@j}} by mauto 4.
-  assert {{Γ, B[σ],A[q σ] ⊢ B[Wk][q σ ∘ Wk] : Type@j}} by mauto.
-  assert {{Γ, B[σ] ⊢ B[Wk][q σ] ≈ B[σ][Wk] : Type@j}}.
-  {
-    transitivity {{{B[Wk ∘ q σ]}}};
-      [mauto 4 | transitivity {{{B[σ ∘ Wk]}}}];
-      [eapply exp_eq_sub_cong_typ2'; mauto 4 | mauto].
-  }
-  assert {{Γ, B[σ],A[q σ] ⊢ B[Wk][q σ ∘ Wk] ≈ B[σ][Wk][Wk] : Type@j}}.
-  {
-    transitivity {{{B[Wk][q σ][Wk]}}};
-      [mauto 4 |].
-    eapply exp_eq_sub_cong_typ1; mauto 3.
-  }
+  assert {{ Γ, B[σ], A[q σ] ⊢s q σ∘Wk : Δ, B }} by mauto 3.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0 : A[q σ∘Wk] }} by mauto 3.
+  assert {{ Γ ⊢ B[σ] : Type@j }} by mauto 2.
+  assert {{ Γ, B[σ] ⊢s Wk : Γ }} by mauto 2.
+  assert {{ Γ, B[σ], A[q σ] ⊢s Wk : Γ, B[σ] }} by mauto 2.
+  assert {{ Γ, B[σ] ⊢ B[σ][Wk] : Type@j }} by mauto 2.
+  assert {{ Γ, B[σ], A[q σ] ⊢ B[σ][Wk][Wk] : Type@j }} by mauto 2.
+  assert {{ Γ, B[σ] ⊢ B[Wk][q σ] ≈ B[σ][Wk] : Type@j }} by (eapply exp_eq_sub_sub_compose_cong_typ; mauto 3).
+  assert {{Γ, B[σ],A[q σ] ⊢ B[Wk][q σ ∘ Wk] ≈ B[σ][Wk][Wk] : Type@j}} by (transitivity {{{ B[Wk][q σ][Wk] }}}; mauto 3).
   assert {{ Γ, B[σ], A[q σ] ⊢ #1[q (q σ)] ≈ #0[q σ∘Wk] : B[σ][Wk][Wk] }} by mauto 3.
-  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ∘Wk] ≈ #0[q σ][Wk] : B[σ][Wk][Wk] }} by mauto 4.
-  assert {{ Γ, B[σ] ⊢s σ∘Wk : Δ }} by mauto 4.
-  assert {{ Γ, B[σ] ⊢ #0 : B[σ∘Wk] }}.
-  {
-    eapply wf_conv with (A:={{{B[σ][Wk]}}}); mauto 2; mauto 4.
-  }
-  assert {{ Γ, B[σ] ⊢ #0[q σ] ≈ #0 : B[σ ∘ Wk] }} by mauto 4.
-  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ][Wk] ≈ #0[Wk] : B[σ ∘ Wk][Wk] }} by mauto 4.
-  assert {{ Γ, B[σ], A[q σ] ⊢ B[σ ∘ Wk][Wk] ≈ B[σ][Wk][Wk] : Type@j}}.
-  {
-    eapply exp_eq_sub_cong_typ1; mauto 3.
-    symmetry.
-    mauto 4.
-  }
-  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ][Wk] ≈ #0[Wk] : B[σ][Wk][Wk] }} by mauto 4.
-  etransitivity; mauto 2.
-  transitivity {{{#0[q σ][Wk]}}}; mauto 3.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ∘Wk] ≈ #0[q σ][Wk] : B[σ][Wk][Wk] }} by mauto 3.
+  assert {{ Γ, B[σ] ⊢s σ∘Wk : Δ }} by mauto 2.
+  assert {{ Γ, B[σ] ⊢ #0 : B[σ∘Wk] }} by mauto 2.
+  assert {{ Γ, B[σ] ⊢ #0[q σ] ≈ #0 : B[σ ∘ Wk] }} by mauto 2.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ][Wk] ≈ #0[Wk] : B[σ ∘ Wk][Wk] }} by mauto 3.
+  assert {{ Γ, B[σ], A[q σ] ⊢ B[σ ∘ Wk][Wk] ≈ B[σ][Wk][Wk] : Type@j}} by mauto 4.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #0[q σ][Wk] ≈ #0[Wk] : B[σ][Wk][Wk] }} by mauto 2.
+  assert {{ Γ, B[σ], A[q σ] ⊢ #1[q (q σ)] ≈ #1 : B[σ][Wk][Wk] }} by (do 2 etransitivity; mauto 2).
+  assert {{ Γ, B[σ], A[q σ] ⊢s Wk∘Wk : Γ }} by mauto 2.
+  assert {{ Γ, B[σ], A[q σ] ⊢ B[σ][Wk∘Wk] : Type@j }} by mauto 2.
+  eapply wf_exp_eq_conv; mauto 2.
 Qed.
 
-(** *** Types Presuppositions *)
+(** *** Type Presuppositions *)
 
 Lemma presup_exp_typ : forall {Γ M A},
     {{ Γ ⊢ M : A }} ->
     exists i, {{ Γ ⊢ A : Type@i }}.
 Proof.
   induction 1; assert {{ ⊢ Γ }} by mauto 3; destruct_conjs; mauto 3.
+
   - enough {{ Γ ⊢s Id,,M : Γ, ℕ }}; mauto 3.
+
   - eexists; mauto 4 using lift_exp_max_left, lift_exp_max_right.
+
   - enough {{ Γ ⊢s Id,,N : Γ, A }}; mauto 3.
-  - assert {{ Γ ⊢s Id,,M1 : Γ, A }} by mauto 3.
+
+  - enough {{ Γ ⊢s Id,,M1,,M2,,N : Γ, A, A[Wk], Eq A[Wk∘Wk] #1 #0 }} by mauto 3.
     assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3.
     assert {{ Γ, A ⊢ A[Wk] : Type@i }} by mauto 3.
     assert {{ Γ, A, A[Wk] ⊢s Wk : Γ, A }} by mauto 4.
-    assert {{ Γ, A, A[Wk] ⊢ A[Wk][Wk] : Type@i }} by mauto 3.
-    assert {{ Γ ⊢ A[Wk][Id,,M1] : Type@i }} by mauto 3.
-    assert {{ Γ ⊢ A[Wk][Id,,M1] ≈ A : Type@i }}.
-    {
-      transitivity {{{ A[Wk∘(Id,,M1)] }}}; mauto 3.
-      transitivity {{{ A[Id] }}}; mauto 4.
-    }
-    assert {{ Γ ⊢s Id,,M1,,M2 : Γ, A, A[Wk] }} by mauto 4.
-    assert {{ Γ ⊢ A[Wk][Wk][Id ,, M1 ,, M2] ≈ A : Type@i }}.
-    {
-      transitivity {{{ A[Wk][Wk∘(Id,,M1,,M2)] }}}; mauto 3.
-      transitivity {{{ A[Wk][Id,,M1] }}}; mauto 3.
-      eapply exp_eq_sub_cong_typ2'; mauto 4.
-    }
-    enough {{ Γ ⊢s Id,,M1,,M2,,N : Γ, A, A[Wk], Eq A[Wk][Wk] #1 #0 }} by mauto 3.
-    assert {{ Γ, A, A[Wk] ⊢ Eq A[Wk][Wk] #1 #0 : Type@i }} by (econstructor; mauto 4).
-    econstructor; mauto 3.
-    eapply wf_conv; mauto 2.
-    transitivity {{{ Eq A[Wk][Wk][Id,,M1,,M2] #1[Id,,M1,,M2] #0[Id,,M1,,M2] }}}.
-    + econstructor; mauto 3 using id_sub_lookup_var0, id_sub_lookup_var1.
-    + symmetry; econstructor; mauto 4.
+    assert {{ Γ, A, A[Wk] ⊢ A[Wk∘Wk] : Type@i }} by mauto 3.
+    assert {{ Γ, A, A[Wk] ⊢ Eq A[Wk∘Wk] #1 #0 : Type@i }} by (econstructor; mauto 3; eapply wf_conv; mauto 4).
+
+    assert {{ Γ ⊢s Id,,M1 : Γ, A }} by mauto 3.
+    assert {{ Γ ⊢ M2 : A[Wk][Id,,M1] }} by (eapply wf_conv; [| | symmetry]; mauto 2).
+    assert {{ Γ ⊢s Id,,M1,,M2 : Γ, A, A[Wk] }} by mauto 3.
+    econstructor; [mautosolve 3 | mautosolve 3 |].
+    eapply wf_conv; [| | symmetry]; mauto 3.
+    transitivity {{{ Eq A[Wk∘Wk][Id,,M1,,M2] #1[Id,,M1,,M2] #0[Id,,M1,,M2] }}}.
+    + econstructor; mauto 3 using id_sub_lookup_var0, id_sub_lookup_var1; eapply wf_conv; mauto 4.
+    + assert {{ Γ ⊢ M2 : A }} by eassumption. (* re-assert to help search process *)
+      assert {{ Γ ⊢ M1 : A[Wk∘Wk][Id,,M1,,M2] }} by (eapply wf_conv; [| | symmetry]; mauto 2).
+      assert {{ Γ ⊢ M2 : A[Wk∘Wk][Id,,M1,,M2] }} by (eapply wf_conv; [| | symmetry]; mauto 2).
+      econstructor; mauto 3 using id_sub_lookup_var0, id_sub_lookup_var1.
 Qed.
 
 Lemma presup_exp : forall {Γ M A},
@@ -1287,6 +1453,8 @@ Lemma presup_exp : forall {Γ M A},
 Proof.
   mauto 4 using presup_exp_typ.
 Qed.
+
+(** *** Consistency Helper *)
 
 Lemma no_closed_neutral : forall {A} {W : ne},
     ~ {{ ⋅ ⊢ W : A }}.
