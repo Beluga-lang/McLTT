@@ -125,15 +125,15 @@ Proof.
           assert (j = i) as -> by mauto 3
       end.
       do 2 eexists; repeat split; mauto 3; lia.
-    + assert {{ Γ ⊢ Π ~_ ~_ ≈ Type@_ : Type@_ }} by mauto 3.
-      assert ({{{ Π ~_ ~_ }}} = {{{ Type@_ }}}) by mauto 3; congruence.
+    + assert {{ Γ ⊢ Π ^_ ^_ ≈ Type@_ : Type@_ }} by mauto 3.
+      assert ({{{ Π ^_ ^_ }}} = {{{ Type@_ }}}) by mauto 3; congruence.
     + right; left.
-      assert {{ Γ ⊢ Π ~_ ~_ ≈ Type@_ : Type@_ }} by mauto 3.
-      assert ({{{ Π ~_ ~_ }}} = {{{ Type@_ }}}) by mauto 3; congruence.
+      assert {{ Γ ⊢ Π ^_ ^_ ≈ Type@_ : Type@_ }} by mauto 3.
+      assert ({{{ Π ^_ ^_ }}} = {{{ Type@_ }}}) by mauto 3; congruence.
     + right; right.
       match goal with
-      | _: {{ Γ ⊢ M' ≈ Π ~?A1 ~?A2 : Type@_ }},
-          _: {{ Γ ⊢ Π ~?B1 ~?B2 ≈ M' : Type@_ }} |- _ =>
+      | _: {{ Γ ⊢ M' ≈ Π ^?A1 ^?A2 : Type@_ }},
+          _: {{ Γ ⊢ Π ^?B1 ^?B2 ≈ M' : Type@_ }} |- _ =>
           assert {{ Γ ⊢ Π A1 A2 ≈ Π B1 B2 : Type@_ }} by mauto 3;
           assert ({{ Γ ⊢ A1 ≈ B1 : Type@_ }} /\ {{ Γ, A1 ⊢ A2 ≈ B2 : Type@_ }}) as [] by mauto 3 using exp_eq_pi_inversion
       end.
@@ -168,8 +168,8 @@ Proof.
     assert {{ ⋅, Type@i ⊢ Type@i[Wk] ≈ Type@i : Type@(S i) }} by mauto 3.
     eapply subtyp_spec in Heq as [| []]; destruct_conjs;
       try (eapply HT'eq; mautosolve 4).
-    assert {{ ⋅, Type@i ⊢ Type@i ≈ Π ~_ ~_ : Type@_ }} by mauto 3.
-    assert ({{{ Π ~_ ~_ }}} = {{{ Type@i }}}) by mauto 3.
+    assert {{ ⋅, Type@i ⊢ Type@i ≈ Π ^_ ^_ : Type@_ }} by mauto 3.
+    assert ({{{ Π ^_ ^_ }}} = {{{ Type@i }}}) by mauto 3.
     congruence.
 Qed.
 
@@ -190,13 +190,13 @@ Proof.
   simpl in *.
   assert (exists B, {{ ⋅, Type@i ⊢ M0 : B }} /\ {{ ⋅ ⊢ Π Type@i B ⊆ Π Type@i #0 }}) as [? [? [| []]%subtyp_spec]] by mauto 3;
     destruct_conjs;
-    try assert ({{{ Π ~_ ~_ }}} = {{{ Type@_ }}}) by mauto 3;
+    try assert ({{{ Π ^_ ^_ }}} = {{{ Type@_ }}}) by mauto 3;
     try congruence.
-  - assert (_ /\ {{ ⋅, Type@i ⊢ ~_ ≈ #0 : ~_ }}) as [_ ?] by mauto 3 using exp_eq_pi_inversion.
+  - assert (_ /\ {{ ⋅, Type@i ⊢ ^_ ≈ #0 : ^_ }}) as [_ ?] by mauto 3 using exp_eq_pi_inversion.
     eapply consistency_ne_helper; mauto 3.
     congruence.
-  - assert (_ /\ {{ ~_ ⊢ x ≈ ~_ : ~_ }}) as [_ ?] by mauto 3 using exp_eq_pi_inversion.
-    assert (_ /\ {{ ~_ ⊢ ~_ ≈ #0 : ~_ }}) as [? ?] by mauto 3 using exp_eq_pi_inversion.
+  - assert (_ /\ {{ ^_ ⊢ x ≈ ^_ : ^_ }}) as [_ ?] by mauto 3 using exp_eq_pi_inversion.
+    assert (_ /\ {{ ^_ ⊢ ^_ ≈ #0 : ^_ }}) as [? ?] by mauto 3 using exp_eq_pi_inversion.
     assert {{ ⋅, Type@i ⊢ x ⊆ #0 }} by (etransitivity; [| eapply ctxeq_subtyp]; mauto 4).
     eapply consistency_ne_helper; mauto 3.
     congruence.

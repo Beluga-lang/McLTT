@@ -17,11 +17,11 @@ Module ctxsub_judg.
   #[local]
   Ltac gen_ctxsub_helper_IH ctxsub_exp_helper ctxsub_exp_eq_helper ctxsub_sub_helper ctxsub_sub_eq_helper ctxsub_subtyp_helper H :=
   match type of H with
-  | {{ ~?Γ ⊢ ~?M : ~?A }} => pose proof ctxsub_exp_helper _ _ _ H
-  | {{ ~?Γ ⊢ ~?M ≈ ~?N : ~?A }} => pose proof ctxsub_exp_eq_helper _ _ _ _ H
-  | {{ ~?Γ ⊢s ~?σ : ~?Δ }} => pose proof ctxsub_sub_helper _ _ _ H
-  | {{ ~?Γ ⊢s ~?σ ≈ ~?τ : ~?Δ }} => pose proof ctxsub_sub_eq_helper _ _ _ _ H
-  | {{ ~?Γ ⊢ ~?M ⊆ ~?M' }} => pose proof ctxsub_subtyp_helper _ _ _ H
+  | {{ ^?Γ ⊢ ^?M : ^?A }} => pose proof ctxsub_exp_helper _ _ _ H
+  | {{ ^?Γ ⊢ ^?M ≈ ^?N : ^?A }} => pose proof ctxsub_exp_eq_helper _ _ _ _ H
+  | {{ ^?Γ ⊢s ^?σ : ^?Δ }} => pose proof ctxsub_sub_helper _ _ _ H
+  | {{ ^?Γ ⊢s ^?σ ≈ ^?τ : ^?Δ }} => pose proof ctxsub_sub_eq_helper _ _ _ _ H
+  | {{ ^?Γ ⊢ ^?M ⊆ ^?M' }} => pose proof ctxsub_subtyp_helper _ _ _ H
   end.
 
   #[local]

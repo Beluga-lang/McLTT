@@ -303,8 +303,8 @@ Qed.
 #[local]
 Ltac per_univ_elem_right_irrel_assert1 :=
   match goal with
-  | H1 : {{ DF ~?a ≈ ~?b ∈ per_univ_elem ?i ↘ ?R1 }},
-      H2 : {{ DF ~?a ≈ ~?b' ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+  | H1 : {{ DF ^?a ≈ ^?b ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ^?a ≈ ^?b' ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
       assert_fails (unify R1 R2);
       match goal with
       | H : R1 <~> R2 |- _ => fail 1
@@ -403,24 +403,24 @@ Qed.
 Ltac do_per_univ_elem_irrel_assert1 :=
   let tactic_error o1 o2 := fail 2 "per_univ_elem_irrel biconditional between" o1 "and" o2 "cannot be solved" in
   match goal with
-  | H1 : {{ DF ~?a ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-      H2 : {{ DF ~?a ≈ ~_ ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+  | H1 : {{ DF ^?a ≈ ^_ ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ^?a ≈ ^_ ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
       assert_fails (unify R1 R2);
       match goal with
       | H : R1 <~> R2 |- _ => fail 1
       | H : R2 <~> R1 |- _ => fail 1
       | _ => assert (R1 <~> R2) by (eapply per_univ_elem_right_irrel; [apply H1 | apply H2]) || tactic_error R1 R2
       end
-  | H1 : {{ DF ~_ ≈ ~?b ∈ per_univ_elem ?i ↘ ?R1 }},
-      H2 : {{ DF ~_ ≈ ~?b ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+  | H1 : {{ DF ^_ ≈ ^?b ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ^_ ≈ ^?b ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
       assert_fails (unify R1 R2);
       match goal with
       | H : R1 <~> R2 |- _ => fail 1
       | H : R2 <~> R1 |- _ => fail 1
       | _ => assert (R1 <~> R2) by (eapply per_univ_elem_left_irrel; [apply H1 | apply H2]) || tactic_error R1 R2
       end
-  | H1 : {{ DF ~?a ≈ ~_ ∈ per_univ_elem ?i ↘ ?R1 }},
-      H2 : {{ DF ~_ ≈ ~?a ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
+  | H1 : {{ DF ^?a ≈ ^_ ∈ per_univ_elem ?i ↘ ?R1 }},
+      H2 : {{ DF ^_ ≈ ^?a ∈ per_univ_elem ?i' ↘ ?R2 }} |- _ =>
       (** Order matters less here as H1 and H2 cannot be exchanged *)
       assert_fails (unify R1 R2);
       match goal with
@@ -893,24 +893,24 @@ Qed.
 Ltac do_per_ctx_env_irrel_assert1 :=
   let tactic_error o1 o2 := fail 3 "per_ctx_env_irrel equality between" o1 "and" o2 "cannot be solved" in
   match goal with
-    | H1 : {{ DF ~?Γ ≈ ~_ ∈ per_ctx_env ↘ ?R1 }},
-        H2 : {{ DF ~?Γ ≈ ~_ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
+    | H1 : {{ DF ^?Γ ≈ ^_ ∈ per_ctx_env ↘ ?R1 }},
+        H2 : {{ DF ^?Γ ≈ ^_ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
         assert_fails (unify R1 R2);
         match goal with
         | H : R1 <~> R2 |- _ => fail 1
         | H : R2 <~> R1 |- _ => fail 1
         | _ => assert (R1 <~> R2) by (eapply per_ctx_env_right_irrel; [apply H1 | apply H2]) || tactic_error R1 R2
         end
-    | H1 : {{ DF ~_ ≈ ~?Δ ∈ per_ctx_env ↘ ?R1 }},
-        H2 : {{ DF ~_ ≈ ~?Δ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
+    | H1 : {{ DF ^_ ≈ ^?Δ ∈ per_ctx_env ↘ ?R1 }},
+        H2 : {{ DF ^_ ≈ ^?Δ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
         assert_fails (unify R1 R2);
         match goal with
         | H : R1 <~> R2 |- _ => fail 1
         | H : R2 <~> R1 |- _ => fail 1
         | _ => assert (R1 <~> R2) by (eapply per_ctx_env_left_irrel; [apply H1 | apply H2]) || tactic_error R1 R2
         end
-    | H1 : {{ DF ~?Γ ≈ ~_ ∈ per_ctx_env ↘ ?R1 }},
-        H2 : {{ DF ~_ ≈ ~?Γ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
+    | H1 : {{ DF ^?Γ ≈ ^_ ∈ per_ctx_env ↘ ?R1 }},
+        H2 : {{ DF ^_ ≈ ^?Γ ∈ per_ctx_env ↘ ?R2 }} |- _ =>
         (** Order matters less here as H1 and H2 cannot be exchanged *)
         assert_fails (unify R1 R2);
         match goal with
@@ -1010,7 +1010,7 @@ Lemma per_ctx_env_cons' : forall {Γ Γ' i A A' tail_rel}
         rel_typ i A ρ A' ρ' (head_rel equiv_ρ_ρ')) ->
     (env_rel <~> fun ρ ρ' =>
          exists (equiv_ρ_drop_ρ'_drop : {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel }}),
-           {{ Dom ~(ρ 0) ≈ ~(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}) ->
+           {{ Dom ^(ρ 0) ≈ ^(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}) ->
     {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_rel }}.
 Proof.
   intros.
@@ -1032,7 +1032,7 @@ Lemma per_ctx_env_cons_clean_inversion : forall {Γ Γ' env_relΓ A A' env_relΓ
           rel_typ i A ρ A' ρ' (head_rel equiv_ρ_ρ')) /\
         (env_relΓA <~> fun ρ ρ' =>
              exists (equiv_ρ_drop_ρ'_drop : {{ Dom ρ ↯ ≈ ρ' ↯ ∈ env_relΓ }}),
-               {{ Dom ~(ρ 0) ≈ ~(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}).
+               {{ Dom ^(ρ 0) ≈ ^(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}).
 Proof with intuition.
   intros * HΓ HΓA.
   inversion HΓA; subst.
