@@ -511,8 +511,8 @@ Qed.
 Ltac apply_functional_glu_univ_elem1 :=
   let tactic_error o1 o2 := fail 2 "functional_glu_univ_elem biconditional between" o1 "and" o2 "cannot be solved" in
   match goal with
-  | H1 : {{ DG ~?a ∈ glu_univ_elem ?i ↘ ?P1 ↘ ?El1 }},
-      H2 : {{ DG ~?a ∈ glu_univ_elem ?i' ↘ ?P2 ↘ ?El2 }} |- _ =>
+  | H1 : {{ DG ^?a ∈ glu_univ_elem ?i ↘ ?P1 ↘ ?El1 }},
+      H2 : {{ DG ^?a ∈ glu_univ_elem ?i' ↘ ?P2 ↘ ?El2 }} |- _ =>
       unify i i';
       assert_fails (unify P1 P2; unify El1 El2);
       match goal with

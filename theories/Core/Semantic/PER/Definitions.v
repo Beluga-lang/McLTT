@@ -284,7 +284,7 @@ Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
             rel_typ i A ρ A' ρ' (head_rel equiv_ρ_ρ')) ->
         (env_rel <~> fun ρ ρ' =>
              exists (equiv_ρ_drop_ρ'_drop : {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel }}),
-               {{ Dom ~(ρ 0) ≈ ~(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}) ->
+               {{ Dom ^(ρ 0) ≈ ^(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}) ->
         {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_rel }} }
 .
 #[export]

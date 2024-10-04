@@ -72,7 +72,7 @@ Open Scope list_scope.
 
 Lemma app_ctx_lookup : forall Δ T Γ n,
     length Δ = n ->
-    {{ #n : ~(iter (S n) (fun T => {{{T [ Wk ]}}}) T) ∈ ~(Δ ++ T :: Γ) }}.
+    {{ #n : ^(iter (S n) (fun T => {{{T [ Wk ]}}}) T) ∈ ^(Δ ++ T :: Γ) }}.
 Proof.
   induction Δ; intros; simpl in *; subst; mauto.
 Qed.
@@ -88,9 +88,9 @@ Proof.
 Qed.
 
 Lemma app_ctx_vlookup : forall Δ T Γ n,
-    {{ ⊢ ~(Δ ++ T :: Γ) }} ->
+    {{ ⊢ ^(Δ ++ T :: Γ) }} ->
     length Δ = n ->
-    {{ ~(Δ ++ T :: Γ) ⊢ #n : ~(iter (S n) (fun T => {{{T [ Wk ]}}}) T) }}.
+    {{ ^(Δ ++ T :: Γ) ⊢ #n : ^(iter (S n) (fun T => {{{T [ Wk ]}}}) T) }}.
 Proof.
   intros. econstructor; auto using app_ctx_lookup.
 Qed.

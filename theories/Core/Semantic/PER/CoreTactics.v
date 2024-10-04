@@ -9,7 +9,7 @@ Import Domain_Notations.
 Ltac destruct_rel_by_assumption in_rel H :=
   repeat
     match goal with
-    | H' : {{ Dom ~?c ≈ ~?c' ∈ ?in_rel0 }} |- _ =>
+    | H' : {{ Dom ^?c ≈ ^?c' ∈ ?in_rel0 }} |- _ =>
         unify in_rel0 in_rel;
         destruct (H _ _ H') as [];
         destruct_all;

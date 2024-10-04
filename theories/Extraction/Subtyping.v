@@ -9,12 +9,12 @@ Import Domain_Notations.
 Ltac subtyping_tac :=
   intros;
   lazymatch goal with
-  | |- {{ ⊢anf ~_ ⊆ ~_ }} =>
+  | |- {{ ⊢anf ^_ ⊆ ^_ }} =>
       subst;
       mauto 4;
       try congruence;
       econstructor; simpl; trivial
-  | |- ~ {{ ⊢anf ~_ ⊆ ~_ }} =>
+  | |- ~ {{ ⊢anf ^_ ⊆ ^_ }} =>
       let H := fresh "H" in
       intro H; dependent destruction H; simpl in *;
       try lia;

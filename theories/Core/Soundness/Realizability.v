@@ -39,7 +39,7 @@ Lemma var_weaken_gen : forall Δ σ Γ,
     {{ Δ ⊢w σ : Γ }} ->
     forall Γ1 Γ2 A0,
       Γ = Γ1 ++ A0 :: Γ2 ->
-      {{ Δ ⊢ #(length Γ1)[σ] ≈ #(length Δ - length Γ2 - 1) : ~(iter (S (length Γ1)) (fun A => {{{ A[Wk] }}}) A0)[σ] }}.
+      {{ Δ ⊢ #(length Γ1)[σ] ≈ #(length Δ - length Γ2 - 1) : ^(iter (S (length Γ1)) (fun A => {{{ A[Wk] }}}) A0)[σ] }}.
 Proof.
   induction 1; intros; subst; gen_presups.
   - pose proof (app_ctx_vlookup _ _ _ _ HΔ eq_refl) as Hvar.
@@ -56,7 +56,7 @@ Proof.
     gen_presup Hvar.
     clear_dups.
     assert {{ ⊢ Δ', A }} by mauto 3.
-    assert {{ Δ', A ⊢s Wk : ~ (Γ1 ++ {{{ Γ2, A0 }}}) }} by mauto 3.
+    assert {{ Δ', A ⊢s Wk : ^(Γ1 ++ {{{ Γ2, A0 }}}) }} by mauto 3.
     transitivity {{{ #(length Γ1)[Wk∘τ] }}}; [mauto 3 |].
     rewrite H1.
     etransitivity; [eapply wf_exp_eq_sub_compose; mauto 3 |].
@@ -218,7 +218,7 @@ Proof.
     bulky_rewrite_in H23.
     unshelve (econstructor; eauto).
     + trivial.
-    + eassert {{ Δ ⊢ M[σ] N : ~_ }} by (eapply wf_app'; eassumption).
+    + eassert {{ Δ ⊢ M[σ] N : ^_ }} by (eapply wf_app'; eassumption).
       autorewrite with mcltt in H25.
       trivial.
     + mauto using domain_app_per.
@@ -264,7 +264,7 @@ Proof.
       specialize (H29 _ _ _ H19 H9).
       rewrite H5 in *.
       autorewrite with mcltt.
-      eassert {{ Δ ⊢ M[σ] : ~_ }} by (mauto 2).
+      eassert {{ Δ ⊢ M[σ] : ^_ }} by (mauto 2).
       autorewrite with mcltt in H30.
       rewrite @wf_exp_eq_pi_eta' with (M := {{{ M[σ] }}}); [| trivial].
       cbn [nf_to_exp].

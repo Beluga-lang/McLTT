@@ -184,7 +184,7 @@ Lemma rel_exp_of_sub_wkwk_succ_var1_inversion : forall {Γ M M' A},
     {{ Γ, ℕ, A ⊨ M ≈ M' : A[Wk∘Wk,,succ(#1)] }} ->
     exists env_rel (_ : {{ EF Γ, ℕ, A ≈ Γ, ℕ, A ∈ per_ctx_env ↘ env_rel }}) i,
     forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
-    exists elem_rel, rel_typ i A d{{{ ρ ↯ ↯ ↦ succ ~(ρ 1) }}} A d{{{ ρ' ↯ ↯ ↦ succ ~(ρ' 1) }}} elem_rel /\ rel_exp M ρ M' ρ' elem_rel.
+    exists elem_rel, rel_typ i A d{{{ ρ ↯ ↯ ↦ succ ^(ρ 1) }}} A d{{{ ρ' ↯ ↯ ↦ succ ^(ρ' 1) }}} elem_rel /\ rel_exp M ρ M' ρ' elem_rel.
 Proof.
   intros * [env_relΓℕA].
   destruct_conjs.
@@ -260,8 +260,8 @@ Proof.
   destruct_conjs.
   functional_eval_rewrite_clear.
   match goal with
-  | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ1 }},
-      _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ2 }} |- _ =>
+  | _: {{ ⟦ σ ⟧s ρ ↘ ^?ρ1 }},
+      _: {{ ⟦ σ ⟧s ρ' ↘ ^?ρ2 }} |- _ =>
       rename ρ1 into ρσ;
       rename ρ2 into ρ'σ
   end.
@@ -291,8 +291,8 @@ Proof.
   {
     apply_relation_equivalence; eexists; eauto.
     unfold drop_env.
-    repeat change (fun n => d{{{ ~?ρσ ↦ ~?x ↦ ~?y }}} (S n)) with (fun n => d{{{ ρ ↦ x }}} n).
-    repeat change (d{{{ ~?ρσ ↦ ~?x ↦ ~?y }}} 0) with y.
+    repeat change (fun n => d{{{ ^?ρσ ↦ ^?x ↦ ^?y }}} (S n)) with (fun n => d{{{ ρ ↦ x }}} n).
+    repeat change (d{{{ ^?ρσ ↦ ^?x ↦ ^?y }}} 0) with y.
     eapply per_bot_then_per_elem; mauto.
   }
   apply_relation_equivalence.
@@ -387,8 +387,8 @@ Proof.
     unshelve epose proof (IHequiv_m_m' _ _ equiv_ρ_ρ' _ _) as [? [? [? []]]]; shelve_unifiable; [solve [mauto] |].
     handle_per_univ_elem_irrel.
     match goal with
-    | _: {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ~?r0 }},
-        _: {{ rec m' ⟦return A' | zero -> MZ' | succ -> MS' end⟧ ρ' ↘ ~?r0' }} |- _ =>
+    | _: {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ^?r0 }},
+        _: {{ rec m' ⟦return A' | zero -> MZ' | succ -> MS' end⟧ ρ' ↘ ^?r0' }} |- _ =>
         rename r0 into rm;
         rename r0' into rm'
     end.
@@ -551,8 +551,8 @@ Proof.
     destruct_by_head rel_typ.
     invert_rel_typ_body.
     match goal with
-    | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ1 }},
-        _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ2 }} |- _ =>
+    | _: {{ ⟦ σ ⟧s ρ ↘ ^?ρ1 }},
+        _: {{ ⟦ σ ⟧s ρ' ↘ ^?ρ2 }} |- _ =>
         rename ρ1 into ρσ;
         rename ρ2 into ρ'σ
     end.
@@ -565,8 +565,8 @@ Proof.
     unshelve epose proof (IHequiv_m_m' _ _ equiv_ρ_ρ' _ _ _ _ _ _ _) as [? [? [? []]]]; shelve_unifiable; only 4: solve [mauto]; eauto.
     handle_per_univ_elem_irrel.
     match goal with
-    | _: {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ~_ ↘ ~?r0 }},
-        _: {{ rec m' ⟦return A'[q σ] | zero -> MZ'[σ] | succ -> MS'[q (q σ)] end⟧ ~_ ↘ ~?r0' }} |- _ =>
+    | _: {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ^_ ↘ ^?r0 }},
+        _: {{ rec m' ⟦return A'[q σ] | zero -> MZ'[σ] | succ -> MS'[q (q σ)] end⟧ ^_ ↘ ^?r0' }} |- _ =>
         rename r0 into rm;
         rename r0' into rm'
     end.
@@ -589,8 +589,8 @@ Proof.
     (on_all_hyp_rev: destruct_rel_by_assumption env_relΔ).
     invert_rel_typ_body.
     match goal with
-    | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ1 }},
-        _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ2 }} |- _ =>
+    | _: {{ ⟦ σ ⟧s ρ ↘ ^?ρ1 }},
+        _: {{ ⟦ σ ⟧s ρ' ↘ ^?ρ2 }} |- _ =>
         rename ρ1 into ρσ;
         rename ρ2 into ρ'σ
     end.
@@ -658,9 +658,9 @@ Proof.
   destruct_by_head rel_typ.
   invert_rel_typ_body.
   match goal with
-  | _: {{ ⟦ σ ⟧s ~?ρ0 ↘ ~?ρσ0 }},
-      _: {{ ⟦ A ⟧ ρσ ↦ ~?m0 ↘ ~?a0 }},
-        _: {{ ⟦ A ⟧ ~?ρσ0 ↦ ~?m0' ↘ ~?a0' }} |- _ =>
+  | _: {{ ⟦ σ ⟧s ^?ρ0 ↘ ^?ρσ0 }},
+      _: {{ ⟦ A ⟧ ρσ ↦ ^?m0 ↘ ^?a0 }},
+        _: {{ ⟦ A ⟧ ^?ρσ0 ↦ ^?m0' ↘ ^?a0' }} |- _ =>
       rename ρ0 into ρ';
       rename ρσ0 into ρ'σ;
       rename a0 into a;

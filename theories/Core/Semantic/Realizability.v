@@ -57,10 +57,10 @@ Proof with (solve [try (try (eexists; split); econstructor); mauto]).
     destruct_rel_mod_eval.
     destruct_rel_mod_app.
     match goal with
-    | _: {{ $| ~?f0 & ⇑! a s |↘ ~_ }},
-        _: {{ $| ~?f0' & ⇑! a' s |↘ ~_ }},
-          _: {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↘ ~?b0 }},
-            _: {{ ⟦ B' ⟧ ρ' ↦ ⇑! a' s ↘ ~?b0' }} |- _ =>
+    | _: {{ $| ^?f0 & ⇑! a s |↘ ^_ }},
+        _: {{ $| ^?f0' & ⇑! a' s |↘ ^_ }},
+          _: {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↘ ^?b0 }},
+            _: {{ ⟦ B' ⟧ ρ' ↦ ⇑! a' s ↘ ^?b0' }} |- _ =>
         rename f0 into f;
         rename f0' into f';
         rename b0 into b;
