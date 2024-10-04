@@ -8,8 +8,8 @@ Import Syntax_Notations.
 #[local]
 Ltac apply_subtyping :=
   repeat match goal with
-    | H : {{ ~?Γ ⊢ ~?M : ~?A }},
-        H1 : {{ ~?Γ ⊢ ~?A ⊆ ~?B }} |- _ =>
+    | H : {{ ^?Γ ⊢ ^?M : ^?A }},
+        H1 : {{ ^?Γ ⊢ ^?A ⊆ ^?B }} |- _ =>
         assert {{ Γ ⊢ M : B }} by mauto; clear H
     end.
 
@@ -27,13 +27,13 @@ Proof.
     destruct_all.
     gen_presups.
     repeat match goal with
-           | H : {{ ~?Γ ⊢ ~?A ⊆ ~?B }}, H1: {{ ⊢ ~?Γ , ~_ }} |- _ =>
+           | H : {{ ^?Γ ⊢ ^?A ⊆ ^?B }}, H1: {{ ⊢ ^?Γ , ^_ }} |- _ =>
                pose proof (wf_subtyp_univ_weaken _ _ _ _ H H1);
                fail_if_dup
            end.
     apply_subtyping.
-    assert {{ Γ, ~(nf_to_exp A') ⊢ B : Type@(max x x0) }} by mauto using lift_exp_max_right.
-    assert {{ Γ, ~(nf_to_exp A') ⊢ B' : Type@(max x x0) }} by mauto using lift_exp_max_left.
+    assert {{ Γ, ^(nf_to_exp A') ⊢ B : Type@(max x x0) }} by mauto using lift_exp_max_right.
+    assert {{ Γ, ^(nf_to_exp A') ⊢ B' : Type@(max x x0) }} by mauto using lift_exp_max_left.
     deepexec IHalg_subtyping_nf ltac:(fun H => pose proof H).
     mauto 3.
 Qed.

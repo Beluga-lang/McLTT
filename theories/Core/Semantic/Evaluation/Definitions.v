@@ -13,7 +13,7 @@ Inductive eval_exp : exp -> env -> domain -> Prop :=
 | eval_exp_typ :
   `( {{ ⟦ Type@i ⟧ ρ ↘ 𝕌@i }} )
 | eval_exp_var :
-  `( {{ ⟦ # x ⟧ ρ ↘ ~(ρ x) }} )
+  `( {{ ⟦ # x ⟧ ρ ↘ ^(ρ x) }} )
 | eval_exp_nat :
   `( {{ ⟦ ℕ ⟧ ρ ↘ ℕ }} )
 | eval_exp_zero :

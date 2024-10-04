@@ -86,7 +86,7 @@ Proof.
     destruct_by_head per_univ.
     functional_eval_rewrite_clear.
     match goal with
-    | _: {{ ⟦ B ⟧ ρ ↦ m ↘ ~?a }} |- _ =>
+    | _: {{ ⟦ B ⟧ ρ ↦ m ↘ ^?a }} |- _ =>
         rename a into b
     end.
     assert {{ Δ' ⊢ M : A[σ][τ] }} by mauto 3 using glu_univ_elem_trm_escape.
@@ -195,7 +195,7 @@ Proof.
     handle_per_univ_elem_irrel.
     eexists; split; mauto 3.
     match goal with
-    | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ~?a }} |- _ =>
+    | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ^?a }} |- _ =>
         rename a into b
     end.
     assert {{ DG b ∈ glu_univ_elem i ↘ OP n equiv_n ↘ OEl n equiv_n }} by mauto 3.
@@ -284,8 +284,8 @@ Proof.
   inversion_clear_by_head pi_glu_exp_pred.
   match goal with
   | _: glu_univ_elem i ?P' ?El' a,
-      _: {{ ⟦ A ⟧ ρ ↘ ~?a' }},
-      _: {{ ⟦ N ⟧ ρ ↘ ~?n' }} |- _ =>
+      _: {{ ⟦ A ⟧ ρ ↘ ^?a' }},
+      _: {{ ⟦ N ⟧ ρ ↘ ^?n' }} |- _ =>
       rename a' into a;
       rename n' into n;
       rename P' into Pa;
@@ -297,8 +297,8 @@ Proof.
   (on_all_hyp: destruct_rel_by_assumption in_rel).
   simplify_evals.
   match goal with
-  | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ~?b' }},
-      _: {{ $| m & n |↘ ~?mn' }} |- _ =>
+  | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ^?b' }},
+      _: {{ $| m & n |↘ ^?mn' }} |- _ =>
       rename b' into b;
       rename mn' into mn
   end.

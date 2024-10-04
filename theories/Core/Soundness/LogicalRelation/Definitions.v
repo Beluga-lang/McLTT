@@ -308,7 +308,7 @@ Variant cons_glu_sub_pred i Γ A (TSb : glu_sub_pred) : glu_sub_pred :=
         (** Here we use [{{{ A[Wk][σ] }}}] instead of [{{{ A[Wk∘σ] }}}]
             as syntactic judgement derived from that is
             a more direct consequence of [{{ Γ, A ⊢ #0 : A[Wk] }}] *)
-        {{ Δ ⊢ #0[σ] : A[Wk][σ] ® ~(ρ 0) ∈ El }} ->
+        {{ Δ ⊢ #0[σ] : A[Wk][σ] ® ^(ρ 0) ∈ El }} ->
         {{ Δ ⊢s Wk ∘ σ ® ρ ↯ ∈ TSb }} ->
         {{ Δ ⊢s σ ® ρ ∈ cons_glu_sub_pred i Γ A TSb }} }.
 
