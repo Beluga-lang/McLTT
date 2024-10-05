@@ -111,12 +111,9 @@ href="https://github.com/mattam82/Coq-Equations">Coq-Equations</a>
 </ul>
 <p>We recommend to install dependencies in the following way:</p>
 <pre class="bash"><code>opam switch create coq-8.20.0 4.14.2
-opam install menhir
 opam pin add coq 8.20.0
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-equations
-opam install coq-menhirlib
-opam install ppx_inline_test</code></pre>
+opam install -y menhir coq-equations coq-menhirlib ppx_inline_test</code></pre>
 <h2 id="development">Development</h2>
 <p>Use the toplevel <code>make</code> to build the whole project:</p>
 <pre><code>make</code></pre>
