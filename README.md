@@ -60,12 +60,9 @@ We recommend to install dependencies in the following way:
 
 ```bash
 opam switch create coq-8.20.0 4.14.2
-opam install menhir
 opam pin add coq 8.20.0
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-equations
-opam install coq-menhirlib
-opam install ppx_inline_test
+opam install -y menhir coq-equations coq-menhirlib ppx_inline_test
 ```
 
 ## Development
