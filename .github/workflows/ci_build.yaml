@@ -73,6 +73,7 @@ jobs:
                 mv theories/dep.html html/dep.html
                 cp assets/styling.css html/styling.css
                 cp -r assets/images html/images
+                sed -i 's!\[Coqdoc\](https://beluga-lang\.github\.io/McLTT/dep\.html)![Coqdoc](dep.html)!' README.md
                 pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McLTT: A Bottom-up Approach to Implementing A Proof Assistant' -t html --css styling.css -o html/index.html
               fi
             endGroup
