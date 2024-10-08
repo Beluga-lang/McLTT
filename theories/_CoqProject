@@ -59,7 +59,6 @@
 ./Core/Soundness/Weakening/Definitions.v
 ./Core/Soundness/Weakening/Lemmas.v
 ./Core/Syntactic/CoreInversions.v
-./Core/Syntactic/CoreTypeInversions.v
 ./Core/Syntactic/Corollaries.v
 ./Core/Syntactic/CtxEq.v
 ./Core/Syntactic/CtxSub.v

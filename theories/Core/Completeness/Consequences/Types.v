@@ -3,7 +3,7 @@ From Mcltt Require Import LibTactics.
 From Mcltt.Core Require Import Base.
 From Mcltt.Core Require Export Completeness.
 From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Syntactic Require Export CoreInversions.
+From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Domain_Notations.
 
 Lemma exp_eq_typ_implies_eq_level : forall {Γ i j k},
