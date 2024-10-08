@@ -841,7 +841,7 @@ Proof.
           mauto 4.
         symmetry.
         bulky_rewrite_in H4.
-        assert {{ Δ0 ⊢ Π IT[σ∘σ0] (OT[q (σ∘σ0)]) ≈ (Π IT OT)[σ∘σ0] : Type@(S (max i4 i)) }} by mauto.
+        assert {{ Δ0 ⊢ Π IT[σ∘σ0] (OT[q (σ∘σ0)]) ≈ (Π IT OT)[σ∘σ0] : Type@_ }} by mauto.
         eapply wf_exp_eq_conv'; mauto 4.
       }
 
