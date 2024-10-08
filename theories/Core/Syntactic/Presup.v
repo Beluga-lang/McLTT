@@ -1213,19 +1213,6 @@ Qed.
 Hint Resolve presup_exp_eq_sub_compose_right : mcltt.
 
 #[local]
-Ltac gen_presup_ctx H :=
-  match type of H with
-  | {{ ⊢ ^?Γ ≈ ^?Δ }} =>
-      let HΓ := fresh "HΓ" in
-      let HΔ := fresh "HΔ" in
-      pose proof presup_ctx_eq H as [HΓ HΔ]
-  | {{ ⊢ ^?Γ ⊆ ^?Δ }} =>
-      let HΓ := fresh "HΓ" in
-      let HΔ := fresh "HΔ" in
-      pose proof presup_ctx_sub H as [HΓ HΔ]
-  end.
-
-#[local]
 Ltac gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp H :=
   match type of H with
   | {{ ^?Γ ⊢ ^?M ≈ ^?N : ^?A }} =>
@@ -1247,23 +1234,16 @@ Ltac gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp H :=
       let HM := fresh "HM" in
       let HN := fresh "HN" in
       pose proof presup_subtyp _ _ _ H as [HΓ [i [HM HN]]]
-  | {{ ^?Γ ⊢ ^?M : ^?A }} =>
-      let HΓ := fresh "HΓ" in
-      let i := fresh "i" in
-      let HAi := fresh "HAi" in
-      pose proof presup_exp H as [HΓ [i HAi]]
-  | {{ ^?Γ ⊢s ^?σ : ^?Δ }} =>
-      let HΓ := fresh "HΓ" in
-      let HΔ := fresh "HΔ" in
-      pose proof presup_sub H as [HΓ HΔ]
-  | _ => gen_presup_ctx H
   end.
 
 Lemma presup_exp_eq : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢ M : A }} /\ {{ Γ ⊢ M' : A }} /\ exists i, {{ Γ ⊢ A : Type@i }}
 with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢s σ : Δ }} /\ {{ Γ ⊢s σ' : Δ }} /\ {{ ⊢ Δ }}
 with presup_subtyp : forall {Γ M M'}, {{ Γ ⊢ M ⊆ M' }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ M : Type@i }} /\ {{ Γ ⊢ M' : Type@i }}.
 Proof with mautosolve 4.
-  all: inversion_clear 1; (on_all_hyp: gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp);
+  1: set (WkWksucc := {{{ Wk∘Wk ,, succ #1 }}}).
+  all: inversion_clear 1;
+    (on_all_hyp: gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp);
+    gen_core_presups;
     clear presup_exp_eq presup_sub_eq presup_subtyp;
     repeat split; try mautosolve 3;
     try (eexists; unshelve solve [mauto 4 using lift_exp_max_left, lift_exp_max_right]; constructor).
@@ -1273,21 +1253,18 @@ Proof with mautosolve 4.
   (** presup_exp_eq cases *)
   - eexists; eapply exp_sub_typ; mauto 4 using lift_exp_max_left, lift_exp_max_right.
 
-  - match_by_head1 ctx_lookup ltac:(fun H => directed destruct (presup_ctx_lookup_typ ltac:(eassumption) H))...
-
   (** presup_sub_eq cases *)
+
   - econstructor; mauto 3.
     eapply wf_conv...
 
-  - assert (exists i, {{ Γ0 ⊢ A : Type@i }}) as [] by mauto 2.
-    assert {{ Γ ⊢ #0[σ] : A[Wk][σ] }} by mauto 3.
-    enough {{ Γ ⊢ #0[σ] : A[Wk∘σ] }} by mauto 4.
+  - enough {{ Γ ⊢ #0[σ] : A[Wk∘σ] }} by mauto 4.
     eapply wf_conv...
 
   (** presup_subtyp cases *)
   - exists (max (S i) (S j)); split; mauto 3 using lift_exp_max_left, lift_exp_max_right.
 Qed.
 
-Ltac gen_presup H := gen_presup_IH @presup_exp_eq @presup_sub_eq @presup_subtyp H.
+Ltac gen_presup H := gen_presup_IH @presup_exp_eq @presup_sub_eq @presup_subtyp H + gen_core_presup H.
 
-Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; clear_dups.
+Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; (on_all_hyp: fun H => gen_lookup_presup H); clear_dups.
