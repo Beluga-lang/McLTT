@@ -42,7 +42,7 @@ Lemma var_weaken_gen : forall Δ σ Γ,
       {{ Δ ⊢ #(length Γ1)[σ] ≈ #(length Δ - length Γ2 - 1) : ^(iter (S (length Γ1)) (fun A => {{{ A[Wk] }}}) A0)[σ] }}.
 Proof.
   induction 1; intros; subst; gen_presups.
-  - pose proof (app_ctx_vlookup _ _ _ _ HΔ eq_refl) as Hvar.
+  - pose proof (app_ctx_vlookup _ _ _ _ ltac:(eassumption) eq_refl) as Hvar.
     gen_presup Hvar.
     clear_dups.
     apply wf_sub_id_inversion in Hτ.

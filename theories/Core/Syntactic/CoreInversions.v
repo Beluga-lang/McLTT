@@ -1,8 +1,31 @@
 From Coq Require Import Setoid.
 From Mcltt Require Import LibTactics.
 From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
+From Mcltt.Core.Syntactic Require Export CtxEq.
 Import Syntax_Notations.
+
+Lemma wf_typ_inversion : forall {Γ i A},
+    {{ Γ ⊢ Type@i : A }} ->
+    {{ Γ ⊢ Type@(S i) ⊆ A }}.
+Proof with mautosolve.
+  intros * H.
+  dependent induction H...
+Qed.
+
+#[export]
+Hint Resolve wf_typ_inversion : mcltt.
+
+Lemma wf_nat_inversion : forall Γ A,
+    {{ Γ ⊢ ℕ : A }} ->
+    {{ Γ ⊢ Type@0 ⊆ A }}.
+Proof with mautosolve 4.
+  intros * H.
+  assert (forall i, 0 <= i) by lia.
+  dependent induction H...
+Qed.
+
+#[export]
+Hint Resolve wf_nat_inversion : mcltt.
 
 Corollary wf_zero_inversion : forall Γ A,
     {{ Γ ⊢ zero : A }} ->
@@ -37,23 +60,48 @@ Proof with mautosolve.
   pose (A0 := A).
   dependent induction H;
     try (specialize (IHwf_exp1 _ _ _ _ eq_refl));
-    destruct_conjs;
-    assert {{ Γ ⊢s Id : Γ }} by mauto 3;
-    repeat split...
+    destruct_conjs; gen_core_presups; repeat split...
 Qed.
 
 #[export]
 Hint Resolve wf_natrec_inversion : mcltt.
 
-Corollary wf_fn_inversion : forall {Γ A M C},
-    {{ Γ ⊢ λ A M : C }} ->
-    exists B, {{ Γ, A ⊢ M : B }} /\ {{ Γ ⊢ Π A B ⊆ C }}.
+Lemma wf_pi_inversion : forall {Γ A B C},
+    {{ Γ ⊢ Π A B : C }} ->
+    exists i, {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }} /\ {{ Γ ⊢ Type@i ⊆ C }}.
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
     try specialize (IHwf_exp1 _ _ eq_refl);
-    destruct_conjs;
-    gen_presups;
+    destruct_conjs; gen_core_presups; eexists...
+Qed.
+
+#[export]
+Hint Resolve wf_pi_inversion : mcltt.
+
+Corollary wf_pi_inversion' : forall {Γ A B i},
+    {{ Γ ⊢ Π A B : Type@i }} ->
+    {{ Γ ⊢ A : Type@i }} /\ {{ Γ, A ⊢ B : Type@i }}.
+Proof with mautosolve 4.
+  intros * [j [? []]]%wf_pi_inversion.
+  assert {{ Γ, A ⊢s Wk : Γ }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@j ⊆ Type@j[Wk] }} by (econstructor; mauto 4).
+  assert {{ Γ, A ⊢ Type@j[Wk] ⊆ Type@i[Wk] }} by mauto 4.
+  assert {{ Γ, A ⊢ Type@i[Wk] ⊆ Type@i }} by (econstructor; mauto 4).
+  enough {{ Γ, A ⊢ Type@j ⊆ Type@i }}...
+Qed.
+
+#[export]
+Hint Resolve wf_pi_inversion' : mcltt.
+
+Corollary wf_fn_inversion : forall {Γ A M C},
+    {{ Γ ⊢ λ A M : C }} ->
+    exists B, {{ Γ, A ⊢ M : B }} /\ {{ Γ ⊢ Π A B ⊆ C }}.
+Proof with solve [mauto using lift_exp_max_left, lift_exp_max_right].
+  intros * H.
+  dependent induction H;
+    try specialize (IHwf_exp1 _ _ eq_refl);
+    destruct_conjs; gen_core_presups;
     eexists; split...
 Qed.
 
@@ -63,7 +111,7 @@ Hint Resolve wf_fn_inversion : mcltt.
 Lemma wf_app_inversion : forall {Γ M N C},
     {{ Γ ⊢ M N : C }} ->
     exists A B, {{ Γ ⊢ M : Π A B }} /\ {{ Γ ⊢ N : A }} /\ {{ Γ ⊢ B[Id,,N] ⊆ C }}.
-Proof with mautosolve.
+Proof with mautosolve 4.
   intros * H.
   dependent induction H;
     try specialize (IHwf_exp1 _ _ eq_refl);
@@ -80,10 +128,8 @@ Lemma wf_vlookup_inversion : forall {Γ x A},
 Proof with mautosolve 4.
   intros * H.
   dependent induction H;
-    [assert (exists i, {{ Γ ⊢ A : Type@i }}) as [] by mauto 4 |];
     try (specialize (IHwf_exp1 _ eq_refl));
-    destruct_conjs;
-    eexists; split...
+    destruct_conjs; gen_core_presups; eexists; split...
 Qed.
 
 #[export]
@@ -92,13 +138,13 @@ Hint Resolve wf_vlookup_inversion : mcltt.
 Lemma wf_exp_sub_inversion : forall {Γ M σ A},
     {{ Γ ⊢ M[σ] : A }} ->
     exists Δ A', {{ Γ ⊢s σ : Δ }} /\ {{ Δ ⊢ M : A' }} /\ {{ Γ ⊢ A'[σ] ⊆ A }}.
-Proof with mautosolve.
+Proof with mautosolve 3.
   intros * H.
   dependent induction H;
     try (specialize (IHwf_exp1 _ _ eq_refl));
     destruct_conjs;
-    gen_presups;
-    do 2 eexists; split...
+    do 2 eexists; repeat split; mauto 3.
+  assert (exists j, {{ Δ ⊢ A : Type@j }}) as [] by mauto 2 using presup_exp_typ...
 Qed.
 
 #[export]
@@ -111,7 +157,7 @@ Lemma wf_sub_id_inversion : forall Γ Δ,
     {{ ⊢ Γ ⊆ Δ }}.
 Proof.
   intros * H.
-  dependent induction H; mautosolve.
+  dependent induction H; mautosolve 3.
 Qed.
 
 #[export]
@@ -125,7 +171,7 @@ Proof.
   dependent induction H;
     firstorder;
     progressive_inversion;
-    repeat eexists; mauto.
+    repeat eexists; mautosolve 3.
 Qed.
 
 #[export]
@@ -134,9 +180,9 @@ Hint Resolve wf_sub_weaken_inversion : mcltt.
 Lemma wf_sub_compose_inversion : forall {Γ1 σ1 σ2 Γ3},
     {{ Γ1 ⊢s σ1 ∘ σ2 : Γ3 }} ->
     exists Γ2, {{ Γ1 ⊢s σ2 : Γ2 }} /\ {{ Γ2 ⊢s σ1 : Γ3 }}.
-Proof with mautosolve 4.
+Proof with mautosolve 3.
   intros * H.
-  dependent induction H; mauto.
+  dependent induction H; mauto 3.
   specialize (IHwf_sub _ _ eq_refl).
   destruct_conjs.
   eexists.
