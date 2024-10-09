@@ -5,7 +5,7 @@
       (appNary : forall (n : Nat) (f : Nary (succ n)) (arg : Nat) -> Nary n)
       (n : Nat)
       (f : Nary n)
-    -> (rec n return y -> (forall (g : Nary y) -> Nat)
+    -> (rec n return y . (forall (g : Nary y) -> Nat)
        | zero => toNat
        | succ m, r => fun (g : Nary (succ m)) -> r (appNary m g (succ m))
        end) f
@@ -13,7 +13,7 @@
 (* Nary definition *)
 (
   fun (n : Nat)
-    -> rec n return y -> Type@0
+    -> rec n return y . Type@0
        | zero => Nat
        | succ m, r => forall (a : Nat) -> r
        end
@@ -23,7 +23,7 @@
 (* appNary definition *)
 (
   fun (n : Nat)
-      (f : rec succ n return y -> Type@0
+      (f : rec succ n return y . Type@0
            | zero => Nat
            | succ m, r => forall (a : Nat) -> r
            end)
@@ -40,7 +40,7 @@
   (
     fun (a : Nat)
         (b : Nat)
-      -> rec a return y -> Nat
+      -> rec a return y . Nat
          | zero => b
          | succ m, r => succ r
          end

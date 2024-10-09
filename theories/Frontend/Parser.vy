@@ -10,8 +10,8 @@ Parameter loc : Type.
 
 %token <loc*string> VAR
 %token <loc*nat> INT
-%token <loc> END LAMBDA NAT PI REC RETURN SUCC TYPE ZERO (* keywords *)
-%token <loc> ARROW "->" AT "@" BAR "|" COLON ":" COMMA "," DARROW "=>" LPAREN "(" RPAREN ")" EOF (* symbols *)
+%token <loc> END LAMBDA NAT PI REC RETURN SUCC TYPE ZERO LET IN (* keywords *)
+%token <loc> ARROW "->" AT "@" BAR "|" COLON ":" COMMA "," DARROW "=>" LPAREN "(" RPAREN ")" DOT "." EQ ":=" EOF (* symbols *)
 
 %start <Cst.obj * Cst.obj> prog
 %type <Cst.obj> obj app_obj atomic_obj
@@ -34,15 +34,18 @@ let obj :=
   | ~ = fnbinder; ~ = params; "->"; ~ = obj; { List.fold_left (fun acc arg => fnbinder (fst arg) (snd arg) acc) params obj }
   | ~ = app_obj; <>
 
-  | REC; escr = obj; RETURN; mx = VAR; "->"; em = obj;
+  | REC; escr = obj; RETURN; mx = VAR; "."; em = obj;
     "|"; ZERO; "=>"; ez = obj;
     "|"; SUCC; sx = VAR; ","; sr = VAR; "=>"; ms = obj;
     END; { Cst.natrec escr (snd mx) em ez (snd sx) (snd sr) ms }
   | SUCC; ~ = obj; { Cst.succ obj }
 
+  | LET; p = param; ":="; arg_obj = obj; IN; fun_obj = obj; { Cst.app (Cst.fn (fst p) (snd p) fun_obj) arg_obj }
+
 let app_obj :=
   | ~ = app_obj; ~ = atomic_obj; { Cst.app app_obj atomic_obj }
   | ~ = atomic_obj; <>
+
 
 let atomic_obj :=
   | TYPE; "@"; n = INT; { Cst.typ (snd n) }
