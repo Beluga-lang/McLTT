@@ -1,6 +1,6 @@
 prog: INT COLON INT SUCC
 ##
-## Ends in an error in state: 56.
+## Ends in an error in state: 61.
 ##
 ## prog -> obj COLON obj . EOF [ # ]
 ##
@@ -11,7 +11,7 @@ prog: INT COLON INT SUCC
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or the end of file is expected.
@@ -33,7 +33,7 @@ prog: TYPE ZERO
 ##
 ## Ends in an error in state: 3.
 ##
-## atomic_obj -> TYPE . AT INT [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT IN EOF END COLON BAR ]
+## atomic_obj -> TYPE . AT INT [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## TYPE
@@ -45,7 +45,7 @@ prog: TYPE AT ZERO
 ##
 ## Ends in an error in state: 4.
 ##
-## atomic_obj -> TYPE AT . INT [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT IN EOF END COLON BAR ]
+## atomic_obj -> TYPE AT . INT [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## TYPE AT
@@ -57,7 +57,7 @@ prog: SUCC RPAREN
 ##
 ## Ends in an error in state: 6.
 ##
-## obj -> SUCC . obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> SUCC . obj [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## SUCC
@@ -70,7 +70,7 @@ prog: REC RPAREN
 ##
 ## Ends in an error in state: 7.
 ##
-## obj -> REC . obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC . obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC
@@ -81,9 +81,9 @@ This token is invalid for the beginning of an expression.
 
 prog: LAMBDA ZERO
 ##
-## Ends in an error in state: 19.
+## Ends in an error in state: 20.
 ##
-## obj -> fnbinder . params ARROW obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> fnbinder . params ARROW obj [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## fnbinder
@@ -95,7 +95,7 @@ For example,
 
 prog: LAMBDA LPAREN ZERO
 ##
-## Ends in an error in state: 12.
+## Ends in an error in state: 13.
 ##
 ## param -> LPAREN . VAR COLON obj RPAREN [ LPAREN EQ ARROW ]
 ##
@@ -107,7 +107,7 @@ A parameter should start with a valid identifier.
 
 prog: LAMBDA LPAREN VAR ZERO
 ##
-## Ends in an error in state: 13.
+## Ends in an error in state: 14.
 ##
 ## param -> LPAREN VAR . COLON obj RPAREN [ LPAREN EQ ARROW ]
 ##
@@ -120,7 +120,7 @@ where "?type" is the type of the parameter.
 
 prog: LAMBDA LPAREN VAR COLON RPAREN
 ##
-## Ends in an error in state: 14.
+## Ends in an error in state: 15.
 ##
 ## param -> LPAREN VAR COLON . obj RPAREN [ LPAREN EQ ARROW ]
 ##
@@ -135,7 +135,7 @@ prog: LPAREN RPAREN
 ##
 ## Ends in an error in state: 10.
 ##
-## atomic_obj -> LPAREN . obj RPAREN [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT IN EOF END COLON BAR ]
+## atomic_obj -> LPAREN . obj RPAREN [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## LPAREN
@@ -146,9 +146,9 @@ prog: LPAREN RPAREN
 
 prog: LPAREN INT DARROW
 ##
-## Ends in an error in state: 33.
+## Ends in an error in state: 38.
 ##
-## atomic_obj -> LPAREN obj . RPAREN [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT IN EOF END COLON BAR ]
+## atomic_obj -> LPAREN obj . RPAREN [ ZERO VAR TYPE RPAREN RETURN NAT LPAREN INT EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## LPAREN obj
@@ -157,7 +157,7 @@ prog: LPAREN INT DARROW
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or ")" is expected.
@@ -165,7 +165,7 @@ This token is invalid for the beginning of an expression.
 
 prog: LAMBDA LPAREN VAR COLON INT DARROW
 ##
-## Ends in an error in state: 17.
+## Ends in an error in state: 18.
 ##
 ## param -> LPAREN VAR COLON obj . RPAREN [ LPAREN EQ ARROW ]
 ##
@@ -176,7 +176,7 @@ prog: LAMBDA LPAREN VAR COLON INT DARROW
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or ")" is expected.
@@ -184,9 +184,9 @@ This token is invalid for the beginning of an expression.
 
 prog: LAMBDA LPAREN VAR COLON INT RPAREN ZERO
 ##
-## Ends in an error in state: 20.
+## Ends in an error in state: 21.
 ##
-## obj -> fnbinder params . ARROW obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> fnbinder params . ARROW obj [ RPAREN RETURN EOF END COLON BAR ]
 ## params -> params . param [ LPAREN ARROW ]
 ##
 ## The known suffix of the stack is as follows:
@@ -197,9 +197,9 @@ prog: LAMBDA LPAREN VAR COLON INT RPAREN ZERO
 
 prog: LAMBDA LPAREN VAR COLON INT RPAREN ARROW RPAREN
 ##
-## Ends in an error in state: 21.
+## Ends in an error in state: 22.
 ##
-## obj -> fnbinder params ARROW . obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> fnbinder params ARROW . obj [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## fnbinder params ARROW
@@ -210,9 +210,9 @@ This token is invalid for the beginning of an expression.
 
 prog: REC INT DARROW
 ##
-## Ends in an error in state: 35.
+## Ends in an error in state: 40.
 ##
-## obj -> REC obj . RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj . RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj
@@ -221,7 +221,7 @@ prog: REC INT DARROW
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or "return" keyword is expected.
@@ -229,9 +229,9 @@ This token is invalid for the beginning of an expression.
 
 prog: REC INT RETURN ZERO
 ##
-## Ends in an error in state: 36.
+## Ends in an error in state: 41.
 ##
-## obj -> REC obj RETURN . VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN . VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN
@@ -241,9 +241,9 @@ A motif should start with a valid identifier.
 
 prog: REC INT RETURN VAR ZERO
 ##
-## Ends in an error in state: 37.
+## Ends in an error in state: 42.
 ##
-## obj -> REC obj RETURN VAR . DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR . DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR
@@ -253,9 +253,9 @@ A motif should have "." after the scrutinee name.
 
 prog: REC INT RETURN VAR DOT RPAREN
 ##
-## Ends in an error in state: 38.
+## Ends in an error in state: 43.
 ##
-## obj -> REC obj RETURN VAR DOT . obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT . obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT
@@ -266,9 +266,9 @@ This token is invalid for the beginning of an expression.
 
 prog: REC INT RETURN VAR DOT INT DARROW
 ##
-## Ends in an error in state: 39.
+## Ends in an error in state: 44.
 ##
-## obj -> REC obj RETURN VAR DOT obj . BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj . BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj
@@ -277,7 +277,7 @@ prog: REC INT RETURN VAR DOT INT DARROW
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or "|" is expected.
@@ -285,9 +285,9 @@ This token is invalid for the beginning of an expression.
 
 prog: REC INT RETURN VAR DOT INT BAR VAR
 ##
-## Ends in an error in state: 40.
+## Ends in an error in state: 45.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR . ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR . ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR
@@ -297,9 +297,9 @@ prog: REC INT RETURN VAR DOT INT BAR VAR
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO ZERO
 ##
-## Ends in an error in state: 41.
+## Ends in an error in state: 46.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO . DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO . DARROW obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO
@@ -309,9 +309,9 @@ prog: REC INT RETURN VAR DOT INT BAR ZERO ZERO
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW RPAREN
 ##
-## Ends in an error in state: 42.
+## Ends in an error in state: 47.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW . obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW . obj BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW
@@ -322,9 +322,9 @@ This token is invalid for the beginning of an expression.
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT DARROW
 ##
-## Ends in an error in state: 43.
+## Ends in an error in state: 48.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj . BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj . BAR SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj
@@ -333,7 +333,7 @@ prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT DARROW
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or "|" is expected.
@@ -341,9 +341,9 @@ This token is invalid for the beginning of an expression.
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR ZERO
 ##
-## Ends in an error in state: 44.
+## Ends in an error in state: 49.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR . SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR . SUCC VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR
@@ -353,9 +353,9 @@ prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR ZERO
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC ZERO
 ##
-## Ends in an error in state: 45.
+## Ends in an error in state: 50.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC . VAR COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC . VAR COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC
@@ -365,9 +365,9 @@ An identifier for the predecessor of the scrutinee is expected.
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR ZERO
 ##
-## Ends in an error in state: 46.
+## Ends in an error in state: 51.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR . COMMA VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR . COMMA VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR
@@ -377,9 +377,9 @@ prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR ZERO
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR COMMA ZERO
 ##
-## Ends in an error in state: 47.
+## Ends in an error in state: 52.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA . VAR DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA . VAR DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA
@@ -389,9 +389,9 @@ An identifier for the recursion result is expected.
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR COMMA VAR ZERO
 ##
-## Ends in an error in state: 48.
+## Ends in an error in state: 53.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR . DARROW obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR . DARROW obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR
@@ -401,9 +401,9 @@ prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR COMMA VAR ZERO
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR COMMA VAR DARROW RPAREN
 ##
-## Ends in an error in state: 49.
+## Ends in an error in state: 54.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW . obj END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW . obj END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW
@@ -414,9 +414,9 @@ This token is invalid for the beginning of an expression.
 
 prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR COMMA VAR DARROW INT DARROW
 ##
-## Ends in an error in state: 50.
+## Ends in an error in state: 55.
 ##
-## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj . END [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj . END [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## REC obj RETURN VAR DOT obj BAR ZERO DARROW obj BAR SUCC VAR COMMA VAR DARROW obj
@@ -425,7 +425,7 @@ prog: REC INT RETURN VAR DOT INT BAR ZERO DARROW INT BAR SUCC VAR COMMA VAR DARR
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or "end" is expected.
@@ -433,7 +433,7 @@ This token is invalid for the beginning of an expression.
 
 prog: INT DARROW
 ##
-## Ends in an error in state: 54.
+## Ends in an error in state: 59.
 ##
 ## prog -> obj . COLON obj EOF [ # ]
 ##
@@ -444,7 +444,7 @@ prog: INT DARROW
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
 Either an expression or ":" is expected.
@@ -452,7 +452,7 @@ This token is invalid for the beginning of an expression.
 
 prog: INT COLON RPAREN
 ##
-## Ends in an error in state: 55.
+## Ends in an error in state: 60.
 ##
 ## prog -> obj COLON . obj EOF [ # ]
 ##
@@ -467,64 +467,89 @@ prog: LET ZERO
 ##
 ## Ends in an error in state: 11.
 ##
-## obj -> LET . param EQ obj IN obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## obj -> LET . let_defns IN obj [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
 ## LET
 ##
 
-A variable "(x : ?A)" is expected after "let", where "?A" is a type.
+At least one variable binding is expected after a "let"
 
-prog: LET LPAREN VAR COLON INT RPAREN ZERO
+prog: LET LPAREN ZERO
 ##
-## Ends in an error in state: 28.
+## Ends in an error in state: 12.
 ##
-## obj -> LET param . EQ obj IN obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## let_defn -> LPAREN . param EQ obj RPAREN [ LPAREN IN ]
 ##
 ## The known suffix of the stack is as follows:
-## LET param
+## LPAREN
 ##
 
-Token "=" is expected after let-binding.
+A variable "(x : ?A)" is expected after "let (", where "?A" is a type.
 
-prog: LET LPAREN VAR COLON INT RPAREN EQ RPAREN
+prog: LET LPAREN LPAREN VAR COLON INT RPAREN ZERO
 ##
 ## Ends in an error in state: 29.
 ##
-## obj -> LET param EQ . obj IN obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## let_defn -> LPAREN param . EQ obj RPAREN [ LPAREN IN ]
 ##
 ## The known suffix of the stack is as follows:
-## LET param EQ
+## LPAREN param
 ##
 
-An expression is expected after "=".
+Expected symbol ":=".
 
-prog: LET LPAREN VAR COLON INT RPAREN EQ INT SUCC
+prog: LET LPAREN LPAREN VAR COLON INT RPAREN EQ RPAREN
 ##
 ## Ends in an error in state: 30.
 ##
-## obj -> LET param EQ obj . IN obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## let_defn -> LPAREN param EQ . obj RPAREN [ LPAREN IN ]
 ##
 ## The known suffix of the stack is as follows:
-## LET param EQ obj
+## LPAREN param EQ
+##
+
+Expected a value for the variable.
+
+prog: LET LPAREN LPAREN VAR COLON INT RPAREN EQ INT SUCC
+##
+## Ends in an error in state: 31.
+##
+## let_defn -> LPAREN param EQ obj . RPAREN [ LPAREN IN ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN param EQ obj
 ##
 ## WARNING: This example involves spurious reductions.
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 24, spurious reduction of production obj -> app_obj
+## In state 25, spurious reduction of production obj -> app_obj
 ##
 
-Expected token "in".
+Expected ")".
 
-prog: LET LPAREN VAR COLON INT RPAREN EQ INT IN RPAREN
+prog: LET LPAREN LPAREN VAR COLON INT RPAREN EQ INT RPAREN ZERO
 ##
-## Ends in an error in state: 31.
+## Ends in an error in state: 33.
 ##
-## obj -> LET param EQ obj IN . obj [ RPAREN RETURN IN EOF END COLON BAR ]
+## let_defns -> let_defns . let_defn [ LPAREN IN ]
+## obj -> LET let_defns . IN obj [ RPAREN RETURN EOF END COLON BAR ]
 ##
 ## The known suffix of the stack is as follows:
-## LET param EQ obj IN
+## LET let_defns
 ##
 
-An expression is expected.
+Expected keyword "in".
+
+prog: LET LPAREN LPAREN VAR COLON INT RPAREN EQ INT RPAREN IN RPAREN
+##
+## Ends in an error in state: 34.
+##
+## obj -> LET let_defns IN . obj [ RPAREN RETURN EOF END COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET let_defns IN
+##
+
+Expected expression after "in".

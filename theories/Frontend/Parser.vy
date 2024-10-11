@@ -18,6 +18,8 @@ Parameter loc : Type.
 %type <string * Cst.obj> param
 %type <list (string * Cst.obj)> params
 %type <string -> Cst.obj -> Cst.obj -> Cst.obj> fnbinder
+%type <(string * Cst.obj) * Cst.obj> let_defn
+%type <list ((string * Cst.obj) * Cst.obj)> let_defns
 
 %on_error_reduce obj params app_obj atomic_obj
 
@@ -39,13 +41,13 @@ let obj :=
     "|"; SUCC; sx = VAR; ","; sr = VAR; "=>"; ms = obj;
     END; { Cst.natrec escr (snd mx) em ez (snd sx) (snd sr) ms }
   | SUCC; ~ = obj; { Cst.succ obj }
+  
+  | LET; ds = let_defns; IN; body = obj; { List.fold_left (fun acc arg => Cst.app acc (snd arg)) (List.rev ds) (List.fold_left (fun acc arg => Cst.fn (fst (fst arg)) (snd (fst arg)) acc) ds body) }
 
-  | LET; p = param; ":="; arg_obj = obj; IN; fun_obj = obj; { Cst.app (Cst.fn (fst p) (snd p) fun_obj) arg_obj }
 
 let app_obj :=
   | ~ = app_obj; ~ = atomic_obj; { Cst.app app_obj atomic_obj }
   | ~ = atomic_obj; <>
-
 
 let atomic_obj :=
   | TYPE; "@"; n = INT; { Cst.typ (snd n) }
@@ -67,6 +69,14 @@ let params :=
 let param :=
   | "("; x = VAR; ":"; ~ = obj; ")"; { (snd x, obj) }
 
+(* Reversed nonempty list of definitions *)
+let let_defns :=
+  | ~ = let_defns; ~ = let_defn; { let_defn :: let_defns }
+  | ~ = let_defn; { [let_defn] }
+
+(* (x : A) := t *)
+let let_defn :=
+  | "("; ~ = param; ":="; ~ = obj; ")"; { (param, obj) }
 %%
 
 Extract Constant loc => "Lexing.position * Lexing.position".
