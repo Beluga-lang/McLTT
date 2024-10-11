@@ -57,14 +57,13 @@ Assistant</title>
 <h1
 id="mcltt-a-bottom-up-approach-to-implementing-a-proof-assistant">McLTT:
 A Bottom-up Approach to Implementing A Proof Assistant</h1>
-<p>In McLTT, we build a verified, runnable typechecker for Martin-Löf
-type theory. After the accomplishment of this project, we will obtain an
-executable, to which we can feed a program in Martin-Löf type theory,
-and this executable will check whether this program has the specified
-type. McLTT is novel in that it is implemented in Coq. Moreover, we will
-prove that the typechecking algorithm extracted from Coq is sound and
-complete: a program passes typechecking if and only if it is a
-well-typed program in MLTT. This will be the first verified proof
+<p>McLTT is a verified, runnable typechecker for Martin-Löf type theory.
+This project provides an executable, to which we can feed a program in
+Martin-Löf type theory to check whether this program has the specified
+type. McLTT is novel in that it is implemented and verified in Coq. More
+specifically, we proved that the typechecking algorithm extracted from
+Coq is sound and complete: a program passes typechecker if and only if
+it is a well-typed program in MLTT. This is the first verified proof
 assistant (despite being elementary) and serves as a basis for future
 extensions.</p>
 <h2 id="online-documentation">Online Documentation</h2>
@@ -123,8 +122,8 @@ parallel as much as possible.</p>
 <pre><code>dune exec mcltt examples/nary.mcl # or your own example</code></pre>
 <p>or more directly</p>
 <pre><code>_build/default/driver/mcltt.exe examples/nary.mcl # or your own example</code></pre>
-<p>To build Coq proof only, you can go into and only build the Coq
-folder:</p>
+<p>To build Coq proof only, you can go into and only build the
+<code>theories</code> directory:</p>
 <pre><code>cd theories
 make</code></pre>
 <h2 id="branches">Branches</h2>
