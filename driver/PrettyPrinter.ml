@@ -56,7 +56,7 @@ let rec format_obj_prec (p : int) (f : Format.formatter) : Cst.obj -> unit =
   | Cst.Coq_natrec (escr, mx, em, ez, sx, sr, es) ->
      let impl f () =
        fprintf f
-         "@[<hv 0>@[<hov 2>rec %a@ return %s -> %a@]@ @[<hov 2>| zero =>@ \
+         "@[<hv 0>@[<hov 2>rec %a@ return %s . %a@]@ @[<hov 2>| zero =>@ \
           %a@]@ @[<hov 2>| succ %s, %s =>@ %a@]@ end@]"
          format_obj escr mx format_obj em format_obj ez sx sr format_obj es
      in

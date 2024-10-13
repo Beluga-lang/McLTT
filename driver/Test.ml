@@ -93,9 +93,9 @@ let%expect_test "recursion on a natural number that always returns zero is of \
   [%expect
     {|
     Parsed:
-      rec 3 return y -> Nat | zero => 0 | succ n, r => 0 end : Nat
+      rec 3 return y . Nat | zero => 0 | succ n, r => 0 end : Nat
     Elaborated:
-      rec 3 return x1 -> Nat | zero => 0 | succ x2, x3 => 0 end : Nat
+      rec 3 return x1 . Nat | zero => 0 | succ x2, x3 => 0 end : Nat
     Normalized Result:
       0 : Nat
   |}]
@@ -117,16 +117,15 @@ let%expect_test "simple_rec.mcl works" =
   [%expect
     {|
     Parsed:
-      fun (x : Nat)
-        -> rec x return y -> Nat | zero => 1 | succ n, r => succ r end
+      fun (x : Nat) -> rec x return y . Nat | zero => 1 | succ n, r => succ r end
       : forall (x : Nat) -> Nat
     Elaborated:
       fun (x1 : Nat)
-        -> rec x1 return x2 -> Nat | zero => 1 | succ x3, x4 => succ x4 end
+        -> rec x1 return x2 . Nat | zero => 1 | succ x3, x4 => succ x4 end
       : forall (x1 : Nat) -> Nat
     Normalized Result:
       fun (x1 : Nat)
-        -> rec x1 return x2 -> Nat | zero => 1 | succ x3, x4 => succ x4 end
+        -> rec x1 return x2 . Nat | zero => 1 | succ x3, x4 => succ x4 end
       : forall (x1 : Nat) -> Nat
   |}]
 
@@ -291,14 +290,14 @@ let%expect_test "vector.mcl works" =
                   (vec : Vec A (succ n))
                -> vecRec A (succ n) vec
                     (fun (l : Nat)
-                      -> rec l return r -> Type@0
+                      -> rec l return r . Type@0
                          | zero => Nat
                          | succ l, r => A
                          end)
                     0
                     (fun (l : Nat)
                          (a : A)
-                         (r : rec l return r -> Type@0
+                         (r : rec l return r . Type@0
                               | zero => Nat
                               | succ l, r => A
                               end)
@@ -391,14 +390,14 @@ let%expect_test "vector.mcl works" =
                   (x25 : x1 A6 (succ x24))
                -> x8 A6 (succ x24) x25
                     (fun (x26 : Nat)
-                      -> rec x26 return x27 -> Type@0
+                      -> rec x26 return x27 . Type@0
                          | zero => Nat
                          | succ x28, A7 => A6
                          end)
                     0
                     (fun (x29 : Nat)
                          (x30 : A6)
-                         (x31 : rec x29 return x32 -> Type@0
+                         (x31 : rec x29 return x32 . Type@0
                                 | zero => Nat
                                 | succ x33, A8 => A6
                                 end)
@@ -477,19 +476,19 @@ let%expect_test "nary.mcl works" =
                         -> Nary n)
            (n : Nat)
            (f : Nary n)
-        -> (rec n return y -> forall (g : Nary y) -> Nat
+        -> (rec n return y . forall (g : Nary y) -> Nat
             | zero => toNat
             | succ m, r => fun (g : Nary (succ m)) -> r (appNary m g (succ m))
             end)
              f)
         (fun (n : Nat)
-          -> rec n return y -> Type@0
+          -> rec n return y . Type@0
              | zero => Nat
              | succ m, r => forall (a : Nat) -> r
              end)
         (fun (f : Nat) -> f)
         (fun (n : Nat)
-             (f : rec succ n return y -> Type@0
+             (f : rec succ n return y . Type@0
                   | zero => Nat
                   | succ m, r => forall (a : Nat) -> r
                   end)
@@ -505,7 +504,7 @@ let%expect_test "nary.mcl works" =
            -> add a (add b c))
           (fun (a : Nat)
                (b : Nat)
-            -> rec a return y -> Nat | zero => b | succ m, r => succ r end))
+            -> rec a return y . Nat | zero => b | succ m, r => succ r end))
       : Nat
     Elaborated:
       (fun (x1 : forall (x2 : Nat) -> Type@0)
@@ -516,20 +515,20 @@ let%expect_test "nary.mcl works" =
                    -> x1 x6)
            (x9 : Nat)
            (x10 : x1 x9)
-        -> (rec x9 return x11 -> forall (x14 : x1 x11) -> Nat
+        -> (rec x9 return x11 . forall (x14 : x1 x11) -> Nat
             | zero => x3
             | succ x12, x13 =>
               fun (x15 : x1 (succ x12)) -> x13 (x5 x12 x15 (succ x12))
             end)
              x10)
         (fun (x16 : Nat)
-          -> rec x16 return x17 -> Type@0
+          -> rec x16 return x17 . Type@0
              | zero => Nat
              | succ x18, A1 => forall (x19 : Nat) -> A1
              end)
         (fun (x20 : Nat) -> x20)
         (fun (x21 : Nat)
-             (x22 : rec succ x21 return x23 -> Type@0
+             (x22 : rec succ x21 return x23 . Type@0
                     | zero => Nat
                     | succ x24, A2 => forall (x25 : Nat) -> A2
                     end)
@@ -545,7 +544,7 @@ let%expect_test "nary.mcl works" =
            -> x27 x30 (x27 x31 x32))
           (fun (x33 : Nat)
                (x34 : Nat)
-            -> rec x33 return x35 -> Nat
+            -> rec x33 return x35 . Nat
                | zero => x34
                | succ x36, x37 => succ x37
                end))
@@ -598,19 +597,19 @@ let%expect_test "let_nary.mcl works" =
                            -> Nary n)
               (n : Nat)
               (f : Nary n)
-           -> (rec n return y -> forall (g : Nary y) -> Nat
+           -> (rec n return y . forall (g : Nary y) -> Nat
                | zero => toNat
                | succ m, r => fun (g : Nary (succ m)) -> r (appNary m g (succ m))
                end)
                 f)
            (fun (n : Nat)
-             -> rec n return y -> Type@0
+             -> rec n return y . Type@0
                 | zero => Nat
                 | succ m, r => forall (a : Nat) -> r
                 end)
            (fun (f : Nat) -> f)
            (fun (n : Nat)
-                (f : rec succ n return y -> Type@0
+                (f : rec succ n return y . Type@0
                      | zero => Nat
                      | succ m, r => forall (a : Nat) -> r
                      end)
@@ -626,7 +625,7 @@ let%expect_test "let_nary.mcl works" =
               -> add a (add b c))
              (fun (a : Nat)
                   (b : Nat)
-               -> rec a return y -> Nat | zero => b | succ m, r => succ r end))
+               -> rec a return y . Nat | zero => b | succ m, r => succ r end))
          : Nat
        Elaborated:
          (fun (x1 : forall (x2 : Nat) -> Type@0)
@@ -637,20 +636,20 @@ let%expect_test "let_nary.mcl works" =
                       -> x1 x6)
               (x9 : Nat)
               (x10 : x1 x9)
-           -> (rec x9 return x11 -> forall (x14 : x1 x11) -> Nat
+           -> (rec x9 return x11 . forall (x14 : x1 x11) -> Nat
                | zero => x3
                | succ x12, x13 =>
                  fun (x15 : x1 (succ x12)) -> x13 (x5 x12 x15 (succ x12))
                end)
                 x10)
            (fun (x16 : Nat)
-             -> rec x16 return x17 -> Type@0
+             -> rec x16 return x17 . Type@0
                 | zero => Nat
                 | succ x18, A1 => forall (x19 : Nat) -> A1
                 end)
            (fun (x20 : Nat) -> x20)
            (fun (x21 : Nat)
-                (x22 : rec succ x21 return x23 -> Type@0
+                (x22 : rec succ x21 return x23 . Type@0
                        | zero => Nat
                        | succ x24, A2 => forall (x25 : Nat) -> A2
                        end)
@@ -666,7 +665,7 @@ let%expect_test "let_nary.mcl works" =
               -> x27 x30 (x27 x31 x32))
              (fun (x33 : Nat)
                   (x34 : Nat)
-               -> rec x33 return x35 -> Nat
+               -> rec x33 return x35 . Nat
                   | zero => x34
                   | succ x36, x37 => succ x37
                   end))
@@ -711,14 +710,14 @@ let%expect_test "let_vector.mcl works" =
                     (vec : Vec A (succ n))
                  -> vecRec A (succ n) vec
                       (fun (l : Nat)
-                        -> rec l return r -> Type@0
+                        -> rec l return r . Type@0
                            | zero => Nat
                            | succ l, r => A
                            end)
                       0
                       (fun (l : Nat)
                            (a : A)
-                           (r : rec l return r -> Type@0
+                           (r : rec l return r . Type@0
                                 | zero => Nat
                                 | succ l, r => A
                                 end)
@@ -811,14 +810,14 @@ let%expect_test "let_vector.mcl works" =
                     (x25 : x1 A6 (succ x24))
                  -> x8 A6 (succ x24) x25
                       (fun (x26 : Nat)
-                        -> rec x26 return x27 -> Type@0
+                        -> rec x26 return x27 . Type@0
                            | zero => Nat
                            | succ x28, A7 => A6
                            end)
                       0
                       (fun (x29 : Nat)
                            (x30 : A6)
-                           (x31 : rec x29 return x32 -> Type@0
+                           (x31 : rec x29 return x32 . Type@0
                                   | zero => Nat
                                   | succ x33, A8 => A6
                                   end)
