@@ -229,7 +229,7 @@ Section glu_univ_elem_cumulativity.
       destruct_rel_mod_app.
       handle_per_univ_elem_irrel.
       match goal with
-      | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ~?a }} |- _ =>
+      | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ^?a }} |- _ =>
           rename a into b
       end.
       eexists; split; mauto 4.
@@ -435,8 +435,8 @@ Proof.
     destruct_rel_mod_eval.
     handle_per_univ_elem_irrel.
     match goal with
-    | _: {{ ⟦ B ⟧ ρ ↦ ⇑! a (length Γ) ↘ ~?a0 }},
-        _: {{ ⟦ B' ⟧ ρ' ↦ ⇑! a' (length Γ) ↘ ~?a0' }} |- _ =>
+    | _: {{ ⟦ B ⟧ ρ ↦ ⇑! a (length Γ) ↘ ^?a0 }},
+        _: {{ ⟦ B' ⟧ ρ' ↦ ⇑! a' (length Γ) ↘ ^?a0' }} |- _ =>
         rename a0 into b;
         rename a0' into b'
     end.
@@ -531,8 +531,8 @@ Proof.
       destruct_rel_mod_eval.
       handle_per_univ_elem_irrel.
       match goal with
-      | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ~?a }},
-          _: {{ ⟦ B' ⟧ ρ' ↦ n ↘ ~?a' }} |- _ =>
+      | _: {{ ⟦ B ⟧ ρ ↦ n ↘ ^?a }},
+          _: {{ ⟦ B' ⟧ ρ' ↦ n ↘ ^?a' }} |- _ =>
           rename a into b;
           rename a' into b'
       end.
@@ -847,7 +847,7 @@ Proof.
   assert (exists Pmax Elmax, {{ DG a ∈ glu_univ_elem (max i l) ↘ Pmax ↘ Elmax }}) as [Pmax [Elmax]]
       by mauto using glu_univ_elem_cumu_max_left.
   assert (i <= max i l) by lia.
-  assert {{ Δ0 ⊢ #0[σ0] : A'[Wk][σ0] ® ~(ρ0 0) ∈ Elmax }}.
+  assert {{ Δ0 ⊢ #0[σ0] : A'[Wk][σ0] ® ^(ρ0 0) ∈ Elmax }}.
   {
     assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3.
     assert {{ Δ0 ⊢ A[Wk][σ0] ≈ A'[Wk][σ0] : Type@l }} by mauto 3.
@@ -872,8 +872,8 @@ Qed.
 Ltac apply_functional_glu_ctx_env1 :=
   let tactic_error o1 o2 := fail 2 "functional_glu_ctx_env biconditional between" o1 "and" o2 "cannot be solved" in
   match goal with
-  | H1 : {{ EG ~?Γ ∈ glu_ctx_env ↘ ?Sb1 }},
-      H2 : {{ EG ~?Γ ∈ glu_ctx_env ↘ ?Sb2 }} |- _ =>
+  | H1 : {{ EG ^?Γ ∈ glu_ctx_env ↘ ?Sb1 }},
+      H2 : {{ EG ^?Γ ∈ glu_ctx_env ↘ ?Sb2 }} |- _ =>
       assert_fails (unify Sb1 Sb2);
       match goal with
       | H : Sb1 <∙> Sb2 |- _ => fail 1
@@ -971,7 +971,7 @@ Proof.
 
   destruct_by_head cons_glu_sub_pred.
   econstructor; mauto 3.
-  - assert {{ Δ' ⊢ #0[σ0][σ] : A[Wk][σ0][σ] ® ~(ρ 0) ∈ El }} by (eapply glu_univ_elem_exp_monotone; mauto 3).
+  - assert {{ Δ' ⊢ #0[σ0][σ] : A[Wk][σ0][σ] ® ^(ρ 0) ∈ El }} by (eapply glu_univ_elem_exp_monotone; mauto 3).
     assert {{ Γ, A ⊢ #0 : A[Wk] }} by mauto 3.
     assert {{ Γ, A ⊢s Wk : Γ }} by mauto 3.
     assert {{ Δ' ⊢ #0[σ0∘σ] ≈ #0[σ0][σ] : A[Wk][σ0∘σ] }} as -> by mauto 3.
@@ -1043,7 +1043,7 @@ Qed.
 Ltac destruct_glu_rel_by_assumption sub_glu_rel H :=
   repeat
     match goal with
-    | H' : {{ ~?Δ ⊢s ~?σ ® ~?ρ ∈ ?sub_glu_rel0 }} |- _ =>
+    | H' : {{ ^?Δ ⊢s ^?σ ® ^?ρ ∈ ?sub_glu_rel0 }} |- _ =>
         unify sub_glu_rel0 sub_glu_rel;
         destruct (H _ _ _ H') as [];
         destruct_conjs;

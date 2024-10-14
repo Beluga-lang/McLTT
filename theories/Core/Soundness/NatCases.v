@@ -245,7 +245,7 @@ Proof.
   unfold univ_glu_exp_pred' in *.
   destruct_conjs.
   match goal with
-  | _: {{ ⟦ A ⟧ ρ ↦ m' ↘ ~?m }}, _: {{ DG ~?m ∈ glu_univ_elem i ↘ ?P ↘ ?El }} |- _ =>
+  | _: {{ ⟦ A ⟧ ρ ↦ m' ↘ ^?m }}, _: {{ DG ^?m ∈ glu_univ_elem i ↘ ?P ↘ ?El }} |- _ =>
       rename m into am';
       rename P into P';
       rename El into El'
@@ -283,7 +283,7 @@ Proof.
   destruct_conjs.
   handle_functional_glu_univ_elem.
   match goal with
-  | _: {{ ⟦ MS ⟧ ρ ↦ m' ↦ r' ↘ ~?m }} |- _ =>
+  | _: {{ ⟦ MS ⟧ ρ ↦ m' ↦ r' ↘ ^?m }} |- _ =>
       rename m into ms
   end.
   exists ms; split; mauto 3.
@@ -391,7 +391,7 @@ Proof.
   destruct_conjs.
   handle_functional_glu_univ_elem.
   match goal with
-  | _: {{ ⟦ MZ ⟧ ~?ρ0 ↘ ~?m }}, _: {{ ⟦ A ⟧ ~?ρ0 ↦ zero ↘ ~?a }} |- _ =>
+  | _: {{ ⟦ MZ ⟧ ^?ρ0 ↘ ^?m }}, _: {{ ⟦ A ⟧ ^?ρ0 ↦ zero ↘ ^?a }} |- _ =>
       rename ρ0 into ρ;
       rename m into mz;
       rename a into az
@@ -440,7 +440,7 @@ Proof.
     destruct_rel_typ.
     invert_rel_typ_body.
     match goal with
-    | _: {{ ⟦ A ⟧ ρ ↦ ⇑! ℕ s ↘ ~?a }}, _: {{ ⟦ A ⟧ ρ ↦ (succ ⇑! ℕ s) ↘ ~?a' }} |- _ =>
+    | _: {{ ⟦ A ⟧ ρ ↦ ⇑! ℕ s ↘ ^?a }}, _: {{ ⟦ A ⟧ ρ ↦ (succ ⇑! ℕ s) ↘ ^?a' }} |- _ =>
         rename a into as'; (** We cannot use [as] as a name *)
         rename a' into asucc
     end.
@@ -454,7 +454,7 @@ Proof.
     destruct_by_head rel_exp.
     functional_eval_rewrite_clear.
     match goal with
-    | _: {{ ⟦ MS ⟧ ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ↘ ~?m }} |- _ =>
+    | _: {{ ⟦ MS ⟧ ρ ↦ ⇑! ℕ s ↦ ⇑! as' (S s) ↘ ^?m }} |- _ =>
         rename m into ms
     end.
     assert {{ Dom as' ≈ as' ∈ per_top_typ }} as [? []]%(fun {a} (f : per_top_typ a a) => f (S s)) by mauto 3.
@@ -480,7 +480,7 @@ Proof.
     match_by_head read_ne ltac:(fun H => directed inversion_clear H).
     handle_functional_glu_univ_elem.
     match goal with
-    | _: {{ ⟦ A ⟧ ~?ρ' ↦ ⇑! ℕ (length Δ') ↘ ~?a }} |- _ =>
+    | _: {{ ⟦ A ⟧ ^?ρ' ↦ ⇑! ℕ (length Δ') ↘ ^?a }} |- _ =>
         rename ρ' into ρ;
         rename a into aΔ'
     end.
@@ -495,10 +495,10 @@ Proof.
     clear_dups.
     handle_functional_glu_univ_elem.
     match goal with
-    | _: {{ ⟦ A ⟧ ~?ρ' ↦ succ (⇑! ℕ (length Δ')) ↘ ~?a }},
-        _: {{ Rtyp aΔ' in S (length Δ') ↘ ~?A }},
-        _: {{ Rnf ⇓ az mz in length Δ' ↘ ~?MZ }},
-            _: {{ Rne m in length Δ' ↘ ~?M }} |- _ =>
+    | _: {{ ⟦ A ⟧ ^?ρ' ↦ succ (⇑! ℕ (length Δ')) ↘ ^?a }},
+        _: {{ Rtyp aΔ' in S (length Δ') ↘ ^?A }},
+        _: {{ Rnf ⇓ az mz in length Δ' ↘ ^?MZ }},
+            _: {{ Rne m in length Δ' ↘ ^?M }} |- _ =>
         rename A into A';
         rename ρ' into ρ;
         rename a into asucc;
@@ -656,13 +656,13 @@ Proof.
   clear_dups.
   match_by_head nat_glu_typ_pred ltac:(fun H => clear H).
   match goal with
-  | _: {{ ⟦ A ⟧ ρ ↦ m ↘ ~?a' }},
-      _: {{ DG ~?a' ∈ glu_univ_elem i ↘ ?P' ↘ ?El' }} |- _ =>
+  | _: {{ ⟦ A ⟧ ρ ↦ m ↘ ^?a' }},
+      _: {{ DG ^?a' ∈ glu_univ_elem i ↘ ?P' ↘ ?El' }} |- _ =>
       rename a' into a;
       rename P' into P;
       rename El' into El
   end.
-  assert (exists r, {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ~ r }} /\ El Δ {{{ A[σ,, M[σ]] }}} {{{ rec M[σ] return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}} r) as [? []] by (eapply glu_rel_exp_natrec_helper; revgoals; mauto 4).
+  assert (exists r, {{ rec m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\ El Δ {{{ A[σ,, M[σ]] }}} {{{ rec M[σ] return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end }}} r) as [? []] by (eapply glu_rel_exp_natrec_helper; revgoals; mauto 4).
   econstructor; mauto 3.
   assert {{ Δ ⊢s σ : Γ }} by mauto 2.
   assert {{ Γ ⊢ M : ℕ }} by mauto 2.

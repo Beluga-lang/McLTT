@@ -23,7 +23,7 @@ Hint Resolve weakening_escape : mcltt.
 
 Ltac saturate_weakening_escape1 :=
   match goal with
-  | H : {{ ~_ ⊢w ~_ : ~_ }} |- _ =>
+  | H : {{ ^_ ⊢w ^_ : ^_ }} |- _ =>
       pose proof (weakening_escape _ _ _ H);
       fail_if_dup
   end.

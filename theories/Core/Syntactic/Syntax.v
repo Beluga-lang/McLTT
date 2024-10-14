@@ -129,7 +129,7 @@ Module Syntax_Notations.
   (** We need to define substitution notation first to assert [left associativity] of level 0. *)
   Notation "e [ s ]" := (a_sub e s) (in custom exp at level 0, e custom exp, s custom exp at level 60, left associativity, format "e [ s ]") : mcltt_scope.
   Notation "( x )" := x (in custom exp at level 0, x custom exp at level 60) : mcltt_scope.
-  Notation "~ x" := x (in custom exp at level 0, x constr at level 0) : mcltt_scope.
+  Notation "'^' x" := x (in custom exp at level 0, x constr at level 0) : mcltt_scope.
   Notation "x" := x (in custom exp at level 0, x ident) : mcltt_scope.
   Notation "'λ' A e" := (a_fn A e) (in custom exp at level 1, A custom exp at level 0, e custom exp at level 60) : mcltt_scope.
   Notation "f x .. y" := (a_app .. (a_app f x) .. y) (in custom exp at level 40, f custom exp, x custom exp at next level, y custom exp at next level) : mcltt_scope.
@@ -152,7 +152,7 @@ Module Syntax_Notations.
 
   Notation "n{{{ x }}}" := x (at level 0, x custom nf at level 99, format "'n{{{'  x  '}}}'") : mcltt_scope.
   Notation "( x )" := x (in custom nf at level 0, x custom nf at level 60) : mcltt_scope.
-  Notation "~ x" := x (in custom nf at level 0, x constr at level 0) : mcltt_scope.
+  Notation "'^' x" := x (in custom nf at level 0, x constr at level 0) : mcltt_scope.
   Notation "x" := x (in custom nf at level 0, x ident) : mcltt_scope.
   Notation "'λ' A e" := (nf_fn A e) (in custom nf at level 2, A custom nf at level 1, e custom nf at level 60) : mcltt_scope.
   Notation "f x .. y" := (ne_app .. (ne_app f x) .. y) (in custom nf at level 40, f custom nf, x custom nf at next level, y custom nf at next level) : mcltt_scope.

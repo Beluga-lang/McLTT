@@ -1,23 +1,23 @@
 From Coq Require Import Setoid Nat.
 From Mcltt Require Import LibTactics.
 From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export CoreInversions.
+From Mcltt.Core.Syntactic Require Export SystemOpt.
 Import Syntax_Notations.
 
 Corollary sub_id_typ : forall Γ M A,
     {{ Γ ⊢ M : A }} ->
-    {{ Γ ⊢ M : A [ Id ] }}.
+    {{ Γ ⊢ M : A[Id] }}.
 Proof.
   intros.
   gen_presups.
-  econstructor; mauto 4.
+  mauto 4.
 Qed.
 
 #[export]
 Hint Resolve sub_id_typ : mcltt.
 
 Corollary invert_sub_id : forall Γ M A,
-    {{ Γ ⊢ M [ Id ] : A }} ->
+    {{ Γ ⊢ M[Id] : A }} ->
     {{ Γ ⊢ M : A }}.
 Proof.
   intros * [? [? [?%wf_sub_id_inversion []]]]%wf_exp_sub_inversion.
@@ -41,7 +41,7 @@ Qed.
 Hint Resolve invert_sub_id_typ : mcltt.
 
 Lemma invert_compose_id : forall {Γ σ Δ},
-    {{ Γ ⊢s σ ∘ Id : Δ }} ->
+    {{ Γ ⊢s σ∘Id : Δ }} ->
     {{ Γ ⊢s σ : Δ }}.
 Proof.
   intros * [? []]%wf_sub_compose_inversion.
@@ -72,7 +72,7 @@ Open Scope list_scope.
 
 Lemma app_ctx_lookup : forall Δ T Γ n,
     length Δ = n ->
-    {{ #n : ~(iter (S n) (fun T => {{{T [ Wk ]}}}) T) ∈ ~(Δ ++ T :: Γ) }}.
+    {{ #n : ^(iter (S n) (fun T => {{{ T[Wk] }}}) T) ∈ ^(Δ ++ T :: Γ) }}.
 Proof.
   induction Δ; intros; simpl in *; subst; mauto.
 Qed.
@@ -88,17 +88,17 @@ Proof.
 Qed.
 
 Lemma app_ctx_vlookup : forall Δ T Γ n,
-    {{ ⊢ ~(Δ ++ T :: Γ) }} ->
+    {{ ⊢ ^(Δ ++ T :: Γ) }} ->
     length Δ = n ->
-    {{ ~(Δ ++ T :: Γ) ⊢ #n : ~(iter (S n) (fun T => {{{T [ Wk ]}}}) T) }}.
+    {{ ^(Δ ++ T :: Γ) ⊢ #n : ^(iter (S n) (fun T => {{{ T[Wk] }}}) T) }}.
 Proof.
   intros. econstructor; auto using app_ctx_lookup.
 Qed.
 
 Lemma sub_q_eq : forall Δ A i Γ σ σ',
-                   {{ Δ ⊢ A : Type@i }} ->
-                   {{ Γ ⊢s σ ≈ σ' : Δ }} ->
-                   {{ Γ, A[σ] ⊢s q σ ≈ q σ' : Δ, A }}.
+    {{ Δ ⊢ A : Type@i }} ->
+    {{ Γ ⊢s σ ≈ σ' : Δ }} ->
+    {{ Γ, A[σ] ⊢s q σ ≈ q σ' : Δ, A }}.
 Proof.
   intros. gen_presup H0.
   econstructor; mauto 3.
@@ -112,7 +112,7 @@ Lemma wf_subtyp_subst_eq : forall Δ A B,
     {{ Δ ⊢ A ⊆ B }} ->
     forall Γ σ σ',
       {{ Γ ⊢s σ ≈ σ' : Δ }} ->
-      {{ Γ ⊢ A [σ] ⊆ B[σ'] }}.
+      {{ Γ ⊢ A[σ] ⊆ B[σ'] }}.
 Proof.
   induction 1; intros * Hσσ'; gen_presup Hσσ'.
   - eapply wf_subtyp_refl'.
@@ -128,7 +128,7 @@ Lemma wf_subtyp_subst : forall Δ A B,
     {{ Δ ⊢ A ⊆ B }} ->
     forall Γ σ,
       {{ Γ ⊢s σ : Δ }} ->
-      {{ Γ ⊢ A [σ] ⊆ B[σ] }}.
+      {{ Γ ⊢ A[σ] ⊆ B[σ] }}.
 Proof.
   intros; mauto 2 using wf_subtyp_subst_eq.
 Qed.
@@ -183,11 +183,11 @@ Qed.
 Hint Resolve exp_succ_sub_rhs : mcltt.
 
 Lemma sub_decompose_q : forall Γ S i σ Δ Δ' τ t,
-  {{Γ ⊢ S : Type@i}} ->
-  {{Δ ⊢s σ : Γ}} ->
-  {{Δ' ⊢s τ : Δ}} ->
-  {{Δ' ⊢ t : S [ σ ] [ τ ]}} ->
-  {{Δ' ⊢s q σ ∘ (τ ,, t) ≈ σ ∘ τ ,, t : Γ, S}}.
+  {{ Γ ⊢ S : Type@i }} ->
+  {{ Δ ⊢s σ : Γ }} ->
+  {{ Δ' ⊢s τ : Δ }} ->
+  {{ Δ' ⊢ t : S[σ][τ] }} ->
+  {{ Δ' ⊢s q σ ∘ (τ ,, t) ≈ σ ∘ τ ,, t : Γ, S }}.
 Proof.
   intros. gen_presups.
   simpl. autorewrite with mcltt.
@@ -205,11 +205,11 @@ Qed.
 Hint Rewrite -> @sub_decompose_q using mauto 4 : mcltt.
 
 Lemma sub_decompose_q_typ : forall Γ S T i σ Δ Δ' τ t,
-  {{Γ, S ⊢ T : Type@i}} ->
-  {{Δ ⊢s σ : Γ}} ->
-  {{Δ' ⊢s τ : Δ}} ->
-  {{Δ' ⊢ t : S [ σ ] [ τ ]}} ->
-  {{Δ' ⊢ T [ σ ∘ τ ,, t ] ≈ T [ q σ ] [ τ ,, t ] : Type@i}}.
+  {{ Γ, S ⊢ T : Type@i }} ->
+  {{ Δ ⊢s σ : Γ }} ->
+  {{ Δ' ⊢s τ : Δ }} ->
+  {{ Δ' ⊢ t : S[σ][τ] }} ->
+  {{ Δ' ⊢ T[σ∘τ,,t] ≈ T[q σ][τ,,t] : Type@i}}.
 Proof.
   intros. gen_presups.
   autorewrite with mcltt.

@@ -21,8 +21,8 @@ Proof with mautosolve.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
   handle_per_univ_elem_irrel.
   match goal with
-  | _: {{ ⟦ σ ⟧s ρ ↘ ~?ρ0 }},
-      _: {{ ⟦ σ ⟧s ρ' ↘ ~?ρ'0 }} |- _ =>
+  | _: {{ ⟦ σ ⟧s ρ ↘ ^?ρ0 }},
+      _: {{ ⟦ σ ⟧s ρ' ↘ ^?ρ'0 }} |- _ =>
       rename ρ0 into ρσ;
       rename ρ'0 into ρ'σ
   end.

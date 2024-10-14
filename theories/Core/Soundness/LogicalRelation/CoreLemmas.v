@@ -511,8 +511,8 @@ Qed.
 Ltac apply_functional_glu_univ_elem1 :=
   let tactic_error o1 o2 := fail 2 "functional_glu_univ_elem biconditional between" o1 "and" o2 "cannot be solved" in
   match goal with
-  | H1 : {{ DG ~?a ∈ glu_univ_elem ?i ↘ ?P1 ↘ ?El1 }},
-      H2 : {{ DG ~?a ∈ glu_univ_elem ?i' ↘ ?P2 ↘ ?El2 }} |- _ =>
+  | H1 : {{ DG ^?a ∈ glu_univ_elem ?i ↘ ?P1 ↘ ?El1 }},
+      H2 : {{ DG ^?a ∈ glu_univ_elem ?i' ↘ ?P2 ↘ ?El2 }} |- _ =>
       unify i i';
       assert_fails (unify P1 P2; unify El1 El2);
       match goal with
@@ -841,7 +841,7 @@ Proof.
           mauto 4.
         symmetry.
         bulky_rewrite_in H4.
-        assert {{ Δ0 ⊢ Π IT[σ∘σ0] (OT[q (σ∘σ0)]) ≈ (Π IT OT)[σ∘σ0] : Type@(S (max i4 i)) }} by mauto.
+        assert {{ Δ0 ⊢ Π IT[σ∘σ0] (OT[q (σ∘σ0)]) ≈ (Π IT OT)[σ∘σ0] : Type@_ }} by mauto.
         eapply wf_exp_eq_conv'; mauto 4.
       }
 

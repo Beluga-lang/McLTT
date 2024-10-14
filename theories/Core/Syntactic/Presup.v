@@ -4,50 +4,27 @@ From Mcltt.Core.Syntactic Require Export CtxEq.
 Import Syntax_Notations.
 
 #[local]
-Ltac gen_presup_ctx H :=
-  match type of H with
-  | {{ ⊢ ~?Γ ≈ ~?Δ }} =>
-      let HΓ := fresh "HΓ" in
-      let HΔ := fresh "HΔ" in
-      pose proof presup_ctx_eq H as [HΓ HΔ]
-  | {{ ⊢ ~?Γ ⊆ ~?Δ }} =>
-      let HΓ := fresh "HΓ" in
-      let HΔ := fresh "HΔ" in
-      pose proof presup_ctx_sub H as [HΓ HΔ]
-  end.
-
-#[local]
 Ltac gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp H :=
   match type of H with
-  | {{ ~?Γ ⊢ ~?M ≈ ~?N : ~?A }} =>
+  | {{ ^?Γ ⊢ ^?M ≈ ^?N : ^?A }} =>
       let HΓ := fresh "HΓ" in
       let i := fresh "i" in
       let HM := fresh "HM" in
       let HN := fresh "HN" in
       let HAi := fresh "HAi" in
       pose proof presup_exp_eq _ _ _ _ H as [HΓ [HM [HN [i HAi]]]]
-  | {{ ~?Γ ⊢s ~?σ ≈ ~?τ : ~?Δ }} =>
+  | {{ ^?Γ ⊢s ^?σ ≈ ^?τ : ^?Δ }} =>
       let HΓ := fresh "HΓ" in
       let Hσ := fresh "Hσ" in
       let Hτ := fresh "Hτ" in
       let HΔ := fresh "HΔ" in
       pose proof presup_sub_eq _ _ _ _ H as [HΓ [Hσ [Hτ HΔ]]]
-  | {{ ~?Γ ⊢ ~?M ⊆ ~?N }} =>
+  | {{ ^?Γ ⊢ ^?M ⊆ ^?N }} =>
       let HΓ := fresh "HΓ" in
       let i := fresh "i" in
       let HM := fresh "HM" in
       let HN := fresh "HN" in
       pose proof presup_subtyp _ _ _ H as [HΓ [i [HM HN]]]
-  | {{ ~?Γ ⊢ ~?M : ~?A }} =>
-      let HΓ := fresh "HΓ" in
-      let i := fresh "i" in
-      let HAi := fresh "HAi" in
-      pose proof presup_exp H as [HΓ [i HAi]]
-  | {{ ~?Γ ⊢s ~?σ : ~?Δ }} =>
-      let HΓ := fresh "HΓ" in
-      let HΔ := fresh "HΔ" in
-      pose proof presup_sub H as [HΓ HΔ]
-  | _ => gen_presup_ctx H
   end.
 
 Lemma presup_exp_eq : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }} /\ {{ Γ ⊢ M : A }} /\ {{ Γ ⊢ M' : A }} /\ exists i, {{ Γ ⊢ A : Type@i }}
@@ -55,7 +32,9 @@ with presup_sub_eq : forall {Γ Δ σ σ'}, {{ Γ ⊢s σ ≈ σ' : Δ }} -> {{ 
 with presup_subtyp : forall {Γ M M'}, {{ Γ ⊢ M ⊆ M' }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ M : Type@i }} /\ {{ Γ ⊢ M' : Type@i }}.
 Proof with mautosolve 4.
   1: set (WkWksucc := {{{ Wk∘Wk ,, succ #1 }}}).
-  all: inversion_clear 1; (on_all_hyp: gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp);
+  all: inversion_clear 1;
+    (on_all_hyp: gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp);
+    gen_core_presups;
     clear presup_exp_eq presup_sub_eq presup_subtyp;
     repeat split; mauto 4;
     try (rename B into C); try (rename B' into C'); try (rename A0 into B); try (rename A' into B');
@@ -248,11 +227,7 @@ Proof with mautosolve 4.
     assert {{ Δ, B ⊢ #(S x) : C[Wk] }} by mauto 4.
     enough {{ Γ ⊢ #(S x)[σ ,, N] : C[Wk][σ ,, N] }}...
 
-  - assert (exists i, {{ Δ ⊢ C : Type@i }}) as []...
-
   (** presup_sub_eq cases *)
-  - econstructor...
-
   - assert {{ Γ ⊢ B[σ] ≈ B[σ'] : Type@i }} by mauto 2.
     eapply wf_conv...
 
@@ -279,6 +254,6 @@ Proof with mautosolve 4.
   - mauto.
 Qed.
 
-Ltac gen_presup H := gen_presup_IH @presup_exp_eq @presup_sub_eq @presup_subtyp H.
+Ltac gen_presup H := gen_presup_IH @presup_exp_eq @presup_sub_eq @presup_subtyp H + gen_core_presup H.
 
-Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; clear_dups.
+Ltac gen_presups := (on_all_hyp: fun H => gen_presup H); invert_wf_ctx; (on_all_hyp: fun H => gen_lookup_presup H); clear_dups.

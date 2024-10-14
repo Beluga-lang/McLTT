@@ -1,12 +1,11 @@
 # McLTT: A Bottom-up Approach to Implementing A Proof Assistant
 
-In McLTT, we build a verified, runnable typechecker for Martin-Löf type theory. After
-the accomplishment of this project, we will obtain an executable, to which we can feed
-a program in Martin-Löf type theory, and this executable will check whether this
-program has the specified type. McLTT is novel in that it is implemented in
-Coq. Moreover, we will prove that the typechecking algorithm extracted from Coq is
-sound and complete: a program passes typechecking if and only if it is a well-typed
-program in MLTT. This will be the first verified proof assistant (despite being
+McLTT is a verified, runnable typechecker for Martin-Löf type theory. This project provides an executable, to which we can feed
+a program in Martin-Löf type theory to check whether this
+program has the specified type. McLTT is novel in that it is implemented and verified in
+Coq. More specifically, we proved that the typechecking algorithm extracted from Coq is
+sound and complete: a program passes typechecker if and only if it is a well-typed
+program in MLTT. This is the first verified proof assistant (despite being
 elementary) and serves as a basis for future extensions. 
 
 ## Online Documentation
@@ -60,12 +59,9 @@ We recommend to install dependencies in the following way:
 
 ```bash
 opam switch create coq-8.20.0 4.14.2
-opam install menhir
 opam pin add coq 8.20.0
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-equations
-opam install coq-menhirlib
-opam install ppx_inline_test
+opam install -y menhir coq-equations coq-menhirlib ppx_inline_test
 ```
 
 ## Development
@@ -86,7 +82,7 @@ or more directly
 _build/default/driver/mcltt.exe examples/nary.mcl # or your own example
 ```
 
-To build Coq proof only, you can go into and only build the Coq folder:
+To build Coq proof only, you can go into and only build the `theories` directory:
 ```
 cd theories
 make
