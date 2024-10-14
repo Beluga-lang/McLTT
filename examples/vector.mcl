@@ -13,7 +13,7 @@
       (* total head function *)
       (
         fun (A : Type@0) (n : Nat) (vec : Vec A (succ n)) ->
-          vecRec A (succ n) vec (fun (l : Nat) -> rec l return r -> Type@0 | zero => Nat | succ l, r => A end) 0 (fun (l : Nat) (a : A) (r : rec l return r -> Type@0 | zero => Nat | succ l, r => A end) -> a)
+          vecRec A (succ n) vec (fun (l : Nat) -> rec l return r . Type@0 | zero => Nat | succ l, r => A end) 0 (fun (l : Nat) (a : A) (r : rec l return r . Type@0 | zero => Nat | succ l, r => A end) -> a)
       )
       (* example vector *)
       (
