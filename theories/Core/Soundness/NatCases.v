@@ -402,7 +402,7 @@ Proof.
   assert {{ ⊢ Δ, ℕ }} by mauto 3.
   assert {{ Δ, ℕ ⊢ A[q σ] : Type@i }} by mauto 3.
   assert {{ ⊢ Δ, ℕ, A[q σ] }} by mauto 2.
-  unshelve assert {{ Δ ⊢ M : ℕ }} by mauto 3; [constructor |].
+  assert {{ Δ ⊢ M : ℕ }} by mautosolve 3.
   assert {{ Δ ⊢ ℕ : Type@0 }} by mauto 3.
   assert {{ Δ ⊢ ℕ[σ] ≈ ℕ : Type@0 }} by mauto 3.
   assert {{ Δ ⊢ M : ℕ[σ] }} by mauto 3.
