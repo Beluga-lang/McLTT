@@ -414,8 +414,8 @@ Proof.
     | _: env_relΓ ρ ?ρ0 |- _ =>
         rename ρ0 into ρ'
     end.
-    assert {{ Dom ⇑ ℕ m ≈ ⇑ ℕ m' ∈ per_nat }} by (econstructor; eassumption).
-    assert {{ Dom ρ ↦ ⇑ ℕ m ≈ ρ' ↦ ⇑ ℕ m' ∈ env_relΓℕ }} as HinΓℕ by (apply_relation_equivalence; mauto).
+    assert {{ Dom ⇑ a m ≈ ⇑ b m' ∈ per_nat }} by (econstructor; eassumption).
+    assert {{ Dom ρ ↦ ⇑ a m ≈ ρ' ↦ ⇑ b m' ∈ env_relΓℕ }} as HinΓℕ by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΓℕ)).
     destruct_by_head per_univ.
@@ -594,8 +594,8 @@ Proof.
         rename ρ1 into ρσ;
         rename ρ2 into ρ'σ
     end.
-    assert {{ Dom ⇑ ℕ m ≈ ⇑ ℕ m' ∈ per_nat }} by (econstructor; eassumption).
-    assert {{ Dom ρσ ↦ ⇑ ℕ m ≈ ρ'σ ↦ ⇑ ℕ m' ∈ env_relΔℕ }} as HinΔℕ by (apply_relation_equivalence; mauto).
+    assert {{ Dom ⇑ a m ≈ ⇑ b m' ∈ per_nat }} by (econstructor; eassumption).
+    assert {{ Dom ρσ ↦ ⇑ a m ≈ ρ'σ ↦ ⇑ b m' ∈ env_relΔℕ }} as HinΔℕ by (apply_relation_equivalence; mauto).
     apply_relation_equivalence.
     (on_all_hyp: fun H => directed destruct (H _ _ HinΔℕ)).
     destruct_by_head per_univ.

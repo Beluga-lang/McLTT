@@ -41,7 +41,7 @@ Inductive glu_nat : ctx -> exp -> domain -> Prop :=
 | glu_nat_neut :
   `{ per_bot m m ->
      (forall {Δ σ M'}, {{ Δ ⊢w σ : Γ }} -> {{ Rne m in length Δ ↘ M' }} -> {{ Δ ⊢ M[σ] ≈ M' : ℕ }}) ->
-     glu_nat Γ M d{{{ ⇑ ℕ m }}} }.
+     glu_nat Γ M d{{{ ⇑ a m }}} }.
 
 #[export]
 Hint Constructors glu_nat : mcltt.
