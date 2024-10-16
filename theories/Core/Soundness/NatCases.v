@@ -352,7 +352,7 @@ Qed.
 #[local]
 Hint Resolve cons_glu_sub_pred_q_nat_helper : mcltt.
 
-Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M m σ ρ am P El},
+Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M a m σ ρ am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
     {{ Γ, ℕ ⊩ A : Type@i }} ->
     {{ Γ ⊩ A[Id,,zero] : Type@i }} ->
@@ -362,10 +362,10 @@ Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M m σ ρ am
     {{ Dom m ≈ m ∈ per_bot }} ->
     (forall Δ' τ V, {{ Δ' ⊢w τ : Δ }} -> {{ Rne m in length Δ' ↘ V }} -> {{ Δ' ⊢ M[τ] ≈ V : ℕ }}) ->
     {{ Δ ⊢s σ ® ρ ∈ SbΓ }} ->
-    {{ ⟦ A ⟧ ρ ↦ ⇑ ℕ m ↘ am }} ->
+    {{ ⟦ A ⟧ ρ ↦ ⇑ a m ↘ am }} ->
     {{ DG am ∈ glu_univ_elem i ↘ P ↘ El }} ->
     exists r,
-      {{ rec ⇑ ℕ m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
+      {{ rec ⇑ a m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ r }} /\
         {{ Δ ⊢ rec M return A[q σ] | zero -> MZ[σ] | succ -> MS[q (q σ)] end : A[σ,,M] ® r ∈ El }}.
 Proof.
   intros * ? HA ? HMZ ? HMS **.
@@ -380,7 +380,7 @@ Proof.
   invert_glu_rel_exp HA.
   pose (SbΓℕA := cons_glu_sub_pred i {{{ Γ, ℕ }}} A SbΓℕ).
   assert {{ EG Γ, ℕ, A ∈ glu_ctx_env ↘ SbΓℕA }} by (econstructor; mauto 3; reflexivity).
-  assert {{ Δ ⊢s σ,,M ® ρ ↦ ⇑ ℕ m ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
+  assert {{ Δ ⊢s σ,,M ® ρ ↦ ⇑ a m ∈ SbΓℕ }} by (unfold SbΓℕ; mauto 3).
   assert {{ Γ, ℕ, A ⊢ MS : A[Wk∘Wk,,succ #1] }} by mauto 2.
   invert_glu_rel_exp HMS.
   destruct_glu_rel_exp_with_sub.
@@ -402,7 +402,7 @@ Proof.
   assert {{ ⊢ Δ, ℕ }} by mauto 3.
   assert {{ Δ, ℕ ⊢ A[q σ] : Type@i }} by mauto 3.
   assert {{ ⊢ Δ, ℕ, A[q σ] }} by mauto 2.
-  assert {{ Δ ⊢ M : ℕ }} by mauto 3.
+  assert {{ Δ ⊢ M : ℕ }} by mautosolve 3.
   assert {{ Δ ⊢ ℕ : Type@0 }} by mauto 3.
   assert {{ Δ ⊢ ℕ[σ] ≈ ℕ : Type@0 }} by mauto 3.
   assert {{ Δ ⊢ M : ℕ[σ] }} by mauto 3.

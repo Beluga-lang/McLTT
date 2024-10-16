@@ -19,7 +19,7 @@ Inductive read_nf_order : nat -> domain_nf -> Prop :=
      read_nf_order s d{{{ ⇓ ℕ (succ m) }}} )
 | rnf_nat_neut :
   `( read_ne_order s m ->
-     read_nf_order s d{{{ ⇓ ℕ (⇑ ℕ m) }}} )
+     read_nf_order s d{{{ ⇓ ℕ (⇑ a m) }}} )
 | rnf_fn :
   `( read_typ_order s a ->
      eval_app_order m d{{{ ⇑! a s }}} ->
@@ -119,7 +119,7 @@ Equations read_nf_impl s d (H : read_nf_order s d) : { m | {{ Rnf d in s ↘ m }
 | s, d{{{ ⇓ ℕ (succ m) }}} , H =>
     let (M, HM) := read_nf_impl s d{{{ ⇓ ℕ m }}} _ in
     exist _ n{{{ succ M }}} _
-| s, d{{{ ⇓ ℕ (⇑ ℕ m) }}}  , H =>
+| s, d{{{ ⇓ ℕ (⇑ ^_ m) }}}  , H =>
     let (M, HM) := read_ne_impl s m _ in
     exist _ n{{{ ⇑ M }}} _
 | s, d{{{ ⇓ (Π a p B) m }}}, H =>
