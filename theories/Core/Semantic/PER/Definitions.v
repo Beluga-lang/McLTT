@@ -66,7 +66,7 @@ Inductive per_nat : relation domain :=
      {{ Dom succ m ≈ succ n ∈ per_nat }} }
 | per_nat_neut :
   `{ {{ Dom m ≈ n ∈ per_bot }} ->
-     {{ Dom ⇑ ℕ m ≈ ⇑ ℕ n ∈ per_nat }} }
+     {{ Dom ⇑ a m ≈ ⇑ b n ∈ per_nat }} }
 .
 #[export]
 Hint Constructors per_nat : mcltt.

@@ -20,7 +20,7 @@ Inductive read_nf : nat -> domain_nf -> nf -> Prop :=
      {{ Rnf ⇓ ℕ (succ m) in s ↘ succ M }} )
 | read_nf_nat_neut :
   `( {{ Rne m in s ↘ M }} ->
-     {{ Rnf ⇓ ℕ (⇑ ℕ m) in s ↘ ⇑ M }} )
+     {{ Rnf ⇓ ℕ (⇑ a m) in s ↘ ⇑ M }} )
 | read_nf_fn :
   `( (** Normal form of arg type *)
      {{ Rtyp a in s ↘ A }} ->

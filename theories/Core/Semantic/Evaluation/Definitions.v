@@ -50,8 +50,8 @@ with eval_natrec : exp -> exp -> exp -> domain -> env -> domain -> Prop :=
      {{ rec succ b ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ms }} )
 | eval_natrec_neut :
   `( {{ ⟦ MZ ⟧ ρ ↘ mz }} ->
-     {{ ⟦ A ⟧ ρ ↦ ⇑ ℕ m ↘ a }} ->
-     {{ rec ⇑ ℕ m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ⇑ a (rec m under ρ return A | zero -> mz | succ -> MS end) }} )
+     {{ ⟦ A ⟧ ρ ↦ ⇑ b m ↘ a }} ->
+     {{ rec ⇑ b m ⟦return A | zero -> MZ | succ -> MS end⟧ ρ ↘ ⇑ a (rec m under ρ return A | zero -> mz | succ -> MS end) }} )
 where "'rec' m '⟦return' A | 'zero' -> MZ | 'succ' -> MS 'end⟧' ρ '↘' r" := (eval_natrec A MZ MS m ρ r) (in custom judg)
 with eval_app : domain -> domain -> domain -> Prop :=
 | eval_app_fn :

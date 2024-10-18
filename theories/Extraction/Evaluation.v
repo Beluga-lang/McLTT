@@ -48,8 +48,8 @@ with eval_natrec_order : exp -> exp -> exp -> domain -> env -> Prop :=
      eval_natrec_order A MZ MS d{{{ succ b }}} p )
 | eno_neut :
   `( eval_exp_order MZ p ->
-     eval_exp_order A d{{{ p ↦ ⇑ ℕ m }}} ->
-     eval_natrec_order A MZ MS d{{{ ⇑ ℕ m }}} p )
+     eval_exp_order A d{{{ p ↦ ⇑ a m }}} ->
+     eval_natrec_order A MZ MS d{{{ ⇑ a m }}} p )
 
 with eval_app_order : domain -> domain -> Prop :=
 | eao_fn :
@@ -146,9 +146,9 @@ with eval_natrec_impl A MZ MS m p (H : eval_natrec_order A MZ MS m p) : { d | ev
     let (mr, Hmr) := eval_natrec_impl A MZ MS m p _ in
     let (r, Hr) := eval_exp_impl MS d{{{ p ↦ m ↦ mr }}} _ in
     exist _ r _
-| A, MZ, MS, d{{{ ⇑ ℕ m }}} , p, H =>
+| A, MZ, MS, d{{{ ⇑ a m }}} , p, H =>
     let (mz, Hmz) := eval_exp_impl MZ p _ in
-    let (mA, HmA) := eval_exp_impl A d{{{ p ↦ ⇑ ℕ m }}} _ in
+    let (mA, HmA) := eval_exp_impl A d{{{ p ↦ ⇑ a m }}} _ in
     exist _ d{{{ ⇑ mA (rec m under p return A | zero -> mz | succ -> MS end) }}} _
 
 with eval_app_impl m n (H : eval_app_order m n) : { d | eval_app m n d } by struct H :=
