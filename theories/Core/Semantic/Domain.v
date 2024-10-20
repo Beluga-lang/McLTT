@@ -12,7 +12,7 @@ Inductive domain : Set :=
 | d_pi : domain -> env -> exp -> domain
 | d_fn : env -> exp -> domain
 | d_eq : domain -> domain -> domain -> domain
-| d_refl : domain -> domain -> domain
+| d_refl : domain -> domain
 | d_neut : domain -> domain_ne -> domain
 with domain_ne : Set :=
 (** Notice that the number x here is not a de Bruijn index but an absolute
@@ -64,7 +64,7 @@ Module Domain_Notations.
   Notation "'λ' ρ M" := (d_fn ρ M) (in custom domain at level 0, ρ custom domain at level 30, M custom exp at level 30) : mcltt_scope.
   Notation "f x .. y" := (d_app .. (d_app f x) .. y) (in custom domain at level 40, f custom domain, x custom domain at next level, y custom domain at next level) : mcltt_scope.
   Notation "'Eq' a m n" := (d_eq a m n) (in custom domain at level 1, a custom domain at level 30, m custom domain at level 35, n custom domain at level 40) : mcltt_scope.
-  Notation "'refl' a m" := (d_refl a m) (in custom domain at level 1, a custom domain at level 30, m custom domain at level 40) : mcltt_scope.
+  Notation "'refl' m" := (d_refl m) (in custom domain at level 1, m custom domain at level 40) : mcltt_scope.
   Notation "'eqrec' n 'under' ρ 'as' 'Eq' a m1 m2 'return' B | 'refl' -> BR 'end'" := (d_eqrec ρ a B BR m1 m2 n) (in custom domain at level 0, a custom domain at level 30, B custom domain at level 60, BR custom domain at level 60, m1 custom domain at level 35, m2 custom domain at level 40, n custom domain at level 60) : mcltt_scope.
   Notation "'!' n" := (d_var n) (in custom domain at level 0, n constr at level 0) : mcltt_scope.
   Notation "'⇑' a m" := (d_neut a m) (in custom domain at level 0, a custom domain at level 30, m custom domain at level 30) : mcltt_scope.

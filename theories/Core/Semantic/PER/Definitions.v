@@ -74,7 +74,7 @@ Hint Constructors per_nat : mcltt.
 Variant per_eq (point_rel : relation domain) : relation domain :=
 | per_eq_refl :
   `{ {{ Dom n ≈ n' ∈ point_rel }} ->
-     {{ Dom refl b n ≈ refl b' n' ∈ per_eq point_rel }} }
+     {{ Dom refl n ≈ refl n' ∈ per_eq point_rel }} }
 | per_eq_neut :
   `{ {{ Dom m ≈ m' ∈ per_bot }} ->
      {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_eq point_rel }} }
@@ -289,13 +289,11 @@ Inductive per_subtyp : nat -> domain -> domain -> Prop :=
             {{ Sub b <: b' at i }}) ->
         {{ DF Π a ρ B ≈ Π a ρ B ∈ per_univ_elem i ↘ elem_rel }} ->
         {{ DF Π a' ρ' B' ≈ Π a' ρ' B' ∈ per_univ_elem i ↘ elem_rel' }} ->
-        {{ Sub Π a ρ B <: Π a' ρ' B' at i }})
+        {{ Sub Π a ρ B <: Π a' ρ' B' at i }} )
 | per_subtyp_eq :
-  `( forall (point_rel : relation domain),
-        {{ DF a ≈ a' ∈ per_univ_elem i ↘ point_rel }} ->
-        {{ Dom m1 ≈ m1' ∈ point_rel }} ->
-        {{ Dom m2 ≈ m2' ∈ point_rel }} ->
-        {{ Sub Eq a m1 m2 <: Eq a' m1' m2' at i }})
+  `( forall elem_rel,
+        {{ DF Eq a m1 m2 ≈ Eq a' m1' m2' ∈ per_univ_elem i ↘ elem_rel }} ->
+        {{ Sub Eq a m1 m2 <: Eq a' m1' m2' at i }} )
 | per_subtyp_neut :
   `( {{ Dom b ≈ b' ∈ per_bot }} ->
      {{ Sub ⇑ a b <: ⇑ a' b' at i }} )

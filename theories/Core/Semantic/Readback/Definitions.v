@@ -33,7 +33,7 @@ Inductive read_nf : nat -> domain_nf -> nf -> Prop :=
 | read_nf_refl :
   `( {{ Rtyp a in s ↘ A }} ->
      {{ Rnf ⇓ a m' in s ↘ M' }} ->
-     {{ Rnf ⇓ (Eq a m1 m2) (refl a' m') in s ↘ refl A M' }} )
+     {{ Rnf ⇓ (Eq a m1 m2) (refl m') in s ↘ refl A M' }} )
 | read_nf_eq_neut :
   `( {{ Rne n in s ↘ N }} ->
      {{ Rnf ⇓ (Eq a m1 m2) (⇑ b n) in s ↘ ⇑ N }} )
@@ -77,7 +77,7 @@ with read_ne : nat -> domain_ne -> ne -> Prop :=
      {{ Rtyp b in S (S (S s)) ↘ B' }} ->
 
      (** Normal form of BR *)
-     {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↦ ⇑! a s ↦ refl a (⇑! a s) ↘ bbr }} ->
+     {{ ⟦ B ⟧ ρ ↦ ⇑! a s ↦ ⇑! a s ↦ refl (⇑! a s) ↘ bbr }} ->
      {{ ⟦ BR ⟧ ρ ↦ ⇑! a s ↘ br }} ->
      {{ Rnf ⇓ bbr br in S s ↘ BR' }} ->
 

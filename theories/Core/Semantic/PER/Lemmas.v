@@ -711,13 +711,12 @@ Lemma per_subtyp_to_univ_elem : forall a b i,
         {{ DF b ≈ b ∈ per_univ_elem i ↘ R' }}.
 Proof.
   destruct 1; do 2 eexists; mauto;
-    split; per_univ_elem_econstructor; mauto 3;
-    match goal with
-    | |- _ <~> _ => apply Equivalence_Reflexive
-    | |- _ ?a ?a => etransitivity; try eassumption; symmetry; eassumption
-    | |- PER _ => eapply per_elem_PER; eassumption
-    | _ => lia
-    end.
+    split;
+    try (etransitivity; try eassumption; symmetry; eassumption);
+    per_univ_elem_econstructor; mauto 3;
+    try apply Equivalence_Reflexive.
+
+  lia.
 Qed.
 
 Lemma per_elem_subtyping : forall A B i,
@@ -764,9 +763,12 @@ Proof.
   simpl; induction 1 using per_univ_elem_ind;
     subst;
     mauto;
-    destruct_all.
-  assert ({{ DF Π a ρ B ≈ Π a' ρ' B' ∈ per_univ_elem i ↘ elem_rel }})
-    by (eapply per_univ_elem_pi'; eauto; intros; destruct_rel_mod_eval; mauto).
+    destruct_all;
+    [ assert ({{ DF Π a ρ B ≈ Π a' ρ' B' ∈ per_univ_elem i ↘ elem_rel }})
+      by (per_univ_elem_econstructor; intuition; destruct_rel_mod_eval; mauto)
+    | enough {{ DF Eq a m1 m2 ≈ Eq a' m1' m2' ∈ per_univ_elem i ↘ elem_rel }} by mauto 3;
+      solve [per_univ_elem_econstructor; eauto]
+    ].
   saturate_refl_for per_univ_elem.
   econstructor; eauto.
   intros;
@@ -811,7 +813,7 @@ Proof.
       intuition.
   - dependent destruction Hsub.
     handle_per_univ_elem_irrel.
-    econstructor; [etransitivity; eauto | |]; etransitivity; eauto.
+    econstructor; etransitivity; eauto.
 Qed.
 
 #[export]

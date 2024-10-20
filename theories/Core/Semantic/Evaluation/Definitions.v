@@ -42,9 +42,8 @@ Inductive eval_exp : exp -> env -> domain -> Prop :=
      {{ ⟦ M2 ⟧ ρ ↘ m2 }} ->
      {{ ⟦ Eq A M1 M2 ⟧ ρ ↘ Eq a m1 m2 }} )
 | eval_exp_refl :
-  `( {{ ⟦ A ⟧ ρ ↘ a }} ->
-     {{ ⟦ M ⟧ ρ ↘ m }} ->
-     {{ ⟦ refl A M ⟧ ρ ↘ refl a m }} )
+  `( {{ ⟦ M ⟧ ρ ↘ m }} ->
+     {{ ⟦ refl A M ⟧ ρ ↘ refl m }} )
 | eval_exp_eqrec :
   `( {{ ⟦ A ⟧ ρ ↘ a }} ->
      {{ ⟦ M1 ⟧ ρ ↘ m1 }} ->
@@ -81,7 +80,7 @@ where "'$|' m '&' n '|↘' r" := (eval_app m n r) (in custom judg)
 with eval_eqrec : domain -> exp -> exp -> domain -> domain -> domain -> env -> domain -> Prop :=
 | eval_eqrec_refl :
   `( {{ ⟦ BR ⟧ ρ ↦ n ↘ br }} ->
-     {{ eqrec refl a' n as Eq a m1 m2 ⟦return B | refl -> BR end⟧ ρ ↘ br }} )
+     {{ eqrec refl n as Eq a m1 m2 ⟦return B | refl -> BR end⟧ ρ ↘ br }} )
 | eval_eqrec_neut :
   `( {{ ⟦ B ⟧ ρ ↦ m1 ↦ m2 ↦ ⇑ (Eq a m1 m2) n ↘ b }} ->
      {{ eqrec ⇑ c n as Eq a m1 m2 ⟦return B | refl -> BR end⟧ ρ ↘ ⇑ b (eqrec n under ρ as Eq a m1 m2 return B | refl -> BR end) }} )
