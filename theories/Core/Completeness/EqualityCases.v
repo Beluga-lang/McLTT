@@ -117,6 +117,29 @@ Proof.
   pose env_relΔA.
   pose env_relΔAAEq.
   handle_per_ctx_env_irrel.
+  invert_per_ctx_env H3.
+  rename tail_rel into env_relΔAA.
+  invert_per_ctx_env equiv_Γ_Γ'.
+  invert_per_ctx_env H4.
+  eexists_rel_exp.
+  intros.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
+  unfold per_univ in *.
+  destruct_conjs.
+  destruct_by_head rel_typ.
+  destruct_by_head rel_exp.
+  invert_rel_typ_body.
+  assert {{ Dom ρ1 ↦ m1 ≈ ρ0 ↦ m0 ∈ env_relΔA }} by (rewrite_relation_equivalence_left; mauto 3).
+  destruct (H9 _ _ (proj1 (H4 _ _) H28)) as [? [[] []]].
+  destruct (H0 _ _ H28).
+  simplify_evals.
+  handle_per_univ_elem_irrel.
+  destruct H47.
+  - assert {{ Dom ρ1 ↦ m1 ↦ m2 ≈ ρ0 ↦ m0 ↦ m3 ∈ env_relΔAA }} by (rewrite_relation_equivalence_left; unshelve eexists; intuition).
+    eexists; split; econstructor; only 4-5: do 2 (econstructor; mauto 3).
+    + econstructor; only 1-2: (econstructor; mauto 3).
+
   match_by_head (per_ctx_env env_relΔAAEq) invert_per_ctx_env.
   rename tail_rel into env_relΔAA.
   match_by_head (per_ctx_env env_relΔAA) invert_per_ctx_env.
