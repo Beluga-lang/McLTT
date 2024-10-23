@@ -87,7 +87,9 @@ Proof.
   eexists; split; econstructor; mauto 3.
   - per_univ_elem_econstructor; mauto 3; try solve_refl.
     typeclasses eauto.
-  - econstructor; mauto 3.
+  - econstructor; intuition.
+    + etransitivity; [| symmetry]; eauto.
+    + etransitivity; [symmetry |]; eauto.
 Qed.
 
 #[export]
@@ -117,33 +119,11 @@ Proof.
   pose env_relΔA.
   pose env_relΔAAEq.
   handle_per_ctx_env_irrel.
-  invert_per_ctx_env H3.
+  invert_per_ctx_envs_of env_relΔAAEq.
   rename tail_rel into env_relΔAA.
-  invert_per_ctx_env equiv_Γ_Γ'.
-  invert_per_ctx_env H4.
-  eexists_rel_exp.
-  intros.
-  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
-  (on_all_hyp: destruct_rel_by_assumption env_relΔ).
-  unfold per_univ in *.
-  destruct_conjs.
-  destruct_by_head rel_typ.
-  destruct_by_head rel_exp.
-  invert_rel_typ_body.
-  assert {{ Dom ρ1 ↦ m1 ≈ ρ0 ↦ m0 ∈ env_relΔA }} by (rewrite_relation_equivalence_left; mauto 3).
-  destruct (H9 _ _ (proj1 (H4 _ _) H28)) as [? [[] []]].
-  destruct (H0 _ _ H28).
-  simplify_evals.
-  handle_per_univ_elem_irrel.
-  destruct H47.
-  - assert {{ Dom ρ1 ↦ m1 ↦ m2 ≈ ρ0 ↦ m0 ↦ m3 ∈ env_relΔAA }} by (rewrite_relation_equivalence_left; unshelve eexists; intuition).
-    eexists; split; econstructor; only 4-5: do 2 (econstructor; mauto 3).
-    + econstructor; only 1-2: (econstructor; mauto 3).
-
-  match_by_head (per_ctx_env env_relΔAAEq) invert_per_ctx_env.
-  rename tail_rel into env_relΔAA.
-  match_by_head (per_ctx_env env_relΔAA) invert_per_ctx_env.
-  match_by_head (per_ctx_env env_relΔA) invert_per_ctx_env.
+  invert_per_ctx_envs_of env_relΔAA.
+  invert_per_ctx_envs_of env_relΔA.
+  handle_per_ctx_env_irrel.
   eexists_rel_exp.
   intros.
   (on_all_hyp: destruct_rel_by_assumption env_relΓ).
@@ -168,19 +148,33 @@ Proof.
   (on_all_hyp: fun H => directed destruct (H _ _ HrelΔAAEq) as []).
   destruct_conjs.
   match_by_head per_eq ltac:(fun H => destruct H).
-  - assert {{ Dom ρ1 ↦ n ≈ ρ0 ↦ n' ∈ env_relΔA }} as HΔA by (apply_relation_equivalence; unshelve eexists; intuition).
-    apply_relation_equivalence.
-    (on_all_hyp: fun H => directed destruct (H _ _ HΔA) as [? [[] []]]).
-    simplify_evals.
-    eexists; split; econstructor; mauto 3.
-      try solve [do 3 (econstructor; mauto 3)].
-    + do 3 (econstructor; mauto 3).
-  - do 3 (econstructor; mauto 3).
-    mauto 3.
-  - do 3 (econstructor; mauto 3).
-  - do 2 (econstructor; mauto 3).
+  (* 2: { *)
+  (*   eexists; split. *)
+  (*   2: { *)
+  (*     econstructor. *)
+  (*     1-2: econstructor; mauto 3. *)
+  (*     2: econstructor; econstructor. *)
+  (*     2: do 4 (econstructor; mauto 3). *)
+  (*     2: mauto 3. *)
+  (*     2: econstructor; mauto 3. *)
+  (*     6: econstructor. *)
+  (*     all: mauto 3. *)
+      
+  (*   } *)
+  (* } *)
+  (* - assert {{ Dom ρ1 ↦ n ≈ ρ0 ↦ n' ∈ env_relΔA }} as HΔA by (apply_relation_equivalence; unshelve eexists; intuition). *)
+  (*   apply_relation_equivalence. *)
+  (*   (on_all_hyp: fun H => directed destruct (H _ _ HΔA) as [? [[] []]]). *)
+  (*   simplify_evals. *)
+  (*   eexists; split; econstructor; mauto 3. *)
+  (*     try solve [do 3 (econstructor; mauto 3)]. *)
+  (*   + do 3 (econstructor; mauto 3). *)
+  (* - do 3 (econstructor; mauto 3). *)
+  (*   mauto 3. *)
+  (* - do 3 (econstructor; mauto 3). *)
+  (* - do 2 (econstructor; mauto 3). *)
     
-  match_by_head (per_ctx_env _ {{{ Δ, A, A[Wk] }}} {{{ Δ, A, A[Wk] }}}) (fun H => idtac H).
+  (* match_by_head (per_ctx_env _ {{{ Δ, A, A[Wk] }}} {{{ Δ, A, A[Wk] }}}) (fun H => idtac H). *)
 Admitted.
 #[export]
 Hint Resolve rel_exp_eqrec_sub : mcltt.
