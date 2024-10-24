@@ -35,7 +35,7 @@ Hint Constructors rel_mod_app : mcltt.
 
 (** *** (Some Elements of) PER Lattice *)
 
-Definition per_bot : relation domain_ne := fun m n => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne n in s ↘ L }}).
+Definition per_bot : relation domain_ne := fun m m' => (forall s, exists L, {{ Rne m in s ↘ L }} /\ {{ Rne m' in s ↘ L }}).
 #[global]
 Arguments per_bot /.
 #[export]
@@ -43,7 +43,7 @@ Hint Transparent per_bot : mcltt.
 #[export]
 Hint Unfold per_bot : mcltt.
 
-Definition per_top : relation domain_nf := fun m n => (forall s, exists L, {{ Rnf m in s ↘ L }} /\ {{ Rnf n in s ↘ L }}).
+Definition per_top : relation domain_nf := fun m m' => (forall s, exists L, {{ Rnf m in s ↘ L }} /\ {{ Rnf m' in s ↘ L }}).
 #[global]
 Arguments per_top /.
 #[export]
@@ -51,7 +51,7 @@ Hint Transparent per_top : mcltt.
 #[export]
 Hint Unfold per_top : mcltt.
 
-Definition per_top_typ : relation domain := fun a b => (forall s, exists C, {{ Rtyp a in s ↘ C }} /\ {{ Rtyp b in s ↘ C }}).
+Definition per_top_typ : relation domain := fun a a' => (forall s, exists C, {{ Rtyp a in s ↘ C }} /\ {{ Rtyp a' in s ↘ C }}).
 #[global]
 Arguments per_top_typ /.
 #[export]
@@ -62,22 +62,24 @@ Hint Unfold per_top_typ : mcltt.
 Inductive per_nat : relation domain :=
 | per_nat_zero : {{ Dom zero ≈ zero ∈ per_nat }}
 | per_nat_succ :
-  `{ {{ Dom m ≈ n ∈ per_nat }} ->
-     {{ Dom succ m ≈ succ n ∈ per_nat }} }
+  `{ {{ Dom m ≈ m' ∈ per_nat }} ->
+     {{ Dom succ m ≈ succ m' ∈ per_nat }} }
 | per_nat_neut :
-  `{ {{ Dom m ≈ n ∈ per_bot }} ->
-     {{ Dom ⇑ a m ≈ ⇑ b n ∈ per_nat }} }
+  `{ {{ Dom m ≈ m' ∈ per_bot }} ->
+     {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_nat }} }
 .
 #[export]
 Hint Constructors per_nat : mcltt.
 
-Variant per_eq (point_rel : relation domain) : relation domain :=
+Variant per_eq (point_rel : relation domain) m1 m2' : relation domain :=
 | per_eq_refl :
-  `{ {{ Dom n ≈ n' ∈ point_rel }} ->
-     {{ Dom refl n ≈ refl n' ∈ per_eq point_rel }} }
+  `{ {{ Dom m1 ≈ n ∈ point_rel }} ->
+     {{ Dom n ≈ n' ∈ point_rel }} ->
+     {{ Dom n' ≈ m2' ∈ point_rel }} ->
+     {{ Dom refl n ≈ refl n' ∈ per_eq point_rel m1 m2' }} }
 | per_eq_neut :
-  `{ {{ Dom m ≈ m' ∈ per_bot }} ->
-     {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_eq point_rel }} }
+  `{ {{ Dom n ≈ n' ∈ per_bot }} ->
+     {{ Dom ⇑ a n ≈ ⇑ a' n' ∈ per_eq point_rel m1 m2' }} }
 .
 #[export]
 Hint Constructors per_eq : mcltt.
@@ -126,7 +128,7 @@ Section Per_univ_elem_core_def.
           PER point_rel ->
           {{ Dom m1 ≈ m1' ∈ point_rel }} ->
           {{ Dom m2 ≈ m2' ∈ point_rel }} ->
-          (elem_rel <~> per_eq point_rel) ->
+          (elem_rel <~> per_eq point_rel m1 m2') ->
           {{ DF Eq a m1 m2 ≈ Eq a' m1' m2' ∈ per_univ_elem_core ↘ elem_rel }} }
   | per_univ_elem_core_neut :
     `{ forall (elem_rel : relation domain),
@@ -161,7 +163,7 @@ Section Per_univ_elem_core_def.
           PER point_rel ->
           {{ Dom m1 ≈ m1' ∈ point_rel }} ->
           {{ Dom m2 ≈ m2' ∈ point_rel }} ->
-          (elem_rel <~> per_eq point_rel) ->
+          (elem_rel <~> per_eq point_rel m1 m2') ->
           motive elem_rel d{{{ Eq a m1 m2 }}} d{{{ Eq a' m1' m2' }}})
       (case_ne : forall {a b a' b' elem_rel},
           {{ Dom b ≈ b' ∈ per_bot }} ->
@@ -241,7 +243,7 @@ Section Per_univ_elem_ind_def.
           PER point_rel ->
           {{ Dom m1 ≈ m1' ∈ point_rel }} ->
           {{ Dom m2 ≈ m2' ∈ point_rel }} ->
-          (elem_rel <~> per_eq point_rel) ->
+          (elem_rel <~> per_eq point_rel m1 m2') ->
           motive i elem_rel d{{{ Eq a m1 m2 }}} d{{{ Eq a' m1' m2' }}})
       (case_ne : forall i {a b a' b' elem_rel},
           {{ Dom b ≈ b' ∈ per_bot }} ->
@@ -311,6 +313,14 @@ Hint Unfold rel_typ : mcltt.
 
 (** * Context/Environment PER *)
 
+Variant cons_per_ctx_env tail_rel (head_rel : forall {ρ ρ'} (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ tail_rel }}), relation domain) : relation env :=
+| mk_cons_per_ctx_env :
+  `{ forall (equiv_ρ_drop_ρ'_drop : {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel }}),
+        {{ Dom ^(ρ 0) ≈ ^(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }} ->
+        {{ Dom ρ ≈ ρ' ∈ cons_per_ctx_env tail_rel (@head_rel) }} }.
+#[export]
+Hint Constructors cons_per_ctx_env : mcltt.
+
 Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
 | per_ctx_env_nil :
   `{ forall env_rel,
@@ -324,9 +334,7 @@ Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
         PER tail_rel ->
         (forall {ρ ρ'} (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ tail_rel }}),
             rel_typ i A ρ A' ρ' (head_rel equiv_ρ_ρ')) ->
-        (env_rel <~> fun ρ ρ' =>
-             exists (equiv_ρ_drop_ρ'_drop : {{ Dom ρ ↯ ≈ ρ' ↯ ∈ tail_rel }}),
-               {{ Dom ^(ρ 0) ≈ ^(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }}) ->
+        (env_rel <~> cons_per_ctx_env tail_rel (@head_rel)) ->
         {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_rel }} }
 .
 #[export]
