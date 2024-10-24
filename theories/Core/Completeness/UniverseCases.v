@@ -35,6 +35,32 @@ Proof.
   eassumption.
 Qed.
 
+Lemma rel_exp_under_ctx_implies_rel_typ_under_ctx : forall {Γ env_rel A A' i},
+    {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }} ->
+    (forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
+        rel_exp A ρ A' ρ' (per_univ i)) ->
+    exists (elem_rel : forall {ρ ρ'} (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}), relation domain),
+    forall ρ ρ' (equiv_ρ_ρ' : {{ Dom ρ ≈ ρ' ∈ env_rel }}),
+      rel_typ i A ρ A' ρ' (elem_rel equiv_ρ_ρ').
+Proof.
+  intros * ? ?.
+  exists (fun ρ ρ' _ m m' => forall R,
+          rel_typ i A ρ A' ρ' R ->
+          R m m').
+  intros.
+  (on_all_hyp: destruct_rel_by_assumption env_rel).
+  unfold per_univ in *.
+  destruct_conjs.
+  econstructor; mauto 3.
+  rewrite per_univ_elem_morphism_iff; mauto 3.
+  split; intros.
+  - enough (rel_typ i A ρ A' ρ' _) by intuition.
+    econstructor; mauto 3.
+  - destruct_rel_typ.
+    handle_per_univ_elem_irrel.
+    eassumption.
+Qed.
+
 Ltac invert_rel_exp_of_typ H :=
   (unshelve epose proof (rel_exp_of_typ_inversion2 _ H); shelve_unifiable; [eassumption |]; clear H)
   + (pose proof (rel_exp_of_typ_inversion1 H) as []; clear H)
