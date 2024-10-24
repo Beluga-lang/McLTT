@@ -140,13 +140,20 @@ Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; repeat split; intros; mauto 3;
-    [firstorder | | transitivity {{{ A[σ] }}}; mauto 4 | assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }}; mauto 3].
+    [firstorder | | | transitivity {{{ A[σ] }}}; mauto 4 | assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }}; mauto 3].
 
-  econstructor; mauto 3.
+  - econstructor; mauto 3.
+  - destruct_by_head eq_glu_exp_pred.
+    + econstructor; mauto 4.
+    + destruct_by_head eq_glu_typ_pred.
+      econstructor; mauto 4.
+      intros.
+      assert {{ Δ ⊢s σ : Γ }} by mauto 3.
+      mauto 4.
 Qed.
 
 Add Parametric Morphism i P El a (H : glu_univ_elem i P El a) Γ : (El Γ)
-    with signature wf_exp_eq Γ {{{Type@i}}} ==> eq ==> eq ==> iff as glu_univ_elem_trm_morphism_iff1.
+    with signature wf_exp_eq Γ {{{ Type@i }}} ==> eq ==> eq ==> iff as glu_univ_elem_trm_morphism_iff1.
 Proof.
   split; intros;
     eapply glu_univ_elem_trm_resp_typ_exp_eq;
@@ -183,14 +190,17 @@ Lemma glu_univ_elem_trm_resp_ctx_eq : forall i P El a,
 Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
-    simpl_glu_rel; mauto 2;
-    econstructor; mauto 4 using glu_nat_resp_ctx_eq.
+    simpl_glu_rel; repeat split; mauto 3;
+    try (econstructor; mauto 4 using glu_nat_resp_ctx_eq).
 
-  - split; mauto.
-    do 2 eexists.
-    split; mauto.
+  - eexists; split; mauto.
     eapply glu_univ_elem_typ_resp_ctx_eq; mauto.
-  - split; mauto 4.
+  - destruct_by_head eq_glu_exp_pred.
+    + econstructor; mauto 4.
+    + destruct_by_head eq_glu_typ_pred.
+      do 2 (econstructor; mauto 4).
+  - assert {{ Δ ⊢ A : Type@i }} by mauto 3.
+    eapply wf_subtyp_refl'; mauto 4.
 Qed.
 
 Add Parametric Morphism i P El a (H : glu_univ_elem i P El a) : El
@@ -242,6 +252,14 @@ Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
     simpl_glu_rel; mauto 4.
+
+  destruct_by_head eq_glu_exp_pred.
+  - gen_presups; eassumption.
+  - destruct_by_head eq_glu_typ_pred.
+    match_by_head per_bot ltac:(fun H => destruct (H (length Γ)) as [N' []]); clear_dups.
+    assert {{ Γ ⊢ N[Id] ≈ N' : A[Id] }} by mauto 4.
+    gen_presups.
+    mauto 3.
 Qed.
 
 Lemma glu_univ_elem_per_univ : forall i P El a,
@@ -256,6 +274,8 @@ Proof.
     reflexivity.
   - match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
     mauto.
+  - per_univ_elem_econstructor; mauto 3; try reflexivity.
+    typeclasses eauto.
 Qed.
 
 #[export]
@@ -275,13 +295,14 @@ Proof.
     try fold (per_univ j m m);
     mauto 4.
 
-  intros.
-  destruct_rel_mod_app.
-  destruct_rel_mod_eval.
-  functional_eval_rewrite_clear.
-  do_per_univ_elem_irrel_assert.
+  - intros.
+    destruct_rel_mod_app.
+    destruct_rel_mod_eval.
+    functional_eval_rewrite_clear.
+    do_per_univ_elem_irrel_assert.
+    econstructor; firstorder eauto.
 
-  econstructor; firstorder eauto.
+  - destruct_by_head eq_glu_exp_pred; econstructor; intuition.
 Qed.
 
 Lemma glu_univ_elem_trm_typ : forall i P El a,
@@ -295,11 +316,12 @@ Proof.
     simpl_glu_rel;
     mauto 4.
 
-  econstructor; eauto.
-  match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
-  intros ? ? N n ? ? equiv_n.
-  destruct_rel_mod_eval.
-  enough (exists mn : domain, {{ $| m & n |↘ mn }} /\  {{ Δ ⊢ M[σ] N : OT[σ,,N] ® mn ∈ OEl n equiv_n }}) as [? []]; eauto 3.
+  - econstructor; eauto.
+    match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+    intros ? ? N n ? ? equiv_n.
+    destruct_rel_mod_eval.
+    enough (exists mn : domain, {{ $| m & n |↘ mn }} /\  {{ Δ ⊢ M[σ] N : OT[σ,,N] ® mn ∈ OEl n equiv_n }}) as [? []]; eauto 3.
+  - destruct_by_head eq_glu_exp_pred; mauto 3.
 Qed.
 
 Lemma glu_univ_elem_trm_univ_lvl : forall i P El a,
@@ -341,6 +363,10 @@ Proof.
     eapply wf_exp_eq_app_cong with (N := N) (N' := N) in Hty; try pi_univ_level_tac; [|mauto 2].
     autorewrite with mcltt in Hty.
     eassumption.
+  - destruct_by_head eq_glu_exp_pred; econstructor; mauto 3.
+    intros.
+    assert {{ Δ ⊢ N[σ] ≈ N' : A[σ] }} by mauto 3.
+    etransitivity; [symmetry | mauto 3]; mauto 4.
   - intros.
     enough {{ Δ ⊢ M[σ] ≈ M'[σ] : A[σ] }}; mauto 4.
 Qed.
@@ -506,6 +532,13 @@ Proof.
       destruct_conjs;
       assert ((OP n equiv_n <∙> OP0 n equiv0_n) /\ (OEl n equiv_n <∙> OEl0 n equiv0_n)) as [] by mauto 3;
       eexists; split; intuition.
+  - assert ((PP <∙> PP0) /\ (PEl <∙> PEl0)) as [] by mauto 2.
+    apply_predicate_equivalence.
+    handle_per_univ_elem_irrel.
+    split; intros ? ?; split; intros;
+      destruct_by_head eq_glu_exp_pred; destruct_by_head eq_glu_typ_pred;
+      econstructor; intuition;
+      econstructor; intuition.
 Qed.
 
 Ltac apply_functional_glu_univ_elem1 :=
@@ -656,11 +689,16 @@ Proof.
     handle_per_univ_elem_irrel.
     intuition.
   - reflexivity.
+  - etransitivity; [symmetry |]; eassumption.
+  - etransitivity; [symmetry |]; eassumption.
+  - admit.
+    (* split; intros; destruct_by_head eq_glu_typ_pred; econstructor. *)
+  - admit.
   - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence.
     eassumption.
   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
     eassumption.
-Qed.
+Admitted.
 
 (** *** Morphism instances for [glu_univ_elem] *)
 Add Parametric Morphism i : (glu_univ_elem i)

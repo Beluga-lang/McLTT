@@ -107,6 +107,33 @@ Variant pi_glu_exp_pred i
 #[export]
 Hint Constructors neut_glu_exp_pred pi_glu_typ_pred pi_glu_exp_pred : mcltt.
 
+Variant eq_glu_typ_pred i (m m' : domain) PP PEl : glu_typ_pred :=
+| mk_eq_glu_typ_pred :
+  `{ {{ Γ ⊢ A ≈ Eq B M M' : Type@i }} ->
+     (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ B[σ] ® PP }}) ->
+     (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M[σ] : B[σ] ® m ∈ PEl }}) ->
+     (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M'[σ] : B[σ] ® m' ∈ PEl }}) ->
+     {{ Γ ⊢ A ® eq_glu_typ_pred i m m' PP PEl }} }.
+
+Variant eq_glu_exp_pred i m m' PP PEl point_rel : glu_exp_pred :=
+| glu_eq_refl :
+  `{ {{ Γ ⊢ A ≈ Eq B M M' : Type@i }} ->
+     (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ B[σ] ® PP }}) ->
+     (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M[σ] : B[σ] ® m ∈ PEl }}) ->
+     (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M'[σ] : B[σ] ® m' ∈ PEl }}) ->
+     {{ Γ ⊢ N ≈ refl B M'' : A }} ->
+     {{ Dom m'' ≈ m'' ∈ point_rel }} ->
+     {{ Γ ⊢ M'' : A ® m'' ∈ PEl }} ->
+     {{ Γ ⊢ N : A ® refl m'' ∈ eq_glu_exp_pred i m m' PP PEl point_rel }} }
+| glu_eq_neut :
+  `{ {{ Γ ⊢ A ® eq_glu_typ_pred i m m' PP PEl }} ->
+     {{ Dom n ≈ n ∈ per_bot }} ->
+     (forall {Δ σ N'}, {{ Δ ⊢w σ : Γ }} -> {{ Rne n in length Δ ↘ N' }} -> {{ Δ ⊢ N[σ] ≈ N' : A[σ] }}) ->
+     {{ Γ ⊢ N : A ® ⇑ c n ∈ eq_glu_exp_pred i m m' PP PEl point_rel }} }.
+
+#[export]
+Hint Constructors eq_glu_typ_pred eq_glu_exp_pred : mcltt.
+
 Definition univ_glu_typ_pred j i : glu_typ_pred := fun Γ A => {{ Γ ⊢ A ≈ Type@j :  Type@i }}.
 Arguments univ_glu_typ_pred j i Γ A/.
 Transparent univ_glu_typ_pred.
@@ -156,6 +183,17 @@ Section Gluing.
           typ_rel <∙> pi_glu_typ_pred i in_rel IP IEl OP ->
           el_rel <∙> pi_glu_exp_pred i in_rel IP IEl elem_rel OEl ->
           {{ DG Π a ρ B ∈ glu_univ_elem_core ↘ typ_rel ↘ el_rel }} }
+
+  | glu_univ_elem_core_eq :
+    `{ forall point_rel PP PEl
+         typ_rel el_rel,
+          {{ DG a ∈ glu_univ_elem_core ↘ PP ↘ PEl }} ->
+          {{ DF a ≈ a ∈ per_univ_elem i ↘ point_rel }} ->
+          {{ Dom m ≈ m ∈ point_rel }} ->
+          {{ Dom m' ≈ m' ∈ point_rel }} ->
+          typ_rel <∙> eq_glu_typ_pred i m m' PP PEl ->
+          el_rel <∙> eq_glu_exp_pred i m m' PP PEl point_rel ->
+          {{ DG Eq a m m' ∈ glu_univ_elem_core ↘ typ_rel ↘ el_rel }} }
 
   | glu_univ_elem_core_neut :
     `{ forall typ_rel el_rel,
@@ -218,6 +256,18 @@ Section GluingInduction.
           El <∙> pi_glu_exp_pred i in_rel IP IEl elem_rel OEl ->
           motive i P El d{{{ Π a ρ B }}})
 
+      (case_Eq :
+        forall i a m m' (point_rel : relation domain) (PP : glu_typ_pred)
+          (PEl : glu_exp_pred) (P : glu_typ_pred) (El : glu_exp_pred),
+          {{ DG a ∈ glu_univ_elem i ↘ PP ↘ PEl }} ->
+          motive i PP PEl a ->
+          {{ DF a ≈ a ∈ per_univ_elem i ↘ point_rel }} ->
+          {{ Dom m ≈ m ∈ point_rel }} ->
+          {{ Dom m' ≈ m' ∈ point_rel }} ->
+          P <∙> eq_glu_typ_pred i m m' PP PEl ->
+          El <∙> eq_glu_exp_pred i m m' PP PEl point_rel ->
+          motive i P El d{{{ Eq a m m' }}})
+
       (case_neut :
         forall i b a
           (P : glu_typ_pred)
@@ -246,11 +296,15 @@ Section GluingInduction.
              HEl')
         (case_nat i)
         _ (* (case_pi i) *)
+        _ (* (case_Eq i)*)
         (case_neut i)
         P El a
         _.
   Next Obligation.
     eapply (case_pi i); def_simp; eauto.
+  Qed.
+  Next Obligation.
+    eapply (case_Eq i); def_simp; eauto.
   Qed.
 End GluingInduction.
 
