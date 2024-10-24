@@ -6,11 +6,11 @@ From Mcltt.Core.Completeness Require Import ContextCases LogicalRelation Substit
 From Mcltt.Core.Semantic Require Import Realizability.
 Import Domain_Notations.
 
-Lemma valid_exp_eq : forall {Γ i A M1 M2},
-    {{ Γ ⊨ A : Type@i }} ->
-    {{ Γ ⊨ M1 : A }} ->
-    {{ Γ ⊨ M2 : A }} ->
-    {{ Γ ⊨ Eq A M1 M2 : Type@i }}.
+Lemma rel_exp_eq_cong : forall {Γ i A A' M1 M1' M2 M2'},
+    {{ Γ ⊨ A ≈ A' : Type@i }} ->
+    {{ Γ ⊨ M1 ≈ M1' : A }} ->
+    {{ Γ ⊨ M2 ≈ M2' : A }} ->
+    {{ Γ ⊨ Eq A M1 M2 ≈ Eq A' M1' M2' : Type@i }}.
 Proof.
   intros * [env_relΓ]%rel_exp_of_typ_inversion1 HM1 HM2.
   destruct_conjs.
@@ -30,9 +30,46 @@ Proof.
   per_univ_elem_econstructor; mauto 3; try solve_refl.
   typeclasses eauto.
 Qed.
+#[export]
+Hint Resolve rel_exp_eq_cong : mcltt.
+
+Lemma valid_exp_eq : forall {Γ i A M1 M2},
+    {{ Γ ⊨ A : Type@i }} ->
+    {{ Γ ⊨ M1 : A }} ->
+    {{ Γ ⊨ M2 : A }} ->
+    {{ Γ ⊨ Eq A M1 M2 : Type@i }}.
+Proof. mauto. Qed.
 
 #[export]
 Hint Resolve valid_exp_eq : mcltt.
+
+Lemma rel_exp_refl_cong : forall {Γ i A A' M M'},
+    {{ Γ ⊨ A ≈ A' : Type@i }} ->
+    {{ Γ ⊨ M ≈ M' : A }} ->
+    {{ Γ ⊨ refl A M ≈ refl A' M' : Eq A M M }}.
+Proof.
+  intros * [env_relΓ]%rel_exp_of_typ_inversion1 HM.
+  destruct_conjs.
+  invert_rel_exp HM.
+  eexists_rel_exp.
+  intros.
+  saturate_refl_for env_relΓ.
+  (on_all_hyp: destruct_rel_by_assumption env_relΓ).
+  destruct_rel_typ.
+  destruct_by_head rel_exp.
+  unfold per_univ in *.
+  destruct_conjs.
+  handle_per_univ_elem_irrel.
+  eexists; split; econstructor; mauto 4.
+  - per_univ_elem_econstructor; mauto 3;
+      try (etransitivity; [| symmetry]; eassumption);
+      try reflexivity.
+    typeclasses eauto.
+  - econstructor; saturate_refl; mauto 3.
+    symmetry; mauto 3.
+Qed.
+#[export]
+Hint Resolve rel_exp_refl_cong : mcltt.
 
 Lemma rel_exp_eq_sub : forall {Γ σ Δ i A M1 M2},
     {{ Γ ⊨s σ : Δ }} ->
@@ -176,25 +213,6 @@ Proof.
 Admitted.
 #[export]
 Hint Resolve rel_exp_eqrec_sub : mcltt.
-
-Lemma rel_exp_eq_cong : forall {Γ i A A' M1 M1' M2 M2'},
-    {{ Γ ⊨ A ≈ A' : Type@i }} ->
-    {{ Γ ⊨ M1 ≈ M1' : A }} ->
-    {{ Γ ⊨ M2 ≈ M2' : A }} ->
-    {{ Γ ⊨ Eq A M1 M2 ≈ Eq A' M1' M2' : Type@i }}.
-Proof.
-Admitted.
-#[export]
-Hint Resolve rel_exp_eq_cong : mcltt.
-
-Lemma rel_exp_refl_cong : forall {Γ i A A' M M'},
-    {{ Γ ⊨ A ≈ A' : Type@i }} ->
-    {{ Γ ⊨ M ≈ M' : A }} ->
-    {{ Γ ⊨ refl A M ≈ refl A' M' : Eq A M M }}.
-Proof.
-Admitted.
-#[export]
-Hint Resolve rel_exp_refl_cong : mcltt.
 
 Lemma rel_exp_eqrec_cong : forall {Γ i A A' M1 M1' M2 M2' j B B' BR BR' N N'},
     {{ Γ ⊨ A : Type@i }} ->
