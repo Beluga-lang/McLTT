@@ -58,6 +58,7 @@ implementation.
 We recommend to install dependencies in the following way:
 
 ```bash
+opam update
 opam switch create coq-8.20.0 4.14.2
 opam pin add coq 8.20.0
 opam repo add coq-released https://coq.inria.fr/opam/released
