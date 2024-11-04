@@ -139,10 +139,15 @@ Lemma glu_univ_elem_trm_resp_typ_exp_eq : forall i P El a,
 Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros;
-    simpl_glu_rel; repeat split; intros; mauto 3;
-    [firstorder | | transitivity {{{ A[σ] }}}; mauto 4 | assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }}; mauto 3].
-
-  econstructor; mauto 3.
+    simpl_glu_rel; repeat split; intros; mauto 3.
+  - firstorder.
+  - econstructor; mauto 3.
+  - econstructor; mauto 3.
+    destruct H11; econstructor; mauto 3.
+    intros.
+    assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }}; mauto 3.
+  - transitivity {{{ A[σ] }}}; mauto 4.
+  - assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }}; mauto 3.
 Qed.
 
 Add Parametric Morphism i P El a (H : glu_univ_elem i P El a) Γ : (El Γ)
@@ -190,6 +195,7 @@ Proof.
     do 2 eexists.
     split; mauto.
     eapply glu_univ_elem_typ_resp_ctx_eq; mauto.
+  - destruct H11; econstructor; mauto 4.
   - split; mauto 4.
 Qed.
 
@@ -250,7 +256,7 @@ Lemma glu_univ_elem_per_univ : forall i P El a,
 Proof.
   simpl.
   induction 1 using glu_univ_elem_ind; intros; eexists;
-    try solve [per_univ_elem_econstructor; try reflexivity; trivial].
+    try solve [per_univ_elem_econstructor; mauto 3; try reflexivity].
 
   - subst. eapply per_univ_elem_core_univ'; trivial.
     reflexivity.
@@ -275,13 +281,16 @@ Proof.
     try fold (per_univ j m m);
     mauto 4.
 
-  intros.
-  destruct_rel_mod_app.
-  destruct_rel_mod_eval.
-  functional_eval_rewrite_clear.
-  do_per_univ_elem_irrel_assert.
+  - intros.
+    destruct_rel_mod_app.
+    destruct_rel_mod_eval.
+    functional_eval_rewrite_clear.
+    do_per_univ_elem_irrel_assert.
 
-  econstructor; firstorder eauto.
+    econstructor; firstorder eauto.
+
+  - handle_per_univ_elem_irrel.
+    destruct H15; saturate_refl_for R; econstructor; mauto using (PER_refl1 _ R).
 Qed.
 
 Lemma glu_univ_elem_trm_typ : forall i P El a,
@@ -341,6 +350,10 @@ Proof.
     eapply wf_exp_eq_app_cong with (N := N) (N' := N) in Hty; try pi_univ_level_tac; [|mauto 2].
     autorewrite with mcltt in Hty.
     eassumption.
+  - econstructor; eauto.
+    destruct H11; econstructor; mauto 3.
+    intros.
+    enough {{ Δ ⊢ M0[σ] ≈ M'[σ] : A[σ] }}; mauto 4.
   - intros.
     enough {{ Δ ⊢ M[σ] ≈ M'[σ] : A[σ] }}; mauto 4.
 Qed.
@@ -484,28 +497,37 @@ Proof.
   intros * Ha Ha'. gen P' El'.
   induction Ha using glu_univ_elem_ind; intros; basic_invert_glu_univ_elem Ha';
     apply_predicate_equivalence; try solve [split; reflexivity].
-  assert ((IP <∙> IP0) /\ (IEl <∙> IEl0)) as [] by mauto.
-  apply_predicate_equivalence.
-  handle_per_univ_elem_irrel.
-  (on_all_hyp: fun H => directed invert_per_univ_elem H).
-  handle_per_univ_elem_irrel.
-  split; [intros Γ C | intros Γ M C m].
-  - split; intros []; econstructor; intuition;
-      [rename equiv_m into equiv0_m; assert (equiv_m : in_rel m m) by intuition
-      | assert (equiv0_m : in_rel0 m m) by intuition ];
-      destruct_rel_mod_eval;
-      functional_eval_rewrite_clear;
-      assert ((OP m equiv_m <∙> OP0 m equiv0_m) /\ (OEl m equiv_m <∙> OEl0 m equiv0_m)) as [] by mauto 3;
-      intuition.
-  - split; intros []; econstructor; intuition;
-      [rename equiv_n into equiv0_n; assert (equiv_n : in_rel n n) by intuition
-      | assert (equiv0_n : in_rel0 n n) by intuition];
-      destruct_rel_mod_eval;
-      [assert (exists m0n, {{ $| m0 & n |↘ m0n }} /\ {{ Δ ⊢ M0[σ] N : OT[σ,,N] ® m0n ∈ OEl n equiv_n }}) by intuition
-      | assert (exists m0n, {{ $| m0 & n |↘ m0n }} /\ {{ Δ ⊢ M0[σ] N : OT[σ,,N] ® m0n ∈ OEl0 n equiv0_n }}) by intuition];
-      destruct_conjs;
-      assert ((OP n equiv_n <∙> OP0 n equiv0_n) /\ (OEl n equiv_n <∙> OEl0 n equiv0_n)) as [] by mauto 3;
-      eexists; split; intuition.
+  - assert ((IP <∙> IP0) /\ (IEl <∙> IEl0)) as [] by mauto.
+    apply_predicate_equivalence.
+    handle_per_univ_elem_irrel.
+    (on_all_hyp: fun H => directed invert_per_univ_elem H).
+    handle_per_univ_elem_irrel.
+    split; [intros Γ C | intros Γ M C m].
+    + split; intros []; econstructor; intuition;
+        [rename equiv_m into equiv0_m; assert (equiv_m : in_rel m m) by intuition
+        | assert (equiv0_m : in_rel0 m m) by intuition ];
+        destruct_rel_mod_eval;
+        functional_eval_rewrite_clear;
+        assert ((OP m equiv_m <∙> OP0 m equiv0_m) /\ (OEl m equiv_m <∙> OEl0 m equiv0_m)) as [] by mauto 3;
+        intuition.
+    + split; intros []; econstructor; intuition;
+        [rename equiv_n into equiv0_n; assert (equiv_n : in_rel n n) by intuition
+        | assert (equiv0_n : in_rel0 n n) by intuition];
+        destruct_rel_mod_eval;
+        [assert (exists m0n, {{ $| m0 & n |↘ m0n }} /\ {{ Δ ⊢ M0[σ] N : OT[σ,,N] ® m0n ∈ OEl n equiv_n }}) by intuition
+        | assert (exists m0n, {{ $| m0 & n |↘ m0n }} /\ {{ Δ ⊢ M0[σ] N : OT[σ,,N] ® m0n ∈ OEl0 n equiv0_n }}) by intuition];
+        destruct_conjs;
+        assert ((OP n equiv_n <∙> OP0 n equiv0_n) /\ (OEl n equiv_n <∙> OEl0 n equiv0_n)) as [] by mauto 3;
+        eexists; split; intuition.
+  - assert ((P <∙> P0) /\ (El <∙> El0)) as [] by mauto.
+    apply_predicate_equivalence.
+    handle_per_univ_elem_irrel.
+    split; [intros Γ C | intros Γ M C m'].
+    + split; intros []; econstructor; intuition.
+    + split; intros []; econstructor; intuition;
+      match_by_head1 glu_eq ltac:(fun H => destruct H);
+        econstructor; intros; apply_equiv_right; mauto 4.
+      apply_equiv_left; mauto 4.
 Qed.
 
 Ltac apply_functional_glu_univ_elem1 :=
@@ -656,6 +678,12 @@ Proof.
     handle_per_univ_elem_irrel.
     intuition.
   - reflexivity.
+  - mauto using (PER_refl2 _ R).
+  - mauto using (PER_refl2 _ R).
+  - split; intros []; econstructor; intuition.
+
+
+
   - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence.
     eassumption.
   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
