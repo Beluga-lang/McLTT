@@ -759,7 +759,19 @@ Proof.
   - mauto using (PER_refl2 _ R).
   - mauto using (PER_refl2 _ R).
   - split; intros []; econstructor; intuition.
-  - admit.
+  - split; intros []; econstructor; intuition;
+      match goal with
+      | H : glu_eq _ _ _ _ _ _ _ _ _ |- _ =>
+          destruct H
+      end;
+      econstructor; mauto 3;
+      apply_equiv_left.
+    + etransitivity; eauto.
+      symmetry. trivial.
+    + etransitivity; eauto.
+    + etransitivity; [| eauto]; eauto.
+    + etransitivity; eauto.
+      symmetry. trivial.
   - simpl_glu_rel.
     econstructor; eauto.
     destruct H16; progressive_invert H17; econstructor; mauto 3; intros.
@@ -784,7 +796,7 @@ Proof.
     destruct_all.
     functional_read_rewrite_clear.
     mauto.
-Admitted.
+Qed.
 
 (** *** Morphism instances for [glu_univ_elem] *)
 Add Parametric Morphism i : (glu_univ_elem i)
