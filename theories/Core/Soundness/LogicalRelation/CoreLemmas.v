@@ -658,37 +658,87 @@ Ltac invert_glu_univ_elem H :=
    destruct H as [? [? [? [? [? [? [? [? []]]]]]]]])
   + basic_invert_glu_univ_elem H.
 
-Lemma glu_univ_elem_resp_per_univ : forall i a a' P El,
-    {{ Dom a ≈ a' ∈ per_univ i }} ->
+Lemma glu_nat_resp_per_nat : forall m n,
+    {{ Dom m ≈ n ∈ per_nat }} ->
+    forall Γ M,
+      glu_nat Γ M m ->
+      glu_nat Γ M n.
+Proof.
+  induction 1; intros; progressive_inversion; mauto.
+  econstructor.
+  - mauto using (PER_refl2 _ per_bot).
+  - intros.
+    specialize (H (length Δ)).
+    destruct_all.
+    functional_read_rewrite_clear.
+    mauto.
+Qed.
+
+#[local]
+ Hint Resolve glu_nat_resp_per_nat : mcltt.
+
+#[local]
+  Ltac resp_per_IH :=
+  match_by_head1 glu_univ_elem
+    ltac:(fun H =>
+            match goal with
+            | H' : _ |- _ => eapply H' in H
+            end);
+  eauto;
+  destruct_all.
+
+Lemma glu_univ_elem_resp_per_univ : forall i a a' R,
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+    forall P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    {{ DG a' ∈ glu_univ_elem i ↘ P ↘ El }}.
+    {{ DG a' ∈ glu_univ_elem i ↘ P ↘ El }} /\
+      (forall Γ M A m m',
+          {{ Γ ⊢ M : A ® m ∈ El }} ->
+          {{ Dom m ≈ m' ∈ R }} ->
+          {{ Γ ⊢ M : A ® m' ∈ El }}).
 Proof.
   simpl.
-  intros * [elem_rel Hper] Horig.
+  intros * Hper * Horig.
   pose proof Hper.
   gen P El.
+
   induction Hper using per_univ_elem_ind; intros; subst;
     saturate_refl_for per_univ_elem;
-    invert_glu_univ_elem Horig; glu_univ_elem_econstructor; try eassumption; mauto;
+    invert_glu_univ_elem Horig;
+    split;
+    try glu_univ_elem_econstructor;
+    try eassumption; mauto 3;
+    intros;
     handle_per_univ_elem_irrel;
-    handle_functional_glu_univ_elem.
-  - intros.
-    match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
+    handle_functional_glu_univ_elem;
+    simpl in *;
+    destruct_all;
+    mauto 3.
+
+  - repeat split; eauto.
+    resp_per_IH.
+    mauto.
+  - resp_per_IH.
+    mauto.
+  - invert_per_univ_elem H.
     destruct_rel_mod_eval.
     handle_per_univ_elem_irrel.
-    intuition.
+    pose proof (H9 _ equiv_c _ H4).
+    resp_per_IH; mauto.
   - reflexivity.
+  - admit.
+  - resp_per_IH. intuition.
   - mauto using (PER_refl2 _ R).
   - mauto using (PER_refl2 _ R).
   - split; intros []; econstructor; intuition.
-
-
-
+  - admit.
+  - admit.
   - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence.
     eassumption.
   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
     eassumption.
-Qed.
+  - admit.
+Admitted.
 
 (** *** Morphism instances for [glu_univ_elem] *)
 Add Parametric Morphism i : (glu_univ_elem i)
