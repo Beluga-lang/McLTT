@@ -684,8 +684,7 @@ Qed.
             match goal with
             | H' : _ |- _ => eapply H' in H
             end);
-  eauto;
-  destruct_all.
+  eauto; intuition.
 
 Lemma glu_univ_elem_resp_per_univ : forall i a a' R,
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
@@ -719,20 +718,59 @@ Proof.
     resp_per_IH.
     mauto.
   - resp_per_IH.
-    mauto.
   - invert_per_univ_elem H.
     destruct_rel_mod_eval.
     handle_per_univ_elem_irrel.
     pose proof (H9 _ equiv_c _ H4).
-    resp_per_IH; mauto.
+    resp_per_IH.
   - reflexivity.
-  - admit.
-  - resp_per_IH. intuition.
+  - simpl_glu_rel.
+    invert_per_univ_elem H10.
+
+    econstructor; mauto 3.
+    + eapply H17.
+      pose proof (proj1 (H17 _ _) H16).
+      simpl in *.
+
+      intros.
+      saturate_refl_for in_rel.
+      pose proof (H18 _ _ equiv_c_c') as [].
+      pose proof (H18 _ _ H19) as [].
+      pose proof (H10 _ _ equiv_c_c') as [].
+      pose proof (H10 _ _ H19) as [].
+      simplify_evals.
+      econstructor; eauto.
+      symmetry.
+      etransitivity.
+      * symmetry. eassumption.
+      * handle_per_univ_elem_irrel.
+        eapply H24.
+        eassumption.
+    + resp_per_IH.
+      destruct_rel_mod_eval.
+      handle_per_univ_elem_irrel.
+      pose proof (H9 _ equiv_n _ H22).
+      eapply H28 in H25 as []; eauto.
+      destruct (H15 _ _ _ _ H20 H21 equiv_n) as [? []].
+      destruct (H16 _ _ equiv_n) as [].
+      simplify_evals.
+      eauto.
+  - resp_per_IH.
   - mauto using (PER_refl2 _ R).
   - mauto using (PER_refl2 _ R).
   - split; intros []; econstructor; intuition.
   - admit.
-  - admit.
+  - simpl_glu_rel.
+    econstructor; eauto.
+    destruct H16; progressive_invert H17; econstructor; mauto 3; intros.
+    + etransitivity; mauto.
+    + etransitivity; eauto.
+      symmetry. eauto.
+    + resp_per_IH.
+    + specialize (H17 (length Δ)).
+      destruct_all.
+      functional_read_rewrite_clear.
+      mauto.
   - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence.
     eassumption.
   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
