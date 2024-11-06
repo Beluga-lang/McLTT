@@ -775,7 +775,15 @@ Proof.
     eassumption.
   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
     eassumption.
-  - admit.
+  - simpl_glu_rel.
+    progressive_invert H9.
+    econstructor; unfold neut_glu_typ_pred; mauto 3.
+
+    intros.
+    specialize (H9 (length Δ)).
+    destruct_all.
+    functional_read_rewrite_clear.
+    mauto.
 Admitted.
 
 (** *** Morphism instances for [glu_univ_elem] *)
