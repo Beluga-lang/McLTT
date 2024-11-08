@@ -686,7 +686,7 @@ Qed.
             end);
   eauto; intuition.
 
-Lemma glu_univ_elem_resp_per_univ : forall i a a' R,
+Lemma glu_univ_elem_resp_per_univ_elem : forall i a a' R,
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
     forall P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -797,6 +797,30 @@ Proof.
     functional_read_rewrite_clear.
     mauto.
 Qed.
+
+
+Lemma glu_univ_elem_resp_per_univ : forall i a a' P El,
+    {{ Dom a ≈ a' ∈ per_univ i }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a' ∈ glu_univ_elem i ↘ P ↘ El }}.
+Proof.
+  intros * [? H] ?.
+  eapply glu_univ_elem_resp_per_univ_elem in H; eauto.
+  intuition.
+Qed.
+
+Lemma glu_univ_elem_resp_per_elem : forall i a a' R P El Γ M A m m',
+    {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Dom m ≈ m' ∈ R }} ->
+    {{ Γ ⊢ M : A ® m' ∈ El }}.
+Proof.
+  intros * H ?.
+  eapply glu_univ_elem_resp_per_univ_elem in H; eauto.
+  intuition.
+Qed.
+
 
 (** *** Morphism instances for [glu_univ_elem] *)
 Add Parametric Morphism i : (glu_univ_elem i)
