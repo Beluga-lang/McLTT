@@ -1,4 +1,4 @@
-# McTT: A Bottom-up Approach to Implementing A Proof Assistant
+# McTT: Building A Correct-By-Construction Proof Checkers For Type Theories
 
 McTT is a verified, runnable typechecker for Martin-Löf type theory. This project provides an executable, to which we can feed
 a program in Martin-Löf type theory to check whether this
