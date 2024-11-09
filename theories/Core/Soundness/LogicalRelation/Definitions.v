@@ -109,31 +109,39 @@ Variant eq_glu_typ_pred i m n
   (El : glu_exp_pred) : glu_typ_pred :=
   | mk_eq_glu_typ_pred :
     `{ {{ Γ ⊢ A ≈ Eq B M N : Type@i }} ->
+       {{ Γ ⊢ B : Type@i }} ->
+       {{ Γ ⊢ M : B }} ->
+       {{ Γ ⊢ N : B }} ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ B[σ] ® P }}) ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M[σ] : B[σ] ® m ∈ El }}) ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ N[σ] : B[σ] ® n ∈ El }}) ->
        {{ Γ ⊢ A ® eq_glu_typ_pred i m n P El }} }.
 
-Variant glu_eq B m n (R : relation domain) (El : glu_exp_pred) : glu_exp_pred :=
+Variant glu_eq B M N m n (R : relation domain) (El : glu_exp_pred) : glu_exp_pred :=
   | glu_eq_refl :
-    `{ {{ Γ ⊢ M ≈ refl B M' : A }} ->
+    `{ {{ Γ ⊢ M' ≈ refl B M'' : A }} ->
+       {{ Γ ⊢ M'' ≈ M : B }} ->
+       {{ Γ ⊢ M'' ≈ N : B }} ->
        {{ Dom m ≈ m' ∈ R }} ->
        {{ Dom m' ≈ n ∈ R }} ->
-       (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M'[σ] : B[σ] ® m' ∈ El }}) ->
-       {{ Γ ⊢ M : A ® refl m' ∈ glu_eq B m n R El }} }
+       (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M''[σ] : B[σ] ® m' ∈ El }}) ->
+       {{ Γ ⊢ M' : A ® refl m' ∈ glu_eq B M N m n R El }} }
   | glu_eq_neut :
     `{ {{ Dom v ≈ v ∈ per_bot }} ->
-       (forall Δ σ V, {{ Δ ⊢w σ : Γ }} -> {{ Rne v in length Δ ↘ V }} -> {{ Δ ⊢ M[σ] ≈ V : A[σ] }}) ->
-       {{ Γ ⊢ M : A ® ⇑ b v ∈ glu_eq B m n R El }} }.
+       (forall Δ σ V, {{ Δ ⊢w σ : Γ }} -> {{ Rne v in length Δ ↘ V }} -> {{ Δ ⊢ M'[σ] ≈ V : A[σ] }}) ->
+       {{ Γ ⊢ M' : A ® ⇑ b v ∈ glu_eq B M N m n R El }} }.
 
 Variant eq_glu_exp_pred i m n R P El : glu_exp_pred :=
   | mk_eq_glu_exp_pred :
     `{ {{ Γ ⊢ M' : A }} ->
        {{ Γ ⊢ A ≈ Eq B M N : Type@i }} ->
+       {{ Γ ⊢ B : Type@i }} ->
+       {{ Γ ⊢ M : B }} ->
+       {{ Γ ⊢ N : B }} ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ B[σ] ® P }}) ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ M[σ] : B[σ] ® m ∈ El }}) ->
        (forall Δ σ, {{ Δ ⊢w σ : Γ }} -> {{ Δ ⊢ N[σ] : B[σ] ® n ∈ El }}) ->
-       {{ Γ ⊢ M' : A ® m' ∈ glu_eq B m n R El }} ->
+       {{ Γ ⊢ M' : A ® m' ∈ glu_eq B M N m n R El }} ->
        {{ Γ ⊢ M' : A ® m' ∈ eq_glu_exp_pred i m n R P El }} }.
 
 #[export]

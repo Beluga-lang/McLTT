@@ -130,6 +130,10 @@ Proof.
   split; intros; eapply glu_univ_elem_typ_resp_exp_eq; mauto 2.
 Qed.
 
+#[global]
+  Ltac destruct_glu_eq :=
+  match_by_head1 glu_eq ltac:(fun H => destruct H).
+
 Lemma glu_univ_elem_trm_resp_typ_exp_eq : forall i P El a,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     forall Γ M A m A',
@@ -143,7 +147,7 @@ Proof.
   - firstorder.
   - econstructor; mauto 3.
   - econstructor; mauto 3.
-    destruct H11; econstructor; mauto 3.
+    destruct_glu_eq; econstructor; mauto 3.
     intros.
     assert {{ Δ ⊢ A[σ] ≈ A'[σ] : Type@i }}; mauto 3.
   - transitivity {{{ A[σ] }}}; mauto 4.
@@ -195,7 +199,7 @@ Proof.
     do 2 eexists.
     split; mauto.
     eapply glu_univ_elem_typ_resp_ctx_eq; mauto.
-  - destruct H11; econstructor; mauto 4.
+  - destruct_glu_eq; econstructor; mauto 4.
   - split; mauto 4.
 Qed.
 
@@ -290,7 +294,7 @@ Proof.
     econstructor; firstorder eauto.
 
   - handle_per_univ_elem_irrel.
-    destruct H15; saturate_refl_for R; econstructor; mauto using (PER_refl1 _ R).
+    destruct_glu_eq; saturate_refl_for R; econstructor; mauto using (PER_refl1 _ R).
 Qed.
 
 Lemma glu_univ_elem_trm_typ : forall i P El a,
@@ -351,9 +355,9 @@ Proof.
     autorewrite with mcltt in Hty.
     eassumption.
   - econstructor; eauto.
-    destruct H11; econstructor; mauto 3.
+    destruct_glu_eq; econstructor; mauto 3.
     intros.
-    enough {{ Δ ⊢ M0[σ] ≈ M'[σ] : A[σ] }}; mauto 4.
+    enough {{ Δ ⊢ M'0[σ] ≈ M'[σ] : A[σ] }}; mauto 4.
   - intros.
     enough {{ Δ ⊢ M[σ] ≈ M'[σ] : A[σ] }}; mauto 4.
 Qed.
@@ -760,10 +764,7 @@ Proof.
   - mauto using (PER_refl2 _ R).
   - split; intros []; econstructor; intuition.
   - split; intros []; econstructor; intuition;
-      match goal with
-      | H : glu_eq _ _ _ _ _ _ _ _ _ |- _ =>
-          destruct H
-      end;
+      destruct_glu_eq;
       econstructor; mauto 3;
       apply_equiv_left.
     + etransitivity; eauto.
@@ -774,12 +775,12 @@ Proof.
       symmetry. trivial.
   - simpl_glu_rel.
     econstructor; eauto.
-    destruct H16; progressive_invert H17; econstructor; mauto 3; intros.
+    destruct_glu_eq; progressive_invert H20; econstructor; mauto 3; intros.
     + etransitivity; mauto.
     + etransitivity; eauto.
       symmetry. eauto.
     + resp_per_IH.
-    + specialize (H17 (length Δ)).
+    + specialize (H20 (length Δ)).
       destruct_all.
       functional_read_rewrite_clear.
       mauto.
@@ -890,6 +891,10 @@ Proof.
       intros.
       (on_all_hyp: destruct_rel_by_assumption in_rel).
       econstructor; mauto.
+  - destruct_conjs.
+    saturate_refl.
+    do 2 eexists.
+    glu_univ_elem_econstructor; eauto; reflexivity.
   - do 2 eexists.
     glu_univ_elem_econstructor; try reflexivity; mauto.
 Qed.
@@ -927,58 +932,48 @@ Ltac saturate_glu_info :=
 #[local]
 Hint Rewrite -> sub_decompose_q using solve [mauto 4] : mcltt.
 
-Lemma glu_univ_elem_typ_monotone : forall i a P El,
+
+Lemma glu_univ_elem_mut_monotone : forall i a P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    forall Δ σ Γ A,
-      {{ Γ ⊢ A ® P }} ->
+    forall Δ σ Γ,
       {{ Δ ⊢w σ : Γ }} ->
-      {{ Δ ⊢ A[σ] ® P }}.
-Proof.
-  simpl. induction 1 using glu_univ_elem_ind; intros;
-    saturate_weakening_escape;
-    handle_functional_glu_univ_elem;
-    simpl in *;
-    try solve [bulky_rewrite].
-  - simpl_glu_rel. econstructor; eauto; try solve [bulky_rewrite]; mauto 3.
-    intros.
-    saturate_weakening_escape.
-    saturate_glu_info.
-    invert_per_univ_elem H3.
-    destruct_rel_mod_eval.
-    simplify_evals.
-    deepexec H1 ltac:(fun H => pose proof H).
-    autorewrite with mcltt in *.
-    mauto 3.
-
-  - destruct_conjs.
-    split; [mauto 3 |].
-    intros.
-    saturate_weakening_escape.
-    autorewrite with mcltt.
-    mauto 3.
-Qed.
-
-Lemma glu_univ_elem_exp_monotone : forall i a P El,
-    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    forall Δ σ Γ M A m,
+      (forall A,
+        {{ Γ ⊢ A ® P }} ->
+        {{ Δ ⊢ A[σ] ® P }}) /\
+    (forall M A m,
       {{ Γ ⊢ M : A ® m ∈ El }} ->
-      {{ Δ ⊢w σ : Γ }} ->
-      {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}.
+      {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}).
 Proof.
-  simpl. induction 1 using glu_univ_elem_ind; intros;
+  simpl. induction 1 using glu_univ_elem_ind;
+    split; intros;
     saturate_weakening_escape;
     handle_functional_glu_univ_elem;
     simpl in *;
-    destruct_all.
+    destruct_all;
+    try solve [bulky_rewrite].
   - repeat eexists; mauto 2; bulky_rewrite.
-    eapply glu_univ_elem_typ_monotone; eauto.
+    resp_per_IH.
   - repeat eexists; mauto 2; bulky_rewrite.
+
+  - simpl_glu_rel.
+    econstructor; eauto; try solve [bulky_rewrite]; mauto 3.
+    + intros.
+      eapply IHglu_univ_elem; eauto.
+    + intros.
+      saturate_weakening_escape.
+      saturate_glu_info.
+      invert_per_univ_elem H3.
+      destruct_rel_mod_eval.
+      simplify_evals.
+      deepexec H1 ltac:(fun H => pose proof H).
+      autorewrite with mcltt in *.
+      mauto 3.
 
   - simpl_glu_rel.
     econstructor; mauto 4;
       intros;
       saturate_weakening_escape.
-    + eapply glu_univ_elem_typ_monotone; eauto.
+    + eapply IHglu_univ_elem; eauto.
     + saturate_glu_info.
       invert_per_univ_elem H3.
       apply_equiv_left.
@@ -1006,10 +1001,51 @@ Proof.
       }
 
       bulky_rewrite.
-      edestruct H10 with (n := n) as [? []];
+      edestruct H11 with (n := n) as [? []];
         simplify_evals; [| | eassumption];
         mauto.
 
+  - simpl_glu_rel.
+    econstructor; intros.
+    + bulky_rewrite.
+    + mauto 3.
+    + mauto 3.
+    + mauto 3.
+    + eapply IHglu_univ_elem; eauto.
+    + eapply IHglu_univ_elem; eauto.
+    + eapply IHglu_univ_elem; eauto.
+  - simpl_glu_rel.
+    econstructor; intros.
+    + mauto 3.
+    + bulky_rewrite.
+    + mauto 3.
+    + mauto 3.
+    + mauto 3.
+    + eapply IHglu_univ_elem; eauto.
+    + eapply IHglu_univ_elem; eauto.
+    + eapply IHglu_univ_elem; eauto.
+    + destruct_glu_eq; econstructor; eauto; intros.
+      * transitivity {{{(refl B M'')[σ]}}}; [mauto 3 |].
+        eapply wf_exp_eq_conv';
+          [eapply wf_exp_eq_refl_sub'; gen_presups; eauto |].
+        symmetry.
+        transitivity {{{(Eq B M N)[σ]}}}; mauto 2.
+        eapply exp_eq_sub_cong_typ1; eauto.
+        econstructor; mauto.
+      * mauto.
+      * mauto.
+      * eapply IHglu_univ_elem; eauto.
+      * assert {{ Δ0 ⊢w σ ∘ σ0 : Γ }} by mauto 4.
+        bulky_rewrite.
+        etransitivity;
+          [| deepexec H14 ltac:(fun H => apply H)].
+        mauto 4.
+  - destruct_conjs.
+    split; [mauto 3 |].
+    intros.
+    saturate_weakening_escape.
+    autorewrite with mcltt.
+    mauto 3.
   - simpl_glu_rel.
     econstructor; repeat split; mauto 3;
       intros;
@@ -1022,6 +1058,28 @@ Proof.
         eapply wf_exp_eq_sub_compose;
           mauto 3.
       * mauto 3.
+Qed.
+
+Lemma glu_univ_elem_typ_monotone : forall i a P El Δ σ Γ A,
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ A ® P }} ->
+    {{ Δ ⊢w σ : Γ }} ->
+    {{ Δ ⊢ A[σ] ® P }}.
+Proof.
+  intros * H; intros.
+  eapply glu_univ_elem_mut_monotone in H; eauto.
+  intuition.
+Qed.
+
+Lemma glu_univ_elem_exp_monotone : forall i a P El Δ σ Γ M A m,
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Δ ⊢w σ : Γ }} ->
+    {{ Δ ⊢ M[σ] : A[σ] ® m ∈ El }}.
+Proof.
+  intros * H; intros.
+  eapply glu_univ_elem_mut_monotone in H; eauto.
+  intuition.
 Qed.
 
 Add Parametric Morphism i a : (glu_elem_bot i a)
