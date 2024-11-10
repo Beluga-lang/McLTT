@@ -641,7 +641,7 @@ Proof.
   - pose proof (fun m0 m1 m2 => per_elem_trans _ _ _ _ m0 m1 m2 H); eauto.
 Qed.
 
-(** Thess lemmas get rid of the unnecessary PER premises. *)
+(** These lemmas get rid of the unnecessary PER premises. *)
 Lemma per_univ_elem_pi' :
   forall i a a' ρ B ρ' B'
     (in_rel : relation domain)
