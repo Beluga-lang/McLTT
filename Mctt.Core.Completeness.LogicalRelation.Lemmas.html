@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./dep.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">Mctt.Core.Completeness.LogicalRelation.Lemmas</h1>
+
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#"><span class="id" title="library">Morphisms</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms_Relations.html#"><span class="id" title="library">Morphisms_Relations</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#"><span class="id" title="library">RelationClasses</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Relations.Relation_Definitions.html#"><span class="id" title="library">Relation_Definitions</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Mctt</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mctt.LibTactics.html#"><span class="id" title="library">LibTactics</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Mctt.Core</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mctt.Core.Base.html#"><span class="id" title="library">Base</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Mctt.Core.Completeness.LogicalRelation</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Definitions.html#"><span class="id" title="library">Definitions</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Tactics.html#"><span class="id" title="library">Tactics</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <a class="idref" href="Mctt.Core.Semantic.Domain.html#Domain_Notations"><span class="id" title="module">Domain_Notations</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <a id="M:1" class="idref" href="#M:1"><span class="id" title="binder">M</span></a> <a id="8eeccf31a49b46f704cdaf358581ea02" class="idref" href="#8eeccf31a49b46f704cdaf358581ea02"><span class="id" title="binder">ρ</span></a> <a id="M':3" class="idref" href="#M':3"><span class="id" title="binder">M'</span></a> <a id="0806f91d0dc307fda6e31d7b75ebeb86" class="idref" href="#0806f91d0dc307fda6e31d7b75ebeb86"><span class="id" title="binder">ρ'</span></a> : (<a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Definitions.html#rel_exp"><span class="id" title="inductive">rel_exp</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#M:1"><span class="id" title="variable">M</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#8eeccf31a49b46f704cdaf358581ea02"><span class="id" title="variable">ρ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#M':3"><span class="id" title="variable">M'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#0806f91d0dc307fda6e31d7b75ebeb86"><span class="id" title="variable">ρ'</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">signature</span> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">(</span></a>@<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#relation_equivalence"><span class="id" title="definition">relation_equivalence</span></a> <a class="idref" href="Mctt.Core.Semantic.Domain.html#domain"><span class="id" title="inductive">domain</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="keyword">as</span> <span class="id" title="var">rel_exp_morphism</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">R</span> <span class="id" title="var">R'</span> <span class="id" title="var">HRR'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> []; <span class="id" title="tactic">econstructor</span>; <span class="id" title="tactic">intuition</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <a id="b93bee5cdce65b1eb956bc32407c1ef3" class="idref" href="#b93bee5cdce65b1eb956bc32407c1ef3"><span class="id" title="binder">σ</span></a> <a id="bdd17f9af07f3df53e7d7a68964f1315" class="idref" href="#bdd17f9af07f3df53e7d7a68964f1315"><span class="id" title="binder">ρ</span></a> <a id="c7c1e22f68abbe4e05ae6642754c165d" class="idref" href="#c7c1e22f68abbe4e05ae6642754c165d"><span class="id" title="binder">σ'</span></a> <a id="49e66a6e0af5a910dbb0c9655ddd7e28" class="idref" href="#49e66a6e0af5a910dbb0c9655ddd7e28"><span class="id" title="binder">ρ'</span></a> : (<a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Definitions.html#rel_sub"><span class="id" title="inductive">rel_sub</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#b93bee5cdce65b1eb956bc32407c1ef3"><span class="id" title="variable">σ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#bdd17f9af07f3df53e7d7a68964f1315"><span class="id" title="variable">ρ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#c7c1e22f68abbe4e05ae6642754c165d"><span class="id" title="variable">σ'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#49e66a6e0af5a910dbb0c9655ddd7e28"><span class="id" title="variable">ρ'</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">signature</span> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">(</span></a>@<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.RelationClasses.html#relation_equivalence"><span class="id" title="definition">relation_equivalence</span></a> <a class="idref" href="Mctt.Core.Semantic.Domain.html#:::'env'"><span class="id" title="notation">env</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a> <span class="id" title="keyword">as</span> <span class="id" title="var">rel_sub_morphism</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">R</span> <span class="id" title="var">R'</span> <span class="id" title="var">HRR'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> []; <span class="id" title="tactic">econstructor</span>; <span class="id" title="tactic">intuition</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="rel_exp_implies_rel_typ" class="idref" href="#rel_exp_implies_rel_typ"><span class="id" title="lemma">rel_exp_implies_rel_typ</span></a> : <span class="id" title="keyword">forall</span> {<a id="i:9" class="idref" href="#i:9"><span class="id" title="binder">i</span></a> <a id="A:10" class="idref" href="#A:10"><span class="id" title="binder">A</span></a> <a id="e854e8081603d521f311e0fd4a9bc159" class="idref" href="#e854e8081603d521f311e0fd4a9bc159"><span class="id" title="binder">ρ</span></a> <a id="A':12" class="idref" href="#A':12"><span class="id" title="binder">A'</span></a> <a id="9d22c48e4bcaf5d4c54b3edd6f838dbc" class="idref" href="#9d22c48e4bcaf5d4c54b3edd6f838dbc"><span class="id" title="binder">ρ'</span></a>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Definitions.html#rel_exp"><span class="id" title="inductive">rel_exp</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A:10"><span class="id" title="variable">A</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#e854e8081603d521f311e0fd4a9bc159"><span class="id" title="variable">ρ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A':12"><span class="id" title="variable">A'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#9d22c48e4bcaf5d4c54b3edd6f838dbc"><span class="id" title="variable">ρ'</span></a> (<a class="idref" href="Mctt.Core.Semantic.PER.Definitions.html#per_univ"><span class="id" title="definition">per_univ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#i:9"><span class="id" title="variable">i</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">exists</span></a> <a id="R:14" class="idref" href="#R:14"><span class="id" title="binder">R</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"><span class="id" title="notation">,</span></a> <a class="idref" href="Mctt.Core.Semantic.PER.Definitions.html#rel_typ"><span class="id" title="definition">rel_typ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#i:9"><span class="id" title="variable">i</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A:10"><span class="id" title="variable">A</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#e854e8081603d521f311e0fd4a9bc159"><span class="id" title="variable">ρ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A':12"><span class="id" title="variable">A'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#9d22c48e4bcaf5d4c54b3edd6f838dbc"><span class="id" title="variable">ρ'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#R:14"><span class="id" title="variable">R</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">destruct_by_head</span> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Definitions.html#rel_exp"><span class="id" title="inductive">rel_exp</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">destruct_by_head</span> <a class="idref" href="Mctt.Core.Semantic.PER.Definitions.html#per_univ"><span class="id" title="definition">per_univ</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">mauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">rel_exp_implies_rel_typ</span> : <span class="id" title="var">mctt</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="rel_typ_implies_rel_exp" class="idref" href="#rel_typ_implies_rel_exp"><span class="id" title="lemma">rel_typ_implies_rel_exp</span></a> : <span class="id" title="keyword">forall</span> {<a id="i:15" class="idref" href="#i:15"><span class="id" title="binder">i</span></a> <a id="A:16" class="idref" href="#A:16"><span class="id" title="binder">A</span></a> <a id="c6846dcc32db6012878372768800bcda" class="idref" href="#c6846dcc32db6012878372768800bcda"><span class="id" title="binder">ρ</span></a> <a id="A':18" class="idref" href="#A':18"><span class="id" title="binder">A'</span></a> <a id="1d72f5f0c5ee8c103d1ab40d908e9bda" class="idref" href="#1d72f5f0c5ee8c103d1ab40d908e9bda"><span class="id" title="binder">ρ'</span></a> <a id="R:20" class="idref" href="#R:20"><span class="id" title="binder">R</span></a>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Mctt.Core.Semantic.PER.Definitions.html#rel_typ"><span class="id" title="definition">rel_typ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#i:15"><span class="id" title="variable">i</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A:16"><span class="id" title="variable">A</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#c6846dcc32db6012878372768800bcda"><span class="id" title="variable">ρ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A':18"><span class="id" title="variable">A'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#1d72f5f0c5ee8c103d1ab40d908e9bda"><span class="id" title="variable">ρ'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#R:20"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.20.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Definitions.html#rel_exp"><span class="id" title="inductive">rel_exp</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A:16"><span class="id" title="variable">A</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#c6846dcc32db6012878372768800bcda"><span class="id" title="variable">ρ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#A':18"><span class="id" title="variable">A'</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#1d72f5f0c5ee8c103d1ab40d908e9bda"><span class="id" title="variable">ρ'</span></a> (<a class="idref" href="Mctt.Core.Semantic.PER.Definitions.html#per_univ"><span class="id" title="definition">per_univ</span></a> <a class="idref" href="Mctt.Core.Completeness.LogicalRelation.Lemmas.html#i:15"><span class="id" title="variable">i</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">destruct_by_head</span> <a class="idref" href="Mctt.Core.Semantic.PER.Definitions.html#rel_typ"><span class="id" title="definition">rel_typ</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">mauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">rel_typ_implies_rel_exp</span> : <span class="id" title="var">mctt</span>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/coq-community/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

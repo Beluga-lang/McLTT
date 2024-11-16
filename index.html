@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>McLTT: A Bottom-up Approach to Implementing A Proof
+  <title>McTT: A Bottom-up Approach to Implementing A Proof
 Assistant</title>
   <style>
     code{white-space: pre-wrap;}
@@ -34,7 +34,7 @@ Assistant</title>
        var header = $(`<div id="header_wrap" class="outer">
           <header class="inner">
             
-              <a id="forkme_banner" href="https://github.com/Beluga-lang/McLTT">Fork on GitHub</a>
+              <a id="forkme_banner" href="https://github.com/Beluga-lang/McTT">Fork on GitHub</a>
             ${h1elem.outerHTML}
           </header>
       </div>`);
@@ -67,9 +67,8 @@ it is a well-typed program in MLTT. This is the first verified proof
 assistant (despite being elementary) and serves as a basis for future
 extensions.</p>
 <h2 id="online-documentation">Online Documentation</h2>
-<p>We have generated a <a
-href="https://beluga-lang.github.io/McTT/dep.html">Coqdoc</a> for
-browsing our Coq proof.</p>
+<p>We have generated a <a href="dep.html">Coqdoc</a> for browsing our
+Coq proof.</p>
 <h2 id="architecture">Architecture</h2>
 <p>McTT has the following architecture:</p>
 <pre><code>    | source code of McTT
@@ -121,9 +120,9 @@ opam install -y menhir coq-equations coq-menhirlib ppx_inline_test</code></pre>
 <p>Makefile will try to find out the number of your CPU cores and
 parallel as much as possible.</p>
 <p>Once <code>make</code> finishes, you can run the binary:</p>
-<pre><code>dune exec mcltt examples/nary.mcl # or your own example</code></pre>
+<pre><code>dune exec mctt examples/nary.mctt # or your own example</code></pre>
 <p>or more directly</p>
-<pre><code>_build/default/driver/mcltt.exe examples/nary.mcl # or your own example</code></pre>
+<pre><code>_build/default/driver/mctt.exe examples/nary.mctt # or your own example</code></pre>
 <p>To build Coq proof only, you can go into and only build the
 <code>theories</code> directory:</p>
 <pre><code>cd theories
