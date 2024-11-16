@@ -1,8 +1,8 @@
 From Coq Require Import Morphisms_Relations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import LogicalRelation UniverseCases.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import LogicalRelation UniverseCases.
 Import Domain_Notations.
 
 Proposition valid_ctx_empty :
@@ -13,7 +13,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve valid_ctx_empty : mcltt.
+Hint Resolve valid_ctx_empty : mctt.
 
 Lemma rel_ctx_extend : forall {Γ Γ' A A' i},
     {{ ⊨ Γ ≈ Γ' }} ->
@@ -52,7 +52,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_ctx_extend rel_ctx_extend' : mcltt.
+Hint Resolve rel_ctx_extend rel_ctx_extend' : mctt.
 
 Lemma rel_ctx_sub_empty :
   {{ SubE ⋅ <: ⋅ }}.
@@ -76,4 +76,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_ctx_sub_empty rel_ctx_sub_extend : mcltt.
+Hint Resolve rel_ctx_sub_empty rel_ctx_sub_extend : mctt.

@@ -1,8 +1,8 @@
 From Coq Require Import Lia List MSets PeanoNat String FunInd.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Import Syntax.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Import Syntax.
 
 Open Scope string_scope.
 
@@ -104,7 +104,7 @@ Inductive user_exp : exp -> Prop :=
   `( user_exp (a_var x) ).
 
 #[export]
-Hint Constructors user_exp : mcltt.
+Hint Constructors user_exp : mctt.
 
 Lemma user_exp_nf : forall M, user_exp (nf_to_exp M)
 with user_exp_ne : forall M, user_exp (ne_to_exp M).
@@ -151,7 +151,7 @@ Inductive closed_at : exp -> nat -> Prop :=
  | ca_natrec : forall n m z s l, closed_at n l -> closed_at m (1+l) -> closed_at z l -> closed_at s (2+l) -> closed_at (a_natrec m z s n) l
 .
 #[local]
-Hint Constructors closed_at: mcltt.
+Hint Constructors closed_at: mctt.
 
 (** Lemma for the well_scoped proof, lookup succeeds if var is in context *)
 Lemma lookup_known (s : string) (ctx : list string) (H_in : List.In s ctx) : exists n : nat, (lookup s ctx = Some n /\ n < List.length ctx).

@@ -1,8 +1,8 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Soundness Require Import LogicalRelation.
 Import Domain_Notations.
 
 Lemma glu_rel_exp_subtyp : forall {Γ M A A' i},
@@ -34,7 +34,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_subtyp : mcltt.
+Hint Resolve glu_rel_exp_subtyp : mctt.
 
 Lemma glu_rel_sub_subtyp : forall {Γ σ Δ Δ'},
     {{ Γ ⊩s σ : Δ }} ->
@@ -52,7 +52,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_subtyp : mcltt.
+Hint Resolve glu_rel_sub_subtyp : mctt.
 
 Lemma glu_rel_exp_conv : forall {Γ M A A' i},
     {{ Γ ⊩ M : A }} ->
@@ -64,7 +64,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_conv : mcltt.
+Hint Resolve glu_rel_exp_conv : mctt.
 
 Lemma glu_rel_sub_conv : forall {Γ σ Δ Δ'},
     {{ Γ ⊩s σ : Δ }} ->
@@ -76,4 +76,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_conv : mcltt.
+Hint Resolve glu_rel_sub_conv : mctt.

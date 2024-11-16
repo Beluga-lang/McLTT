@@ -1,8 +1,8 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import LogicalRelation UniverseCases.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import LogicalRelation UniverseCases.
 Import Domain_Notations.
 
 Lemma rel_exp_sub_cong : forall {Δ M M' A σ σ' Γ},
@@ -36,7 +36,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_sub_cong : mcltt.
+Hint Resolve rel_exp_sub_cong : mctt.
 
 Lemma rel_exp_sub_id : forall {Γ M A},
     {{ Γ ⊨ M : A }} ->
@@ -54,7 +54,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_sub_id : mcltt.
+Hint Resolve rel_exp_sub_id : mctt.
 
 Lemma rel_exp_sub_compose : forall {Γ τ Γ' σ Γ'' M A},
     {{ Γ ⊨s τ : Γ' }} ->
@@ -84,7 +84,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_sub_compose : mcltt.
+Hint Resolve rel_exp_sub_compose : mctt.
 
 Lemma rel_exp_conv : forall {Γ M M' A A' i},
     {{ Γ ⊨ M ≈ M' : A }} ->
@@ -109,7 +109,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_conv : mcltt.
+Hint Resolve rel_exp_conv : mctt.
 
 Lemma rel_exp_sym : forall {Γ M M' A},
     {{ Γ ⊨ M ≈ M' : A }} ->
@@ -130,7 +130,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_sym : mcltt.
+Hint Resolve rel_exp_sym : mctt.
 
 Lemma rel_exp_trans : forall {Γ M1 M2 M3 A},
     {{ Γ ⊨ M1 ≈ M2 : A }} ->
@@ -155,7 +155,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_trans : mcltt.
+Hint Resolve rel_exp_trans : mctt.
 
 #[export]
 Instance rel_exp_PER {Γ A} : PER (rel_exp_under_ctx Γ A).
@@ -209,4 +209,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_eq_subtyp : mcltt.
+Hint Resolve rel_exp_eq_subtyp : mctt.

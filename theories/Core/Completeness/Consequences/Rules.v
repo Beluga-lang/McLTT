@@ -1,8 +1,8 @@
 From Coq Require Import RelationClasses.
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core Require Export Completeness.
-From Mcltt.Core.Semantic Require Import Realizability.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core Require Export Completeness.
+From Mctt.Core.Semantic Require Import Realizability.
 Import Domain_Notations.
 
 Lemma ctxeq_nbe_eq : forall Γ Γ' M A,

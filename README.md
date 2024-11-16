@@ -76,11 +76,11 @@ possible.
 
 Once `make` finishes, you can run the binary:
 ```
-dune exec mcltt examples/nary.mcl # or your own example
+dune exec mctt examples/nary.mctt # or your own example
 ```
 or more directly
 ```
-_build/default/driver/mcltt.exe examples/nary.mcl # or your own example
+_build/default/driver/mctt.exe examples/nary.mctt # or your own example
 ```
 
 To build Coq proof only, you can go into and only build the `theories` directory:

@@ -1,8 +1,8 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Algorithmic.Subtyping Require Import Definitions.
-From Mcltt.Core Require Import Base Soundness.
-From Mcltt.Core.Syntactic Require Import SystemOpt.
-From Mcltt.Core.Completeness.Consequences Require Import Rules.
+From Mctt Require Import LibTactics.
+From Mctt.Algorithmic.Subtyping Require Import Definitions.
+From Mctt.Core Require Import Base Soundness.
+From Mctt.Core.Syntactic Require Import SystemOpt.
+From Mctt.Core.Completeness.Consequences Require Import Rules.
 Import Syntax_Notations.
 
 #[local]
@@ -61,7 +61,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve alg_subtyping_nf_trans alg_subtyping_nf_refl : mcltt.
+Hint Resolve alg_subtyping_nf_trans alg_subtyping_nf_refl : mctt.
 
 Lemma alg_subtyping_trans : forall Γ A0 A1 A2,
     {{ Γ ⊢a A0 ⊆ A1 }} ->
@@ -74,7 +74,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve alg_subtyping_trans : mcltt.
+Hint Resolve alg_subtyping_trans : mctt.
 
 Lemma alg_subtyping_complete : forall Γ A B,
     {{ Γ ⊢ A ⊆ B }} ->

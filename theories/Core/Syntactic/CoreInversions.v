@@ -1,7 +1,7 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export CtxEq.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Export CtxEq.
 Import Syntax_Notations.
 
 Lemma wf_typ_inversion : forall {Γ i A},
@@ -13,7 +13,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve wf_typ_inversion : mcltt.
+Hint Resolve wf_typ_inversion : mctt.
 
 Lemma wf_nat_inversion : forall Γ A,
     {{ Γ ⊢ ℕ : A }} ->
@@ -25,7 +25,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve wf_nat_inversion : mcltt.
+Hint Resolve wf_nat_inversion : mctt.
 
 Corollary wf_zero_inversion : forall Γ A,
     {{ Γ ⊢ zero : A }} ->
@@ -37,7 +37,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve wf_zero_inversion : mcltt.
+Hint Resolve wf_zero_inversion : mctt.
 
 Corollary wf_succ_inversion : forall Γ A M,
     {{ Γ ⊢ succ M : A }} ->
@@ -50,7 +50,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve wf_succ_inversion : mcltt.
+Hint Resolve wf_succ_inversion : mctt.
 
 Lemma wf_natrec_inversion : forall Γ A M A' MZ MS,
     {{ Γ ⊢ rec M return A' | zero -> MZ | succ -> MS end : A }} ->
@@ -64,7 +64,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve wf_natrec_inversion : mcltt.
+Hint Resolve wf_natrec_inversion : mctt.
 
 Lemma wf_pi_inversion : forall {Γ A B C},
     {{ Γ ⊢ Π A B : C }} ->
@@ -77,7 +77,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve wf_pi_inversion : mcltt.
+Hint Resolve wf_pi_inversion : mctt.
 
 Corollary wf_pi_inversion' : forall {Γ A B i},
     {{ Γ ⊢ Π A B : Type@i }} ->
@@ -92,7 +92,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve wf_pi_inversion' : mcltt.
+Hint Resolve wf_pi_inversion' : mctt.
 
 Corollary wf_fn_inversion : forall {Γ A M C},
     {{ Γ ⊢ λ A M : C }} ->
@@ -106,7 +106,7 @@ Proof with solve [mauto using lift_exp_max_left, lift_exp_max_right].
 Qed.
 
 #[export]
-Hint Resolve wf_fn_inversion : mcltt.
+Hint Resolve wf_fn_inversion : mctt.
 
 Lemma wf_app_inversion : forall {Γ M N C},
     {{ Γ ⊢ M N : C }} ->
@@ -120,7 +120,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve wf_app_inversion : mcltt.
+Hint Resolve wf_app_inversion : mctt.
 
 Lemma wf_vlookup_inversion : forall {Γ x A},
     {{ Γ ⊢ #x : A }} ->
@@ -133,7 +133,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve wf_vlookup_inversion : mcltt.
+Hint Resolve wf_vlookup_inversion : mctt.
 
 Lemma wf_exp_sub_inversion : forall {Γ M σ A},
     {{ Γ ⊢ M[σ] : A }} ->
@@ -148,7 +148,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_sub_inversion : mcltt.
+Hint Resolve wf_exp_sub_inversion : mctt.
 
 (** We omit [wf_conv] and [wf_cumu] as they do not give useful inversions *)
 
@@ -161,7 +161,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_sub_id_inversion : mcltt.
+Hint Resolve wf_sub_id_inversion : mctt.
 
 Lemma wf_sub_weaken_inversion : forall {Γ Δ},
     {{ Γ ⊢s Wk : Δ }} ->
@@ -175,7 +175,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_sub_weaken_inversion : mcltt.
+Hint Resolve wf_sub_weaken_inversion : mctt.
 
 Lemma wf_sub_compose_inversion : forall {Γ1 σ1 σ2 Γ3},
     {{ Γ1 ⊢s σ1 ∘ σ2 : Γ3 }} ->
@@ -190,7 +190,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve wf_sub_compose_inversion : mcltt.
+Hint Resolve wf_sub_compose_inversion : mctt.
 
 Lemma wf_sub_extend_inversion : forall {Γ σ M Δ},
     {{ Γ ⊢s σ,,M : Δ }} ->
@@ -204,4 +204,4 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve wf_sub_extend_inversion : mcltt.
+Hint Resolve wf_sub_extend_inversion : mctt.

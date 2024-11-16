@@ -1,8 +1,8 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Soundness Require Import
   ContextCases
   LogicalRelation
   SubstitutionCases
@@ -31,7 +31,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_nat : mcltt.
+Hint Resolve glu_rel_exp_nat : mctt.
 
 Lemma glu_rel_exp_sub_nat : forall {Γ σ Δ M},
     {{ Γ ⊩s σ : Δ }} ->
@@ -46,7 +46,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_sub_nat : mcltt.
+Hint Resolve glu_rel_exp_sub_nat : mctt.
 
 Lemma glu_rel_exp_clean_inversion2'' : forall {Γ Sb M},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -95,7 +95,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_zero : mcltt.
+Hint Resolve glu_rel_exp_zero : mctt.
 
 Lemma glu_rel_exp_succ : forall {Γ M},
     {{ Γ ⊩ M : ℕ }} ->
@@ -117,7 +117,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_succ : mcltt.
+Hint Resolve glu_rel_exp_succ : mctt.
 
 Lemma glu_rel_sub_extend_nat : forall {Γ σ Δ M},
     {{ Γ ⊩s σ : Δ }} ->
@@ -133,7 +133,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_extend_nat : mcltt.
+Hint Resolve glu_rel_sub_extend_nat : mctt.
 
 Lemma glu_rel_exp_natrec_zero_helper : forall {i Γ SbΓ A MZ MS Δ M σ ρ am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
@@ -202,7 +202,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve cons_glu_sub_pred_nat_helper : mcltt.
+Hint Resolve cons_glu_sub_pred_nat_helper : mctt.
 
 Lemma glu_rel_exp_natrec_succ_helper : forall {i Γ SbΓ A MZ MS Δ M M' m' σ ρ am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
@@ -328,7 +328,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve cons_glu_sub_pred_q_helper : mcltt.
+Hint Resolve cons_glu_sub_pred_q_helper : mctt.
 
 Lemma cons_glu_sub_pred_q_nat_helper : forall {Γ SbΓ Δ σ ρ i},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
@@ -350,7 +350,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve cons_glu_sub_pred_q_nat_helper : mcltt.
+Hint Resolve cons_glu_sub_pred_q_nat_helper : mctt.
 
 Lemma glu_rel_exp_natrec_neut_helper : forall {i Γ SbΓ A MZ MS Δ M a m σ ρ am P El},
     {{ EG Γ ∈ glu_ctx_env ↘ SbΓ }} ->
@@ -673,4 +673,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_natrec : mcltt.
+Hint Resolve glu_rel_exp_natrec : mctt.

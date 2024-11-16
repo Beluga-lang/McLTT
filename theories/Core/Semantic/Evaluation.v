@@ -1,1 +1,1 @@
-From Mcltt.Core.Semantic.Evaluation Require Export Definitions Lemmas Tactics.
+From Mctt.Core.Semantic.Evaluation Require Export Definitions Lemmas Tactics.

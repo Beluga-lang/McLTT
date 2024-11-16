@@ -1,9 +1,9 @@
 From Coq Require Import Morphisms_Relations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import LogicalRelation.
-From Mcltt.Core.Syntactic Require Import SystemOpt.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import LogicalRelation.
+From Mctt.Core.Syntactic Require Import SystemOpt.
 Import Domain_Notations.
 
 Lemma valid_lookup : forall {Γ x A env_rel}
@@ -42,7 +42,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve valid_exp_var : mcltt.
+Hint Resolve valid_exp_var : mctt.
 
 Lemma rel_exp_var_0_sub : forall {Γ M σ Δ A},
   {{ Γ ⊨s σ : Δ }} ->
@@ -65,7 +65,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_var_0_sub : mcltt.
+Hint Resolve rel_exp_var_0_sub : mctt.
 
 Lemma rel_exp_var_S_sub : forall {Γ M σ Δ A x B},
   {{ Γ ⊨s σ : Δ }} ->
@@ -92,7 +92,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_var_S_sub : mcltt.
+Hint Resolve rel_exp_var_S_sub : mctt.
 
 Lemma rel_exp_var_weaken : forall {Γ B x A},
     {{ ⊨ Γ , B }} ->
@@ -117,4 +117,4 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_var_weaken : mcltt.
+Hint Resolve rel_exp_var_weaken : mctt.

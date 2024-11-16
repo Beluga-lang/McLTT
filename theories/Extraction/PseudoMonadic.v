@@ -1,3 +1,4 @@
+(** McTT Extraction Helpers in a (pseudo-)monadic style *)
 From Coq Require Extraction.
 
 (** We cannot use class based generalization for

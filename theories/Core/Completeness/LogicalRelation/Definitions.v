@@ -1,6 +1,6 @@
 From Coq Require Import Relations.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export PER.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export PER.
 Import Domain_Notations.
 
 Inductive rel_exp M ρ M' ρ' (R : relation domain) : Prop :=
@@ -8,7 +8,7 @@ Inductive rel_exp M ρ M' ρ' (R : relation domain) : Prop :=
 #[global]
 Arguments mk_rel_exp {_ _ _ _ _}.
 #[export]
-Hint Constructors rel_exp : mcltt.
+Hint Constructors rel_exp : mctt.
 
 Definition rel_exp_under_ctx Γ A M M' :=
   exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,
@@ -20,16 +20,16 @@ Definition valid_exp_under_ctx Γ A M := rel_exp_under_ctx Γ A M M.
 #[global]
 Arguments valid_exp_under_ctx _ _ _ /.
 #[export]
-Hint Transparent valid_exp_under_ctx : mcltt.
+Hint Transparent valid_exp_under_ctx : mctt.
 #[export]
-Hint Unfold valid_exp_under_ctx : mcltt.
+Hint Unfold valid_exp_under_ctx : mctt.
 
 Inductive rel_sub σ ρ σ' ρ' (R : relation env) : Prop :=
 | mk_rel_sub : forall ρσ ρ'σ', {{ ⟦ σ ⟧s ρ ↘ ρσ }} -> {{ ⟦ σ' ⟧s ρ' ↘ ρ'σ' }} -> {{ Dom ρσ ≈ ρ'σ' ∈ R }} -> rel_sub σ ρ σ' ρ' R.
 #[global]
 Arguments mk_rel_sub {_ _ _ _ _ _}.
 #[export]
-Hint Constructors rel_sub : mcltt.
+Hint Constructors rel_sub : mctt.
 
 Definition rel_sub_under_ctx Γ Δ σ σ' :=
   exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }})
@@ -41,9 +41,9 @@ Definition valid_sub_under_ctx Γ Δ σ := rel_sub_under_ctx Γ Δ σ σ.
 #[global]
 Arguments valid_sub_under_ctx _ _ _ /.
 #[export]
-Hint Transparent valid_sub_under_ctx : mcltt.
+Hint Transparent valid_sub_under_ctx : mctt.
 #[export]
-Hint Unfold valid_sub_under_ctx : mcltt.
+Hint Unfold valid_sub_under_ctx : mctt.
 
 Definition subtyp_under_ctx Γ M M' :=
   exists env_rel (_ : {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }}) i,

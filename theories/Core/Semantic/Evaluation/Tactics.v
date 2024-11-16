@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic.Evaluation Require Import Definitions Lemmas.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic.Evaluation Require Import Definitions Lemmas.
 Import Domain_Notations.
 
 Ltac simplify_evals :=
