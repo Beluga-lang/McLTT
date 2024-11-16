@@ -1,10 +1,10 @@
 From Coq Require Import Equivalence Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Export Realizability.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Soundness Require Export Realizability.
 Import Domain_Notations.
 
 Add Parametric Morphism i a Γ A M : (glu_elem_bot i a Γ A M)
@@ -51,11 +51,11 @@ Proof with mautosolve 4.
   assert {{ Γ ⊢ A[Id] ≈ V : Type@(max i j) }} by mauto 4 using lift_exp_eq_max_left.
   assert {{ Γ ⊢ A'[Id] ≈ V : Type@j }} by mauto 4.
   assert {{ Γ ⊢ A'[Id] ≈ V : Type@(max i j) }} by mauto 4 using lift_exp_eq_max_right.
-  autorewrite with mcltt in *...
+  autorewrite with mctt in *...
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_typ_unique_upto_exp_eq : mcltt.
+Hint Resolve glu_univ_elem_typ_unique_upto_exp_eq : mctt.
 
 Lemma glu_univ_elem_typ_unique_upto_exp_eq_ge : forall {i j a P P' El El' Γ A A'},
     i <= j ->
@@ -70,7 +70,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_typ_unique_upto_exp_eq_ge : mcltt.
+Hint Resolve glu_univ_elem_typ_unique_upto_exp_eq_ge : mctt.
 
 Lemma glu_univ_elem_typ_unique_upto_exp_eq' : forall {i a P El Γ A A'},
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -80,7 +80,7 @@ Lemma glu_univ_elem_typ_unique_upto_exp_eq' : forall {i a P El Γ A A'},
 Proof. mautosolve 4. Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_typ_unique_upto_exp_eq' : mcltt.
+Hint Resolve glu_univ_elem_typ_unique_upto_exp_eq' : mctt.
 
 Lemma glu_univ_elem_per_univ_elem_typ_escape : forall {i a a' elem_rel P P' El El' Γ A A'},
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ elem_rel }} ->
@@ -97,7 +97,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_per_univ_elem_typ_escape : mcltt.
+Hint Resolve glu_univ_elem_per_univ_elem_typ_escape : mctt.
 
 Lemma glu_univ_elem_per_univ_typ_escape : forall {i a a' P P' El El' Γ A A'},
     {{ Dom a ≈ a' ∈ per_univ i }} ->
@@ -112,7 +112,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_per_univ_typ_escape : mcltt.
+Hint Resolve glu_univ_elem_per_univ_typ_escape : mctt.
 
 Lemma glu_univ_elem_per_univ_typ_iff : forall {i a a' P P' El El'},
     {{ Dom a ≈ a' ∈ per_univ i }} ->
@@ -138,7 +138,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_cumu_ge : mcltt.
+Hint Resolve glu_univ_elem_cumu_ge : mctt.
 
 Corollary glu_univ_elem_cumu_max_left : forall {i j a P El},
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -415,13 +415,13 @@ Proof.
     {
       assert {{ Γ ⊢ IT[Id] ® IP }} by mauto 4.
       simpl in *.
-      autorewrite with mcltt in *; mauto 3.
+      autorewrite with mctt in *; mauto 3.
     }
     assert {{ Γ ⊢ IT' ® IP }}.
     {
       assert {{ Γ ⊢ IT'[Id] ® IP }} by mauto 4.
       simpl in *.
-      autorewrite with mcltt in *; mauto 3.
+      autorewrite with mctt in *; mauto 3.
     }
     do 2 bulky_rewrite1.
     assert {{ Γ ⊢ IT ≈ IT' : Type@i }} by mauto 4.
@@ -460,7 +460,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_per_subtyp_typ_escape : mcltt.
+Hint Resolve glu_univ_elem_per_subtyp_typ_escape : mctt.
 
 Lemma glu_univ_elem_per_subtyp_trm_if : forall {i a a' P P' El El' Γ A A' M m},
     {{ Sub a <: a' at i }} ->
@@ -514,13 +514,13 @@ Proof.
       {
         assert {{ Γ ⊢ IT[Id] ® IP }} by mauto 3.
         simpl in *.
-        autorewrite with mcltt in *; mauto 3.
+        autorewrite with mctt in *; mauto 3.
       }
       assert {{ Γ ⊢ IT' ® IP }}.
       {
         assert {{ Γ ⊢ IT'[Id] ® IP }} by mauto 3.
         simpl in *.
-        autorewrite with mcltt in *; mauto 3.
+        autorewrite with mctt in *; mauto 3.
       }
       assert {{ Δ ⊢ IT'[σ] ≈ IT[σ] : Type@i }} by (symmetry; mauto 4 using glu_univ_elem_per_univ_typ_escape).
       assert {{ Δ ⊢ N : IT'[σ] ® n ∈ IEl }} by (simpl; bulky_rewrite1; eassumption).
@@ -578,7 +578,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_typ_with_sub' : mcltt.
+Hint Resolve mk_glu_rel_typ_with_sub' : mctt.
 
 Lemma mk_glu_rel_typ_with_sub'' : forall {i Δ A σ ρ a},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
@@ -592,7 +592,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_typ_with_sub'' : mcltt.
+Hint Resolve mk_glu_rel_typ_with_sub'' : mctt.
 
 Lemma mk_glu_rel_exp_with_sub' : forall {i Δ A M σ ρ a m},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
@@ -607,7 +607,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_exp_with_sub' : mcltt.
+Hint Resolve mk_glu_rel_exp_with_sub' : mctt.
 
 Lemma mk_glu_rel_exp_with_sub'' : forall {i Δ A M σ ρ a m},
     {{ ⟦ A ⟧ ρ ↘ a }} ->
@@ -622,7 +622,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve mk_glu_rel_exp_with_sub'' : mcltt.
+Hint Resolve mk_glu_rel_exp_with_sub'' : mctt.
 
 Lemma glu_rel_exp_with_sub_implies_glu_rel_exp_sub_with_typ : forall {i Δ A M σ Γ ρ},
   {{ Δ ⊢s σ : Γ }} ->
@@ -638,7 +638,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_with_sub_implies_glu_rel_exp_sub_with_typ : mcltt.
+Hint Resolve glu_rel_exp_with_sub_implies_glu_rel_exp_sub_with_typ : mctt.
 
 Lemma glu_rel_exp_with_sub_implies_glu_rel_typ_with_sub : forall {i Δ A j σ ρ},
   glu_rel_exp_with_sub i Δ A {{{ Type@j }}} σ ρ ->
@@ -654,7 +654,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_with_sub_implies_glu_rel_typ_with_sub : mcltt.
+Hint Resolve glu_rel_exp_with_sub_implies_glu_rel_typ_with_sub : mctt.
 
 Lemma glu_rel_typ_with_sub_implies_glu_rel_exp_with_sub : forall {Δ A j σ Γ ρ},
   {{ Δ ⊢s σ : Γ }} ->
@@ -669,7 +669,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_typ_with_sub_implies_glu_rel_exp_with_sub : mcltt.
+Hint Resolve glu_rel_typ_with_sub_implies_glu_rel_exp_with_sub : mctt.
 
 (** *** Lemmas for [glu_ctx_env] *)
 
@@ -793,7 +793,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_ctx_env_wf_ctx glu_ctx_env_sub_escape : mcltt.
+Hint Resolve glu_ctx_env_wf_ctx glu_ctx_env_sub_escape : mctt.
 
 Lemma glu_ctx_env_per_ctx_env : forall {Γ Sb},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -805,7 +805,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_ctx_env_per_ctx_env : mcltt.
+Hint Resolve glu_ctx_env_per_ctx_env : mctt.
 
 Lemma glu_ctx_env_resp_per_ctx_helper : forall {Γ Γ' Sb Sb'},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -855,7 +855,7 @@ Proof.
     eapply glu_univ_elem_exp_cumu_ge; mauto 3.
   }
   eapply glu_univ_elem_exp_conv; [eexists | | | |]; intuition.
-  autorewrite with mcltt.
+  autorewrite with mctt.
   eassumption.
 Qed.
 
@@ -953,7 +953,7 @@ Proof.
   destruct_by_head rel_exp.
   handle_functional_glu_ctx_env.
   eapply glu_univ_elem_per_subtyp_trm_conv; mauto 3.
-  autorewrite with mcltt.
+  autorewrite with mctt.
   eassumption.
 Qed.
 
@@ -998,13 +998,13 @@ Proof.
   assert {{ Δ ⊢ M : A[σ] }} by mauto 2 using glu_univ_elem_trm_escape.
   assert {{ Δ ⊢s σ,,M : Γ, A }} by mauto 2.
   econstructor; mauto 3;
-    autorewrite with mcltt; mauto 3.
+    autorewrite with mctt; mauto 3.
 
   assert {{ Δ ⊢ #0[σ,,M] ≈ M : A[σ] }} as ->; mauto 2.
 Qed.
 
 #[export]
-Hint Resolve cons_glu_sub_pred_helper : mcltt.
+Hint Resolve cons_glu_sub_pred_helper : mctt.
 
 Lemma initial_env_glu_rel_exp : forall {Γ ρ Sb},
     initial_env Γ ρ ->
@@ -1145,7 +1145,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_to_wf_exp : mcltt.
+Hint Resolve glu_rel_exp_to_wf_exp : mctt.
 
 (** *** Lemmas about [glu_rel_sub] *)
 
@@ -1220,4 +1220,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_wf_sub : mcltt.
+Hint Resolve glu_rel_sub_wf_sub : mctt.

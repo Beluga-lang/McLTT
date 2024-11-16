@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic.System Require Export Definitions Lemmas.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic.System Require Export Definitions Lemmas.
 Import Syntax_Notations.
 
 #[global]
@@ -14,7 +14,7 @@ Ltac pi_univ_level_tac :=
   end.
 
 #[export]
-Hint Rewrite -> wf_exp_eq_pi_sub using pi_univ_level_tac : mcltt.
+Hint Rewrite -> wf_exp_eq_pi_sub using pi_univ_level_tac : mctt.
 
 #[local]
 Ltac invert_wf_ctx1 H :=

@@ -1,7 +1,7 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core Require Export Soundness.
-From Mcltt.Core.Completeness.Consequences Require Export Types.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core Require Export Soundness.
+From Mctt.Core.Completeness.Consequences Require Export Types.
 Import Domain_Notations.
 
 Lemma idempotent_nbe_ty : forall {Γ i A B C},
@@ -16,7 +16,7 @@ Proof.
   reflexivity.
 Qed.
 #[export]
-Hint Resolve idempotent_nbe_ty : mcltt.
+Hint Resolve idempotent_nbe_ty : mctt.
 
 Lemma adjust_exp_eq_level : forall {Γ A A' i j},
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -72,21 +72,21 @@ Proof.
   do 2 eexists; mauto 4.
 Qed.
 #[export]
-Hint Resolve nf_of_pi : mcltt.
+Hint Resolve nf_of_pi : mctt.
 
 Theorem canonical_form_of_pi : forall {M A B},
     {{ ⋅ ⊢ M : Π A B }} ->
     exists W1 W2, nbe {{{ ⋅ }}} M {{{ Π A B }}} n{{{ λ W1 W2 }}}.
 Proof. mauto 3. Qed.
 #[export]
-Hint Resolve canonical_form_of_pi : mcltt.
+Hint Resolve canonical_form_of_pi : mctt.
 
 Inductive canonical_nat : nf -> Prop :=
 | canonical_nat_zero : canonical_nat n{{{ zero }}}
 | canonical_nat_succ : forall W, canonical_nat W -> canonical_nat n{{{ succ W }}}
 .
 #[export]
-Hint Constructors canonical_nat : mcltt.
+Hint Constructors canonical_nat : mctt.
 
 Theorem canonical_form_of_nat : forall {M},
     {{ ⋅ ⊢ M : ℕ }} ->
@@ -105,7 +105,7 @@ Proof with mautosolve 4.
   - match_by_head1 (wf_exp {{{ ⋅ }}} {{{ ℕ }}}) ltac:(fun H => contradict H)...
 Qed.
 #[export]
-Hint Resolve canonical_form_of_nat : mcltt.
+Hint Resolve canonical_form_of_nat : mctt.
 
 Theorem canonical_form_of_typ : forall {i M},
     {{ ⋅ ⊢ M : Type@i }} ->
@@ -124,7 +124,7 @@ Proof with mautosolve 4.
     match_by_head1 (wf_exp {{{ ⋅ }}} {{{ Type@i }}}) ltac:(fun H => contradict H)...
 Qed.
 #[export]
-Hint Resolve canonical_form_of_typ : mcltt.
+Hint Resolve canonical_form_of_typ : mctt.
 
 Lemma subtyp_spec : forall {Γ A B},
     {{ Γ ⊢ A ⊆ B }} ->
@@ -164,7 +164,7 @@ Proof with (congruence + firstorder (mautosolve 4 + lia)).
 Qed.
 
 #[export]
-Hint Resolve subtyp_spec : mcltt.
+Hint Resolve subtyp_spec : mctt.
 
 Lemma consistency_ne_helper : forall {i A A'} {W : ne},
     is_typ_constr A' ->

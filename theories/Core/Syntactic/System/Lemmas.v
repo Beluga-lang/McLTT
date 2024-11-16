@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic.System Require Import Definitions.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic.System Require Import Definitions.
 Import Syntax_Notations.
 
 (** ** Core Presuppositions *)
@@ -13,7 +13,7 @@ Proof.
   induction 1; simpl; lia.
 Qed.
 #[export]
-Hint Resolve ctx_lookup_lt : mcltt.
+Hint Resolve ctx_lookup_lt : mctt.
 
 Lemma ctx_decomp : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }} /\ exists i, {{ Γ ⊢ A : Type@i }}.
 Proof with now eauto.
@@ -21,7 +21,7 @@ Proof with now eauto.
 Qed.
 
 #[export]
-Hint Resolve ctx_decomp : mcltt.
+Hint Resolve ctx_decomp : mctt.
 
 Corollary ctx_decomp_left : forall {Γ A}, {{ ⊢ Γ , A }} -> {{ ⊢ Γ }}.
 Proof with easy.
@@ -34,7 +34,7 @@ Proof with easy.
 Qed.
 
 #[export]
-Hint Resolve ctx_decomp_left ctx_decomp_right : mcltt.
+Hint Resolve ctx_decomp_left ctx_decomp_right : mctt.
 
 (** *** Context Presuppositions *)
 
@@ -54,7 +54,7 @@ Proof with easy.
 Qed.
 
 #[export]
-Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mcltt.
+Hint Resolve presup_ctx_eq presup_ctx_eq_left presup_ctx_eq_right : mctt.
 
 Lemma presup_sub : forall {Γ Δ σ}, {{ Γ ⊢s σ : Δ }} -> {{ ⊢ Γ }} /\ {{ ⊢ Δ }}.
 Proof with mautosolve.
@@ -72,7 +72,7 @@ Proof with easy.
 Qed.
 
 #[export]
-Hint Resolve presup_sub presup_sub_left presup_sub_right : mcltt.
+Hint Resolve presup_sub presup_sub_left presup_sub_right : mctt.
 
 (** With [presup_sub], we can prove similar for [exp]. *)
 
@@ -82,7 +82,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_ctx : mcltt.
+Hint Resolve presup_exp_ctx : mctt.
 
 (** and other presuppositions about context well-formedness. *)
 
@@ -102,7 +102,7 @@ Proof with easy.
 Qed.
 
 #[export]
-Hint Resolve presup_sub_eq_ctx presup_sub_eq_ctx_left presup_sub_eq_ctx_right : mcltt.
+Hint Resolve presup_sub_eq_ctx presup_sub_eq_ctx_left presup_sub_eq_ctx_right : mctt.
 
 Lemma presup_exp_eq_ctx : forall {Γ M M' A}, {{ Γ ⊢ M ≈ M' : A }} -> {{ ⊢ Γ }}.
 Proof with mautosolve 2.
@@ -110,7 +110,7 @@ Proof with mautosolve 2.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_ctx : mcltt.
+Hint Resolve presup_exp_eq_ctx : mctt.
 
 (** *** Immediate Results of Context Presuppositions *)
 
@@ -127,7 +127,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve exp_sub_typ : mcltt.
+Hint Resolve exp_sub_typ : mctt.
 
 Lemma exp_sub_nat : forall {Δ Γ M σ},
     {{ Δ ⊢ M : ℕ }} ->
@@ -140,7 +140,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve exp_sub_nat : mcltt.
+Hint Resolve exp_sub_nat : mctt.
 
 (** Also we can recover cumulativity rules we had before adding subtyping. *)
 
@@ -161,7 +161,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve wf_cumu wf_exp_eq_cumu : mcltt.
+Hint Resolve wf_cumu wf_exp_eq_cumu : mctt.
 
 (** We can prove some additional lemmas for type presuppositions as well. *)
 
@@ -174,7 +174,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve lift_exp_ge : mcltt.
+Hint Resolve lift_exp_ge : mctt.
 
 Corollary lift_exp_max_left : forall {Γ A n} m,
     {{ Γ ⊢ A : Type@n }} ->
@@ -201,7 +201,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve lift_exp_eq_ge : mcltt.
+Hint Resolve lift_exp_eq_ge : mctt.
 
 Corollary lift_exp_eq_max_left : forall {Γ A A' n} m,
     {{ Γ ⊢ A ≈ A' : Type@n }} ->
@@ -233,7 +233,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve presup_ctx_lookup_typ : mcltt.
+Hint Resolve presup_ctx_lookup_typ : mctt.
 
 Lemma presup_exp_typ : forall {Γ M A},
     {{ Γ ⊢ M : A }} ->
@@ -263,7 +263,7 @@ Lemma wf_ctx_sub_refl : forall Γ Δ,
 Proof. induction 1; mauto. Qed.
 
 #[export]
-Hint Resolve wf_ctx_sub_refl : mcltt.
+Hint Resolve wf_ctx_sub_refl : mctt.
 
 Lemma wf_conv : forall Γ M A i A',
     {{ Γ ⊢ M : A }} ->
@@ -274,7 +274,7 @@ Lemma wf_conv : forall Γ M A i A',
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve wf_conv : mcltt.
+Hint Resolve wf_conv : mctt.
 
 Lemma wf_sub_conv : forall Γ σ Δ Δ',
   {{ Γ ⊢s σ : Δ }} ->
@@ -283,7 +283,7 @@ Lemma wf_sub_conv : forall Γ σ Δ Δ',
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve wf_sub_conv : mcltt.
+Hint Resolve wf_sub_conv : mctt.
 
 Lemma wf_exp_eq_conv : forall Γ M M' A A' i,
    {{ Γ ⊢ M ≈ M' : A }} ->
@@ -294,7 +294,7 @@ Lemma wf_exp_eq_conv : forall Γ M M' A A' i,
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_conv : mcltt.
+Hint Resolve wf_exp_eq_conv : mctt.
 
 Lemma wf_sub_eq_conv : forall Γ σ σ' Δ Δ',
     {{ Γ ⊢s σ ≈ σ' : Δ }} ->
@@ -303,7 +303,7 @@ Lemma wf_sub_eq_conv : forall Γ σ σ' Δ Δ',
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve wf_sub_eq_conv : mcltt.
+Hint Resolve wf_sub_eq_conv : mctt.
 
 Add Parametric Morphism Γ : (wf_sub_eq Γ)
     with signature wf_ctx_eq ==> eq ==> eq ==> iff as wf_sub_eq_morphism_iff3.
@@ -319,7 +319,7 @@ Lemma exp_eq_refl : forall {Γ M A},
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve exp_eq_refl : mcltt.
+Hint Resolve exp_eq_refl : mctt.
 
 Lemma exp_eq_trans_typ_max : forall {Γ i i' A A' A''},
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -332,7 +332,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_trans_typ_max : mcltt.
+Hint Resolve exp_eq_trans_typ_max : mctt.
 
 Lemma sub_eq_refl : forall {Γ σ Δ},
     {{ Γ ⊢s σ : Δ }} ->
@@ -340,7 +340,7 @@ Lemma sub_eq_refl : forall {Γ σ Δ},
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve sub_eq_refl : mcltt.
+Hint Resolve sub_eq_refl : mctt.
 
 (** *** Lemmas for [exp] of [{{{ Type@i }}}] *)
 
@@ -374,7 +374,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mcltt.
+Hint Resolve exp_eq_sub_cong_typ1 exp_eq_sub_cong_typ2' exp_eq_sub_compose_typ : mctt.
 
 Lemma exp_eq_typ_sub_sub : forall {Γ Δ Ψ σ τ i},
     {{ Δ ⊢s σ : Ψ }} ->
@@ -383,9 +383,9 @@ Lemma exp_eq_typ_sub_sub : forall {Γ Δ Ψ σ τ i},
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve exp_eq_typ_sub_sub : mcltt.
+Hint Resolve exp_eq_typ_sub_sub : mctt.
 #[export]
-Hint Rewrite -> @exp_eq_sub_compose_typ @exp_eq_typ_sub_sub using mauto 4 : mcltt.
+Hint Rewrite -> @exp_eq_sub_compose_typ @exp_eq_typ_sub_sub using mauto 4 : mctt.
 
 Lemma functional_ctx_lookup : forall {Γ A A' x},
     {{ #x : A ∈ Γ }} ->
@@ -418,7 +418,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve vlookup_0_typ vlookup_1_typ : mcltt.
+Hint Resolve vlookup_0_typ vlookup_1_typ : mctt.
 
 Lemma exp_sub_typ_helper : forall {Γ σ Δ M i},
     {{ Γ ⊢s σ : Δ }} ->
@@ -430,7 +430,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve exp_sub_typ_helper : mcltt.
+Hint Resolve exp_sub_typ_helper : mctt.
 
 Lemma exp_eq_var_0_sub_typ : forall {Γ σ Δ M i},
     {{ Γ ⊢s σ : Δ }} ->
@@ -456,9 +456,9 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_var_0_sub_typ exp_eq_var_1_sub_typ : mcltt.
+Hint Resolve exp_eq_var_0_sub_typ exp_eq_var_1_sub_typ : mctt.
 #[export]
-Hint Rewrite -> @exp_eq_var_0_sub_typ @exp_eq_var_1_sub_typ : mcltt.
+Hint Rewrite -> @exp_eq_var_0_sub_typ @exp_eq_var_1_sub_typ : mctt.
 
 Lemma exp_eq_var_0_weaken_typ : forall {Γ A i},
     {{ ⊢ Γ, A }} ->
@@ -474,7 +474,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_var_0_weaken_typ : mcltt.
+Hint Resolve exp_eq_var_0_weaken_typ : mctt.
 
 Lemma sub_extend_typ : forall {Γ σ Δ M i},
     {{ Γ ⊢s σ : Δ }} ->
@@ -486,7 +486,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_extend_typ : mcltt.
+Hint Resolve sub_extend_typ : mctt.
 
 Lemma sub_eq_extend_cong_typ : forall {Γ σ σ' Δ M M' i},
     {{ Γ ⊢s σ : Δ }} ->
@@ -521,7 +521,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_extend_cong_typ sub_eq_extend_compose_typ sub_eq_p_extend_typ : mcltt.
+Hint Resolve sub_eq_extend_cong_typ sub_eq_extend_compose_typ sub_eq_p_extend_typ : mctt.
 
 Lemma sub_eq_wk_var0_id : forall {Γ A i},
     {{ Γ ⊢ A : Type@i }} ->
@@ -535,9 +535,9 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_wk_var0_id : mcltt.
+Hint Resolve sub_eq_wk_var0_id : mctt.
 #[export]
-Hint Rewrite -> @sub_eq_wk_var0_id using mauto 4 : mcltt.
+Hint Rewrite -> @sub_eq_wk_var0_id using mauto 4 : mctt.
 
 Lemma exp_eq_sub_sub_compose_cong_typ : forall {Γ Δ Δ' Ψ σ τ σ' τ' A i},
     {{ Ψ ⊢ A : Type@i }} ->
@@ -555,7 +555,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_sub_sub_compose_cong_typ : mcltt.
+Hint Resolve exp_eq_sub_sub_compose_cong_typ : mctt.
 
 (** *** Lemmas for [exp] of [{{{ ℕ }}}] *)
 
@@ -589,7 +589,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_sub_nat exp_eq_sub_cong_nat1 exp_eq_sub_cong_nat2 exp_eq_sub_compose_nat : mcltt.
+Hint Resolve exp_sub_nat exp_eq_sub_cong_nat1 exp_eq_sub_cong_nat2 exp_eq_sub_compose_nat : mctt.
 
 Lemma exp_eq_nat_sub_sub : forall {Γ Δ Ψ σ τ},
     {{ Δ ⊢s σ : Ψ }} ->
@@ -598,7 +598,7 @@ Lemma exp_eq_nat_sub_sub : forall {Γ Δ Ψ σ τ},
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve exp_eq_nat_sub_sub : mcltt.
+Hint Resolve exp_eq_nat_sub_sub : mctt.
 
 Lemma exp_eq_nat_sub_sub_to_nat_sub : forall {Γ Δ Ψ Ψ' σ τ σ'},
     {{ Δ ⊢s σ : Ψ }} ->
@@ -608,7 +608,7 @@ Lemma exp_eq_nat_sub_sub_to_nat_sub : forall {Γ Δ Ψ Ψ' σ τ σ'},
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve exp_eq_nat_sub_sub_to_nat_sub : mcltt.
+Hint Resolve exp_eq_nat_sub_sub_to_nat_sub : mctt.
 
 Lemma vlookup_0_nat : forall {Γ},
     {{ ⊢ Γ }} ->
@@ -630,7 +630,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve vlookup_0_nat vlookup_1_nat : mcltt.
+Hint Resolve vlookup_0_nat vlookup_1_nat : mctt.
 
 Lemma exp_sub_nat_helper : forall {Γ σ Δ M},
     {{ Γ ⊢s σ : Δ }} ->
@@ -642,7 +642,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve exp_sub_nat_helper : mcltt.
+Hint Resolve exp_sub_nat_helper : mctt.
 
 Lemma exp_eq_var_0_sub_nat : forall {Γ σ Δ M},
     {{ Γ ⊢s σ : Δ }} ->
@@ -667,7 +667,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_var_0_sub_nat exp_eq_var_1_sub_nat : mcltt.
+Hint Resolve exp_eq_var_0_sub_nat exp_eq_var_1_sub_nat : mctt.
 
 Lemma exp_eq_var_0_weaken_nat : forall {Γ A},
     {{ ⊢ Γ, A }} ->
@@ -681,7 +681,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_var_0_weaken_nat : mcltt.
+Hint Resolve exp_eq_var_0_weaken_nat : mctt.
 
 Lemma sub_extend_nat : forall {Γ σ Δ M},
     {{ Γ ⊢s σ : Δ }} ->
@@ -693,7 +693,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve sub_extend_nat : mcltt.
+Hint Resolve sub_extend_nat : mctt.
 
 Lemma sub_eq_extend_cong_nat : forall {Γ σ σ' Δ M M'},
     {{ Γ ⊢s σ : Δ }} ->
@@ -727,7 +727,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_extend_cong_nat sub_eq_extend_compose_nat sub_eq_p_extend_nat : mcltt.
+Hint Resolve sub_eq_extend_cong_nat sub_eq_extend_compose_nat sub_eq_p_extend_nat : mctt.
 
 Lemma exp_eq_sub_sub_compose_cong_nat : forall {Γ Δ Δ' Ψ σ τ σ' τ' M},
     {{ Ψ ⊢ M : ℕ }} ->
@@ -745,7 +745,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_sub_sub_compose_cong_nat : mcltt.
+Hint Resolve exp_eq_sub_sub_compose_cong_nat : mctt.
 
 (** *** Other Tedious Lemmas *)
 
@@ -769,7 +769,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_sub_sub_compose_cong : mcltt.
+Hint Resolve exp_eq_sub_sub_compose_cong : mctt.
 
 Lemma ctxeq_ctx_lookup : forall {Γ Δ A x},
     {{ ⊢ Γ ≈ Δ }} ->
@@ -785,7 +785,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve ctxeq_ctx_lookup : mcltt.
+Hint Resolve ctxeq_ctx_lookup : mctt.
 
 Lemma sub_id_on_typ : forall {Γ M A i},
     {{ Γ ⊢ A : Type@i }} ->
@@ -797,7 +797,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_id_on_typ : mcltt.
+Hint Resolve sub_id_on_typ : mctt.
 
 Lemma sub_id_extend : forall {Γ M A i},
     {{ Γ ⊢ A : Type@i }} ->
@@ -809,7 +809,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_id_extend : mcltt.
+Hint Resolve sub_id_extend : mctt.
 
 Lemma sub_eq_p_id_extend : forall {Γ M A i},
     {{ Γ ⊢ A : Type@i }} ->
@@ -821,9 +821,9 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_p_id_extend : mcltt.
+Hint Resolve sub_eq_p_id_extend : mctt.
 #[export]
-Hint Rewrite -> @sub_eq_p_id_extend using mauto 4 : mcltt.
+Hint Rewrite -> @sub_eq_p_id_extend using mauto 4 : mctt.
 
 Lemma sub_q : forall {Γ A i σ Δ},
     {{ Δ ⊢ A : Type@i }} ->
@@ -863,7 +863,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_q sub_q_typ sub_q_nat : mcltt.
+Hint Resolve sub_q sub_q_typ sub_q_nat : mctt.
 
 Lemma exp_eq_var_1_sub_q_sigma_nat : forall {Γ A i σ Δ},
     {{ Δ, ℕ ⊢ A : Type@i }} ->
@@ -888,7 +888,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve exp_eq_var_1_sub_q_sigma_nat : mcltt.
+Hint Resolve exp_eq_var_1_sub_q_sigma_nat : mctt.
 
 Lemma sub_id_extend_zero : forall {Γ},
     {{ ⊢ Γ }} ->
@@ -932,7 +932,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_id_extend_zero sub_weak_compose_weak_extend_succ_var_1 sub_eq_id_extend_nat_compose_sigma sub_eq_id_extend_compose_sigma : mcltt.
+Hint Resolve sub_id_extend_zero sub_weak_compose_weak_extend_succ_var_1 sub_eq_id_extend_nat_compose_sigma sub_eq_id_extend_compose_sigma : mctt.
 
 Lemma sub_eq_sigma_compose_weak_id_extend : forall {Γ M A i σ Δ},
     {{ Γ ⊢ A : Type@i }} ->
@@ -949,7 +949,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_sigma_compose_weak_id_extend : mcltt.
+Hint Resolve sub_eq_sigma_compose_weak_id_extend : mctt.
 
 Lemma sub_eq_q_sigma_id_extend : forall {Γ M A i σ Δ},
     {{ Δ ⊢ A : Type@i }} ->
@@ -975,9 +975,9 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_q_sigma_id_extend : mcltt.
+Hint Resolve sub_eq_q_sigma_id_extend : mctt.
 #[export]
-Hint Rewrite -> @sub_eq_q_sigma_id_extend using mauto 4 : mcltt.
+Hint Rewrite -> @sub_eq_q_sigma_id_extend using mauto 4 : mctt.
 
 Lemma sub_eq_p_q_sigma : forall {Γ A i σ Δ},
     {{ Δ ⊢ A : Type@i }} ->
@@ -992,7 +992,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_p_q_sigma : mcltt.
+Hint Resolve sub_eq_p_q_sigma : mctt.
 
 Lemma sub_eq_p_q_sigma_nat : forall {Γ σ Δ},
     {{ Γ ⊢s σ : Δ }} ->
@@ -1003,7 +1003,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_p_q_sigma_nat : mcltt.
+Hint Resolve sub_eq_p_q_sigma_nat : mctt.
 
 Lemma sub_eq_p_p_q_q_sigma_nat : forall {Γ A i σ Δ},
     {{ Δ, ℕ ⊢ A : Type@i }} ->
@@ -1024,7 +1024,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_p_p_q_q_sigma_nat : mcltt.
+Hint Resolve sub_eq_p_p_q_q_sigma_nat : mctt.
 
 Lemma sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : forall {Γ A i σ Δ},
     {{ Δ, ℕ ⊢ A : Type@i }} ->
@@ -1075,7 +1075,7 @@ Proof with mautosolve 4.
 Qed.
 
 #[export]
-Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mcltt.
+Hint Resolve sub_eq_q_sigma_compose_weak_weak_extend_succ_var_1 : mctt.
 
 (** *** Lemmas for [wf_subtyp] *)
 
@@ -1085,7 +1085,7 @@ Fact wf_subtyp_refl : forall {Γ A i},
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve wf_subtyp_refl : mcltt.
+Hint Resolve wf_subtyp_refl : mctt.
 
 Lemma wf_subtyp_ge : forall {Γ i j},
     {{ ⊢ Γ }} ->
@@ -1096,7 +1096,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_subtyp_ge : mcltt.
+Hint Resolve wf_subtyp_ge : mctt.
 
 Lemma wf_subtyp_sub : forall {Δ A A'},
     {{ Δ ⊢ A ⊆ A' }} ->
@@ -1114,7 +1114,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_subtyp_sub : mcltt.
+Hint Resolve wf_subtyp_sub : mctt.
 
 Lemma wf_subtyp_univ_weaken : forall {Γ i j A},
     {{ Γ ⊢ Type@i ⊆ Type@j }} ->
@@ -1143,7 +1143,7 @@ Proof with (do 2 eexists; repeat split; mautosolve).
 Qed.
 
 #[export]
-Hint Resolve ctx_sub_ctx_lookup : mcltt.
+Hint Resolve ctx_sub_ctx_lookup : mctt.
 
 Lemma no_closed_neutral : forall {A} {W : ne},
     ~ {{ ⋅ ⊢ W : A }}.
@@ -1156,4 +1156,4 @@ Proof.
   inversion_by_head ctx_lookup.
 Qed.
 #[export]
-Hint Resolve no_closed_neutral : mcltt.
+Hint Resolve no_closed_neutral : mctt.

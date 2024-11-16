@@ -1,9 +1,9 @@
 From Coq Require Import RelationClasses.
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core Require Export Completeness.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core Require Export Completeness.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Syntactic Require Export SystemOpt.
 Import Domain_Notations.
 
 Lemma exp_eq_typ_implies_eq_level : forall {Γ i j k},
@@ -25,7 +25,7 @@ Proof with mautosolve.
   reflexivity.
 Qed.
 #[export]
-Hint Resolve exp_eq_typ_implies_eq_level : mcltt.
+Hint Resolve exp_eq_typ_implies_eq_level : mctt.
 
 Inductive is_typ_constr : typ -> Prop :=
 | typ_is_typ_constr : forall i, is_typ_constr {{{ Type@i }}}
@@ -34,7 +34,7 @@ Inductive is_typ_constr : typ -> Prop :=
 | var_is_typ_constr : forall x, is_typ_constr {{{ #x }}}
 .
 #[export]
-Hint Constructors is_typ_constr : mcltt.  
+Hint Constructors is_typ_constr : mctt.  
 
 Theorem is_typ_constr_and_exp_eq_var_implies_eq_var : forall Γ A x i,
     is_typ_constr A ->
@@ -74,7 +74,7 @@ Proof.
   lia.
 Qed.
 #[export]
-Hint Resolve is_typ_constr_and_exp_eq_var_implies_eq_var : mcltt.
+Hint Resolve is_typ_constr_and_exp_eq_var_implies_eq_var : mctt.
 
 Theorem is_typ_constr_and_exp_eq_typ_implies_eq_typ : forall Γ A i j,
     is_typ_constr A ->
@@ -100,7 +100,7 @@ Proof.
     reflexivity.
 Qed.
 #[export]
-Hint Resolve is_typ_constr_and_exp_eq_typ_implies_eq_typ : mcltt.
+Hint Resolve is_typ_constr_and_exp_eq_typ_implies_eq_typ : mctt.
 
 Theorem is_typ_constr_and_exp_eq_nat_implies_eq_nat : forall Γ A j,
     is_typ_constr A ->
@@ -127,4 +127,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve is_typ_constr_and_exp_eq_nat_implies_eq_nat : mcltt.
+Hint Resolve is_typ_constr_and_exp_eq_nat_implies_eq_nat : mctt.

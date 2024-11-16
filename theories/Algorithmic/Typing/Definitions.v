@@ -1,5 +1,5 @@
-From Mcltt.Algorithmic.Subtyping Require Export Definitions.
-From Mcltt.Core Require Import Base.
+From Mctt.Algorithmic.Subtyping Require Export Definitions.
+From Mctt.Core Require Import Base.
 Import Domain_Notations.
 
 Reserved Notation "Γ '⊢a' M ⟹ A" (in custom judg at level 80, Γ custom exp, M custom exp, A custom nf).
@@ -51,7 +51,7 @@ with alg_type_infer : ctx -> nf -> exp -> Prop :=
 where "Γ '⊢a' M ⟹ A" := (alg_type_infer Γ A M) (in custom judg) : type_scope.
 
 #[export]
-Hint Constructors alg_type_check alg_type_infer : mcltt.
+Hint Constructors alg_type_check alg_type_infer : mctt.
 
 Scheme alg_type_check_mut_ind := Induction for alg_type_check Sort Prop
 with alg_type_infer_mut_ind := Induction for alg_type_infer Sort Prop.

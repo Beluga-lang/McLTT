@@ -1,8 +1,8 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import LogicalRelation.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import LogicalRelation.
 Import Domain_Notations.
 
 Lemma rel_exp_of_typ_inversion : forall {Γ A A' i},
@@ -40,7 +40,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_of_typ : mcltt.
+Hint Resolve rel_exp_of_typ : mctt.
 
 Ltac eexists_rel_exp_of_typ :=
   apply rel_exp_of_typ;
@@ -61,7 +61,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve valid_exp_typ : mcltt.
+Hint Resolve valid_exp_typ : mctt.
 
 Lemma rel_exp_typ_sub : forall {i Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
@@ -79,7 +79,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_typ_sub : mcltt.
+Hint Resolve rel_exp_typ_sub : mctt.
 
 Lemma rel_exp_cumu : forall {i Γ A A'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -96,4 +96,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_cumu : mcltt.
+Hint Resolve rel_exp_cumu : mctt.

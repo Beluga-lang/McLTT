@@ -30,7 +30,7 @@ jobs:
       contents: write
     env:
       REGISTRY: "ghcr.io"
-      IMAGE_TAG: "beluga-lang/mcltt:main"
+      IMAGE_TAG: "beluga-lang/mctt:main"
       # Only deploy if the build follows from pushing to one of main branches
       DOC_DEPLOY: ${{ (github.ref_name == 'main' || startsWith(github.ref_name, 'ext/')) && 'true' || 'false' }}
       DOC_DEPLOY_DEST: ${{ startsWith(github.ref_name, 'ext/') && github.ref_name || '' }}
@@ -73,8 +73,8 @@ jobs:
                 mv theories/dep.html html/dep.html
                 cp assets/styling.css html/styling.css
                 cp -r assets/images html/images
-                sed -i 's!\[Coqdoc\](https://beluga-lang\.github\.io/McLTT/dep\.html)![Coqdoc](dep.html)!' README.md
-                pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McLTT: A Bottom-up Approach to Implementing A Proof Assistant' -t html --css styling.css -o html/index.html
+                sed -i 's!\[Coqdoc\](https://beluga-lang\.github\.io/McTT/dep\.html)![Coqdoc](dep.html)!' README.md
+                pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McTT: A Bottom-up Approach to Implementing A Proof Assistant' -t html --css styling.css -o html/index.html
               fi
             endGroup
             startGroup "Run inline tests"

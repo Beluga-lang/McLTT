@@ -1,9 +1,9 @@
 From Coq Require Import Equivalence Morphisms Morphisms_Prop Morphisms_Relations Relation_Definitions RelationClasses.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Soundness.LogicalRelation Require Import CoreTactics Definitions.
-From Mcltt.Core.Soundness.Weakening Require Export Lemmas.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Soundness.LogicalRelation Require Import CoreTactics Definitions.
+From Mctt.Core.Soundness.Weakening Require Export Lemmas.
 Import Domain_Notations.
 
 Lemma glu_nat_per_nat : forall Γ M a,
@@ -14,7 +14,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve glu_nat_per_nat : mcltt.
+Hint Resolve glu_nat_per_nat : mctt.
 
 Lemma glu_nat_escape : forall Γ M a,
     glu_nat Γ M a ->
@@ -34,7 +34,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_nat_escape : mcltt.
+Hint Resolve glu_nat_escape : mctt.
 
 Lemma glu_nat_resp_ctx_eq : forall Γ M a Δ,
     glu_nat Γ M a ->
@@ -45,7 +45,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve glu_nat_resp_ctx_eq : mcltt.
+Hint Resolve glu_nat_resp_ctx_eq : mctt.
 
 Add Parametric Morphism : glu_nat
     with signature wf_ctx_eq ==> eq ==> eq ==> iff as glu_ctx_env_sub_morphism_iff1.
@@ -66,7 +66,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve glu_nat_resp_exp_eq : mcltt.
+Hint Resolve glu_nat_resp_exp_eq : mctt.
 
 Add Parametric Morphism Γ : (glu_nat Γ)
     with signature wf_exp_eq Γ {{{ ℕ }}} ==> eq ==> iff as glu_ctx_env_sub_morphism_iff2.
@@ -231,7 +231,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_nat_resp_wk : mcltt.
+Hint Resolve glu_nat_resp_wk : mctt.
 
 Lemma glu_univ_elem_trm_escape : forall i P El a,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -259,7 +259,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_per_univ : mcltt.
+Hint Resolve glu_univ_elem_per_univ : mctt.
 
 Lemma glu_univ_elem_per_elem : forall i P El a,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -337,9 +337,9 @@ Proof.
     assert {{ Γ ⊢ M ≈ M' : Π IT OT }} as Hty by mauto.
     eassert {{ Δ ⊢ IT[σ] : Type@_ }} by mauto 3.
     eapply wf_exp_eq_sub_cong with (Γ := Δ) in Hty; [| eapply sub_eq_refl; mauto 3].
-    autorewrite with mcltt in Hty.
+    autorewrite with mctt in Hty.
     eapply wf_exp_eq_app_cong with (N := N) (N' := N) in Hty; try pi_univ_level_tac; [|mauto 2].
-    autorewrite with mcltt in Hty.
+    autorewrite with mctt in Hty.
     eassumption.
   - intros.
     enough {{ Δ ⊢ M[σ] ≈ M'[σ] : A[σ] }}; mauto 4.
@@ -364,7 +364,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_core_univ' : mcltt.
+Hint Resolve glu_univ_elem_core_univ' : mctt.
 
 Ltac glu_univ_elem_econstructor :=
   eapply glu_univ_elem_core_univ' + basic_glu_univ_elem_econstructor.
@@ -377,7 +377,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_univ_elem_univ_simple_constructor : mcltt.
+Hint Resolve glu_univ_elem_univ_simple_constructor : mctt.
 
 Ltac rewrite_predicate_equivalence_left :=
   repeat match goal with
@@ -735,7 +735,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_univ_glu_univ_elem : mcltt.
+Hint Resolve per_univ_glu_univ_elem : mctt.
 
 Corollary per_univ_elem_glu_univ_elem : forall i a R,
     {{ DF a ≈ a ∈ per_univ_elem i ↘ R }} ->
@@ -746,7 +746,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_univ_elem_glu_univ_elem : mcltt.
+Hint Resolve per_univ_elem_glu_univ_elem : mctt.
 
 Ltac saturate_glu_info1 :=
   match goal with
@@ -765,7 +765,7 @@ Ltac saturate_glu_info :=
   repeat saturate_glu_info1.
 
 #[local]
-Hint Rewrite -> sub_decompose_q using solve [mauto 4] : mcltt.
+Hint Rewrite -> sub_decompose_q using solve [mauto 4] : mctt.
 
 Lemma glu_univ_elem_typ_monotone : forall i a P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -787,14 +787,14 @@ Proof.
     destruct_rel_mod_eval.
     simplify_evals.
     deepexec H1 ltac:(fun H => pose proof H).
-    autorewrite with mcltt in *.
+    autorewrite with mctt in *.
     mauto 3.
 
   - destruct_conjs.
     split; [mauto 3 |].
     intros.
     saturate_weakening_escape.
-    autorewrite with mcltt.
+    autorewrite with mctt.
     mauto 3.
 Qed.
 
@@ -826,7 +826,7 @@ Proof.
       destruct_rel_mod_app.
       simplify_evals.
       deepexec H1 ltac:(fun H => pose proof H).
-      autorewrite with mcltt in *.
+      autorewrite with mctt in *.
       repeat eexists; eauto.
       assert {{ Δ0 ⊢s σ0,,N : Δ, IT[σ] }}.
       {
@@ -854,9 +854,9 @@ Proof.
     econstructor; repeat split; mauto 3;
       intros;
       saturate_weakening_escape.
-    + autorewrite with mcltt.
+    + autorewrite with mctt.
       mauto 3.
-    + autorewrite with mcltt.
+    + autorewrite with mctt.
       etransitivity.
       * symmetry.
         eapply wf_exp_eq_sub_compose;

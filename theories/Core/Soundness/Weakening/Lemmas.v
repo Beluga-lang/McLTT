@@ -1,9 +1,9 @@
 From Coq Require Import Program.Equality.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Soundness.Weakening Require Import Definitions.
-From Mcltt.Core.Syntactic Require Export Corollaries.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Soundness.Weakening Require Import Definitions.
+From Mctt.Core.Syntactic Require Export Corollaries.
 Import Syntax_Notations.
 
 Lemma weakening_escape : forall Γ σ Δ,
@@ -18,7 +18,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve weakening_escape : mcltt.
+Hint Resolve weakening_escape : mctt.
 
 
 Ltac saturate_weakening_escape1 :=
@@ -67,7 +67,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve ctxsub_weakening weakening_conv : mcltt.
+Hint Resolve ctxsub_weakening weakening_conv : mctt.
 
 Lemma weakening_compose : forall Γ' σ' Γ'',
     {{ Γ' ⊢w σ' : Γ'' }} ->
@@ -86,7 +86,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve weakening_compose : mcltt.
+Hint Resolve weakening_compose : mctt.
 
 Lemma weakening_id : forall Γ,
     {{ ⊢ Γ }} ->
@@ -104,4 +104,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve weakening_id weakening_wk : mcltt.
+Hint Resolve weakening_id weakening_wk : mctt.

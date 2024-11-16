@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export System.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Export System.
 Import Syntax_Notations.
 
 Lemma ctx_sub_refl : forall {Γ},
@@ -11,7 +11,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve ctx_sub_refl : mcltt.
+Hint Resolve ctx_sub_refl : mctt.
 
 Module ctxsub_judg.
   #[local]
@@ -86,7 +86,7 @@ Module ctxsub_judg.
   Qed.
 
   #[export]
-  Hint Resolve ctxsub_exp ctxsub_exp_eq ctxsub_sub ctxsub_sub_eq ctxsub_subtyp : mcltt.
+  Hint Resolve ctxsub_exp ctxsub_exp_eq ctxsub_sub ctxsub_sub_eq ctxsub_subtyp : mctt.
 End ctxsub_judg.
 
 Export ctxsub_judg.
@@ -103,7 +103,7 @@ Proof.
 Qed.
 
 #[export]
- Hint Resolve wf_ctx_sub_trans : mcltt.
+ Hint Resolve wf_ctx_sub_trans : mctt.
 
 #[export]
 Instance wf_ctx_sub_trans_ins : Transitive wf_ctx_sub.

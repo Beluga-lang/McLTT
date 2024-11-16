@@ -1,9 +1,9 @@
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export NbE.
-From Mcltt.Extraction Require Import Evaluation Readback.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export NbE.
+From Mctt.Extraction Require Import Evaluation Readback.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -17,7 +17,7 @@ Inductive initial_env_order : ctx -> Prop :=
      initial_env_order (A :: Γ)).
 
 #[local]
-Hint Constructors initial_env_order : mcltt.
+Hint Constructors initial_env_order : mctt.
 
 Lemma initial_env_order_sound : forall Γ p,
     initial_env Γ p ->
@@ -27,7 +27,7 @@ Proof with (econstructor; intros; functional_initial_env_rewrite_clear; function
 Qed.
 
 #[local]
-Hint Resolve initial_env_order_sound : mcltt.
+Hint Resolve initial_env_order_sound : mctt.
 
 Section InitialEnvImpl.
 
@@ -101,7 +101,7 @@ Inductive nbe_order G M A : Prop :=
      nbe_order G M A ).
 
 #[local]
-Hint Constructors nbe_order : mcltt.
+Hint Constructors nbe_order : mctt.
 
 Lemma nbe_order_sound : forall G M A w,
     nbe G M A w ->
@@ -115,7 +115,7 @@ Proof with (econstructor; intros;
 Qed.
 
 #[local]
-Hint Resolve nbe_order_sound : mcltt.
+Hint Resolve nbe_order_sound : mctt.
 
 Section NbEDef.
 
@@ -159,7 +159,7 @@ Inductive nbe_ty_order G A : Prop :=
      nbe_ty_order G A ).
 
 #[local]
-Hint Constructors nbe_ty_order : mcltt.
+Hint Constructors nbe_ty_order : mctt.
 
 Lemma nbe_ty_order_sound : forall G A w,
     nbe_ty G A w ->
@@ -173,7 +173,7 @@ Proof with (econstructor; intros;
 Qed.
 
 #[local]
-Hint Resolve nbe_ty_order_sound : mcltt.
+Hint Resolve nbe_ty_order_sound : mctt.
 
 Section NbETyDef.
 

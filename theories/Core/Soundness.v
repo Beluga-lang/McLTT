@@ -1,9 +1,9 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Semantic Require Export NbE.
-From Mcltt.Core.Soundness Require Export FundamentalTheorem.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Semantic Require Export NbE.
+From Mctt.Core.Soundness Require Export FundamentalTheorem.
 Import Domain_Notations.
 
 Theorem soundness : forall {Γ M A},

@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Soundness Require Import LogicalRelation.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Soundness Require Import LogicalRelation.
 Import Domain_Notations.
 
 Lemma glu_rel_ctx_empty : {{ ⊩ ⋅ }}.
@@ -9,7 +9,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_ctx_empty : mcltt.
+Hint Resolve glu_rel_ctx_empty : mctt.
 
 Lemma glu_rel_ctx_extend : forall {Γ A i},
     {{ ⊩ Γ }} ->
@@ -24,4 +24,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_ctx_extend : mcltt.
+Hint Resolve glu_rel_ctx_extend : mctt.

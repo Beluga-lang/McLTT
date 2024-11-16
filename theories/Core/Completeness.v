@@ -1,9 +1,9 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Export FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Semantic Require Export NbE.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Export FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Semantic Require Export NbE.
+From Mctt.Core.Syntactic Require Export SystemOpt.
 Import Domain_Notations.
 
 Theorem completeness : forall {Γ M M' A},

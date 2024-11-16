@@ -2,7 +2,7 @@
 
 From Coq Require Import List Arith.PeanoNat String.
 
-From Mcltt Require Import Syntax.
+From Mctt Require Import Syntax.
 
 Parameter loc : Type.
 

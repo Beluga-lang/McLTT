@@ -3,7 +3,7 @@ From Equations Require Export Equations.
 
 Open Scope predicate_scope.
 
-Create HintDb mcltt discriminated.
+Create HintDb mctt discriminated.
 
 (** Transparency setting for generalized rewriting *)
 #[export]
@@ -189,37 +189,37 @@ Ltac dir_inversion_clear_by_head head := match_by_head head ltac:(fun H => direc
 Ltac destruct_by_head head := match_by_head head ltac:(fun H => destruct H).
 Ltac dir_destruct_by_head head := match_by_head head ltac:(fun H => directed destruct H).
 
-(** *** McLTT automation *)
+(** *** McTT automation *)
 
 Tactic Notation "mauto" :=
-  eauto with mcltt core.
+  eauto with mctt core.
 
 Tactic Notation "mauto" int_or_var(pow) :=
-  eauto pow with mcltt core.
+  eauto pow with mctt core.
 
 Tactic Notation "mauto" "using" uconstr(use) :=
-  eauto using use with mcltt core.
+  eauto using use with mctt core.
 
 Tactic Notation "mauto" "using" uconstr(use1) "," uconstr(use2) :=
-  eauto using use1, use2 with mcltt core.
+  eauto using use1, use2 with mctt core.
 
 Tactic Notation "mauto" "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) :=
-  eauto using use1, use2, use3 with mcltt core.
+  eauto using use1, use2, use3 with mctt core.
 
 Tactic Notation "mauto" "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) "," uconstr(use4) :=
-  eauto using use1, use2, use3, use4 with mcltt core.
+  eauto using use1, use2, use3, use4 with mctt core.
 
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use) :=
-  eauto pow using use with mcltt core.
+  eauto pow using use with mctt core.
 
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) :=
-  eauto pow using use1, use2 with mcltt core.
+  eauto pow using use1, use2 with mctt core.
 
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) :=
-  eauto pow using use1, use2, use3 with mcltt core.
+  eauto pow using use1, use2, use3 with mctt core.
 
 Tactic Notation "mauto" int_or_var(pow) "using" uconstr(use1) "," uconstr(use2) "," uconstr(use3) "," uconstr(use4) :=
-  eauto pow using use1, use2, use3, use4 with mcltt core.
+  eauto pow using use1, use2, use3, use4 with mctt core.
 
 Ltac mautosolve_impl pow := unshelve solve [mauto pow]; solve [constructor].
 
@@ -242,7 +242,7 @@ Hint Extern 1 (@Transitive _ (@predicate_implication _)) => simple apply @PreOrd
 
 
 (** Default setting for [intuition] tactic *)
-Ltac Tauto.intuition_solver ::= auto with mcltt core solve_subterm.
+Ltac Tauto.intuition_solver ::= auto with mctt core solve_subterm.
 
 Ltac exvar T tac :=
   lazymatch type of T with
@@ -462,7 +462,7 @@ Qed.
 Ltac bulky_rewrite1 :=
   match goal with
   | H : _ |- _ => rewrite H
-  | _ => progress (autorewrite with mcltt)
+  | _ => progress (autorewrite with mctt)
   end.
 
 Ltac bulky_rewrite := repeat (bulky_rewrite1; mauto 2).
@@ -470,7 +470,7 @@ Ltac bulky_rewrite := repeat (bulky_rewrite1; mauto 2).
 Ltac bulky_rewrite_in1 HT :=
   match goal with
   | H : _ |- _ => tryif unify H HT then fail else rewrite H in HT
-  | _ => progress (autorewrite with mcltt in HT)
+  | _ => progress (autorewrite with mctt in HT)
   end.
 
 Ltac bulky_rewrite_in HT := repeat (bulky_rewrite_in1 HT; mauto 2).

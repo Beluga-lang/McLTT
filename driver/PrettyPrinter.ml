@@ -1,7 +1,7 @@
-open MclttExtracted.Entrypoint
-open MclttExtracted.Syntax
-module Parser = MclttExtracted.Parser
-module ParserMessages = MclttExtracted.ParserMessages
+open McttExtracted.Entrypoint
+open McttExtracted.Syntax
+module Parser = McttExtracted.Parser
+module ParserMessages = McttExtracted.ParserMessages
 
 (************************************************************)
 (* Formatting helpers *)

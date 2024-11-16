@@ -1,7 +1,7 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Algorithmic Require Export Subtyping.
-From Mcltt.Extraction Require Import NbE PseudoMonadic.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Algorithmic Require Export Subtyping.
+From Mctt.Extraction Require Import NbE PseudoMonadic.
 From Equations Require Import Equations.
 Import Domain_Notations.
 
@@ -54,7 +54,7 @@ Inductive subtyping_order G A B :=
   nbe_ty_order G B ->
   subtyping_order G A B.
 #[local]
-Hint Constructors subtyping_order : mcltt.
+Hint Constructors subtyping_order : mctt.
 
 Lemma subtyping_order_sound : forall G A B,
     {{ G ⊢a A ⊆ B }} ->
@@ -101,7 +101,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve subtyping_order_sound subtyping_impl_complete' : mcltt.
+Hint Resolve subtyping_order_sound subtyping_impl_complete' : mctt.
 
 Theorem subtyping_impl_complete : forall G A B,
     {{G ⊢a A ⊆ B}} ->

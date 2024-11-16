@@ -1,8 +1,8 @@
 From Coq Require Import Lia PeanoNat Relations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic.Evaluation Require Import Definitions.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic.Evaluation Require Import Definitions.
 Import Domain_Notations.
 
 Section functional_eval.
@@ -66,7 +66,7 @@ Section functional_eval.
 End functional_eval.
 
 #[export]
-Hint Resolve functional_eval_exp functional_eval_natrec functional_eval_app functional_eval_sub : mcltt.
+Hint Resolve functional_eval_exp functional_eval_natrec functional_eval_app functional_eval_sub : mctt.
 
 Ltac functional_eval_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_eval equality between" o1 "and" o2 "cannot be solved by mauto" in
