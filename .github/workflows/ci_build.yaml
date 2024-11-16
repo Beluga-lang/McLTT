@@ -74,7 +74,7 @@ jobs:
                 cp assets/styling.css html/styling.css
                 cp -r assets/images html/images
                 sed -i 's!\[Coqdoc\](https://beluga-lang\.github\.io/McTT/dep\.html)![Coqdoc](dep.html)!' README.md
-                pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McTT: A Bottom-up Approach to Implementing A Proof Assistant' -t html --css styling.css -o html/index.html
+                pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McTT: Building A Correct-By-Construction Proof Checkers For Type Theories' -t html --css styling.css -o html/index.html
               fi
             endGroup
             startGroup "Run inline tests"
