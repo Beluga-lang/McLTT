@@ -669,71 +669,71 @@ Ltac invert_glu_univ_elem H :=
    destruct H as [? [? [? [? [? [? [? [? []]]]]]]]])
   + basic_invert_glu_univ_elem H.
 
-Lemma glu_univ_elem_resp_per_univ : forall i a a' P El,
-    {{ Dom a ≈ a' ∈ per_univ i }} ->
-    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
-    {{ DG a' ∈ glu_univ_elem i ↘ P ↘ El }}.
-Proof.
-  simpl.
-  intros * [elem_rel Hper] Horig.
-  pose proof Hper.
-  gen P El.
-  induction Hper using per_univ_elem_ind; intros; subst;
-    saturate_refl_for per_univ_elem;
-    invert_glu_univ_elem Horig; glu_univ_elem_econstructor; try eassumption; mauto;
-    handle_per_univ_elem_irrel;
-    handle_functional_glu_univ_elem.
-  - intros.
-    match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H).
-    destruct_rel_mod_eval.
-    handle_per_univ_elem_irrel.
-    intuition.
-  - reflexivity.
-  - etransitivity; [symmetry |]; eassumption.
-  - etransitivity; [symmetry |]; eassumption.
-  - admit.
-    (* split; intros; destruct_by_head eq_glu_typ_pred; econstructor. *)
-  - admit.
-  - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence.
-    eassumption.
-  - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence.
-    eassumption.
-Admitted.
+(* Lemma glu_univ_elem_resp_per_univ : forall i a a' P El, *)
+(*     {{ Dom a ≈ a' ∈ per_univ i }} -> *)
+(*     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} -> *)
+(*     {{ DG a' ∈ glu_univ_elem i ↘ P ↘ El }}. *)
+(* Proof. *)
+(*   simpl. *)
+(*   intros * [elem_rel Hper] Horig. *)
+(*   pose proof Hper. *)
+(*   gen P El. *)
+(*   induction Hper using per_univ_elem_ind; intros; subst; *)
+(*     saturate_refl_for per_univ_elem; *)
+(*     invert_glu_univ_elem Horig; glu_univ_elem_econstructor; try eassumption; mauto; *)
+(*     handle_per_univ_elem_irrel; *)
+(*     handle_functional_glu_univ_elem. *)
+(*   - intros. *)
+(*     match_by_head per_univ_elem ltac:(fun H => directed invert_per_univ_elem H). *)
+(*     destruct_rel_mod_eval. *)
+(*     handle_per_univ_elem_irrel. *)
+(*     intuition. *)
+(*   - reflexivity. *)
+(*   - etransitivity; [symmetry |]; eassumption. *)
+(*   - etransitivity; [symmetry |]; eassumption. *)
+(*   - admit. *)
+(*     (* split; intros; destruct_by_head eq_glu_typ_pred; econstructor. *) *)
+(*   - admit. *)
+(*   - apply neut_glu_typ_pred_morphism_glu_typ_pred_equivalence. *)
+(*     eassumption. *)
+(*   - apply neut_glu_exp_pred_morphism_glu_exp_pred_equivalence. *)
+(*     eassumption. *)
+(* Admitted. *)
 
-(** *** Morphism instances for [glu_univ_elem] *)
-Add Parametric Morphism i : (glu_univ_elem i)
-    with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> per_univ i ==> iff as glu_univ_elem_morphism_iff.
-Proof with mautosolve.
-  intros P P' HPP' El El' HElEl' a a' Haa'.
-  rewrite HPP', HElEl'.
-  split; intros; eapply glu_univ_elem_resp_per_univ; mauto.
-  symmetry; eassumption.
-Qed.
+(* (** *** Morphism instances for [glu_univ_elem] *) *)
+(* Add Parametric Morphism i : (glu_univ_elem i) *)
+(*     with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> per_univ i ==> iff as glu_univ_elem_morphism_iff. *)
+(* Proof with mautosolve. *)
+(*   intros P P' HPP' El El' HElEl' a a' Haa'. *)
+(*   rewrite HPP', HElEl'. *)
+(*   split; intros; eapply glu_univ_elem_resp_per_univ; mauto. *)
+(*   symmetry; eassumption. *)
+(* Qed. *)
 
-Add Parametric Morphism i R : (glu_univ_elem i)
-    with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> per_univ_elem i R ==> iff as glu_univ_elem_morphism_iff'.
-Proof with mautosolve.
-  intros P P' HPP' El El' HElEl' **.
-  rewrite HPP', HElEl'.
-  split; intros; eapply glu_univ_elem_resp_per_univ; mauto.
-  symmetry; mauto.
-Qed.
+(* Add Parametric Morphism i R : (glu_univ_elem i) *)
+(*     with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> per_univ_elem i R ==> iff as glu_univ_elem_morphism_iff'. *)
+(* Proof with mautosolve. *)
+(*   intros P P' HPP' El El' HElEl' **. *)
+(*   rewrite HPP', HElEl'. *)
+(*   split; intros; eapply glu_univ_elem_resp_per_univ; mauto. *)
+(*   symmetry; mauto. *)
+(* Qed. *)
 
-Ltac saturate_glu_by_per1 :=
-  match goal with
-  | H : glu_univ_elem ?i ?P ?El ?a,
-      H1 : per_univ_elem ?i _ ?a ?a' |- _ =>
-      assert (glu_univ_elem i P El a') by (rewrite <- H1; eassumption);
-      fail_if_dup
-  | H : glu_univ_elem ?i ?P ?El ?a',
-      H1 : per_univ_elem ?i _ ?a ?a' |- _ =>
-      assert (glu_univ_elem i P El a) by (rewrite H1; eassumption);
-      fail_if_dup
-  end.
+(* Ltac saturate_glu_by_per1 := *)
+(*   match goal with *)
+(*   | H : glu_univ_elem ?i ?P ?El ?a, *)
+(*       H1 : per_univ_elem ?i _ ?a ?a' |- _ => *)
+(*       assert (glu_univ_elem i P El a') by (rewrite <- H1; eassumption); *)
+(*       fail_if_dup *)
+(*   | H : glu_univ_elem ?i ?P ?El ?a', *)
+(*       H1 : per_univ_elem ?i _ ?a ?a' |- _ => *)
+(*       assert (glu_univ_elem i P El a) by (rewrite H1; eassumption); *)
+(*       fail_if_dup *)
+(*   end. *)
 
-Ltac saturate_glu_by_per :=
-  clear_dups;
-  repeat saturate_glu_by_per1.
+(* Ltac saturate_glu_by_per := *)
+(*   clear_dups; *)
+(*   repeat saturate_glu_by_per1. *)
 
 Lemma per_univ_glu_univ_elem : forall i a,
     {{ Dom a ≈ a ∈ per_univ i }} ->
@@ -768,6 +768,9 @@ Proof.
       intros.
       (on_all_hyp: destruct_rel_by_assumption in_rel).
       econstructor; mauto.
+  - destruct_conjs.
+    do 2 eexists.
+    glu_univ_elem_econstructor; try (etransitivity; [symmetry |]; eassumption); try reflexivity; mauto 3.
   - do 2 eexists.
     glu_univ_elem_econstructor; try reflexivity; mauto.
 Qed.
@@ -817,6 +820,7 @@ Proof.
     handle_functional_glu_univ_elem;
     simpl in *;
     try solve [bulky_rewrite].
+
   - simpl_glu_rel. econstructor; eauto; try solve [bulky_rewrite]; mauto 3.
     intros.
     saturate_weakening_escape.
@@ -828,13 +832,15 @@ Proof.
     autorewrite with mcltt in *.
     mauto 3.
 
+  - admit.
+
   - destruct_conjs.
     split; [mauto 3 |].
     intros.
     saturate_weakening_escape.
     autorewrite with mcltt.
     mauto 3.
-Qed.
+Admitted.
 
 Lemma glu_univ_elem_exp_monotone : forall i a P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
