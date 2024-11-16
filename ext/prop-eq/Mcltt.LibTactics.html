@@ -51,7 +51,7 @@ Transparency setting for generalized rewriting
 </div>
 
 <div class="doc">
-<a id="lab24"></a><h3 class="section">Generalization of Variables</h3>
+<a id="lab29"></a><h3 class="section">Generalization of Variables</h3>
 
 </div>
 <div class="code">
@@ -66,7 +66,7 @@ Transparency setting for generalized rewriting
 </div>
 
 <div class="doc">
-<a id="lab25"></a><h3 class="section">Marking-based Tactics</h3>
+<a id="lab30"></a><h3 class="section">Marking-based Tactics</h3>
 
 </div>
 <div class="code">
@@ -121,7 +121,7 @@ Transparency setting for generalized rewriting
 </div>
 
 <div class="doc">
-<a id="lab26"></a><h3 class="section">Simple helper</h3>
+<a id="lab31"></a><h3 class="section">Simple helper</h3>
 
 </div>
 <div class="code">
@@ -249,6 +249,8 @@ We use dependent destruction as it is more general than inversion
 <br/>
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">unify_by_head_of</span> <span class="id" title="var">t</span> <span class="id" title="var">head</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">t</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| ?<span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">unify</span> <span class="id" title="var">X</span> <span class="id" title="var">head</span><br/>
+&nbsp;&nbsp;| ?<span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">unify</span> <span class="id" title="var">X</span> <span class="id" title="var">head</span><br/>
 &nbsp;&nbsp;| ?<span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">unify</span> <span class="id" title="var">X</span> <span class="id" title="var">head</span><br/>
 &nbsp;&nbsp;| ?<span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">unify</span> <span class="id" title="var">X</span> <span class="id" title="var">head</span><br/>
 &nbsp;&nbsp;| ?<span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">unify</span> <span class="id" title="var">X</span> <span class="id" title="var">head</span><br/>
@@ -281,7 +283,7 @@ We use dependent destruction as it is more general than inversion
 </div>
 
 <div class="doc">
-<a id="lab27"></a><h3 class="section">McLTT automation</h3>
+<a id="lab32"></a><h3 class="section">McLTT automation</h3>
 
 </div>
 <div class="code">
@@ -555,7 +557,7 @@ Sometimes `reflexivity` does not work as (simple) unification fails for some unk
 </div>
 
 <div class="doc">
-<a id="lab28"></a><h3 class="section">Helper Instances for Generalized Rewriting</h3>
+<a id="lab33"></a><h3 class="section">Helper Instances for Generalized Rewriting</h3>
 
 </div>
 <div class="code">

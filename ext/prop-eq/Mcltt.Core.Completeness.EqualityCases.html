@@ -60,7 +60,6 @@
 &nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="var">mauto</span> 3.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">eexists</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="var">per_univ_elem_econstructor</span>; <span class="id" title="var">mauto</span> 3; <span class="id" title="tactic">try</span> <span class="id" title="var">solve_refl</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
 #[<span class="id" title="var">export</span>]<br/>
 <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">rel_exp_eq_cong</span> : <span class="id" title="var">mcltt</span>.<br/>
@@ -99,7 +98,6 @@
 &nbsp;&nbsp;- <span class="id" title="var">per_univ_elem_econstructor</span>; <span class="id" title="var">mauto</span> 3;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">try</span> (<span class="id" title="var">etransitivity</span>; [| <span class="id" title="tactic">symmetry</span>]; <span class="id" title="var">eassumption</span>);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>.<br/>
 &nbsp;&nbsp;- <span class="id" title="tactic">econstructor</span>; <span class="id" title="var">saturate_refl</span>; <span class="id" title="var">mauto</span> 3.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="var">mauto</span> 3.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
@@ -132,7 +130,6 @@
 &nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="var">mauto</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">eexists</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="var">per_univ_elem_econstructor</span>; <span class="id" title="var">mauto</span> 3; <span class="id" title="tactic">try</span> <span class="id" title="var">solve_refl</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
@@ -162,7 +159,6 @@
 &nbsp;&nbsp;<span class="id" title="var">handle_per_univ_elem_irrel</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">eexists</span>; <span class="id" title="tactic">split</span>; <span class="id" title="tactic">econstructor</span>; <span class="id" title="var">mauto</span> 3.<br/>
 &nbsp;&nbsp;- <span class="id" title="var">per_univ_elem_econstructor</span>; <span class="id" title="var">mauto</span> 3; <span class="id" title="tactic">try</span> <span class="id" title="var">solve_refl</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>.<br/>
 &nbsp;&nbsp;- <span class="id" title="var">saturate_refl</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="tactic">intuition</span>.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
