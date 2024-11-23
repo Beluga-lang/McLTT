@@ -1,8 +1,8 @@
 From Coq Require Import Morphisms_Relations Relation_Definitions.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import LogicalRelation TermStructureCases UniverseCases.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import LogicalRelation TermStructureCases UniverseCases.
 Import Domain_Notations.
 
 Lemma rel_exp_of_pi_inversion : forall {Γ M M' A B},
@@ -115,7 +115,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_pi_cong : mcltt.
+Hint Resolve rel_exp_pi_cong : mctt.
 
 Lemma rel_exp_pi_sub : forall {i Γ σ Δ A B},
     {{ Γ ⊨s σ : Δ }} ->
@@ -149,7 +149,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_pi_sub : mcltt.
+Hint Resolve rel_exp_pi_sub : mctt.
 
 Lemma rel_exp_fn_cong : forall {i Γ A A' B M M'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -185,7 +185,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_fn_cong : mcltt.
+Hint Resolve rel_exp_fn_cong : mctt.
 
 Lemma rel_exp_fn_sub : forall {Γ σ Δ A M B},
     {{ Γ ⊨s σ : Δ }} ->
@@ -222,7 +222,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_fn_sub : mcltt.
+Hint Resolve rel_exp_fn_sub : mctt.
 
 Lemma rel_exp_app_cong : forall {Γ M M' A B N N'},
     {{ Γ ⊨ M ≈ M' : Π A B }} ->
@@ -250,7 +250,7 @@ Proof with intuition.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_app_cong : mcltt.
+Hint Resolve rel_exp_app_cong : mctt.
 
 Lemma rel_exp_app_sub : forall {Γ σ Δ M A B N},
     {{ Γ ⊨s σ : Δ }} ->
@@ -277,7 +277,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_app_sub : mcltt.
+Hint Resolve rel_exp_app_sub : mctt.
 
 Lemma rel_exp_pi_beta : forall {Γ A M B N},
   {{ Γ , A ⊨ M : B }} ->
@@ -303,7 +303,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_pi_beta : mcltt.
+Hint Resolve rel_exp_pi_beta : mctt.
 
 Lemma rel_exp_pi_eta : forall {Γ M A B},
   {{ Γ ⊨ M : Π A B }} ->
@@ -325,4 +325,4 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_pi_eta : mcltt.
+Hint Resolve rel_exp_pi_eta : mctt.

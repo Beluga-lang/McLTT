@@ -1,10 +1,10 @@
 From Coq Require Import Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export PER.
-From Mcltt.Core.Soundness.Weakening Require Export Definitions.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export PER.
+From Mctt.Core.Soundness.Weakening Require Export Definitions.
 
 Import Domain_Notations.
 Global Open Scope predicate_scope.
@@ -44,7 +44,7 @@ Inductive glu_nat : ctx -> exp -> domain -> Prop :=
      glu_nat Γ M d{{{ ⇑ a m }}} }.
 
 #[export]
-Hint Constructors glu_nat : mcltt.
+Hint Constructors glu_nat : mctt.
 
 Definition nat_glu_typ_pred i : glu_typ_pred := fun Γ A => {{ Γ ⊢ A ≈ ℕ : Type@i }}.
 Arguments nat_glu_typ_pred i Γ A/.
@@ -150,7 +150,7 @@ Variant eq_glu_exp_pred i m n R P El : glu_exp_pred :=
   pi_glu_typ_pred
   pi_glu_exp_pred
   eq_glu_typ_pred
-  glu_eq eq_glu_exp_pred : mcltt.
+  glu_eq eq_glu_exp_pred : mctt.
 
 Definition univ_glu_typ_pred j i : glu_typ_pred := fun Γ A => {{ Γ ⊢ A ≈ Type@j :  Type@i }}.
 Arguments univ_glu_typ_pred j i Γ A/.
@@ -221,7 +221,7 @@ Section Gluing.
 End Gluing.
 
 #[export]
-Hint Constructors glu_univ_elem_core : mcltt.
+Hint Constructors glu_univ_elem_core : mctt.
 
 Equations glu_univ_elem (i : nat) : glu_typ_pred -> glu_exp_pred -> domain -> Prop by wf i :=
 | i => glu_univ_elem_core i (fun j lt_j_i a Γ A => exists P El, {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} /\ {{ Γ ⊢ A ® P }}).
@@ -333,7 +333,7 @@ Variant glu_elem_bot i a Γ A M m : Prop :=
     (forall Δ σ M', {{ Δ ⊢w σ : Γ }} -> {{ Rne m in length Δ ↘ M' }} -> {{ Δ ⊢ M[σ] ≈ M' : A[σ] }}) ->
     {{ Γ ⊢ M : A ® m ∈ glu_elem_bot i a }}.
 #[export]
-Hint Constructors glu_elem_bot : mcltt.
+Hint Constructors glu_elem_bot : mctt.
 
 Variant glu_elem_top i a Γ A M m : Prop :=
 | glu_elem_top_make : forall P El,
@@ -344,7 +344,7 @@ Variant glu_elem_top i a Γ A M m : Prop :=
     (forall Δ σ w, {{ Δ ⊢w σ : Γ }} -> {{ Rnf ⇓ a m in length Δ ↘ w }} -> {{ Δ ⊢ M[σ] ≈ w : A[σ] }}) ->
     {{ Γ ⊢ M : A ® m ∈ glu_elem_top i a }}.
 #[export]
-Hint Constructors glu_elem_top : mcltt.
+Hint Constructors glu_elem_top : mctt.
 
 Variant glu_typ_top i a Γ A : Prop :=
 | glu_typ_top_make :
@@ -353,7 +353,7 @@ Variant glu_typ_top i a Γ A : Prop :=
     (forall Δ σ A', {{ Δ ⊢w σ : Γ }} -> {{ Rtyp a in length Δ ↘ A' }} -> {{ Δ ⊢ A[σ] ≈ A' : Type@i }}) ->
     {{ Γ ⊢ A ® glu_typ_top i a }}.
 #[export]
-Hint Constructors glu_typ_top : mcltt.
+Hint Constructors glu_typ_top : mctt.
 
 Variant glu_rel_typ_with_sub i Δ A σ ρ : Prop :=
 | mk_glu_rel_typ_with_sub :

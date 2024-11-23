@@ -1,8 +1,8 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation SubtypingCases TermStructureCases UniverseCases.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Soundness Require Import LogicalRelation SubtypingCases TermStructureCases UniverseCases.
 Import Domain_Notations.
 
 Lemma presup_glu_rel_sub : forall {Γ σ Δ},
@@ -23,7 +23,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_left_glu_rel_sub : mcltt.
+Hint Resolve presup_left_glu_rel_sub : mctt.
 
 Lemma presup_right_glu_rel_sub : forall {Γ σ Δ},
     {{ Γ ⊩s σ : Δ }} ->
@@ -34,7 +34,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_right_glu_rel_sub : mcltt.
+Hint Resolve presup_right_glu_rel_sub : mctt.
 
 Lemma glu_rel_sub_id : forall {Γ},
     {{ ⊩ Γ }} ->
@@ -48,7 +48,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_id : mcltt.
+Hint Resolve glu_rel_sub_id : mctt.
 
 Lemma glu_rel_sub_weaken : forall {Γ A},
     {{ ⊩ Γ, A }} ->
@@ -64,7 +64,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_weaken : mcltt.
+Hint Resolve glu_rel_sub_weaken : mctt.
 
 Lemma glu_rel_sub_compose : forall {Γ1 σ2 Γ2 σ1 Γ3},
     {{ Γ1 ⊩s σ2 : Γ2 }} ->
@@ -88,7 +88,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_compose : mcltt.
+Hint Resolve glu_rel_sub_compose : mctt.
 
 Lemma glu_rel_sub_extend : forall {Γ σ Δ M A i},
     {{ Γ ⊩s σ : Δ }} ->
@@ -145,4 +145,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_sub_extend : mcltt.
+Hint Resolve glu_rel_sub_extend : mctt.

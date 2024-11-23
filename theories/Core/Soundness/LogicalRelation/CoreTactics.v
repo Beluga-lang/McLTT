@@ -1,8 +1,8 @@
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Soundness.LogicalRelation Require Import Definitions.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Soundness.LogicalRelation Require Import Definitions.
 
 Ltac basic_invert_glu_univ_elem H :=
   progress simp glu_univ_elem in H;

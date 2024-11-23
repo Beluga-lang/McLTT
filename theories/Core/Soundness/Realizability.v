@@ -1,9 +1,9 @@
 From Coq Require Import Nat.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness.LogicalRelation Require Export Core.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Soundness.LogicalRelation Require Export Core.
 Import Domain_Notations.
 
 Open Scope list_scope.
@@ -95,7 +95,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mcltt.
+Hint Rewrite -> wf_sub_eq_extend_compose using mauto 4 : mctt.
 
 Theorem realize_glu_univ_elem_gen : forall a i P El,
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -197,7 +197,7 @@ Proof.
       simplify_evals.
       destruct (H2 _ ltac:(eassumption) _ ltac:(eassumption)) as [? []].
       assert (IEl {{{ Δ, IT[σ] }}} {{{ IT[σ][Wk] }}} {{{ #0 }}} d{{{ ⇑! a (length Δ) }}}) by mauto 3 using var_glu_elem_bot.
-      autorewrite with mcltt in H31.
+      autorewrite with mctt in H31.
       specialize (H14 {{{ Δ, IT[σ] }}} {{{ σ∘Wk }}} _ _ ltac:(mauto) ltac:(eassumption) ltac:(eassumption)).
       specialize (H8 _ _ _ ltac:(eassumption) ltac:(eassumption)) as [].
       etransitivity; [| eapply H33]; mauto 3.
@@ -219,7 +219,7 @@ Proof.
     unshelve (econstructor; eauto).
     + trivial.
     + eassert {{ Δ ⊢ M[σ] N : ^_ }} by (eapply wf_app'; eassumption).
-      autorewrite with mcltt in H25.
+      autorewrite with mctt in H25.
       trivial.
     + mauto using domain_app_per.
     + intros.
@@ -227,7 +227,7 @@ Proof.
       progressive_invert H26.
       destruct (H15 _ _ _ _ _ ltac:(eassumption) ltac:(eassumption) ltac:(eassumption) equiv_n).
       handle_functional_glu_univ_elem.
-      autorewrite with mcltt.
+      autorewrite with mctt.
 
       etransitivity.
       * rewrite sub_decompose_q_typ; mauto 4.
@@ -240,7 +240,7 @@ Proof.
            bulky_rewrite_in H12.
         -- rewrite <- @exp_eq_sub_compose_typ; mauto 3.
         -- econstructor; mauto 3.
-           autorewrite with mcltt.
+           autorewrite with mctt.
            rewrite <- @exp_eq_sub_compose_typ; mauto 3.
 
   - handle_functional_glu_univ_elem.
@@ -263,9 +263,9 @@ Proof.
       destruct (H11 _ _ _ ltac:(eassumption) ltac:(eassumption)) as [].
       specialize (H29 _ _ _ H19 H9).
       rewrite H5 in *.
-      autorewrite with mcltt.
+      autorewrite with mctt.
       eassert {{ Δ ⊢ M[σ] : ^_ }} by (mauto 2).
-      autorewrite with mcltt in H30.
+      autorewrite with mctt in H30.
       rewrite @wf_exp_eq_pi_eta' with (M := {{{ M[σ] }}}); [| trivial].
       cbn [nf_to_exp].
       eapply wf_exp_eq_fn_cong'; eauto.
@@ -275,7 +275,7 @@ Proof.
       simplify_evals.
       destruct (H2 _ ltac:(eassumption) _ ltac:(eassumption)) as [? []].
       specialize (H12 _ _ _ _ ltac:(trivial) (var_glu_elem_bot _ _ _ _ _ _ H H10)).
-      autorewrite with mcltt in H12.
+      autorewrite with mctt in H12.
       specialize (H14 {{{Δ, IT[σ]}}} {{{σ ∘ Wk}}} _ _ ltac:(mauto) ltac:(eassumption) ltac:(eassumption)) as [? []].
       apply_equiv_left.
       destruct_rel_mod_app.
@@ -351,7 +351,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve realize_glu_typ_top realize_glu_elem_top : mcltt.
+Hint Resolve realize_glu_typ_top realize_glu_elem_top : mctt.
 
 Corollary var0_glu_elem : forall {i a P El Γ A},
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->

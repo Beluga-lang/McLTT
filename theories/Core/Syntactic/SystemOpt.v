@@ -1,7 +1,7 @@
 From Coq Require Import Setoid.
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export CoreInversions Presup.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Export CoreInversions Presup.
 Import Syntax_Notations.
 
 Add Parametric Morphism i Γ : (wf_exp Γ)
@@ -44,9 +44,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_subtyp_refl' : mcltt.
+Hint Resolve wf_subtyp_refl' : mctt.
 #[export]
-Remove Hints wf_subtyp_refl : mcltt.
+Remove Hints wf_subtyp_refl : mctt.
 
 Corollary wf_conv' : forall Γ M A i A',
     {{ Γ ⊢ M : A }} ->
@@ -57,9 +57,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_conv' : mcltt.
+Hint Resolve wf_conv' : mctt.
 #[export]
-Remove Hints wf_conv : mcltt.
+Remove Hints wf_conv : mctt.
 
 Corollary wf_exp_eq_conv' : forall Γ M M' A A' i,
    {{ Γ ⊢ M ≈ M' : A }} ->
@@ -70,9 +70,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_conv' : mcltt.
+Hint Resolve wf_exp_eq_conv' : mctt.
 #[export]
-Remove Hints wf_exp_eq_conv : mcltt.
+Remove Hints wf_exp_eq_conv : mctt.
 
 Corollary wf_ctx_eq_extend' : forall {Γ Δ A A' i},
     {{ ⊢ Γ ≈ Δ }} ->
@@ -86,9 +86,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_ctx_eq_extend' : mcltt.
+Hint Resolve wf_ctx_eq_extend' : mctt.
 #[export]
-Remove Hints wf_ctx_eq_extend : mcltt.
+Remove Hints wf_ctx_eq_extend : mctt.
 
 Corollary wf_nat' : forall {Γ i},
     {{ ⊢ Γ }} ->
@@ -100,9 +100,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_nat' : mcltt.
+Hint Resolve wf_nat' : mctt.
 #[export]
-Remove Hints wf_nat : mcltt.
+Remove Hints wf_nat : mctt.
 
 Corollary wf_natrec' : forall {Γ A MZ MS M},
     {{ Γ ⊢ MZ : A[Id,,zero] }} ->
@@ -114,9 +114,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_natrec' : mcltt.
+Hint Resolve wf_natrec' : mctt.
 #[export]
-Remove Hints wf_natrec : mcltt.
+Remove Hints wf_natrec : mctt.
 
 Corollary wf_pi_max : forall {Γ A i B j},
     {{ Γ ⊢ A : Type@i }} ->
@@ -130,7 +130,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_pi_max : mcltt.
+Hint Resolve wf_pi_max : mctt.
 
 Corollary wf_fn' : forall {Γ A M B},
     {{ Γ, A ⊢ M : B }} ->
@@ -140,9 +140,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_fn' : mcltt.
+Hint Resolve wf_fn' : mctt.
 #[export]
-Remove Hints wf_fn : mcltt.
+Remove Hints wf_fn : mctt.
 
 Corollary wf_app' : forall {Γ M N A B},
     {{ Γ ⊢ M : Π A B }} ->
@@ -156,9 +156,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_app' : mcltt.
+Hint Resolve wf_app' : mctt.
 #[export]
-Remove Hints wf_app : mcltt.
+Remove Hints wf_app : mctt.
 
 Lemma wf_exp_eq_typ_sub' : forall Γ σ Δ i j,
     {{ Γ ⊢s σ : Δ }} ->
@@ -167,10 +167,10 @@ Lemma wf_exp_eq_typ_sub' : forall Γ σ Δ i j,
 Proof. mauto 3. Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_typ_sub' : mcltt.
+Hint Resolve wf_exp_eq_typ_sub' : mctt.
 
 #[export]
-Hint Rewrite -> wf_exp_eq_typ_sub' using solve [lia | mauto 3] : mcltt.
+Hint Rewrite -> wf_exp_eq_typ_sub' using solve [lia | mauto 3] : mctt.
 
 Corollary wf_exp_eq_nat_sub' : forall Γ σ Δ i,
     {{ Γ ⊢s σ : Δ }} ->
@@ -182,12 +182,12 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_nat_sub' : mcltt.
+Hint Resolve wf_exp_eq_nat_sub' : mctt.
 #[export]
-Remove Hints wf_exp_eq_nat_sub : mcltt.
+Remove Hints wf_exp_eq_nat_sub : mctt.
 
 #[export]
-Hint Rewrite -> wf_exp_eq_nat_sub' using mautosolve 3 : mcltt.
+Hint Rewrite -> wf_exp_eq_nat_sub' using mautosolve 3 : mctt.
 
 Corollary wf_exp_eq_natrec_cong' : forall {Γ A A' i MZ MZ' MS MS' M M'},
     {{ Γ, ℕ ⊢ A ≈ A' : Type@i }} ->
@@ -200,9 +200,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_natrec_cong' : mcltt.
+Hint Resolve wf_exp_eq_natrec_cong' : mctt.
 #[export]
-Remove Hints wf_exp_eq_natrec_cong : mcltt.
+Remove Hints wf_exp_eq_natrec_cong : mctt.
 
 Corollary wf_exp_eq_natrec_sub' : forall {Γ σ Δ A MZ MS M},
     {{ Γ ⊢s σ : Δ }} ->
@@ -215,9 +215,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_natrec_sub' : mcltt.
+Hint Resolve wf_exp_eq_natrec_sub' : mctt.
 #[export]
-Remove Hints wf_exp_eq_natrec_sub : mcltt.
+Remove Hints wf_exp_eq_natrec_sub : mctt.
 
 Corollary wf_exp_eq_nat_beta_zero' : forall {Γ A MZ MS},
     {{ Γ ⊢ MZ : A[Id,,zero] }} ->
@@ -228,9 +228,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_nat_beta_zero' : mcltt.
+Hint Resolve wf_exp_eq_nat_beta_zero' : mctt.
 #[export]
-Remove Hints wf_exp_eq_nat_beta_zero : mcltt.
+Remove Hints wf_exp_eq_nat_beta_zero : mctt.
 
 Corollary wf_exp_eq_nat_beta_succ' : forall {Γ A MZ MS M},
     {{ Γ ⊢ MZ : A[Id,,zero] }} ->
@@ -242,9 +242,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_nat_beta_succ' : mcltt.
+Hint Resolve wf_exp_eq_nat_beta_succ' : mctt.
 #[export]
-Remove Hints wf_exp_eq_nat_beta_succ : mcltt.
+Remove Hints wf_exp_eq_nat_beta_succ : mctt.
 
 Corollary wf_exp_eq_pi_sub_max : forall {Γ σ Δ A i B j},
     {{ Γ ⊢s σ : Δ }} ->
@@ -259,7 +259,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_pi_sub_max : mcltt.
+Hint Resolve wf_exp_eq_pi_sub_max : mctt.
 
 Corollary wf_exp_eq_pi_cong' : forall {Γ A A' B B' i},
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -270,9 +270,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_pi_cong' : mcltt.
+Hint Resolve wf_exp_eq_pi_cong' : mctt.
 #[export]
-Remove Hints wf_exp_eq_pi_cong : mcltt.
+Remove Hints wf_exp_eq_pi_cong : mctt.
 
 Corollary wf_exp_eq_pi_cong_max : forall {Γ A A' i B B' j},
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -286,7 +286,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_pi_cong_max : mcltt.
+Hint Resolve wf_exp_eq_pi_cong_max : mctt.
 
 Corollary wf_exp_eq_fn_cong' : forall {Γ A A' i B M M'},
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -297,9 +297,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_fn_cong' : mcltt.
+Hint Resolve wf_exp_eq_fn_cong' : mctt.
 #[export]
-Remove Hints wf_exp_eq_fn_cong : mcltt.
+Remove Hints wf_exp_eq_fn_cong : mctt.
 
 Corollary wf_exp_eq_fn_sub' : forall {Γ σ Δ A M B},
     {{ Γ ⊢s σ : Δ }} ->
@@ -310,9 +310,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_fn_sub' : mcltt.
+Hint Resolve wf_exp_eq_fn_sub' : mctt.
 #[export]
-Remove Hints wf_exp_eq_fn_sub : mcltt.
+Remove Hints wf_exp_eq_fn_sub : mctt.
 
 Corollary wf_exp_eq_app_cong' : forall {Γ A B M M' N N'},
     {{ Γ ⊢ M ≈ M' : Π A B }} ->
@@ -326,9 +326,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_app_cong' : mcltt.
+Hint Resolve wf_exp_eq_app_cong' : mctt.
 #[export]
-Remove Hints wf_exp_eq_app_cong : mcltt.
+Remove Hints wf_exp_eq_app_cong : mctt.
 
 Corollary wf_exp_eq_app_sub' : forall {Γ σ Δ A B M N},
     {{ Γ ⊢s σ : Δ }} ->
@@ -343,9 +343,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_app_sub' : mcltt.
+Hint Resolve wf_exp_eq_app_sub' : mctt.
 #[export]
-Remove Hints wf_exp_eq_app_sub : mcltt.
+Remove Hints wf_exp_eq_app_sub : mctt.
 
 Corollary wf_exp_eq_pi_beta' : forall {Γ A B M N},
     {{ Γ, A ⊢ M : B }} ->
@@ -360,9 +360,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_pi_beta' : mcltt.
+Hint Resolve wf_exp_eq_pi_beta' : mctt.
 #[export]
-Remove Hints wf_exp_eq_pi_beta : mcltt.
+Remove Hints wf_exp_eq_pi_beta : mctt.
 
 Corollary wf_exp_eq_pi_eta' : forall {Γ A B M},
     {{ Γ ⊢ M : Π A B }} ->
@@ -375,9 +375,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_pi_eta' : mcltt.
+Hint Resolve wf_exp_eq_pi_eta' : mctt.
 #[export]
-Remove Hints wf_exp_eq_pi_eta : mcltt.
+Remove Hints wf_exp_eq_pi_eta : mctt.
 
 Lemma wf_subtyp_pi' : forall Γ A A' B B' i,
     {{ Γ ⊢ A ≈ A' : Type@i }} ->
@@ -392,9 +392,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_subtyp_pi' : mcltt.
+Hint Resolve wf_subtyp_pi' : mctt.
 #[export]
-Remove Hints wf_subtyp_pi : mcltt.
+Remove Hints wf_subtyp_pi : mctt.
 
 
 Lemma wf_exp_eq_refl_sub' : forall Γ Δ σ A M,
@@ -407,6 +407,6 @@ Qed.
 
 
 #[export]
-Hint Resolve wf_exp_eq_refl_sub' : mcltt.
+Hint Resolve wf_exp_eq_refl_sub' : mctt.
 #[export]
-Remove Hints wf_exp_eq_refl_sub : mcltt.
+Remove Hints wf_exp_eq_refl_sub : mctt.

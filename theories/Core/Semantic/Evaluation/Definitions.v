@@ -1,5 +1,5 @@
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export Domain.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export Domain.
 Import Domain_Notations.
 
 Reserved Notation "'⟦' M '⟧' ρ '↘' r" (in custom judg at level 80, M custom exp at level 99, ρ custom domain at level 99, r custom domain at level 99).
@@ -114,4 +114,4 @@ Combined Scheme eval_mut_ind from
   eval_sub_mut_ind.
 
 #[export]
-Hint Constructors eval_exp eval_natrec eval_app eval_eqrec eval_sub : mcltt.
+Hint Constructors eval_exp eval_natrec eval_app eval_eqrec eval_sub : mctt.

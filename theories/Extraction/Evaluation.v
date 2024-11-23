@@ -1,8 +1,8 @@
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Import Evaluation.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Import Evaluation.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -74,7 +74,7 @@ with eval_sub_order : sub -> env -> Prop :=
      eval_sub_order {{{ σ ∘ τ }}} p ).
 
 #[local]
-Hint Constructors eval_exp_order eval_natrec_order eval_app_order eval_sub_order : mcltt.
+Hint Constructors eval_exp_order eval_natrec_order eval_app_order eval_sub_order : mctt.
 
 Lemma eval_exp_order_sound : forall m p a,
     {{ ⟦ m ⟧ p ↘ a }} ->
@@ -96,7 +96,7 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; eauto).
 Qed.
 
 #[export]
-Hint Resolve eval_exp_order_sound eval_natrec_order_sound eval_app_order_sound eval_sub_order_sound : mcltt.
+Hint Resolve eval_exp_order_sound eval_natrec_order_sound eval_app_order_sound eval_sub_order_sound : mctt.
 
 #[local]
 Ltac impl_obl_tac1 :=

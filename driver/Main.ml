@@ -1,5 +1,5 @@
-module Parser = MclttExtracted.Parser
-module Entrypoint = MclttExtracted.Entrypoint
+module Parser = McttExtracted.Parser
+module Entrypoint = McttExtracted.Entrypoint
 open Parser
 open MenhirLibParser.Inter
 open Entrypoint

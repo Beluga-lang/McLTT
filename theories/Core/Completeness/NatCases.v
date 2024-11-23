@@ -1,9 +1,9 @@
 From Coq Require Import Morphisms_Relations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import LogicalRelation SubstitutionCases TermStructureCases UniverseCases.
-From Mcltt.Core.Semantic Require Import Realizability.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import LogicalRelation SubstitutionCases TermStructureCases UniverseCases.
+From Mctt.Core.Semantic Require Import Realizability.
 Import Domain_Notations.
 
 Lemma rel_exp_of_nat_inversion : forall {Γ M M'},
@@ -40,7 +40,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_of_nat : mcltt.
+Hint Resolve rel_exp_of_nat : mctt.
 
 Ltac eexists_rel_exp_of_nat :=
   apply rel_exp_of_nat;
@@ -61,7 +61,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve valid_exp_nat : mcltt.
+Hint Resolve valid_exp_nat : mctt.
 
 Lemma rel_exp_nat_sub : forall {Γ σ i Δ},
     {{ Γ ⊨s σ : Δ }} ->
@@ -79,7 +79,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_nat_sub : mcltt.
+Hint Resolve rel_exp_nat_sub : mctt.
 
 Lemma valid_exp_zero : forall {Γ},
     {{ ⊨ Γ }} ->
@@ -92,7 +92,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve valid_exp_zero : mcltt.
+Hint Resolve valid_exp_zero : mctt.
 
 Lemma rel_exp_zero_sub : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
@@ -107,7 +107,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_zero_sub : mcltt.
+Hint Resolve rel_exp_zero_sub : mctt.
 
 Lemma rel_exp_succ_sub : forall {Γ σ Δ M},
     {{ Γ ⊨s σ : Δ }} ->
@@ -126,7 +126,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_succ_sub : mcltt.
+Hint Resolve rel_exp_succ_sub : mctt.
 
 Lemma rel_exp_succ_cong : forall {Γ M M'},
     {{ Γ ⊨ M ≈ M' : ℕ }} ->
@@ -141,7 +141,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_succ_cong : mcltt.
+Hint Resolve rel_exp_succ_cong : mctt.
 
 Lemma rel_exp_of_sub_id_zero_inversion : forall {Γ M M' A},
     {{ Γ ⊨ M ≈ M' : A[Id,,zero] }} ->
@@ -498,7 +498,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_natrec_cong : mcltt.
+Hint Resolve rel_exp_natrec_cong : mctt.
 
 Lemma eval_natrec_sub_rel : forall {Γ env_relΓ σ Δ env_relΔ MZ MZ' MS MS' A A' i m m'},
     {{ DF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }} ->
@@ -676,7 +676,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_natrec_sub : mcltt.
+Hint Resolve rel_exp_natrec_sub : mctt.
 
 Lemma rel_exp_nat_beta_zero : forall {Γ MZ MS A},
     {{ Γ ⊨ MZ : A[Id,,zero] }} ->
@@ -711,7 +711,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_nat_beta_zero : mcltt.
+Hint Resolve rel_exp_nat_beta_zero : mctt.
 
 Lemma rel_exp_nat_beta_succ_rel_typ : forall {Γ env_relΓ A i M},
     {{ DF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }} ->
@@ -768,4 +768,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_nat_beta_succ : mcltt.
+Hint Resolve rel_exp_nat_beta_succ : mctt.

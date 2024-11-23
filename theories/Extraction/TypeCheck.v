@@ -1,12 +1,12 @@
 From Coq Require Import Morphisms_Relations.
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Algorithmic Require Import Typing.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Import Consequences Realizability.
-From Mcltt.Extraction Require Import NbE PseudoMonadic Subtyping.
-From Mcltt.Frontend Require Import Elaborator.
+From Mctt Require Import LibTactics.
+From Mctt.Algorithmic Require Import Typing.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Import Consequences Realizability.
+From Mctt.Extraction Require Import NbE PseudoMonadic Subtyping.
+From Mctt.Frontend Require Import Elaborator.
 Import Domain_Notations.
 
 Section lookup.
@@ -68,7 +68,7 @@ Section type_check.
   .
 
   #[local]
-  Hint Constructors type_check_order type_infer_order : mcltt.
+  Hint Constructors type_check_order type_infer_order : mctt.
 
   Lemma user_exp_to_type_infer_order : forall M,
       user_exp M ->
@@ -348,7 +348,7 @@ Section type_check.
 End type_check.
 
 #[local]
-Hint Resolve type_check_order_soundness type_infer_order_soundness : mcltt.
+Hint Resolve type_check_order_soundness type_infer_order_soundness : mctt.
 
 Lemma type_check_complete' : forall G M A (HA : exists i, {{ G ⊢ A : Type@i }}),
     {{ G ⊢a M ⟸ A }} ->

@@ -1,8 +1,8 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import ContextCases LogicalRelation UniverseCases.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import ContextCases LogicalRelation UniverseCases.
 Import Domain_Notations.
 
 Lemma rel_sub_id : forall {Γ},
@@ -14,7 +14,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_id : mcltt.
+Hint Resolve rel_sub_id : mctt.
 
 Lemma rel_sub_weaken : forall {Γ A},
     {{ ⊨ Γ, A }} ->
@@ -29,7 +29,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_weaken : mcltt.
+Hint Resolve rel_sub_weaken : mctt.
 
 Lemma rel_sub_compose_cong : forall {Γ τ τ' Γ' σ σ' Γ''},
     {{ Γ ⊨s τ ≈ τ' : Γ' }} ->
@@ -47,7 +47,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_compose_cong : mcltt.
+Hint Resolve rel_sub_compose_cong : mctt.
 
 Lemma rel_sub_extend_cong : forall {i Γ M M' σ σ' Δ A},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
@@ -73,7 +73,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_extend_cong : mcltt.
+Hint Resolve rel_sub_extend_cong : mctt.
 
 Lemma rel_sub_id_compose_right : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
@@ -87,7 +87,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_id_compose_right : mcltt.
+Hint Resolve rel_sub_id_compose_right : mctt.
 
 Lemma rel_sub_id_compose_left : forall {Γ σ Δ},
     {{ Γ ⊨s σ : Δ }} ->
@@ -101,7 +101,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_id_compose_left : mcltt.
+Hint Resolve rel_sub_id_compose_left : mctt.
 
 Lemma rel_sub_compose_assoc : forall {Γ σ Γ' σ' Γ'' σ'' Γ'''},
     {{ Γ' ⊨s σ : Γ }} ->
@@ -123,7 +123,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_compose_assoc : mcltt.
+Hint Resolve rel_sub_compose_assoc : mctt.
 
 Lemma rel_sub_extend_compose : forall {Γ τ Γ' M σ Γ'' A i},
     {{ Γ' ⊨s σ : Γ'' }} ->
@@ -153,7 +153,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_extend_compose : mcltt.
+Hint Resolve rel_sub_extend_compose : mctt.
 
 Lemma rel_sub_p_extend : forall {Γ' M σ Γ A},
     {{ Γ' ⊨s σ : Γ }} ->
@@ -174,7 +174,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_p_extend : mcltt.
+Hint Resolve rel_sub_p_extend : mctt.
 
 Lemma rel_sub_extend : forall {Γ' σ Γ A},
     {{ Γ' ⊨s σ : Γ, A }} ->
@@ -195,7 +195,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_extend : mcltt.
+Hint Resolve rel_sub_extend : mctt.
 
 Lemma rel_sub_sym : forall {Γ σ σ' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
@@ -211,7 +211,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_sym : mcltt.
+Hint Resolve rel_sub_sym : mctt.
 
 Lemma rel_sub_trans : forall {Γ σ σ' σ'' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
@@ -231,7 +231,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_trans : mcltt.
+Hint Resolve rel_sub_trans : mctt.
 
 #[export]
 Instance rel_sub_PER {Γ A} : PER (rel_sub_under_ctx Γ A).
@@ -253,7 +253,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_conv : mcltt.
+Hint Resolve rel_sub_conv : mctt.
 
 Lemma presup_rel_sub : forall {Γ σ σ' Δ},
     {{ Γ ⊨s σ ≈ σ' : Δ }} ->
@@ -284,4 +284,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_sub_eq_subtyp : mcltt.
+Hint Resolve rel_sub_eq_subtyp : mctt.

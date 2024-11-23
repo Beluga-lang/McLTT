@@ -1,7 +1,7 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export Domain Evaluation Readback.
-From Mcltt.Core.Syntactic Require Export System.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export Domain Evaluation Readback.
+From Mctt.Core.Syntactic Require Export System.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -14,7 +14,7 @@ Inductive initial_env : ctx -> env -> Prop :=
      initial_env (A :: Γ) d{{{ ρ ↦ ⇑! a (length Γ) }}}).
 
 #[export]
-Hint Constructors initial_env : mcltt.
+Hint Constructors initial_env : mctt.
 
 Lemma functional_initial_env : forall Γ ρ,
     initial_env Γ ρ ->
@@ -29,7 +29,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve functional_initial_env : mcltt.
+Hint Resolve functional_initial_env : mctt.
 
 (** In the following spec, we do not care (for now)
     whether [a] is the evaluation result of A or not.
@@ -46,7 +46,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve initial_env_spec : mcltt.
+Hint Resolve initial_env_spec : mctt.
 
 Ltac functional_initial_env_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_initial_env equality between" o1 "and" o2 "cannot be solved by mauto" in
@@ -65,7 +65,7 @@ Inductive nbe : ctx -> exp -> typ -> nf -> Prop :=
      nbe Γ M A w ).
 
 #[export]
-Hint Constructors nbe : mcltt.
+Hint Constructors nbe : mctt.
 
 Lemma functional_nbe : forall Γ M A w w',
     nbe Γ M A w ->
@@ -81,7 +81,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve functional_nbe : mcltt.
+Hint Resolve functional_nbe : mctt.
 
 Lemma nbe_cumu : forall {Γ A i W},
     nbe Γ A {{{ Type@i }}} W ->
@@ -120,7 +120,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve lift_nbe_max_left lift_nbe_max_right : mcltt.
+Hint Resolve lift_nbe_max_left lift_nbe_max_right : mctt.
 
 Lemma functional_nbe_of_typ : forall Γ A i j W W',
     nbe Γ A {{{ Type@i }}} W ->
@@ -131,7 +131,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve functional_nbe_of_typ : mcltt.
+Hint Resolve functional_nbe_of_typ : mctt.
 
 
 Inductive nbe_ty : ctx -> typ -> nf -> Prop :=
@@ -142,7 +142,7 @@ Inductive nbe_ty : ctx -> typ -> nf -> Prop :=
      nbe_ty Γ M W ).
 
 #[export]
-Hint Constructors nbe_ty : mcltt.
+Hint Constructors nbe_ty : mctt.
 
 Lemma functional_nbe_ty : forall Γ M w w',
     nbe_ty Γ M w ->
@@ -166,7 +166,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve functional_nbe_ty nbe_type_to_nbe_ty : mcltt.
+Hint Resolve functional_nbe_ty nbe_type_to_nbe_ty : mctt.
 
 Ltac functional_nbe_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_nbe equality between" o1 "and" o2 "cannot be solved by mauto" in

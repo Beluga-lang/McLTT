@@ -1,5 +1,5 @@
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Export SystemOpt.
 Import Syntax_Notations.
 
 Generalizable All Variables.
@@ -18,4 +18,4 @@ Inductive weakening : ctx -> sub -> ctx -> Prop :=
 where "Γ ⊢w σ : Δ" := (weakening Γ σ Δ) (in custom judg) : type_scope.
 
 #[export]
- Hint Constructors weakening : mcltt.
+ Hint Constructors weakening : mctt.

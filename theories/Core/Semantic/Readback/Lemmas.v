@@ -1,9 +1,9 @@
 From Coq Require Import Lia PeanoNat Relations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Import Evaluation.
-From Mcltt.Core.Semantic.Readback Require Import Definitions.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Import Evaluation.
+From Mctt.Core.Semantic.Readback Require Import Definitions.
 Import Domain_Notations.
 
 Section functional_read.
@@ -53,7 +53,7 @@ Section functional_read.
 End functional_read.
 
 #[export]
-Hint Resolve functional_read_nf functional_read_ne functional_read_typ : mcltt.
+Hint Resolve functional_read_nf functional_read_ne functional_read_typ : mctt.
 
 Ltac functional_read_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_read equality between" o1 "and" o2 "cannot be solved by mauto" in

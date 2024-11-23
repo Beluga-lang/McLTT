@@ -1,9 +1,9 @@
 From Coq Require Import Lia Morphisms_Relations PeanoNat Relation_Definitions.
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export NbE PER.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export NbE PER.
 Import Domain_Notations.
 
 Lemma per_nat_then_per_top : forall {n m},
@@ -16,7 +16,7 @@ Proof with solve [destruct_conjs; eexists; repeat econstructor; eauto].
 Qed.
 
 #[export]
-Hint Resolve per_nat_then_per_top : mcltt.
+Hint Resolve per_nat_then_per_top : mctt.
 
 Lemma realize_per_univ_elem_gen : forall {i a a' R},
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
@@ -95,7 +95,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_univ_then_per_top_typ : mcltt.
+Hint Resolve per_univ_then_per_top_typ : mctt.
 
 Corollary per_bot_then_per_elem : forall {i a a' R c c'},
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ R }} ->
@@ -116,7 +116,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_elem_then_per_top : mcltt.
+Hint Resolve per_elem_then_per_top : mctt.
 
 Lemma per_ctx_then_per_env_initial_env : forall {Γ Γ' env_rel},
     {{ EF Γ ≈ Γ' ∈ per_ctx_env ↘ env_rel }} ->

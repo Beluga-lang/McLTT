@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export CtxSub.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Export CtxSub.
 Import Syntax_Notations.
 
 Lemma ctx_eq_refl : forall {Γ}, {{ ⊢ Γ }} -> {{ ⊢ Γ ≈ Γ }}.
@@ -9,7 +9,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve ctx_eq_refl : mcltt.
+Hint Resolve ctx_eq_refl : mctt.
 
 Lemma ctx_eq_sym : forall {Γ Δ}, {{ ⊢ Γ ≈ Δ }} -> {{ ⊢ Δ ≈ Γ }}.
 Proof.
@@ -19,7 +19,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve ctx_eq_sym : mcltt.
+Hint Resolve ctx_eq_sym : mctt.
 
 Lemma ctxeq_exp : forall {Γ Δ M A}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ M : A }} -> {{ Δ ⊢ M : A }}.
 Proof. mauto. Qed.
@@ -37,7 +37,7 @@ Lemma ctxeq_subtyp : forall {Γ Δ A B}, {{ ⊢ Γ ≈ Δ }} -> {{ Γ ⊢ A ⊆ 
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve ctxeq_exp ctxeq_exp_eq ctxeq_sub ctxeq_sub_eq ctxeq_subtyp : mcltt.
+Hint Resolve ctxeq_exp ctxeq_exp_eq ctxeq_sub ctxeq_sub_eq ctxeq_subtyp : mctt.
 
 
 Lemma ctx_eq_trans : forall {Γ0 Γ1 Γ2}, {{ ⊢ Γ0 ≈ Γ1 }} -> {{ ⊢ Γ1 ≈ Γ2 }} -> {{ ⊢ Γ0 ≈ Γ2 }}.
@@ -58,7 +58,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve ctx_eq_trans : mcltt.
+Hint Resolve ctx_eq_trans : mctt.
 
 #[export]
 Instance wf_ctx_PER : PER wf_ctx_eq.

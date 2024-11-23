@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Soundness Require Import
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Soundness Require Import
   ContextCases
   FunctionCases
   NatCases
@@ -8,7 +8,7 @@ From Mcltt.Core.Soundness Require Import
   SubtypingCases
   TermStructureCases
   UniverseCases.
-From Mcltt.Core.Soundness Require Export LogicalRelation.
+From Mctt.Core.Soundness Require Export LogicalRelation.
 Import Domain_Notations.
 
 Section soundness_fundamental.

@@ -1,8 +1,8 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Soundness Require Import LogicalRelation.
 Import Domain_Notations.
 
 Lemma presup_glu_rel_exp : forall {Γ M A},
@@ -24,7 +24,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_ctx_glu_rel_exp : mcltt.
+Hint Resolve presup_ctx_glu_rel_exp : mctt.
 
 Lemma presup_typ_glu_rel_exp : forall {Γ M A},
     {{ Γ ⊩ M : A }} ->
@@ -35,7 +35,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_typ_glu_rel_exp : mcltt.
+Hint Resolve presup_typ_glu_rel_exp : mctt.
 
 Lemma glu_rel_exp_vlookup : forall {Γ x A},
     {{ ⊩ Γ }} ->
@@ -78,7 +78,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_vlookup : mcltt.
+Hint Resolve glu_rel_exp_vlookup : mctt.
 
 Lemma glu_rel_exp_sub : forall {Γ σ Δ M A},
     {{ Γ ⊩s σ : Δ }} ->
@@ -106,4 +106,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_sub : mcltt.
+Hint Resolve glu_rel_exp_sub : mctt.
