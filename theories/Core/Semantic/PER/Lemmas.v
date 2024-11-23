@@ -184,7 +184,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve per_eq_sym : mcltt.
+Hint Resolve per_eq_sym : mctt.
 
 Lemma per_eq_trans : forall point_rel m1 m2 n n' n'',
     PER point_rel ->
@@ -198,7 +198,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve per_eq_trans : mcltt.
+Hint Resolve per_eq_trans : mctt.
 
 #[export]
 Instance per_eq_PER {point_rel m1 m2} {Hpoint : PER point_rel} : PER (per_eq point_rel m1 m2).

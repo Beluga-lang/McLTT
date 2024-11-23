@@ -82,7 +82,7 @@ Variant per_eq (point_rel : relation domain) m1 m2' : relation domain :=
      {{ Dom ⇑ a n ≈ ⇑ a' n' ∈ per_eq point_rel m1 m2' }} }
 .
 #[export]
-Hint Constructors per_eq : mcltt.
+Hint Constructors per_eq : mctt.
 
 Variant per_ne : relation domain :=
 | per_ne_neut :
@@ -319,7 +319,7 @@ Variant cons_per_ctx_env tail_rel (head_rel : forall {ρ ρ'} (equiv_ρ_ρ' : {{
         {{ Dom ^(ρ 0) ≈ ^(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }} ->
         {{ Dom ρ ≈ ρ' ∈ cons_per_ctx_env tail_rel (@head_rel) }} }.
 #[export]
-Hint Constructors cons_per_ctx_env : mcltt.
+Hint Constructors cons_per_ctx_env : mctt.
 
 Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
 | per_ctx_env_nil :

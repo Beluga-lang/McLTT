@@ -679,7 +679,7 @@ Proof.
 Qed.
 
 #[local]
- Hint Resolve glu_nat_resp_per_nat : mcltt.
+ Hint Resolve glu_nat_resp_per_nat : mctt.
 
 #[local]
   Ltac resp_per_IH :=
@@ -965,7 +965,7 @@ Proof.
       destruct_rel_mod_eval.
       simplify_evals.
       deepexec H1 ltac:(fun H => pose proof H).
-      autorewrite with mcltt in *.
+      autorewrite with mctt in *.
       mauto 3.
 
   - simpl_glu_rel.
@@ -1043,7 +1043,7 @@ Proof.
     split; [mauto 3 |].
     intros.
     saturate_weakening_escape.
-    autorewrite with mcltt.
+    autorewrite with mctt.
     mauto 3.
   - simpl_glu_rel.
     econstructor; repeat split; mauto 3;

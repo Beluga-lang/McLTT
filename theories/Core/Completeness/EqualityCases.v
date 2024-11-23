@@ -30,7 +30,7 @@ Proof.
   per_univ_elem_econstructor; mauto 3; try solve_refl.
 Qed.
 #[export]
-Hint Resolve rel_exp_eq_cong : mcltt.
+Hint Resolve rel_exp_eq_cong : mctt.
 
 Lemma valid_exp_eq : forall {Γ i A M1 M2},
     {{ Γ ⊨ A : Type@i }} ->
@@ -40,7 +40,7 @@ Lemma valid_exp_eq : forall {Γ i A M1 M2},
 Proof. mauto. Qed.
 
 #[export]
-Hint Resolve valid_exp_eq : mcltt.
+Hint Resolve valid_exp_eq : mctt.
 
 Lemma rel_exp_refl_cong : forall {Γ i A A' M M'},
     {{ Γ ⊨ A ≈ A' : Type@i }} ->
@@ -67,7 +67,7 @@ Proof.
     symmetry; mauto 3.
 Qed.
 #[export]
-Hint Resolve rel_exp_refl_cong : mcltt.
+Hint Resolve rel_exp_refl_cong : mctt.
 
 Lemma rel_exp_eq_sub : forall {Γ σ Δ i A M1 M2},
     {{ Γ ⊨s σ : Δ }} ->
@@ -97,7 +97,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_eq_sub : mcltt.
+Hint Resolve rel_exp_eq_sub : mctt.
 
 Lemma rel_exp_refl_sub : forall {Γ σ Δ i A M},
     {{ Γ ⊨s σ : Δ }} ->
@@ -126,7 +126,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_refl_sub : mcltt.
+Hint Resolve rel_exp_refl_sub : mctt.
 
 Lemma rel_exp_eqrec_sub : forall {Γ σ Δ i A M1 M2 j B BR N},
     {{ Γ ⊨s σ : Δ }} ->
@@ -208,7 +208,7 @@ Proof.
     It might be better to do some optimization first. *)
 Admitted.
 #[export]
-Hint Resolve rel_exp_eqrec_sub : mcltt.
+Hint Resolve rel_exp_eqrec_sub : mctt.
 
 Lemma rel_exp_eqrec_cong : forall {Γ i A A' M1 M1' M2 M2' j B B' BR BR' N N'},
     {{ Γ ⊨ A : Type@i }} ->
@@ -226,7 +226,7 @@ Lemma rel_exp_eqrec_cong : forall {Γ i A A' M1 M1' M2 M2' j B B' BR BR' N N'},
 Proof.
 Admitted.
 #[export]
-Hint Resolve rel_exp_eqrec_cong : mcltt.
+Hint Resolve rel_exp_eqrec_cong : mctt.
 
 Lemma rel_exp_eqrec_beta : forall {Γ i A M j B BR},
     {{ Γ ⊨ A : Type@i }} ->
@@ -239,4 +239,4 @@ Lemma rel_exp_eqrec_beta : forall {Γ i A M j B BR},
 Proof.
 Admitted.
 #[export]
-Hint Resolve rel_exp_eqrec_beta : mcltt.
+Hint Resolve rel_exp_eqrec_beta : mctt.
