@@ -1,9 +1,9 @@
 From Coq Require Import Morphisms_Relations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import ContextCases LogicalRelation SubstitutionCases SubtypingCases TermStructureCases UniverseCases VariableCases.
-From Mcltt.Core.Semantic Require Import Realizability.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import ContextCases LogicalRelation SubstitutionCases SubtypingCases TermStructureCases UniverseCases VariableCases.
+From Mctt.Core.Semantic Require Import Realizability.
 Import Domain_Notations.
 
 Lemma rel_exp_eq_cong : forall {Γ i A A' M1 M1' M2 M2'},
