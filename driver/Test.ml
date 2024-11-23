@@ -1,7 +1,7 @@
 (* Unit test cases for parsing *)
 
 open Main
-open MclttExtracted.Entrypoint
+open McttExtracted.Entrypoint
 
 (** Helper definitions *)
 
@@ -100,8 +100,8 @@ let%expect_test "recursion on a natural number that always returns zero is of \
       0 : Nat
   |}]
 
-let%expect_test "simple_nat.mcl works" =
-  let _ = main_of_example "simple_nat.mcl" in
+let%expect_test "simple_nat.mctt works" =
+  let _ = main_of_example "simple_nat.mctt" in
   [%expect
     {|
     Parsed:
@@ -112,8 +112,8 @@ let%expect_test "simple_nat.mcl works" =
       4 : Nat
   |}]
 
-let%expect_test "simple_rec.mcl works" =
-  let _ = main_of_example "simple_rec.mcl" in
+let%expect_test "simple_rec.mctt works" =
+  let _ = main_of_example "simple_rec.mctt" in
   [%expect
     {|
     Parsed:
@@ -129,8 +129,8 @@ let%expect_test "simple_rec.mcl works" =
       : forall (x1 : Nat) -> Nat
   |}]
 
-let%expect_test "pair.mcl works" =
-  let _ = main_of_example "pair.mcl" in
+let%expect_test "pair.mctt works" =
+  let _ = main_of_example "pair.mctt" in
   [%expect
     {|
     Parsed:
@@ -255,8 +255,8 @@ let%expect_test "pair.mcl works" =
       5 : Nat
   |}]
 
-let%expect_test "vector.mcl works" =
-  let _ = main_of_example "vector.mcl" in
+let%expect_test "vector.mctt works" =
+  let _ = main_of_example "vector.mctt" in
   [%expect
     {|
     Parsed:
@@ -463,8 +463,8 @@ let%expect_test "vector.mcl works" =
       7 : Nat
   |}]
 
-let%expect_test "nary.mcl works" =
-  let _ = main_of_example "nary.mcl" in
+let%expect_test "nary.mctt works" =
+  let _ = main_of_example "nary.mctt" in
   [%expect
     {|
     Parsed:
@@ -553,8 +553,8 @@ let%expect_test "nary.mcl works" =
       6 : Nat
   |}]
 
-let%expect_test "simple_let.mcl works" =
-  let _ = main_of_example "simple_let.mcl" in
+let%expect_test "simple_let.mctt works" =
+  let _ = main_of_example "simple_let.mctt" in
   [%expect
     {| 
       Parsed:
@@ -565,8 +565,8 @@ let%expect_test "simple_let.mcl works" =
         1 : Nat      
   |}]
 
-let%expect_test "let_two_vars.mcl works" =
-  let _ = main_of_example "let_two_vars.mcl" in
+let%expect_test "let_two_vars.mctt works" =
+  let _ = main_of_example "let_two_vars.mctt" in
   [%expect
      {|
        Parsed:
@@ -584,8 +584,8 @@ let%expect_test "let_two_vars.mcl works" =
          0 : Nat
   |}]
 
-let%expect_test "let_nary.mcl works" =
-  let _ = main_of_example "let_nary.mcl" in
+let%expect_test "let_nary.mctt works" =
+  let _ = main_of_example "let_nary.mctt" in
   [%expect
      {|
        Parsed:
@@ -675,8 +675,8 @@ let%expect_test "let_nary.mcl works" =
   |}]
 
 
-let%expect_test "let_vector.mcl works" =
-  let _ = main_of_example "let_vector.mcl" in
+let%expect_test "let_vector.mctt works" =
+  let _ = main_of_example "let_vector.mctt" in
   [%expect
     {| 
       Parsed:

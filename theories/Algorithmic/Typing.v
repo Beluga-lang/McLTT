@@ -1,1 +1,1 @@
-From Mcltt.Algorithmic.Typing Require Export Definitions Lemmas.
+From Mctt.Algorithmic.Typing Require Export Definitions Lemmas.

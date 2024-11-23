@@ -1,1 +1,1 @@
-From Mcltt.Algorithmic.Subtyping Require Export Definitions Lemmas.
+From Mctt.Algorithmic.Subtyping Require Export Definitions Lemmas.

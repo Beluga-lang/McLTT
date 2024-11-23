@@ -1,9 +1,9 @@
 From Coq Require Import Equivalence Lia Morphisms Morphisms_Prop Morphisms_Relations PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Import PER.CoreTactics PER.Definitions.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Import PER.CoreTactics PER.Definitions.
 Import Domain_Notations.
 
 Add Parametric Morphism R0 `(R0_morphism : Proper _ ((@relation_equivalence domain) ==> (@relation_equivalence domain)) R0) A ρ A' ρ' : (rel_mod_eval R0 A ρ A' ρ')
@@ -31,7 +31,7 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve per_bot_sym : mcltt.
+Hint Resolve per_bot_sym : mctt.
 
 Lemma per_bot_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_bot }} ->
@@ -45,7 +45,7 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve per_bot_trans : mcltt.
+Hint Resolve per_bot_trans : mctt.
 
 #[export]
 Instance per_bot_PER : PER per_bot.
@@ -62,7 +62,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve var_per_bot : mcltt.
+Hint Resolve var_per_bot : mctt.
 
 Lemma per_top_sym : forall m n,
     {{ Dom m ≈ n ∈ per_top }} ->
@@ -74,7 +74,7 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve per_top_sym : mcltt.
+Hint Resolve per_top_sym : mctt.
 
 Lemma per_top_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_top }} ->
@@ -88,7 +88,7 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve per_top_trans : mcltt.
+Hint Resolve per_top_trans : mctt.
 
 #[export]
 Instance per_top_PER : PER per_top.
@@ -109,7 +109,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_bot_then_per_top : mcltt.
+Hint Resolve per_bot_then_per_top : mctt.
 
 Lemma per_top_typ_sym : forall m n,
     {{ Dom m ≈ n ∈ per_top_typ }} ->
@@ -121,7 +121,7 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve per_top_typ_sym : mcltt.
+Hint Resolve per_top_typ_sym : mctt.
 
 Lemma per_top_typ_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_top_typ }} ->
@@ -135,7 +135,7 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve per_top_typ_trans : mcltt.
+Hint Resolve per_top_typ_trans : mctt.
 
 #[export]
 Instance per_top_typ_PER : PER per_top_typ.
@@ -153,7 +153,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve per_nat_sym : mcltt.
+Hint Resolve per_nat_sym : mctt.
 
 Lemma per_nat_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_nat }} ->
@@ -165,7 +165,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve per_nat_trans : mcltt.
+Hint Resolve per_nat_trans : mctt.
 
 #[export]
 Instance per_nat_PER : PER per_nat.
@@ -184,7 +184,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve per_eq_sym : mcltt.
+Hint Resolve per_eq_sym : mctt.
 
 Lemma per_eq_trans : forall point_rel m1 m2 n n' n'',
     PER point_rel ->
@@ -198,7 +198,7 @@ Proof with mautosolve 3.
 Qed.
 
 #[export]
-Hint Resolve per_eq_trans : mcltt.
+Hint Resolve per_eq_trans : mctt.
 
 #[export]
 Instance per_eq_PER {point_rel m1 m2} {Hpoint : PER point_rel} : PER (per_eq point_rel m1 m2).
@@ -271,7 +271,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve per_ne_sym : mcltt.
+Hint Resolve per_ne_sym : mctt.
 
 Lemma per_ne_trans : forall m n l,
     {{ Dom m ≈ n ∈ per_ne }} ->
@@ -284,7 +284,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve per_ne_trans : mcltt.
+Hint Resolve per_ne_trans : mctt.
 
 #[export]
 Instance per_ne_PER : PER per_ne.
@@ -676,7 +676,7 @@ Ltac per_univ_elem_econstructor :=
   (repeat intro; hnf; (eapply per_univ_elem_pi' || eapply per_univ_elem_eq')) + basic_per_univ_elem_econstructor.
 
 #[export]
-Hint Resolve per_univ_elem_pi' per_univ_elem_eq' : mcltt.
+Hint Resolve per_univ_elem_pi' per_univ_elem_eq' : mctt.
 
 Lemma per_univ_elem_pi_clean_inversion : forall {i j a a' in_rel ρ ρ' B B' elem_rel},
     {{ DF a ≈ a' ∈ per_univ_elem i ↘ in_rel }} ->
@@ -732,7 +732,7 @@ Proof with solve [eauto].
 Qed.
 
 #[export]
-Hint Resolve per_univ_elem_cumu : mcltt.
+Hint Resolve per_univ_elem_cumu : mctt.
 
 Lemma per_univ_elem_cumu_ge : forall i i' a0 a1 R,
     i <= i' ->
@@ -743,7 +743,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve per_univ_elem_cumu_ge : mcltt.
+Hint Resolve per_univ_elem_cumu_ge : mctt.
 
 Lemma per_univ_elem_cumu_max_left : forall i j a0 a1 R,
     {{ DF a0 ≈ a1 ∈ per_univ_elem i ↘ R }} ->
@@ -832,7 +832,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_subtyp_refl1 : mcltt.
+Hint Resolve per_subtyp_refl1 : mctt.
 
 Lemma per_subtyp_refl2 : forall a b i R,
     {{ DF a ≈ b ∈ per_univ_elem i ↘ R }} ->
@@ -844,7 +844,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_subtyp_refl2 : mcltt.
+Hint Resolve per_subtyp_refl2 : mctt.
 
 Lemma per_subtyp_trans : forall a1 a2 i,
     {{ Sub a1 <: a2 at i }} ->
@@ -871,7 +871,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_subtyp_trans : mcltt.
+Hint Resolve per_subtyp_trans : mctt.
 
 #[export]
 Instance per_subtyp_trans_ins i : Transitive (per_subtyp i).
@@ -899,7 +899,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_subtyp_cumu : mcltt.
+Hint Resolve per_subtyp_cumu : mctt.
 
 Lemma per_subtyp_cumu_left : forall a1 a2 i j,
     {{ Sub a1 <: a2 at i }} ->
@@ -1138,7 +1138,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_ctx_env_cons' : mcltt.
+Hint Resolve per_ctx_env_cons' : mctt.
 
 Ltac per_ctx_env_econstructor :=
   (repeat intro; hnf; eapply per_ctx_env_cons') + econstructor.
@@ -1284,7 +1284,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_ctx_subtyp_trans : mcltt.
+Hint Resolve per_ctx_subtyp_trans : mctt.
 
 #[export]
 Instance per_ctx_subtyp_trans_ins : Transitive per_ctx_subtyp.

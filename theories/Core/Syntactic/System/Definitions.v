@@ -1,8 +1,8 @@
 From Coq Require Import List Classes.RelationClasses Setoid Morphisms.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export Syntax.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Export Syntax.
 Import Syntax_Notations.
 
 Reserved Notation "⊢ Γ" (in custom judg at level 80, Γ custom exp).
@@ -464,7 +464,7 @@ Inductive wf_ctx_eq : ctx -> ctx -> Prop :=
 where "⊢ Γ ≈ Γ'" := (wf_ctx_eq Γ Γ') (in custom judg) : type_scope.
 
 #[export]
-Hint Constructors wf_ctx wf_ctx_eq wf_ctx_sub wf_exp wf_sub wf_exp_eq wf_sub_eq wf_subtyp ctx_lookup : mcltt.
+Hint Constructors wf_ctx wf_ctx_eq wf_ctx_sub wf_exp wf_sub wf_exp_eq wf_sub_eq wf_subtyp ctx_lookup : mctt.
 
 #[export]
 Instance wf_exp_eq_PER Γ A : PER (wf_exp_eq Γ A).
@@ -502,7 +502,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve presup_ctx_sub : mcltt.
+Hint Resolve presup_ctx_sub : mctt.
 
 Lemma presup_ctx_sub_left : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Γ }}.
 Proof with easy.
@@ -510,7 +510,7 @@ Proof with easy.
 Qed.
 
 #[export]
-Hint Resolve presup_ctx_sub_left : mcltt.
+Hint Resolve presup_ctx_sub_left : mctt.
 
 Lemma presup_ctx_sub_right : forall {Γ Δ}, {{ ⊢ Γ ⊆ Δ }} -> {{ ⊢ Δ }}.
 Proof with easy.
@@ -518,7 +518,7 @@ Proof with easy.
 Qed.
 
 #[export]
-Hint Resolve presup_ctx_sub_right : mcltt.
+Hint Resolve presup_ctx_sub_right : mctt.
 
 Lemma presup_subtyp_right : forall {Γ A B}, {{ Γ ⊢ A ⊆ B }} -> exists i, {{ Γ ⊢ B : Type@i }}.
 Proof with mautosolve.
@@ -526,7 +526,7 @@ Proof with mautosolve.
 Qed.
 
 #[export]
-Hint Resolve presup_subtyp_right : mcltt.
+Hint Resolve presup_subtyp_right : mctt.
 
 (** Subtyping Rules without Extra Arguments *)
 
@@ -541,9 +541,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_subtyp' : mcltt.
+Hint Resolve wf_exp_subtyp' : mctt.
 #[export]
-Remove Hints wf_exp_subtyp : mcltt.
+Remove Hints wf_exp_subtyp : mctt.
 
 Lemma wf_sub_subtyp' : forall Γ Δ Δ' σ,
     {{ Γ ⊢s σ : Δ }} ->
@@ -555,9 +555,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_sub_subtyp' : mcltt.
+Hint Resolve wf_sub_subtyp' : mctt.
 #[export]
-Remove Hints wf_sub_subtyp : mcltt.
+Remove Hints wf_sub_subtyp : mctt.
 
 Lemma wf_exp_eq_subtyp' : forall Γ A A' M M',
     {{ Γ ⊢ M ≈ M' : A }} ->
@@ -570,9 +570,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_exp_eq_subtyp' : mcltt.
+Hint Resolve wf_exp_eq_subtyp' : mctt.
 #[export]
-Remove Hints wf_exp_eq_subtyp : mcltt.
+Remove Hints wf_exp_eq_subtyp : mctt.
 
 Lemma wf_sub_eq_subtyp' : forall Γ Δ Δ' σ σ',
     {{ Γ ⊢s σ ≈ σ' : Δ }} ->
@@ -584,9 +584,9 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve wf_sub_eq_subtyp' : mcltt.
+Hint Resolve wf_sub_eq_subtyp' : mctt.
 #[export]
-Remove Hints wf_sub_eq_subtyp : mcltt.
+Remove Hints wf_sub_eq_subtyp : mctt.
 
 Add Parametric Morphism Γ T : (wf_exp_eq Γ T)
     with signature wf_exp_eq Γ T ==> eq ==> iff as wf_exp_eq_morphism_iff1.
@@ -613,15 +613,15 @@ Proof.
 Qed.
 
 #[export]
-Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub wf_exp_eq_eq_sub using mauto 3 : mcltt.
+Hint Rewrite -> wf_exp_eq_typ_sub wf_exp_eq_nat_sub wf_exp_eq_eq_sub using mauto 3 : mctt.
 
 #[export]
 Hint Rewrite -> wf_sub_eq_id_compose_right wf_sub_eq_id_compose_left
                   wf_sub_eq_compose_assoc (* prefer right association *)
-                  wf_sub_eq_p_extend using mauto 4 : mcltt.
+                  wf_sub_eq_p_extend using mauto 4 : mctt.
 
 #[export]
-Hint Rewrite -> wf_exp_eq_sub_id wf_exp_eq_pi_sub using mauto 4 : mcltt.
+Hint Rewrite -> wf_exp_eq_sub_id wf_exp_eq_pi_sub using mauto 4 : mctt.
 
 #[export]
 Instance wf_exp_eq_per_elem Γ T : PERElem _ (wf_exp Γ T) (wf_exp_eq Γ T).

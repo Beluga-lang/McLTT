@@ -1,7 +1,7 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem UniverseCases.
-From Mcltt.Core.Soundness Require Import
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem UniverseCases.
+From Mctt.Core.Soundness Require Import
   ContextCases
   LogicalRelation
   SubstitutionCases
@@ -29,7 +29,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve cons_glu_sub_pred_pi_helper : mcltt.
+Hint Resolve cons_glu_sub_pred_pi_helper : mctt.
 
 Lemma glu_rel_exp_pi : forall {Γ A B i},
     {{ Γ ⊩ A : Type@i }} ->
@@ -78,7 +78,7 @@ Proof.
     unfold univ_glu_exp_pred' in *.
     destruct_conjs.
     handle_functional_glu_univ_elem.
-    autorewrite with mcltt.
+    autorewrite with mctt.
     eassumption.
   - assert {{ Dom ρ ↦ m ≈ ρ ↦ m ∈ env_relΓA }} as HrelΓA by (apply_relation_equivalence; mautosolve 2).
     apply_relation_equivalence.
@@ -104,7 +104,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_pi : mcltt.
+Hint Resolve glu_rel_exp_pi : mctt.
 
 Lemma glu_rel_exp_of_pi : forall {Γ M A B i Sb},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -247,7 +247,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_fn : mcltt.
+Hint Resolve glu_rel_exp_fn : mctt.
 
 Lemma glu_rel_exp_app_helper : forall {Γ M N A B i},
     {{ Γ ⊩ A : Type@i }} ->
@@ -316,7 +316,7 @@ Proof.
   assert (exists mn : domain, {{ $| m & n |↘ mn }} /\ {{ Δ ⊢ M[σ][Id] N[σ] : OT[Id,,N[σ]] ® mn ∈ OEl n equiv_n }}) as [] by mauto 2.
   destruct_conjs.
   functional_eval_rewrite_clear.
-  assert {{ Δ ⊢ N[σ] : A[σ][Id] ® n ∈ Ela }} by (autorewrite with mcltt; eassumption).
+  assert {{ Δ ⊢ N[σ] : A[σ][Id] ® n ∈ Ela }} by (autorewrite with mctt; eassumption).
   assert {{ Δ ⊢s σ∘Id,,N[σ] ® ρ ↦ n ∈ SbΓA }} as Hcons by (unfold SbΓA; mauto 2).
   (on_all_hyp: destruct_glu_rel_by_assumption SbΓA).
   simplify_evals.
@@ -334,7 +334,7 @@ Proof.
     assert {{ Δ ⊢ M[σ][Id] ≈ M[σ] : (Π A B)[σ] }} by mauto 2.
     assert {{ Δ ⊢ M[σ][Id] ≈ M[σ] : Π A[σ] B[q σ] }} by mauto 3.
     assert {{ Δ ⊢ M[σ][Id] N[σ] ≈ M[σ] N[σ] : B[q σ][Id,,N[σ]] }} as HGoal' by mauto 3.
-    autorewrite with mcltt in HGoal'.
+    autorewrite with mctt in HGoal'.
     eassumption.
   }
   assert {{ Δ ⊢ B[σ,,N[σ]] ≈ B[(σ∘Id),,N[σ]] : Type@i }} as ->
@@ -373,4 +373,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_app : mcltt.
+Hint Resolve glu_rel_exp_app : mctt.

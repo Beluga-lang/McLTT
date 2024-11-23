@@ -1,6 +1,6 @@
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Import Evaluation.
-From Mcltt.Core.Semantic Require Export Domain.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Import Evaluation.
+From Mctt.Core.Semantic Require Export Domain.
 Import Domain_Notations.
 
 Reserved Notation "'Rnf' m 'in' s ↘ M" (in custom judg at level 80, m custom domain, s constr, M custom nf).
@@ -126,4 +126,4 @@ Combined Scheme read_mut_ind from
   read_typ_mut_ind.
 
 #[export]
-Hint Constructors read_nf read_ne read_typ : mcltt.
+Hint Constructors read_nf read_ne read_typ : mctt.

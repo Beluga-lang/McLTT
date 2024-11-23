@@ -1,10 +1,10 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Algorithmic.Typing Require Import Definitions.
-From Mcltt.Algorithmic.Subtyping Require Export Lemmas.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import Consequences.Rules.
-From Mcltt.Core.Semantic Require Import Consequences.
-From Mcltt.Frontend Require Import Elaborator.
+From Mctt Require Import LibTactics.
+From Mctt.Algorithmic.Typing Require Import Definitions.
+From Mctt.Algorithmic.Subtyping Require Export Lemmas.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import Consequences.Rules.
+From Mctt.Core.Semantic Require Import Consequences.
+From Mctt.Frontend Require Import Elaborator.
 Import Domain_Notations.
 
 Lemma functional_alg_type_infer : forall {Γ A A' M},
@@ -31,7 +31,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve functional_alg_type_infer : mcltt.
+Hint Resolve functional_alg_type_infer : mctt.
 
 Ltac functional_alg_type_infer_rewrite_clear1 :=
   let tactic_error o1 o2 := fail 3 "functional_alg_type_infer equality between" o1 "and" o2 "cannot be solved by mauto" in
@@ -139,7 +139,7 @@ Proof with (f_equiv; mautosolve 4).
 Qed.
 
 #[export]
-Hint Resolve alg_type_infer_normal : mcltt.
+Hint Resolve alg_type_infer_normal : mctt.
 
 Lemma alg_type_check_typ_implies_alg_type_infer_typ : forall {Γ A i},
     {{ ⊢ Γ }} ->
@@ -158,7 +158,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_check_typ_implies_alg_type_infer_typ : mcltt.
+Hint Resolve alg_type_check_typ_implies_alg_type_infer_typ : mctt.
 
 Lemma alg_type_check_pi_implies_alg_type_infer_pi : forall {Γ M A B i},
     {{ ⊢ Γ }} ->
@@ -197,7 +197,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_check_pi_implies_alg_type_infer_pi : mcltt.
+Hint Resolve alg_type_check_pi_implies_alg_type_infer_pi : mctt.
 
 Lemma alg_type_check_subtyp : forall {Γ A A' M},
     {{ Γ ⊢a M ⟸ A }} ->
@@ -210,7 +210,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_check_subtyp : mcltt.
+Hint Resolve alg_type_check_subtyp : mctt.
 
 Corollary alg_type_check_conv : forall {Γ i A A' M},
     {{ Γ ⊢a M ⟸ A }} ->
@@ -221,7 +221,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_check_conv : mcltt.
+Hint Resolve alg_type_check_conv : mctt.
 
 Lemma alg_type_check_complete : forall {Γ A M},
     user_exp M ->
@@ -273,7 +273,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_check_complete : mcltt.
+Hint Resolve alg_type_check_complete : mctt.
 
 Corollary alg_type_infer_complete : forall {Γ A M},
     user_exp M ->
@@ -287,7 +287,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_infer_complete : mcltt.
+Hint Resolve alg_type_infer_complete : mctt.
 
 Corollary alg_type_infer_typ_complete : forall {Γ i A},
     user_exp A ->
@@ -298,7 +298,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_infer_typ_complete : mcltt.
+Hint Resolve alg_type_infer_typ_complete : mctt.
 
 Corollary alg_type_infer_pi_complete : forall {Γ i A},
     user_exp A ->
@@ -309,4 +309,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve alg_type_infer_pi_complete : mcltt.
+Hint Resolve alg_type_infer_pi_complete : mctt.

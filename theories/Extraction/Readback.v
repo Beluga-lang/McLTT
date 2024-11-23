@@ -1,9 +1,9 @@
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Import Readback Evaluation.
-From Mcltt.Extraction Require Import Evaluation.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Import Readback Evaluation.
+From Mctt.Extraction Require Import Evaluation.
 Import Domain_Notations.
 
 Generalizable All Variables.
@@ -78,7 +78,7 @@ with read_typ_order : nat -> domain -> Prop :=
     read_typ_order s d{{{ ⇑ a b }}} ).
 
 #[local]
-Hint Constructors read_nf_order read_ne_order read_typ_order : mcltt.
+Hint Constructors read_nf_order read_ne_order read_typ_order : mctt.
 
 Lemma read_nf_order_sound : forall s d m,
     {{ Rnf d in s ↘ m }} ->
@@ -96,7 +96,7 @@ Proof with (econstructor; intros; functional_eval_rewrite_clear; mauto).
 Qed.
 
 #[export]
-Hint Resolve read_nf_order_sound read_ne_order_sound read_typ_order_sound : mcltt.
+Hint Resolve read_nf_order_sound read_ne_order_sound read_typ_order_sound : mctt.
 
 #[local]
 Ltac impl_obl_tac1 :=

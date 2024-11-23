@@ -1,9 +1,9 @@
 From Coq Require Import Lia PeanoNat Relation_Definitions RelationClasses.
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export Domain Evaluation Readback.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export Domain Evaluation Readback.
 Import Domain_Notations.
 
 Notation "'Dom' a ≈ b ∈ R" := ((R a b : Prop) : Prop) (in custom judg at level 90, a custom domain, b custom domain, R constr).
@@ -24,14 +24,14 @@ Variant rel_mod_eval (R : relation domain -> domain -> domain -> Prop) A ρ A' �
 #[global]
 Arguments mk_rel_mod_eval {_ _ _ _ _ _}.
 #[export]
-Hint Constructors rel_mod_eval : mcltt.
+Hint Constructors rel_mod_eval : mctt.
 
 (** Related modulo application *)
 Variant rel_mod_app f a f' a' (R : relation domain) : Prop := mk_rel_mod_app : forall fa f'a', {{ $| f & a |↘ fa }} -> {{ $| f' & a' |↘ f'a' }} -> {{ Dom fa ≈ f'a' ∈ R }} -> rel_mod_app f a f' a' R.
 #[global]
 Arguments mk_rel_mod_app {_ _ _ _ _}.
 #[export]
-Hint Constructors rel_mod_app : mcltt.
+Hint Constructors rel_mod_app : mctt.
 
 (** *** (Some Elements of) PER Lattice *)
 
@@ -39,25 +39,25 @@ Definition per_bot : relation domain_ne := fun m m' => (forall s, exists L, {{ R
 #[global]
 Arguments per_bot /.
 #[export]
-Hint Transparent per_bot : mcltt.
+Hint Transparent per_bot : mctt.
 #[export]
-Hint Unfold per_bot : mcltt.
+Hint Unfold per_bot : mctt.
 
 Definition per_top : relation domain_nf := fun m m' => (forall s, exists L, {{ Rnf m in s ↘ L }} /\ {{ Rnf m' in s ↘ L }}).
 #[global]
 Arguments per_top /.
 #[export]
-Hint Transparent per_top : mcltt.
+Hint Transparent per_top : mctt.
 #[export]
-Hint Unfold per_top : mcltt.
+Hint Unfold per_top : mctt.
 
 Definition per_top_typ : relation domain := fun a a' => (forall s, exists C, {{ Rtyp a in s ↘ C }} /\ {{ Rtyp a' in s ↘ C }}).
 #[global]
 Arguments per_top_typ /.
 #[export]
-Hint Transparent per_top_typ : mcltt.
+Hint Transparent per_top_typ : mctt.
 #[export]
-Hint Unfold per_top_typ : mcltt.
+Hint Unfold per_top_typ : mctt.
 
 Inductive per_nat : relation domain :=
 | per_nat_zero : {{ Dom zero ≈ zero ∈ per_nat }}
@@ -69,7 +69,7 @@ Inductive per_nat : relation domain :=
      {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_nat }} }
 .
 #[export]
-Hint Constructors per_nat : mcltt.
+Hint Constructors per_nat : mctt.
 
 Variant per_eq (point_rel : relation domain) m1 m2' : relation domain :=
 | per_eq_refl :
@@ -82,7 +82,7 @@ Variant per_eq (point_rel : relation domain) m1 m2' : relation domain :=
      {{ Dom ⇑ a n ≈ ⇑ a' n' ∈ per_eq point_rel m1 m2' }} }
 .
 #[export]
-Hint Constructors per_eq : mcltt.
+Hint Constructors per_eq : mctt.
 
 Variant per_ne : relation domain :=
 | per_ne_neut :
@@ -90,7 +90,7 @@ Variant per_ne : relation domain :=
      {{ Dom ⇑ a m ≈ ⇑ a' m' ∈ per_ne }} }
 .
 #[export]
-Hint Constructors per_ne : mcltt.
+Hint Constructors per_ne : mctt.
 
 (** * Universe/Element PER *)
 (** ** Universe/Element PER Definition *)
@@ -187,7 +187,7 @@ Section Per_univ_elem_core_def.
 End Per_univ_elem_core_def.
 
 #[export]
-Hint Constructors per_univ_elem_core : mcltt.
+Hint Constructors per_univ_elem_core : mctt.
 
 Equations per_univ_elem (i : nat) : relation domain -> domain -> domain -> Prop by wf i :=
 | i => per_univ_elem_core i (fun j lt_j_i a a' => exists R', {{ DF a ≈ a' ∈ per_univ_elem j ↘ R' }}).
@@ -196,9 +196,9 @@ Definition per_univ (i : nat) : relation domain := fun a a' => exists R', {{ DF 
 #[global]
 Arguments per_univ _ _ _ /.
 #[export]
-Hint Transparent per_univ : mcltt.
+Hint Transparent per_univ : mctt.
 #[export]
-Hint Unfold per_univ : mcltt.
+Hint Unfold per_univ : mctt.
 
 Lemma per_univ_elem_core_univ' : forall j i elem_rel,
     j < i ->
@@ -211,7 +211,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve per_univ_elem_core_univ' : mcltt.
+Hint Resolve per_univ_elem_core_univ' : mctt.
 
 (** ** Universe/Element PER Induction Principle *)
 
@@ -302,14 +302,14 @@ Inductive per_subtyp : nat -> domain -> domain -> Prop :=
 where "'Sub' a <: b 'at' i" := (per_subtyp i a b) (in custom judg) : type_scope.
 
 #[export]
-Hint Constructors per_subtyp : mcltt.
+ Hint Constructors per_subtyp : mctt.
 
 Definition rel_typ i A ρ A' ρ' R' := rel_mod_eval (per_univ_elem i) A ρ A' ρ' R'.
 Arguments rel_typ _ _ _ _ _ _ /.
 #[export]
-Hint Transparent rel_typ : mcltt.
+Hint Transparent rel_typ : mctt.
 #[export]
-Hint Unfold rel_typ : mcltt.
+Hint Unfold rel_typ : mctt.
 
 (** * Context/Environment PER *)
 
@@ -319,7 +319,7 @@ Variant cons_per_ctx_env tail_rel (head_rel : forall {ρ ρ'} (equiv_ρ_ρ' : {{
         {{ Dom ^(ρ 0) ≈ ^(ρ' 0) ∈ head_rel equiv_ρ_drop_ρ'_drop }} ->
         {{ Dom ρ ≈ ρ' ∈ cons_per_ctx_env tail_rel (@head_rel) }} }.
 #[export]
-Hint Constructors cons_per_ctx_env : mcltt.
+Hint Constructors cons_per_ctx_env : mctt.
 
 Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
 | per_ctx_env_nil :
@@ -338,14 +338,14 @@ Inductive per_ctx_env : relation env -> ctx -> ctx -> Prop :=
         {{ EF Γ, A ≈ Γ', A' ∈ per_ctx_env ↘ env_rel }} }
 .
 #[export]
-Hint Constructors per_ctx_env : mcltt.
+Hint Constructors per_ctx_env : mctt.
 
 Definition per_ctx : relation ctx := fun Γ Γ' => exists R', per_ctx_env R' Γ Γ'.
 Definition valid_ctx : ctx -> Prop := fun Γ => per_ctx Γ Γ.
 #[export]
-Hint Transparent valid_ctx : mcltt.
+Hint Transparent valid_ctx : mctt.
 #[export]
-Hint Unfold valid_ctx : mcltt.
+Hint Unfold valid_ctx : mctt.
 
 Reserved Notation "'SubE' Γ <: Δ" (in custom judg at level 90, Γ custom exp, Δ custom exp).
 
@@ -369,4 +369,4 @@ Inductive per_ctx_subtyp : ctx -> ctx -> Prop :=
 where "'SubE' Γ <: Δ" := (per_ctx_subtyp Γ Δ) (in custom judg) : type_scope.
 
 #[export]
-Hint Constructors per_ctx_subtyp : mcltt.
+Hint Constructors per_ctx_subtyp : mctt.

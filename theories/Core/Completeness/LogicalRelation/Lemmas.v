@@ -1,8 +1,8 @@
 From Coq Require Import Morphisms Morphisms_Relations RelationClasses Relation_Definitions.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness.LogicalRelation Require Import Definitions Tactics.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness.LogicalRelation Require Import Definitions Tactics.
 Import Domain_Notations.
 
 Add Parametric Morphism M ρ M' ρ' : (rel_exp M ρ M' ρ')
@@ -30,7 +30,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_exp_implies_rel_typ : mcltt.
+Hint Resolve rel_exp_implies_rel_typ : mctt.
 
 Lemma rel_typ_implies_rel_exp : forall {i A ρ A' ρ' R},
     rel_typ i A ρ A' ρ' R ->
@@ -42,7 +42,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve rel_typ_implies_rel_exp : mcltt.
+Hint Resolve rel_typ_implies_rel_exp : mctt.
 
 Lemma rel_exp_clean_inversion : forall {Γ env_rel A M M'},
     {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_rel }} ->

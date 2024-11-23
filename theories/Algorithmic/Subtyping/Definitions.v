@@ -1,6 +1,6 @@
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Semantic Require Export NbE.
-From Mcltt.Core.Syntactic Require Export SystemOpt.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Semantic Require Export NbE.
+From Mctt.Core.Syntactic Require Export SystemOpt.
 Import Syntax_Notations.
 
 Reserved Notation "Γ ⊢a A ⊆ A'" (in custom judg at level 80, Γ custom exp, A custom exp, A' custom exp).
@@ -35,4 +35,4 @@ Inductive alg_subtyping : ctx -> typ -> typ -> Prop :=
 where "Γ ⊢a A ⊆ B" := (alg_subtyping Γ A B) (in custom judg) : type_scope.
 
 #[export]
-Hint Constructors alg_subtyping_nf alg_subtyping: mcltt.
+Hint Constructors alg_subtyping_nf alg_subtyping: mctt.

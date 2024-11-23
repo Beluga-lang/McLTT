@@ -1,21 +1,21 @@
 (include_subdirs no)
 
 (library
- (name Mcltt)
- (public_name mcltt.driver)
+ (name Mctt)
+ (public_name mctt.driver)
  (modules Main Lexer PrettyPrinter Test)
- (libraries MclttExtracted)
+ (libraries McttExtracted)
  (inline_tests
   (deps
-   (glob_files_rec ../examples/*.mcl)))
+   (glob_files_rec ../examples/*.mctt)))
  (preprocess
   (pps ppx_expect)))
 
 (executable
- (name mcltt)
- (public_name mcltt)
- (modules Mcltt)
- (libraries Mcltt))
+ (name mctt)
+ (public_name mctt)
+ (modules Mctt)
+ (libraries Mctt))
 
 (env
  (dev

@@ -1,8 +1,8 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import FundamentalTheorem.
-From Mcltt.Core.Semantic Require Import Realizability.
-From Mcltt.Core.Soundness Require Import LogicalRelation SubtypingCases TermStructureCases.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import FundamentalTheorem.
+From Mctt.Core.Semantic Require Import Realizability.
+From Mctt.Core.Soundness Require Import LogicalRelation SubtypingCases TermStructureCases.
 Import Domain_Notations.
 
 Lemma glu_rel_exp_of_typ : forall {Γ Sb A i},
@@ -41,7 +41,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_typ : mcltt.
+Hint Resolve glu_rel_exp_typ : mctt.
 
 Lemma glu_rel_exp_clean_inversion2' : forall {i Γ Sb M},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
@@ -75,4 +75,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve glu_rel_exp_sub_typ : mcltt.
+Hint Resolve glu_rel_exp_sub_typ : mctt.

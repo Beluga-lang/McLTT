@@ -1,6 +1,6 @@
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Syntactic Require Export CtxEq.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Syntactic Require Export CtxEq.
 Import Syntax_Notations.
 
 Lemma presup_exp_eq_natrec_cong_right : forall {Γ i A A' MZ' MS' M M'},
@@ -33,7 +33,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_natrec_cong_right : mcltt.
+Hint Resolve presup_exp_eq_natrec_cong_right : mctt.
 
 Lemma presup_exp_eq_natrec_sub_left : forall {Γ σ Δ i A MZ MS M},
     {{ ⊢ Γ }} ->
@@ -58,7 +58,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_natrec_sub_left : mcltt.
+Hint Resolve presup_exp_eq_natrec_sub_left : mctt.
 
 Lemma presup_exp_eq_natrec_sub_right : forall {Γ σ Δ i A MZ MS M},
     {{ ⊢ Γ }} ->
@@ -112,7 +112,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_natrec_sub_right : mcltt.
+Hint Resolve presup_exp_eq_natrec_sub_right : mctt.
 
 Lemma presup_exp_eq_beta_succ_right : forall {Γ i A MZ MS M},
     {{ ⊢ Γ, ℕ }} ->
@@ -156,7 +156,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_beta_succ_right : mcltt.
+Hint Resolve presup_exp_eq_beta_succ_right : mctt.
 
 Lemma presup_exp_eq_fn_cong_right : forall {Γ i A A' j B M'},
     {{ ⊢ Γ }} ->
@@ -179,7 +179,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_fn_cong_right : mcltt.
+Hint Resolve presup_exp_eq_fn_cong_right : mctt.
 
 Lemma presup_exp_eq_fn_sub_right : forall {Γ σ Δ i A j B M},
     {{ ⊢ Γ }} ->
@@ -204,7 +204,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_fn_sub_right : mcltt.
+Hint Resolve presup_exp_eq_fn_sub_right : mctt.
 
 Lemma presup_exp_eq_app_cong_right : forall {Γ i A B M' N N'},
     {{ ⊢ Γ }} ->
@@ -227,7 +227,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_app_cong_right : mcltt.
+Hint Resolve presup_exp_eq_app_cong_right : mctt.
 
 Lemma presup_exp_eq_app_sub_left : forall {Γ σ Δ i A B M N},
     {{ ⊢ Γ }} ->
@@ -258,7 +258,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_app_sub_left : mcltt.
+Hint Resolve presup_exp_eq_app_sub_left : mctt.
 
 Lemma presup_exp_eq_app_sub_right : forall {Γ σ Δ i A B M N},
     {{ ⊢ Γ }} ->
@@ -287,7 +287,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_app_sub_right : mcltt.
+Hint Resolve presup_exp_eq_app_sub_right : mctt.
 
 Lemma presup_exp_eq_pi_eta_right : forall {Γ i A B M},
     {{ ⊢ Γ }} ->
@@ -312,7 +312,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_pi_eta_right : mcltt.
+Hint Resolve presup_exp_eq_pi_eta_right : mctt.
 
 Lemma presup_exp_eq_prop_eq_var0 : forall {Γ i A},
     {{ Γ ⊢ A : Type@i }} ->
@@ -326,7 +326,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_var0 : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_var0 : mctt.
 
 Lemma presup_exp_eq_prop_eq_var1 : forall {Γ i A},
     {{ Γ ⊢ A : Type@i }} ->
@@ -340,7 +340,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_var1 : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_var1 : mctt.
 
 Lemma presup_exp_eq_prop_eq_wf : forall {Γ i A},
     {{ Γ ⊢ A : Type@i }} ->
@@ -356,7 +356,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_wf : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_wf : mctt.
 
 Lemma presup_exp_eq_prop_eq_sub_helper2 : forall {Γ σ Δ i A M1 M2},
     {{ Γ ⊢s σ : Δ }} ->
@@ -377,7 +377,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_sub_helper2 : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_sub_helper2 : mctt.
 
 Lemma presup_exp_eq_prop_eq_typ_sub2_eq : forall {Γ σ Δ i A M1 M2},
     {{ Γ ⊢s σ : Δ }} ->
@@ -407,7 +407,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_typ_sub2_eq : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_typ_sub2_eq : mctt.
 
 Lemma presup_exp_eq_prop_eq_sub_helper3 : forall {Γ σ Δ i A M1 M2 N},
     {{ Γ ⊢s σ : Δ }} ->
@@ -426,7 +426,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_sub_helper3 : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_sub_helper3 : mctt.
 
 Lemma presup_exp_eq_prop_eq_id_sub_helper2 : forall {Γ i A M1 M2},
     {{ Γ ⊢ A : Type@i }} ->
@@ -447,7 +447,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_id_sub_helper2 : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_id_sub_helper2 : mctt.
 
 Lemma presup_exp_eq_prop_eq_typ_id_sub2_eq : forall {Γ i A M1 M2},
     {{ Γ ⊢ A : Type@i }} ->
@@ -472,7 +472,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_typ_id_sub2_eq : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_typ_id_sub2_eq : mctt.
 
 Lemma presup_exp_eq_prop_eq_id_sub_helper3 : forall {Γ i A M1 M2 N},
     {{ Γ ⊢ A : Type@i }} ->
@@ -490,7 +490,7 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve presup_exp_eq_prop_eq_id_sub_helper3 : mcltt.
+Hint Resolve presup_exp_eq_prop_eq_id_sub_helper3 : mctt.
 
 Lemma presup_exp_eq_refl_sub_right : forall {Γ σ Δ i A M},
     {{ ⊢ Γ }} ->
@@ -509,7 +509,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_refl_sub_right : mcltt.
+Hint Resolve presup_exp_eq_refl_sub_right : mctt.
 
 Lemma presup_exp_eq_eqrec_sub_left : forall {Γ σ Δ i A M1 M2 j B N BR},
     {{ ⊢ Γ }} ->
@@ -554,7 +554,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_eqrec_sub_left : mcltt.
+Hint Resolve presup_exp_eq_eqrec_sub_left : mctt.
 
 Lemma presup_exp_eq_eqrec_sub_right : forall {Γ σ Δ i A M1 M2 j B N BR},
     {{ ⊢ Γ }} ->
@@ -881,7 +881,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_eqrec_sub_right : mcltt.
+Hint Resolve presup_exp_eq_eqrec_sub_right : mctt.
 
 Lemma presup_exp_eq_refl_cong_right : forall {Γ i A A' M M'},
     {{ ⊢ Γ }} ->
@@ -899,7 +899,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_refl_cong_right : mcltt.
+Hint Resolve presup_exp_eq_refl_cong_right : mctt.
 
 Lemma presup_exp_eq_eqrec_cong_right : forall {Γ i A A' M1 M1' M2 M2' j B B' BR BR' N N'},
     {{ ⊢ Γ }} ->
@@ -1029,7 +1029,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_eqrec_cong_right : mcltt.
+Hint Resolve presup_exp_eq_eqrec_cong_right : mctt.
 
 Lemma presup_exp_eq_eqrec_beta_right : forall {Γ i A M j B BR},
     {{ ⊢ Γ }} ->
@@ -1137,7 +1137,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_eqrec_beta_right : mcltt.
+Hint Resolve presup_exp_eq_eqrec_beta_right : mctt.
 
 Lemma presup_exp_eq_var_0_sub_left : forall {Γ σ Δ i A M},
     {{ ⊢ Γ }} ->
@@ -1154,7 +1154,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_var_0_sub_left : mcltt.
+Hint Resolve presup_exp_eq_var_0_sub_left : mctt.
 
 Lemma presup_exp_eq_var_S_sub_left : forall {Γ σ Δ i A M B x},
     {{ ⊢ Γ }} ->
@@ -1173,7 +1173,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_var_S_sub_left : mcltt.
+Hint Resolve presup_exp_eq_var_S_sub_left : mctt.
 
 Lemma presup_exp_eq_sub_cong_right : forall {Γ σ σ' Δ i A M M'},
     {{ ⊢ Δ }} ->
@@ -1193,7 +1193,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_sub_cong_right : mcltt.
+Hint Resolve presup_exp_eq_sub_cong_right : mctt.
 
 Lemma presup_exp_eq_sub_compose_right : forall {Γ τ Γ' σ Γ'' i A M},
     {{ ⊢ Γ }} ->
@@ -1210,7 +1210,7 @@ Proof.
 Qed.
 
 #[local]
-Hint Resolve presup_exp_eq_sub_compose_right : mcltt.
+Hint Resolve presup_exp_eq_sub_compose_right : mctt.
 
 #[local]
 Ltac gen_presup_IH presup_exp_eq presup_sub_eq presup_subtyp H :=

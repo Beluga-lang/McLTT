@@ -3,11 +3,11 @@ From Coq Require Import ExtrOcamlBasic ExtrOcamlNatInt ExtrOcamlNativeString Ext
 
 From Equations Require Import Equations.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base Completeness Soundness.
-From Mcltt.Core.Syntactic Require Import SystemOpt.
-From Mcltt.Extraction Require Import NbE TypeCheck.
-From Mcltt.Frontend Require Import Elaborator Parser.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base Completeness Soundness.
+From Mctt.Core.Syntactic Require Import SystemOpt.
+From Mctt.Extraction Require Import NbE TypeCheck.
+From Mctt.Frontend Require Import Elaborator Parser.
 Import MenhirLibParser.Inter.
 Import Syntax_Notations.
 

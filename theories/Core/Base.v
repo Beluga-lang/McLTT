@@ -1,6 +1,6 @@
-#[global] Declare Scope mcltt_scope.
-#[global] Delimit Scope mcltt_scope with mcltt.
-#[global] Bind Scope mcltt_scope with Sortclass.
+#[global] Declare Scope mctt_scope.
+#[global] Delimit Scope mctt_scope with mctt.
+#[global] Bind Scope mctt_scope with Sortclass.
 
 #[global] Declare Custom Entry judg.
 

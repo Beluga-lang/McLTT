@@ -1,8 +1,8 @@
 From Coq Require Import Morphisms_Relations RelationClasses.
 
-From Mcltt Require Import LibTactics.
-From Mcltt.Core Require Import Base.
-From Mcltt.Core.Completeness Require Import LogicalRelation FunctionCases.
+From Mctt Require Import LibTactics.
+From Mctt.Core Require Import Base.
+From Mctt.Core.Completeness Require Import LogicalRelation FunctionCases.
 Import Domain_Notations.
 
 Lemma subtyp_refl : forall Γ M M' i,
@@ -147,4 +147,4 @@ Proof.
 Qed.
 
 #[export]
-Hint Resolve subtyp_refl subtyp_trans subtyp_univ subtyp_pi : mcltt.
+Hint Resolve subtyp_refl subtyp_trans subtyp_univ subtyp_pi : mctt.

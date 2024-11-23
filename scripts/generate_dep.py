@@ -4,7 +4,7 @@ from typing import Iterable
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 THEORIES_ROOT = PROJECT_ROOT / "theories"
-ROOT_MODULE_NAME = "Mcltt"
+ROOT_MODULE_NAME = "Mctt"
 COLORS = {
     "Algorithmic": "darkturquoise",
     "Completeness": "deeppink3",
@@ -57,11 +57,11 @@ def node_of_path(path: str) -> str:
 
     # Handle special case for two main theorems
     # so that printed graph looks better
-    if module_name == "Mcltt.Core.Completeness" or module_name == "Mcltt.Core.Soundness":
+    if module_name == "Mctt.Core.Completeness" or module_name == "Mctt.Core.Soundness":
         result = under_subgraph(f"Core/{node_label}", f""""{module_name}"[label="{node_label}",tooltip="{module_name}",color={color},fillcolor=white];""")
-    elif module_name == "Mcltt.LibTactics":
+    elif module_name == "Mctt.LibTactics":
         result = f"""{{ graph[cluster=false,rank=min]; "{module_name}"[label="{node_label}",tooltip="{module_name}",fillcolor={color}]; }}"""
-    elif module_name == "Mcltt.Core.Semantic.Consequences":
+    elif module_name == "Mctt.Core.Semantic.Consequences":
         result = f"""{{ cluster=false; rank=max; "{module_name}"[label="{node_label}",tooltip="{module_name}",fillcolor={color}]; }}"""
     else:
         result = f""""{module_name}"[label="{node_label}",tooltip="{module_name}",fillcolor={color}];"""
@@ -92,9 +92,9 @@ def data_of_depline(depline: str) -> str:
 def gen_graph() -> str:
     newline = "\n"
     return textwrap.dedent(f"""
-      digraph Mcltt {{
-        graph [center=true,class="depgraph",cluster=true,fontname="Open Sans",fontsize=28,label="Mcltt",labeljust=l,labelloc=t,penwidth=2,size=15,splines=true,tooltip=""];
-        node [fontsize=18,shape=note,style=filled,URL="https://beluga-lang.github.io/McLTT/{DOC_BASE}/\\N.html"];
+      digraph Mctt {{
+        graph [center=true,class="depgraph",cluster=true,fontname="Open Sans",fontsize=28,label="Mctt",labeljust=l,labelloc=t,penwidth=2,size=15,splines=true,tooltip=""];
+        node [fontsize=18,shape=note,style=filled,URL="https://beluga-lang.github.io/McTT/{DOC_BASE}/\\N.html"];
         {default_subgraph_decl("Algorithmic")}
         {default_subgraph_decl("Core")}
         {core_subgraph_decl("Completeness")}
