@@ -295,6 +295,60 @@ Proof.
       symmetry.
       rewrite <- wf_exp_eq_pi_sub; mauto 4.
 
+  - match_by_head eq_glu_typ_pred progressive_invert.
+    econstructor; eauto; intros.
+    + gen_presups; trivial.
+    + saturate_weakening_escape.
+      assert {{ Γ ⊢w Id : Γ }} by mauto 4.
+      assert (P Γ {{{ B[Id] }}}) as HB by mauto 3.
+      bulky_rewrite_in HB.
+      assert (El Γ {{{ B[Id] }}} {{{ M[Id] }}} m) as HM by mauto 3.
+      bulky_rewrite_in HM.
+      assert (El Γ {{{ B[Id] }}} {{{ N[Id] }}} n) as HN by mauto 3.
+      bulky_rewrite_in HN.
+      dir_inversion_clear_by_head read_typ.
+      assert {{ Γ ⊢ B ® glu_typ_top i a }} as [] by mauto 3.
+      assert {{ Γ ⊢ M : B ® m ∈ glu_elem_top i a }} as [] by mauto 3.
+      assert {{ Γ ⊢ N : B ® n ∈ glu_elem_top i a }} as [] by mauto 3.
+      bulky_rewrite.
+      simpl.
+      eapply wf_exp_eq_eq_cong; firstorder.
+
+  - handle_functional_glu_univ_elem.
+    invert_glu_rel1.
+    mauto.
+
+  - handle_functional_glu_univ_elem.
+    invert_glu_rel1.
+    econstructor; intros; mauto 3.
+
+    saturate_weakening_escape.
+    destruct_glu_eq;
+      dir_inversion_clear_by_head read_nf.
+    + pose proof (PER_refl1 _ _ _ _ _ H25).
+      gen_presups.
+      assert {{ Γ ⊢w Id : Γ }} by mauto 4.
+      assert (P Γ {{{ B[Id] }}}) as HB by mauto 3.
+      bulky_rewrite_in HB.
+      assert (El Γ {{{ B[Id] }}} {{{ M''[Id] }}} m') as HM'' by mauto 3.
+      bulky_rewrite_in HM''.
+      assert {{ Γ ⊢ B ® glu_typ_top i a }} as [] by mauto 3.
+      assert {{ Γ ⊢ N : B ® m' ∈ glu_elem_top i a }} as [] by mauto 3.
+      assert {{ Γ ⊢ Eq B M N ≈ Eq B N N : Type@i }} by (eapply wf_exp_eq_eq_cong; mauto 3).
+      assert {{ Γ ⊢ Eq B M'' M'' ≈ Eq B N N : Type@i }} by (eapply wf_exp_eq_eq_cong; mauto 3).
+      assert {{ Γ ⊢ A ≈ Eq B N N : Type@i }} by mauto 3.
+      assert {{ Γ ⊢ refl B M'' ≈ refl B N : Eq B M'' M'' }} by mauto 3.
+      assert {{ Γ ⊢ refl B M'' ≈ refl B N : Eq B N N }} by mauto 3.
+      assert {{ Γ ⊢ M' ≈ refl B N : A }} by mauto 4.
+      simpl.
+
+      transitivity {{{ (refl B N)[σ] }}}; [mauto 3 |].
+      bulky_rewrite.
+      transitivity {{{ refl (B[σ]) (N[σ]) }}};
+        [ eapply wf_exp_eq_conv'; [econstructor |]; mauto 3 |].
+      econstructor; mauto 3.
+    + firstorder.
+
   - econstructor; eauto.
     intros.
     progressive_inversion.
