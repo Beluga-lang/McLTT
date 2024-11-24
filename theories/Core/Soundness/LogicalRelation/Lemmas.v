@@ -114,6 +114,45 @@ Qed.
 #[export]
 Hint Resolve glu_univ_elem_per_univ_typ_escape : mctt.
 
+Lemma glu_univ_elem_exp_unique_upto_exp_eq : forall {i j a P P' El El' Γ A A' M M' m},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Γ ⊢ M' : A' ® m ∈ El' }} ->
+    {{ Γ ⊢ M ≈ M' : A }}.
+Proof.
+  intros.
+  assert {{ Γ ⊢ M : A ® m ∈ glu_elem_top i a }} as [] by mauto 3.
+  assert {{ Γ ⊢ M' : A' ® m ∈ glu_elem_top j a }} as [] by mauto 3.
+  assert {{ Γ ⊢ A ≈ A' : Type@(max i j) }} by mauto 3.
+  match_by_head per_top ltac:(fun H => destruct (H (length Γ)) as [W []]).
+  clear_dups.
+  assert {{ Γ ⊢ M[Id] ≈ W : A[Id] }} by mauto 4.
+  assert {{ Γ ⊢ M[Id] ≈ W : A }} by (gen_presups; mauto 4).
+  assert {{ Γ ⊢ M : A }} by mauto 4.
+  assert {{ Γ ⊢ M'[Id] ≈ W : A'[Id] }} by mauto 4.
+  assert {{ Γ ⊢ M'[Id] ≈ W : A' }} by (gen_presups; mauto 4).
+  assert {{ Γ ⊢ M'[Id] ≈ W : A }} by (gen_presups; mauto 4).
+  assert {{ Γ ⊢ M' : A }} by mauto 4.
+  transitivity {{{M[Id]}}}; [mauto 3 |].
+  transitivity W; [mauto 3 |].
+  mauto 4.
+Qed.
+
+#[export]
+ Hint Resolve glu_univ_elem_exp_unique_upto_exp_eq : mctt.
+
+Lemma glu_univ_elem_exp_unique_upto_exp_eq' : forall {i a P El Γ M M' m A},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Γ ⊢ M' : A ® m ∈ El }} ->
+    {{ Γ ⊢ M ≈ M' : A }}.
+Proof. mautosolve 4. Qed.
+
+
+#[export]
+Hint Resolve glu_univ_elem_exp_unique_upto_exp_eq' : mctt.
+
 Lemma glu_univ_elem_per_univ_typ_iff : forall {i a a' P P' El El'},
     {{ Dom a ≈ a' ∈ per_univ i }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -247,6 +286,55 @@ Section glu_univ_elem_cumulativity.
       assert {{ DG b ∈ glu_univ_elem j ↘ OP' n equiv_n ↘ OEl' n equiv_n }} by mauto 3.
       assert {{ Δ ⊢ OT0[σ,,N] ® OP' n equiv_n }} by (eapply glu_univ_elem_trm_typ; mauto 3).
       enough {{ Δ ⊢ OT[σ,,N] ≈ OT0[σ,,N] : Type@j }} as ->...
+
+    - invert_glu_rel1.
+      econstructor; intros; firstorder mauto 3.
+    - invert_glu_rel1.
+      handle_per_univ_elem_irrel.
+
+      econstructor; intros; firstorder mauto 3.
+      destruct_glu_eq; econstructor; firstorder mauto 3.
+    - repeat invert_glu_rel1.
+      handle_per_univ_elem_irrel.
+
+      econstructor; intros; firstorder mauto 3.
+      assert {{ Γ ⊢w Id : Γ }} by mauto 4.
+      assert (P Γ {{{ B[Id] }}}) as HB by mauto 3.
+      bulky_rewrite_in HB.
+      assert (P0 Γ B) as HB' by firstorder.
+      assert (P0 Γ {{{ B0[Id] }}}) as HB0 by mauto 3.
+      bulky_rewrite_in HB0.
+      assert {{ Γ ⊢ B0 ≈ B : Type@j }} by mauto 3.
+      assert (El Γ {{{ B[Id] }}} {{{ M0[Id] }}} m) as HM0 by mauto 3.
+      bulky_rewrite_in HM0.
+      assert (El0 Γ B M0 m) as HM0' by firstorder.
+      assert (El Γ {{{ B[Id] }}} {{{ N[Id] }}} n) as HN by mauto 3.
+      bulky_rewrite_in HN.
+      assert (El0 Γ B N n) as HN' by firstorder.
+      assert (El0 Γ {{{ B0[Id] }}} {{{ M[Id] }}} m) as HM by mauto 3.
+      bulky_rewrite_in HM.
+      assert (El0 Γ {{{ B0[Id] }}} {{{ N0[Id] }}} n) as HN0 by mauto 3.
+      bulky_rewrite_in HN0.
+      assert {{ Γ ⊢ M0 ≈ M : B }} by mauto 3.
+      assert {{ Γ ⊢ N ≈ N0 : B }} by mauto 3.
+
+      destruct_glu_eq; econstructor; apply_equiv_left; mauto 3.
+      + bulky_rewrite.
+        eapply wf_exp_eq_conv'; [econstructor |]; mauto 3.
+        transitivity M; mauto 3.
+        bulky_rewrite.
+      + transitivity M; mauto 3.
+        transitivity M''; mauto 3.
+        transitivity N0; mauto 3.
+      + intros.
+        assert (P Δ {{{ B[σ] }}}) by mauto 3.
+        assert {{ Δ ⊢ B0[σ] ≈ B[σ] : Type@j }} by mauto 3.
+        assert {{ Γ ⊢ M'' ≈ M0 : B }} by (transitivity M; mauto 3).
+        assert {{ Δ ⊢ M''[σ] ≈ M0[σ] : B[σ] }} by mauto 4.
+        assert (El0 Δ {{{ B0[σ] }}} {{{M''[σ]}}} m') as HEl0 by mauto 3.
+        bulky_rewrite_in HEl0.
+        firstorder.
+
     - destruct_by_head neut_glu_exp_pred.
       econstructor; mauto.
       destruct_by_head neut_glu_typ_pred.
@@ -386,16 +474,17 @@ Lemma glu_univ_elem_per_subtyp_typ_escape : forall {i a a' P P' El El' Γ A A'},
 Proof.
   intros * Hsubtyp Hglu Hglu' HA HA'.
   gen A' A Γ. gen El' El P' P.
-  induction Hsubtyp using per_subtyp_ind; intros; subst;
-    saturate_refl_for per_univ_elem;
-    invert_glu_univ_elem Hglu;
-    handle_functional_glu_univ_elem;
-    handle_per_univ_elem_irrel;
-    destruct_by_head pi_glu_typ_pred;
+  induction Hsubtyp using per_subtyp_ind; intros; subst.
+  Focus 3.
+    saturate_refl_for per_univ_elem.
+    invert_glu_univ_elem Hglu.
+    handle_functional_glu_univ_elem.
+    handle_per_univ_elem_irrel.
+    destruct_by_head pi_glu_typ_pred.
     saturate_glu_by_per;
     invert_glu_univ_elem Hglu';
     handle_functional_glu_univ_elem;
-    try solve [simpl in *; mauto 3].
+    try solve [simpl in *; bulky_rewrite; mauto 3].
   - match_by_head (per_bot b b') ltac:(fun H => specialize (H (length Γ)) as [V []]).
     simpl in *.
     destruct_conjs.
