@@ -474,26 +474,16 @@ Lemma glu_univ_elem_per_subtyp_typ_escape : forall {i a a' P P' El El' Γ A A'},
 Proof.
   intros * Hsubtyp Hglu Hglu' HA HA'.
   gen A' A Γ. gen El' El P' P.
-  induction Hsubtyp using per_subtyp_ind; intros; subst.
-  Focus 3.
-    saturate_refl_for per_univ_elem.
-    invert_glu_univ_elem Hglu.
-    handle_functional_glu_univ_elem.
-    handle_per_univ_elem_irrel.
-    destruct_by_head pi_glu_typ_pred.
+  induction Hsubtyp using per_subtyp_ind; intros; subst;
+    saturate_refl_for per_univ_elem;
+    try solve [simpl in *; bulky_rewrite; mauto 3];
+    invert_glu_univ_elem Hglu;
+    handle_functional_glu_univ_elem;
+    handle_per_univ_elem_irrel;
+    destruct_by_head pi_glu_typ_pred;
     saturate_glu_by_per;
     invert_glu_univ_elem Hglu';
-    handle_functional_glu_univ_elem;
-    try solve [simpl in *; bulky_rewrite; mauto 3].
-  - match_by_head (per_bot b b') ltac:(fun H => specialize (H (length Γ)) as [V []]).
-    simpl in *.
-    destruct_conjs.
-    assert {{ Γ ⊢ A[Id] ≈ A : Type@i }} as <- by mauto 4.
-    assert {{ Γ ⊢ A'[Id] ≈ A' : Type@i }} as <- by mauto 3.
-    assert {{ Γ ⊢ A'[Id] ≈ V : Type@i }} as -> by mauto 4.
-    eapply wf_subtyp_refl'.
-    mauto 4.
-  - bulky_rewrite.
+    handle_functional_glu_univ_elem.
   - bulky_rewrite.
     mauto 3.
   - destruct_by_head pi_glu_typ_pred.
@@ -546,6 +536,14 @@ Proof.
       mauto 4.
     }
     mauto 3.
+  - match_by_head (per_bot b b') ltac:(fun H => specialize (H (length Γ)) as [V []]).
+    simpl in *.
+    destruct_conjs.
+    assert {{ Γ ⊢ A[Id] ≈ A : Type@i }} as <- by mauto 4.
+    assert {{ Γ ⊢ A'[Id] ≈ A' : Type@i }} as <- by mauto 3.
+    assert {{ Γ ⊢ A'[Id] ≈ V : Type@i }} as -> by mauto 4.
+    eapply wf_subtyp_refl'.
+    mauto 4.
 Qed.
 
 #[export]
@@ -563,25 +561,17 @@ Proof.
   assert {{ Γ ⊢ A ⊆ A' }} by (eapply glu_univ_elem_per_subtyp_typ_escape; only 4: eapply glu_univ_elem_trm_typ; mauto).
   gen m M A' A. gen Γ. gen El' El P' P.
   induction Hsubtyp using per_subtyp_ind; intros; subst;
-    saturate_refl_for per_univ_elem;
+    saturate_refl_for per_univ_elem.
+  1-3,5:
     invert_glu_univ_elem Hglu;
-    handle_functional_glu_univ_elem;
-    handle_per_univ_elem_irrel;
-    repeat invert_glu_rel1;
-    saturate_glu_by_per;
-    invert_glu_univ_elem Hglu';
-    handle_functional_glu_univ_elem;
-    repeat invert_glu_rel1;
-    try solve [simpl in *; intuition mauto 3].
-  - match_by_head1 (per_bot b b') ltac:(fun H => destruct (H (length Γ)) as [V []]).
-    econstructor; mauto 3.
-    + econstructor; mauto 3.
-    + intros.
-      match_by_head1 (per_bot b b') ltac:(fun H => destruct (H (length Δ)) as [? []]).
-      functional_read_rewrite_clear.
-      assert {{ Δ ⊢ A[σ] ⊆ A'[σ] }} by mauto 3.
-      assert {{ Δ ⊢ M[σ] ≈ M' : A[σ] }} by mauto 3.
-      mauto 3.
+  handle_functional_glu_univ_elem;
+  handle_per_univ_elem_irrel;
+  repeat invert_glu_rel1;
+  saturate_glu_by_per;
+  invert_glu_univ_elem Hglu';
+  handle_functional_glu_univ_elem;
+  repeat invert_glu_rel1;
+  try solve [simpl in *; intuition mauto 3].
   - simpl in *.
     destruct_conjs.
     intuition mauto 3.
@@ -631,6 +621,21 @@ Proof.
       assert {{ Sub b <: b' at i }} by mauto 3.
       assert {{ Δ ⊢ OT'[σ,,N] ⊆ OT[σ,,N] }} by mauto 3.
       intuition.
+  - match_by_head1 (per_bot b b') ltac:(fun H => destruct (H (length Γ)) as [V []]).
+    econstructor; mauto 3.
+    + econstructor; mauto 3.
+    + intros.
+      match_by_head1 (per_bot b b') ltac:(fun H => destruct (H (length Δ)) as [? []]).
+      functional_read_rewrite_clear.
+      assert {{ Δ ⊢ A[σ] ⊆ A'[σ] }} by mauto 3.
+      assert {{ Δ ⊢ M[σ] ≈ M' : A[σ] }} by mauto 3.
+      mauto 3.
+  - assert {{ Γ ⊢ A ® P }} by (eapply glu_univ_elem_trm_typ; eauto).
+    assert {{ Γ ⊢ A ≈ A' : Type@i }} by mauto 4.
+    rewrite H in *.
+    rewrite H4 in *.
+    handle_functional_glu_univ_elem.
+    trivial.
 Qed.
 
 Lemma glu_univ_elem_per_subtyp_trm_conv : forall {i j k a a' P P' El El' Γ A A' M m},
