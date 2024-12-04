@@ -492,6 +492,34 @@ Proof with mautosolve.
   split; intros []; econstructor; intuition.
 Qed.
 
+
+(** *** Morphism instances for [eq_glu_*_pred]s *)
+Add Parametric Morphism i m n : (eq_glu_typ_pred i m n)
+    with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> eq ==> eq ==> iff as eq_glu_typ_pred_morphism_iff.
+Proof with mautosolve.
+  split; intros []; econstructor; intuition.
+Qed.
+
+Add Parametric Morphism i m n : (eq_glu_typ_pred i m n)
+    with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> glu_typ_pred_equivalence as eq_glu_typ_pred_morphism_glu_typ_pred_equivalence.
+Proof with mautosolve.
+  split; intros []; econstructor; intuition.
+Qed.
+
+
+Add Parametric Morphism i m n IR : (eq_glu_exp_pred i m n IR)
+    with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> eq ==> eq ==> eq ==> eq ==> iff as eq_glu_exp_pred_morphism_iff.
+Proof with mautosolve.
+  split; intros []; destruct_glu_eq; repeat (econstructor; intuition).
+Qed.
+
+Add Parametric Morphism i m n IR : (eq_glu_exp_pred i m n IR)
+    with signature glu_typ_pred_equivalence ==> glu_exp_pred_equivalence ==> glu_exp_pred_equivalence as eq_glu_exp_pred_morphism_glu_exp_pred_equivalence.
+Proof with mautosolve.
+  split; intros []; destruct_glu_eq; repeat (econstructor; intuition).
+Qed.
+
+
 Lemma functional_glu_univ_elem : forall i a P P' El El',
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P' ↘ El' }} ->
@@ -529,9 +557,8 @@ Proof.
     split; [intros Γ C | intros Γ M C m'].
     + split; intros []; econstructor; intuition.
     + split; intros []; econstructor; intuition;
-      match_by_head1 glu_eq ltac:(fun H => destruct H);
+        destruct_glu_eq;
         econstructor; intros; apply_equiv_right; mauto 4.
-      apply_equiv_left; mauto 4.
 Qed.
 
 Ltac apply_functional_glu_univ_elem1 :=

@@ -131,7 +131,7 @@ Variant glu_eq B M N m n (R : relation domain) (El : glu_exp_pred) : glu_exp_pre
        (forall Δ σ V, {{ Δ ⊢w σ : Γ }} -> {{ Rne v in length Δ ↘ V }} -> {{ Δ ⊢ M'[σ] ≈ V : A[σ] }}) ->
        {{ Γ ⊢ M' : A ® ⇑ b v ∈ glu_eq B M N m n R El }} }.
 
-Variant eq_glu_exp_pred i m n R P El : glu_exp_pred :=
+Variant eq_glu_exp_pred i m n R (P : glu_typ_pred) (El : glu_exp_pred) : glu_exp_pred :=
   | mk_eq_glu_exp_pred :
     `{ {{ Γ ⊢ M' : A }} ->
        {{ Γ ⊢ A ≈ Eq B M N : Type@i }} ->
