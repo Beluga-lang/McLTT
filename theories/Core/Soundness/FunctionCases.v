@@ -54,8 +54,8 @@ Proof.
   unfold univ_glu_exp_pred' in *.
   destruct_conjs.
   rename m into a.
-  assert {{ Γ ⊨ Π A B : Type@i }} as [env_relΓ]%rel_exp_of_typ_inversion by mauto 3 using completeness_fundamental_exp.
-  assert {{ Γ, A ⊨ B : Type@i }} as [env_relΓA]%rel_exp_of_typ_inversion by mauto 3 using completeness_fundamental_exp.
+  assert {{ Γ ⊨ Π A B : Type@i }} as [env_relΓ]%rel_exp_of_typ_inversion1 by mauto 3 using completeness_fundamental_exp.
+  assert {{ Γ, A ⊨ B : Type@i }} as [env_relΓA]%rel_exp_of_typ_inversion1 by mauto 3 using completeness_fundamental_exp.
   destruct_conjs.
   match_by_head1 (per_ctx_env env_relΓA) invert_per_ctx_env.
   pose env_relΓA.

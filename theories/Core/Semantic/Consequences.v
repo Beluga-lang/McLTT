@@ -172,7 +172,7 @@ Lemma consistency_ne_helper : forall {i A A'} {W : ne},
     {{ ⋅, Type@i ⊢ A ⊆ A' }} ->
     ~ {{ ⋅, Type@i ⊢ W : A }}.
 Proof with (congruence + mautosolve 3).
-  intros * HA' HA'eq Heq HW. gen A'.
+ intros * HA' HA'eq Heq HW. gen A'.
   dependent induction HW; intros; mauto 3; try directed dependent destruction HA';
     try (destruct W; simpl in *; congruence).
   - destruct W; simpl in *; autoinjections.
@@ -186,6 +186,8 @@ Proof with (congruence + mautosolve 3).
       try (eapply HA'eq; mautosolve 4).
     assert {{ ⋅, Type@i ⊢ Type@i ≈ Π ^_ ^_ : Type@_ }} by mauto 3.
     assert ({{{ Π ^_ ^_ }}} = {{{ Type@i }}}) by mauto 3...
+  - destruct W; simpl in *; autoinjections.
+    eapply IHHW6; [| | | | mauto 4]...
 Qed.
 
 Theorem consistency : forall {i} M,
