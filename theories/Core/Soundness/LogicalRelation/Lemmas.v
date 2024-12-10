@@ -464,6 +464,19 @@ Proof.
   eapply glu_univ_elem_exp_lower_max_left; mauto.
 Qed.
 
+Lemma glu_univ_elem_exp_conv' : forall {i j a P P' El El' Γ A M m},
+    {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
+    {{ DG a ∈ glu_univ_elem j ↘ P' ↘ El' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El }} ->
+    {{ Γ ⊢ A ® P' }} ->
+    {{ Γ ⊢ M : A ® m ∈ El' }}.
+Proof.
+  intros.
+  eapply glu_univ_elem_exp_conv; only 2: exact H; eauto.
+  mauto 2.
+Qed.
+
+
 Lemma glu_univ_elem_per_subtyp_typ_escape : forall {i a a' P P' El El' Γ A A'},
     {{ Sub a <: a' at i }} ->
     {{ DG a ∈ glu_univ_elem i ↘ P ↘ El }} ->
@@ -1144,29 +1157,32 @@ Ltac destruct_glu_rel_by_assumption sub_glu_rel H :=
         mark_with H' 1
     end;
   unmark_all_with 1.
+
 Ltac destruct_glu_rel_exp_with_sub :=
   repeat
     match goal with
     | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_exp_with_sub _ _ _ _ _ _) |- _ =>
-        destruct_glu_rel_by_assumption sub_glu_rel H; mark H
+        destruct_glu_rel_by_assumption sub_glu_rel H; fail_if_dup; mark H
     | H : glu_rel_exp_with_sub _ _ _ _ _ _ |- _ =>
         dependent destruction H
     end;
   unmark_all.
+
 Ltac destruct_glu_rel_sub_with_sub :=
   repeat
     match goal with
     | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_sub_with_sub _ _ _ _ _) |- _ =>
-        destruct_glu_rel_by_assumption sub_glu_rel H; mark H
+        destruct_glu_rel_by_assumption sub_glu_rel H; fail_if_dup; mark H
     | H : glu_rel_exp_with_sub _ _ _ _ _ _ |- _ =>
         dependent destruction H
     end;
   unmark_all.
+
 Ltac destruct_glu_rel_typ_with_sub :=
   repeat
     match goal with
     | H : (forall Δ σ ρ, {{ Δ ⊢s σ ® ρ ∈ ?sub_glu_rel }} -> glu_rel_typ_with_sub _ _ _ _ _) |- _ =>
-        destruct_glu_rel_by_assumption sub_glu_rel H; mark H
+        destruct_glu_rel_by_assumption sub_glu_rel H; fail_if_dup; mark H
     | H : glu_rel_exp_with_sub _ _ _ _ _ _ |- _ =>
         dependent destruction H
     end;
@@ -1315,3 +1331,37 @@ Qed.
 
 #[export]
 Hint Resolve glu_rel_sub_wf_sub : mctt.
+
+
+Ltac saturate_glu_typ_from_el1 :=
+  match goal with
+  | H : glu_univ_elem _ _ ?El _, H1 : ?El _ _ _ _ |- _ =>
+      pose proof (glu_univ_elem_trm_typ _ _ _ _ H _ _ _ _ H1);
+      fail_if_dup
+  end.
+
+Ltac saturate_glu_typ_from_el :=
+  fail_if_dup;
+  repeat saturate_glu_typ_from_el1.
+
+Ltac unify_glu_univ_lvl1 i :=
+  match goal with
+  | H1 : glu_univ_elem _ _ ?El _, H2 : glu_univ_elem i ?P _ _, H3 : ?P _ _, H4 : ?El _ _ _ _
+    |- _ =>
+      pose proof (glu_univ_elem_exp_conv' H1 H2 H4 H3);
+      fail_if_dup
+  end.
+
+Ltac unify_glu_univ_lvl i :=
+  fail_if_dup;
+  repeat unify_glu_univ_lvl1 i.
+
+Ltac applying_glu_rel_judge :=
+  destruct_glu_rel_exp_with_sub;
+  destruct_glu_rel_sub_with_sub;
+  simplify_evals;
+  match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H);
+  handle_functional_glu_univ_elem;
+  unfold univ_glu_exp_pred' in *;
+  destruct_conjs;
+  clear_dups.

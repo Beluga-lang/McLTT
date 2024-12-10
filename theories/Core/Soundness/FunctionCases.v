@@ -47,12 +47,7 @@ Proof.
   intros.
   assert {{ Δ ⊢s σ : Γ }} by mauto 4.
   split; mauto 3.
-  destruct_glu_rel_exp_with_sub.
-  simplify_evals.
-  match_by_head glu_univ_elem ltac:(fun H => directed invert_glu_univ_elem H).
-  handle_functional_glu_univ_elem.
-  unfold univ_glu_exp_pred' in *.
-  destruct_conjs.
+  applying_glu_rel_judge.
   rename m into a.
   assert {{ Γ ⊨ Π A B : Type@i }} as [env_relΓ]%rel_exp_of_typ_inversion1 by mauto 3 using completeness_fundamental_exp.
   assert {{ Γ, A ⊨ B : Type@i }} as [env_relΓA]%rel_exp_of_typ_inversion1 by mauto 3 using completeness_fundamental_exp.
