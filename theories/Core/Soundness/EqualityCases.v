@@ -83,14 +83,14 @@ Proof.
   eexists; repeat split; mauto.
   - glu_univ_elem_econstructor; mauto 3; reflexivity.
   - do 2 try econstructor; mauto 3;
-      try (intros Δ' τ **;
-             assert {{ Δ' ⊢s τ : Δ }} by mauto 2;
-           assert {{ Δ' ⊢s σ ∘ τ ® ρ ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption);
-           assert {{ Δ' ⊢s σ ∘ τ : Γ }} by mauto 2;
-           assert {{ Δ' ⊢ M[σ][τ] ≈ M[σ ∘ τ] : A[σ ∘ τ] }} by mauto;
-           applying_glu_rel_judge;
-           saturate_glu_typ_from_el;
-           bulky_rewrite).
+    intros Δ' τ **;
+      assert {{ Δ' ⊢s τ : Δ }} by mauto 2;
+    assert {{ Δ' ⊢s σ ∘ τ ® ρ ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption);
+    assert {{ Δ' ⊢s σ ∘ τ : Γ }} by mauto 2;
+    assert {{ Δ' ⊢ M[σ][τ] ≈ M[σ ∘ τ] : A[σ ∘ τ] }} by mauto;
+    applying_glu_rel_judge;
+    saturate_glu_typ_from_el;
+    bulky_rewrite.
 Qed.
 
 #[export]
