@@ -415,6 +415,12 @@ Variant glu_rel_sub_with_sub Δ τ (Sb : glu_sub_pred) σ ρ : Prop :=
 Definition glu_rel_ctx Γ : Prop := exists Sb, {{ EG Γ ∈ glu_ctx_env ↘ Sb }}.
 Arguments glu_rel_ctx Γ/.
 
+Definition glu_rel_exp_resp_sub_env i Sb M A :=
+  forall Δ σ ρ,
+    {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
+    glu_rel_exp_with_sub i Δ M A σ ρ.
+Arguments glu_rel_exp_resp_sub_env i Sb M A/.
+
 Definition glu_rel_exp Γ M A : Prop :=
   exists Sb,
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} /\

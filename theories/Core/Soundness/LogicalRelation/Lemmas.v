@@ -1205,18 +1205,13 @@ Proof.
   mauto.
 Qed.
 
-Definition glu_rel_exp_clean_inversion2_result i Sb M A :=
-  forall Δ σ ρ,
-    {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
-    glu_rel_exp_with_sub i Δ M A σ ρ.
-
 Lemma glu_rel_exp_clean_inversion2 : forall {i Γ Sb M A},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩ A : Type@i }} ->
     {{ Γ ⊩ M : A }} ->
-    glu_rel_exp_clean_inversion2_result i Sb M A.
+    glu_rel_exp_resp_sub_env i Sb M A.
 Proof.
-  unfold glu_rel_exp_clean_inversion2_result.
+  simpl.
   intros * ? HA HM.
   eapply glu_rel_exp_clean_inversion1 in HA; [| eassumption].
   eapply glu_rel_exp_clean_inversion1 in HM; [| eassumption].
@@ -1234,7 +1229,7 @@ Qed.
 
 Ltac invert_glu_rel_exp H :=
   (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
-   unfold glu_rel_exp_clean_inversion2_result in H)
+   simpl in H)
   + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
      destruct H as [])
   + (inversion H; subst).
