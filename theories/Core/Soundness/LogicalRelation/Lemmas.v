@@ -1234,6 +1234,7 @@ Ltac invert_glu_rel_exp H :=
      destruct H as [])
   + (inversion H; subst).
 
+
 Lemma glu_rel_exp_to_wf_exp : forall {Γ A M},
     {{ Γ ⊩ M : A }} ->
     {{ Γ ⊢ M : A }}.
@@ -1360,3 +1361,26 @@ Ltac applying_glu_rel_judge :=
   unfold univ_glu_exp_pred' in *;
   destruct_conjs;
   clear_dups.
+
+
+Lemma glu_rel_exp_preserves_lvl : forall Γ Sb M A i,
+    {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
+    (forall Δ σ ρ,
+        {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
+        glu_rel_exp_with_sub i Δ M A σ ρ) ->
+    {{ Γ ⊢ A : Type@i }}.
+Proof.
+  intros.
+  assert (exists env_relΓ, {{ EF Γ ≈ Γ ∈ per_ctx_env ↘ env_relΓ }}) as [env_relΓ] by mauto 3.
+  assert (exists ρ ρ', initial_env Γ ρ /\ initial_env Γ ρ' /\ {{ Dom ρ ≈ ρ' ∈ env_relΓ }}) as [ρ] by mauto 3 using per_ctx_then_per_env_initial_env.
+  destruct_conjs.
+  functional_initial_env_rewrite_clear.
+  assert {{ Γ ⊢s Id ® ρ ∈ Sb }} by (eapply initial_env_glu_rel_exp; mauto 3).
+  destruct_glu_rel_exp_with_sub.
+  saturate_glu_typ_from_el.
+  saturate_glu_info.
+  mauto 3.
+Qed.
+
+#[export]
+Hint Resolve glu_rel_exp_preserves_lvl : mctt.

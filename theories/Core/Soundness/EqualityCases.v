@@ -62,12 +62,36 @@ Qed.
 #[export]
   Hint Resolve glu_rel_eq : mctt.
 
-Lemma glu_rel_eq_refl : forall Γ A i M,
-    {{ Γ ⊩ A : Type@i }} ->
+Lemma glu_rel_eq_refl : forall Γ A M,
     {{ Γ ⊩ M : A }} ->
     {{ Γ ⊩ refl A M : Eq A M M }}.
 Proof.
-Admitted.
+  intros * HM.
+  assert {{ ⊩ Γ }} as [SbΓ] by mauto.
+  assert {{ Γ ⊢ M : A }} by mauto.
+  invert_glu_rel_exp HM.
+  assert {{ Γ ⊢ A : Type@x }} by mauto.
+  eexists; split; eauto.
+  exists x; intros.
+  assert {{ Δ ⊢s σ : Γ }} by mauto 4.
+  applying_glu_rel_judge.
+  saturate_glu_typ_from_el.
+  deepexec glu_univ_elem_per_univ ltac:(fun H => pose proof H).
+  match_by_head per_univ ltac:(fun H => destruct H).
+  deepexec glu_univ_elem_per_elem ltac:(fun H => pose proof H; fail_at_if_dup ltac:(4)).
+  saturate_glu_info.
+  eexists; repeat split; mauto.
+  - glu_univ_elem_econstructor; mauto 3; reflexivity.
+  - do 2 try econstructor; mauto 3;
+      try (intros Δ' τ **;
+             assert {{ Δ' ⊢s τ : Δ }} by mauto 2;
+           assert {{ Δ' ⊢s σ ∘ τ ® ρ ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption);
+           assert {{ Δ' ⊢s σ ∘ τ : Γ }} by mauto 2;
+           assert {{ Δ' ⊢ M[σ][τ] ≈ M[σ ∘ τ] : A[σ ∘ τ] }} by mauto;
+           applying_glu_rel_judge;
+           saturate_glu_typ_from_el;
+           bulky_rewrite).
+Qed.
 
 #[export]
   Hint Resolve glu_rel_eq_refl : mctt.
