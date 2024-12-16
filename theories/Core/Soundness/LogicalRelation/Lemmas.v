@@ -650,7 +650,7 @@ Proof.
     handle_functional_glu_univ_elem.
     trivial.
 Qed.
-xb
+
 Lemma glu_univ_elem_per_subtyp_trm_conv : forall {i j k a a' P P' El El' Γ A A' M m},
     {{ Sub a <: a' at i }} ->
     {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} ->
