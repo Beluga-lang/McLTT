@@ -53,14 +53,15 @@ Proof.
   eapply glu_rel_exp_clean_inversion2 in HM; mauto 3.
 Qed.
 
-Ltac invert_glu_rel_exp H ::=
+#[local]
+  Ltac invert_glu_rel_exp_old H :=
+  invert_glu_rel_exp H.
+
+#[global]
+  Ltac invert_glu_rel_exp H :=
   (unshelve eapply (glu_rel_exp_clean_inversion2' _) in H; shelve_unifiable; [eassumption |];
    simpl in H)
-  + (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
-     simpl in H)
-  + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
-     destruct H as [])
-  + (inversion H; subst).
+  + invert_glu_rel_exp_old H.
 
 Lemma glu_rel_exp_sub_typ : forall {Γ σ Δ i A},
     {{ Γ ⊩s σ : Δ }} ->

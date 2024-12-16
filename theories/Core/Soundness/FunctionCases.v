@@ -47,7 +47,7 @@ Proof.
   intros.
   assert {{ Δ ⊢s σ : Γ }} by mauto 4.
   split; mauto 3.
-  applying_glu_rel_judge.
+  apply_glu_rel_judge.
   rename m into a.
   assert {{ Γ ⊨ Π A B : Type@i }} as [env_relΓ]%rel_exp_of_typ_inversion1 by mauto 3 using completeness_fundamental_exp.
   assert {{ Γ, A ⊨ B : Type@i }} as [env_relΓA]%rel_exp_of_typ_inversion1 by mauto 3 using completeness_fundamental_exp.

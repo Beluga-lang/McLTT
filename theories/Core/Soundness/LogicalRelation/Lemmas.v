@@ -650,7 +650,7 @@ Proof.
     handle_functional_glu_univ_elem.
     trivial.
 Qed.
-
+xb
 Lemma glu_univ_elem_per_subtyp_trm_conv : forall {i j k a a' P P' El El' Γ A A' M m},
     {{ Sub a <: a' at i }} ->
     {{ DG a ∈ glu_univ_elem j ↘ P ↘ El }} ->
@@ -1227,12 +1227,13 @@ Proof.
   eapply glu_univ_elem_exp_conv; revgoals; mauto 3.
 Qed.
 
+#[global]
 Ltac invert_glu_rel_exp H :=
   (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
    simpl in H)
   + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
      destruct H as [])
-  + (inversion H; subst).
+  + (inversion H as [? [? [? ?]]]; subst).
 
 
 Lemma glu_rel_exp_to_wf_exp : forall {Γ A M},
@@ -1352,7 +1353,8 @@ Ltac unify_glu_univ_lvl i :=
   fail_if_dup;
   repeat unify_glu_univ_lvl1 i.
 
-Ltac applying_glu_rel_judge :=
+Ltac apply_glu_rel_judge :=
+  destruct_glu_rel_typ_with_sub;
   destruct_glu_rel_exp_with_sub;
   destruct_glu_rel_sub_with_sub;
   simplify_evals;
