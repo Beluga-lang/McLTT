@@ -1227,7 +1227,7 @@ Proof.
   eapply glu_univ_elem_exp_conv; revgoals; mauto 3.
 Qed.
 
-#[global]
+#[export]
 Ltac invert_glu_rel_exp H :=
   (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
    simpl in H)
@@ -1397,7 +1397,7 @@ Ltac saturate_syn_judge1 :=
       assert {{ Γ ⊢s τ : Γ' }} by mauto; fail_if_dup
   end.
 
-#[global]
+#[export]
   Ltac saturate_syn_judge :=
   repeat saturate_syn_judge1.
 
@@ -1409,6 +1409,6 @@ Ltac invert_sem_judge1 :=
       invert_glu_rel_sub H
   end.
 
-#[global]
+#[export]
   Ltac invert_sem_judge :=
   repeat invert_sem_judge1.
