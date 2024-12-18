@@ -1292,9 +1292,9 @@ Lemma glu_rel_sub_clean_inversion3 : forall {Γ Sb τ Γ' Sb'},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ EG Γ' ∈ glu_ctx_env ↘ Sb' }} ->
     {{ Γ ⊩s τ : Γ' }} ->
-    forall (Δ : ctx) (σ : sub) (ρ : env), Sb Δ σ ρ -> glu_rel_sub_with_sub Δ τ Sb' σ ρ.
+    glu_rel_sub_resp_sub_env Sb Sb' τ.
 Proof.
-  intros * ? ? Hglu.
+  simpl. intros * ? ? Hglu.
   eapply glu_rel_sub_clean_inversion2 in Hglu; [| eassumption].
   destruct_conjs.
   handle_functional_glu_ctx_env.
@@ -1386,3 +1386,29 @@ Qed.
 
 #[export]
 Hint Resolve glu_rel_exp_preserves_lvl : mctt.
+
+
+
+Ltac saturate_syn_judge1 :=
+  match goal with
+  | H : {{ ^?Γ ⊩ ^?M : ^?A }} |- _ =>
+      assert {{ Γ ⊢ M : A }} by mauto; fail_if_dup
+  | H : {{ ^?Γ ⊩s ^?τ : ^?Γ' }} |- _ =>
+      assert {{ Γ ⊢s τ : Γ' }} by mauto; fail_if_dup
+  end.
+
+#[global]
+  Ltac saturate_syn_judge :=
+  repeat saturate_syn_judge1.
+
+Ltac invert_sem_judge1 :=
+  match goal with
+  | H : {{ ^?Γ ⊩ ^?M : ^?A }} |- _ =>
+      invert_glu_rel_exp H
+  | H : {{ ^?Γ ⊩s ^?τ : ^?Γ' }} |- _ =>
+      invert_glu_rel_sub H
+  end.
+
+#[global]
+  Ltac invert_sem_judge :=
+  repeat invert_sem_judge1.

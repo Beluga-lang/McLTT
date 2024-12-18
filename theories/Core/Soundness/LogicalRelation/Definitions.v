@@ -430,6 +430,13 @@ Definition glu_rel_exp Γ M A : Prop :=
         glu_rel_exp_with_sub i Δ M A σ ρ.
 Arguments glu_rel_exp Γ M A/.
 
+
+Definition glu_rel_sub_resp_sub_env Sb Sb' τ :=
+  forall Δ σ ρ,
+    {{ Δ ⊢s σ ® ρ ∈ Sb }} ->
+    glu_rel_sub_with_sub Δ τ Sb' σ ρ.
+Arguments glu_rel_sub_resp_sub_env Sb Sb' τ/.
+
 Definition glu_rel_sub Γ τ Γ' : Prop :=
   exists Sb Sb',
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} /\
