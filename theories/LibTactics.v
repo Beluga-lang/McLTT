@@ -271,7 +271,9 @@ Ltac deepexec lem tac :=
             || deepexec constr:(proj2 lem) tac
   | forall _ : ?T, _ =>
       exvar T ltac:(fun x =>
-                      lazymatch type of T with
+                      let TT := type of T in
+                      let TT := eval simpl in TT in
+                      lazymatch TT with
                       | Prop => match goal with
                             | H : _ |- _ => unify x H; deepexec constr:(lem x) tac
                             | _ => deepexec constr:(lem x) tac
@@ -297,7 +299,9 @@ Ltac cutexec lem C tac :=
                         unify x C;
                         tac lem
                       else
-                        lazymatch type of T with
+                        let TT := type of T in
+                        let TT := eval simpl in TT in
+                        lazymatch TT with
                          | Prop => match goal with
                                | H : _ |- _ => unify x H; cutexec constr:(lem x) C tac
                                | _ => cutexec constr:(lem x) C tac

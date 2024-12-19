@@ -51,7 +51,7 @@ Hint Resolve glu_rel_exp_sub_nat : mctt.
 Lemma glu_rel_exp_clean_inversion2'' : forall {Γ Sb M},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩ M : ℕ }} ->
-    glu_rel_exp_clean_inversion2_result 0 Sb M {{{ ℕ }}}.
+    glu_rel_exp_resp_sub_env 0 Sb M {{{ ℕ }}}.
 Proof.
   intros * ? HM.
   assert {{ Γ ⊩ ℕ : Type@0 }} by mauto 3.
@@ -60,11 +60,11 @@ Qed.
 
 Ltac invert_glu_rel_exp H ::=
   (unshelve eapply (glu_rel_exp_clean_inversion2'' _) in H; shelve_unifiable; [eassumption |];
-   unfold glu_rel_exp_clean_inversion2_result in H)
+   unfold glu_rel_exp_resp_sub_env in H)
   + (unshelve eapply (glu_rel_exp_clean_inversion2' _) in H; shelve_unifiable; [eassumption |];
-     unfold glu_rel_exp_clean_inversion2_result in H)
+     unfold glu_rel_exp_resp_sub_env in H)
   + (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
-     unfold glu_rel_exp_clean_inversion2_result in H)
+     unfold glu_rel_exp_resp_sub_env in H)
   + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
      destruct H as [])
   + (inversion H; subst).

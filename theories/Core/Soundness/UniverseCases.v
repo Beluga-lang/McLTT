@@ -46,21 +46,22 @@ Hint Resolve glu_rel_exp_typ : mctt.
 Lemma glu_rel_exp_clean_inversion2' : forall {i Γ Sb M},
     {{ EG Γ ∈ glu_ctx_env ↘ Sb }} ->
     {{ Γ ⊩ M : Type@i }} ->
-    glu_rel_exp_clean_inversion2_result (S i) Sb M {{{ Type@i }}}.
+    glu_rel_exp_resp_sub_env (S i) Sb M {{{ Type@i }}}.
 Proof.
   intros * ? HM.
   assert {{ Γ ⊩ Type@i : Type@(S i) }} by mauto 3.
   eapply glu_rel_exp_clean_inversion2 in HM; mauto 3.
 Qed.
 
-Ltac invert_glu_rel_exp H ::=
+#[local]
+  Ltac invert_glu_rel_exp_old H :=
+  invert_glu_rel_exp H.
+
+#[global]
+  Ltac invert_glu_rel_exp H :=
   (unshelve eapply (glu_rel_exp_clean_inversion2' _) in H; shelve_unifiable; [eassumption |];
-   unfold glu_rel_exp_clean_inversion2_result in H)
-  + (unshelve eapply (glu_rel_exp_clean_inversion2 _ _) in H; shelve_unifiable; [eassumption | eassumption |];
-     unfold glu_rel_exp_clean_inversion2_result in H)
-  + (unshelve eapply (glu_rel_exp_clean_inversion1 _) in H; shelve_unifiable; [eassumption |];
-     destruct H as [])
-  + (inversion H; subst).
+   simpl in H)
+  + invert_glu_rel_exp_old H.
 
 Lemma glu_rel_exp_sub_typ : forall {Γ σ Δ i A},
     {{ Γ ⊩s σ : Δ }} ->

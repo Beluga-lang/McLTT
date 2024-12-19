@@ -18,17 +18,76 @@ Lemma glu_rel_eq : forall Γ A i M N,
     {{ Γ ⊩ N : A }} ->
     {{ Γ ⊩ Eq A M N : Type@i }}.
 Proof.
-Admitted.
+  intros * HA HM HN.
+  assert {{ ⊩ Γ }} as [SbΓ] by mauto.
+  saturate_syn_judge.
+  invert_sem_judge.
+
+  eapply glu_rel_exp_of_typ; mauto 3.
+  intros.
+  assert {{ Δ ⊢s σ : Γ }} by mauto 4.
+  split; mauto 3.
+  apply_glu_rel_judge.
+  saturate_glu_typ_from_el.
+  unify_glu_univ_lvl i.
+  deepexec glu_univ_elem_per_univ ltac:(fun H => pose proof H).
+  match_by_head per_univ ltac:(fun H => destruct H).
+  do 2 deepexec glu_univ_elem_per_elem ltac:(fun H => pose proof H; fail_at_if_dup ltac:(4)).
+
+  eexists; repeat split; mauto.
+  - eexists. per_univ_elem_econstructor; mauto. reflexivity.
+  - intros.
+    match_by_head1 glu_univ_elem invert_glu_univ_elem.
+    handle_per_univ_elem_irrel.
+    handle_functional_glu_univ_elem.
+    econstructor; mauto 3;
+      intros Δ' τ **;
+      assert {{ Δ' ⊢s τ : Δ }} by mauto 2;
+      assert {{ Δ' ⊢s σ ∘ τ ® ρ ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption);
+      assert {{ Δ' ⊢s σ ∘ τ : Γ }} by mauto 2;
+      apply_glu_rel_judge;
+      handle_functional_glu_univ_elem;
+      unify_glu_univ_lvl i.
+    + bulky_rewrite.
+    + assert {{ Δ' ⊢ M[σ][τ] ≈ M[σ ∘ τ] : A[σ ∘ τ] }} by mauto.
+      bulky_rewrite.
+    + assert {{ Δ' ⊢ N[σ][τ] ≈ N[σ ∘ τ] : A[σ ∘ τ] }} by mauto.
+      bulky_rewrite.
+Qed.
 
 #[export]
   Hint Resolve glu_rel_eq : mctt.
 
-Lemma glu_rel_eq_refl : forall Γ A i M,
-    {{ Γ ⊩ A : Type@i }} ->
+Lemma glu_rel_eq_refl : forall Γ A M,
     {{ Γ ⊩ M : A }} ->
     {{ Γ ⊩ refl A M : Eq A M M }}.
 Proof.
-Admitted.
+  intros * HM.
+  assert {{ ⊩ Γ }} as [SbΓ] by mauto.
+  saturate_syn_judge.
+  invert_sem_judge.
+  assert {{ Γ ⊢ A : Type@x }} by mauto.
+  eexists; split; eauto.
+  exists x; intros.
+  assert {{ Δ ⊢s σ : Γ }} by mauto 4.
+  apply_glu_rel_judge.
+  saturate_glu_typ_from_el.
+  deepexec glu_univ_elem_per_univ ltac:(fun H => pose proof H).
+  match_by_head per_univ ltac:(fun H => destruct H).
+  deepexec glu_univ_elem_per_elem ltac:(fun H => pose proof H; fail_at_if_dup ltac:(4)).
+  saturate_glu_info.
+  eexists; repeat split; mauto.
+  - glu_univ_elem_econstructor; mauto 3; reflexivity.
+  - do 2 try econstructor; mauto 3;
+    intros Δ' τ **;
+      assert {{ Δ' ⊢s τ : Δ }} by mauto 2;
+    assert {{ Δ' ⊢s σ ∘ τ ® ρ ∈ SbΓ }} by (eapply glu_ctx_env_sub_monotone; eassumption);
+    assert {{ Δ' ⊢s σ ∘ τ : Γ }} by mauto 2;
+    assert {{ Δ' ⊢ M[σ][τ] ≈ M[σ ∘ τ] : A[σ ∘ τ] }} by mauto;
+    apply_glu_rel_judge;
+    saturate_glu_typ_from_el;
+    bulky_rewrite.
+Qed.
 
 #[export]
   Hint Resolve glu_rel_eq_refl : mctt.
