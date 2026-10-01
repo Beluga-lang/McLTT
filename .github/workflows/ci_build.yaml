@@ -44,6 +44,9 @@ jobs:
 
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          # The homepage lists the ext/* branches, which needs them all.
+          fetch-depth: 0
           
       - name: Log in container registry
         uses: docker/login-action@v3
@@ -86,10 +89,13 @@ jobs:
                 mv theories/dep.html html/dep.html
                 cp assets/styling.css html/styling.css
                 cp -r assets/images html/images
-                # The link has to be absolute for the README as GitHub renders
-                # it, but relative once the README *is* the deployed index.
-                sed -i 's!\[Coqdoc\](https://[A-Za-z0-9.-]*\.github\.io/McTT/dep\.html)![Coqdoc](dep.html)!' README.md
-                pandoc README.md -H assets/include.html --no-highlight --metadata pagetitle='McTT: Building A Correct-By-Construction Proof Checkers For Type Theories' -t html --css styling.css -o html/index.html
+                # Only main's README is the homepage; an ext/* branch's docs go
+                # to their own folder, and homepage.yaml refreshes the branch
+                # list on the homepage after every build.
+                if [[ "${{ github.ref_name }}" == 'main' ]]; then
+                  git config --global --add safe.directory "$PWD"
+                  .github/scripts/build_homepage.sh html
+                fi
               fi
             endGroup
             startGroup "Run inline tests"

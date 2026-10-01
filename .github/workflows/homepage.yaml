@@ -1,0 +1,47 @@
+name: Homepage
+# Keep the list of ext/* branches on the homepage current.  It is rendered from
+# main's README, so it changes whenever an ext/* branch is pushed, created or
+# deleted, not only when main is.  `workflow_run` and `delete` always run this
+# file as it is on the default branch, so the ext/* branches need no copy of it.
+on:
+  workflow_run:
+    workflows: ["CI build"]
+    types: [completed]
+  delete:
+  workflow_dispatch:
+
+concurrency:
+  group: homepage
+  cancel-in-progress: true
+
+jobs:
+  homepage:
+    name: Render the homepage
+    # A deleted tag or non-ext branch changes nothing on the homepage.
+    if: github.event_name != 'delete' || startsWith(github.event.ref, 'ext/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install pandoc
+        run: sudo apt-get update -q && sudo apt-get install -y -q pandoc
+
+      - name: Render
+        run: |
+          .github/scripts/build_homepage.sh html
+          cp assets/styling.css html/styling.css
+          cp -r assets/images html/images
+
+      - name: Deploy the homepage only
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: html
+          # Keep everything else on gh-pages: main's Coqdoc and every ext/*
+          # branch's docs.
+          clean: false
